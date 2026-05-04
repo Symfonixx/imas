@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="{{ app()->getLocale() }}" dir="{{app()->getLocale() == 'ar' ? 'rtl' :'ltr'}}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="icon" type="image/png" href="{{asset('images/favicon/favicon-96x96.png')}}" sizes="96x96"/>
+    <link rel="icon" type="image/svg+xml" href="{{asset('images/favicon/favicon.svg')}}"/>
+    <link rel="shortcut icon" href="{{asset('images/favicon/favicon.ico')}}"/>
+    <link rel="apple-touch-icon" sizes="180x180" href="{{asset('images/favicon/apple-touch-icon.png')}}"/>
+    <link rel="manifest" href="{{asset('images/favicon/site.webmanifest')}}"/>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @routes
+    @inertiaHead
+</head>
+<body>
+@inertia
+</body>
+</html>

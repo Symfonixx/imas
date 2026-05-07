@@ -18,6 +18,7 @@
 @php
     $values = [
         'about_us_content' => (string) ($seo->get('about_us_content') ?: ''),
+        'about_us_youtube_embed' => (string) ($seo->get('about_us_youtube_embed') ?: ''),
         'about_us_meta_title' => (string) ($seo->get('about_us_meta_title') ?: ''),
         'about_us_meta_description' => (string) ($seo->get('about_us_meta_description') ?: ''),
         'about_us_meta_keywords' => (string) ($seo->get('about_us_meta_keywords') ?: ''),
@@ -100,6 +101,16 @@
                             <textarea name="data[about_us_content]"
                                       id="tinymce"
                                       class="form-control form-control-solid">{!! old('data.about_us_content', $values['about_us_content']) !!}</textarea>
+                        </x-admin.form-group>
+
+                        <x-admin.form-group
+                            label="YouTube Embed"
+                            name="data.about_us_youtube_embed"
+                            helper="Paste iframe embed code or a YouTube URL."
+                            translatable>
+                            <textarea name="data[about_us_youtube_embed]"
+                                      rows="4"
+                                      class="form-control form-control-solid">{{ old('data.about_us_youtube_embed', $values['about_us_youtube_embed']) }}</textarea>
                         </x-admin.form-group>
                     </div>
                 </div>

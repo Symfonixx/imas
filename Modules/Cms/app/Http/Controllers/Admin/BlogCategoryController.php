@@ -22,7 +22,7 @@ class BlogCategoryController extends Controller
 
     public function index()
     {
-        $model = $this->categoryRepository->all(['id', 'name', 'slug', 'created_at']);
+        $model = $this->categoryRepository->all(['id', 'name', 'slug', 'add_to_navbar', 'created_at']);
 
         return view('cms::admin.blog_category.index', compact('model'));
     }
@@ -37,6 +37,11 @@ class BlogCategoryController extends Controller
         $data = [
             'name' => $request->input('name'),
             'slug' => $request->input('slug'),
+            'add_to_navbar' => $request->boolean('add_to_navbar'),
+            'meta_title' => $request->input('meta_title'),
+            'meta_description' => $request->input('meta_description'),
+            'meta_keywords' => $request->input('meta_keywords'),
+            'meta_image' => $request->file('meta_img') ?: $request->input('meta_img_media_path'),
         ];
         $this->categoryRepository->store($data);
 
@@ -53,6 +58,11 @@ class BlogCategoryController extends Controller
         $data = [
             'name' => $request->input('name'),
             'slug' => $blogs_category->slug,
+            'add_to_navbar' => $request->boolean('add_to_navbar'),
+            'meta_title' => $request->input('meta_title'),
+            'meta_description' => $request->input('meta_description'),
+            'meta_keywords' => $request->input('meta_keywords'),
+            'meta_image' => $request->file('meta_img') ?: $request->input('meta_img_media_path'),
         ];
         $this->categoryRepository->update($data, $blogs_category, $request->boolean('update_translations'));
 

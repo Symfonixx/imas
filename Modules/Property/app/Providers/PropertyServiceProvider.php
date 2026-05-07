@@ -4,6 +4,14 @@ namespace Modules\Property\Providers;
 
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
+use Modules\Property\Repositories\Attribute\AttributeModelRepository;
+use Modules\Property\Repositories\Attribute\AttributeRepository;
+use Modules\Property\Repositories\AttributeFamily\AttributeFamilyModelRepository;
+use Modules\Property\Repositories\AttributeFamily\AttributeFamilyRepository;
+use Modules\Property\Repositories\Location\LocationModelRepository;
+use Modules\Property\Repositories\Location\LocationRepository;
+use Modules\Property\Repositories\PropertyType\PropertyTypeModelRepository;
+use Modules\Property\Repositories\PropertyType\PropertyTypeRepository;
 use Nwidart\Modules\Traits\PathNamespace;
 
 class PropertyServiceProvider extends ServiceProvider
@@ -34,6 +42,10 @@ class PropertyServiceProvider extends ServiceProvider
     {
         $this->app->register(EventServiceProvider::class);
         $this->app->register(RouteServiceProvider::class);
+        $this->app->bind(LocationRepository::class, LocationModelRepository::class);
+        $this->app->bind(AttributeRepository::class, AttributeModelRepository::class);
+        $this->app->bind(AttributeFamilyRepository::class, AttributeFamilyModelRepository::class);
+        $this->app->bind(PropertyTypeRepository::class, PropertyTypeModelRepository::class);
     }
 
     /**

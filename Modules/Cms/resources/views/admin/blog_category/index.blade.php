@@ -29,6 +29,8 @@
             </th>
             <th class="min-w-200px">{{__('Name')}}</th>
             <th class="min-w-200px">{{__('Url')}}</th>
+            <th class="min-w-120px">{{__('Add To Navbar')}}</th>
+            <th class="min-w-120px">{{__('SEO')}}</th>
             <th class="min-w-150px">{{__('Created At')}}</th>
             <th class="min-w-200px text-end rounded-end"></th>
         </thead>
@@ -42,6 +44,14 @@
                 </td>
                 <td>{{$category->name}}</td>
                 <td>{{$category->slug}}</td>
+                <td>{{$category->add_to_navbar ? __('Yes') : __('No')}}</td>
+                <td>
+                    @if($category->meta_title || $category->meta_description || $category->meta_keywords || $category->meta_image)
+                        <span class="badge badge-light-success">{{ __('Added') }}</span>
+                    @else
+                        <span class="badge badge-light-secondary">{{ __('Empty') }}</span>
+                    @endif
+                </td>
                 <td>{{$category->created_at->diffForHumans() }}</td>
                 <td class="text-end">
                     <button type="button" class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1"

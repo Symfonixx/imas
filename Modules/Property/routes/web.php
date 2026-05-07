@@ -14,5 +14,4 @@ use Modules\Property\Http\Controllers\PropertyController;
 |
 */
 
-    Route::resource('property', PropertyController::class)->names('property');
-
+Route::resource('property', PropertyController::class)->names('property');

@@ -4,13 +4,15 @@ namespace Modules\Cms\Repositories\BlogCategory;
 
 use Config;
 use Exception;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Log;
 use Modules\Cms\Models\BlogCategory;
 use Modules\Core\Traits\ExceptionHandlerTrait;
+use Modules\Core\Traits\FileTrait;
 
 class BlogCategoryModelRepository implements BlogCategoryRepository {
-    use ExceptionHandlerTrait;
+    use ExceptionHandlerTrait, FileTrait;
 
     public function all(array $columns = ['*']): LengthAwarePaginator {
         return BlogCategory::select($columns)->latest()->paginate(Config::get('core.page_size', 10));
@@ -60,8 +62,16 @@ class BlogCategoryModelRepository implements BlogCategoryRepository {
             }
         }
 
+        $metaImage = $data['meta_image'] ?? null;
+        if ($metaImage instanceof UploadedFile) {
+            $metaImage = $this->upload($metaImage, 'cms/blog-categories', $data['slug'] ?? null, $category?->meta_image);
+        } elseif ($metaImage === '' || $metaImage === null) {
+            $metaImage = $category?->meta_image;
+        }
+
         return array_merge($data, [
             'name' => $transName,
+            'meta_image' => $metaImage,
         ]);
     }
 

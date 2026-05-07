@@ -255,4 +255,5 @@ INSERT INTO `permissions` (`id`, `name`, `guard_name`, `created_at`, `updated_at
         (5, 'Logs Management', 'web', NULL, NULL),
         (6, 'App Monitoring', 'web', NULL, NULL),
         (7, 'Media Library Management', 'web', NULL, NULL),
-        (8, 'Corporate Management', 'web', NULL, NULL);
+        (8, 'Corporate Management', 'web', NULL, NULL),
+        (9, 'Property Management', 'web', NULL, NULL);

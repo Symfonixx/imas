@@ -58,6 +58,18 @@
             </div>
 
         </div>
+        <div class="menu-sub menu-sub-accordion {{ isset($active['turkish_citizenship'])  ? 'show' : '' }}">
+            <div class="menu-item">
+                <a class="menu-link {{ isset($active['turkish_citizenship']) ? 'active' : '' }}"
+                   href="{{ route('admin.turkish_citizenship.index') }}">
+                            <span class="menu-bullet">
+                                <span class="bullet bullet-dot"></span>
+                            </span>
+                    <span class="menu-title">{{ __('Turkish Citizenship') }}</span>
+                </a>
+            </div>
+
+        </div>
 
     </div>
 @endcan
@@ -190,6 +202,68 @@
                 </a>
             </div>
 
+        </div>
+
+    </div>
+@endcan
+
+@can('Property Management')
+    <div data-kt-menu-trigger="click"
+         class="menu-item menu-accordion {{ isset($active['properties']) ? 'show hover' : '' }}">
+            <span class="menu-link">
+                <span class="menu-icon">
+                   <i class="bi bi-buildings"></i>
+                </span>
+                <span class="menu-title">{{ __('Properties') }}</span>
+                <span class="menu-arrow"></span>
+            </span>
+
+        <div class="menu-sub menu-sub-accordion {{ isset($active['locations']) || isset($active['attributes']) || isset($active['attribute_families']) || isset($active['property_types']) || isset($active['property_items']) ? 'show' : '' }}">
+            <div class="menu-item">
+                <a class="menu-link {{ isset($active['property_items']) ? 'active' : '' }}"
+                   href="{{ route('admin.properties.index') }}">
+                            <span class="menu-bullet">
+                                <span class="bullet bullet-dot"></span>
+                            </span>
+                    <span class="menu-title">{{ __('Properties') }}</span>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a class="menu-link {{ isset($active['locations']) ? 'active' : '' }}"
+                   href="{{ route('admin.locations.index') }}">
+                            <span class="menu-bullet">
+                                <span class="bullet bullet-dot"></span>
+                            </span>
+                    <span class="menu-title">{{ __('Locations') }}</span>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a class="menu-link {{ isset($active['attributes']) ? 'active' : '' }}"
+                   href="{{ route('admin.attributes.index') }}">
+                            <span class="menu-bullet">
+                                <span class="bullet bullet-dot"></span>
+                            </span>
+                    <span class="menu-title">{{ __('Attributes') }}</span>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a class="menu-link {{ isset($active['attribute_families']) ? 'active' : '' }}"
+                   href="{{ route('admin.attribute_families.index') }}">
+                            <span class="menu-bullet">
+                                <span class="bullet bullet-dot"></span>
+                            </span>
+                    <span class="menu-title">{{ __('Attribute families') }}</span>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a class="menu-link {{ isset($active['property_types']) ? 'active' : '' }}"
+                   href="{{ route('admin.property_types.index') }}">
+                            <span class="menu-bullet">
+                                <span class="bullet bullet-dot"></span>
+                            </span>
+                    <span class="menu-title">{{ __('Property types') }}</span>
+                </a>
+            </div>
         </div>
 
     </div>

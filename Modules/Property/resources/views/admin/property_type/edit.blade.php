@@ -1,0 +1,135 @@
+@php
+    $iconChoicesResolved = collect($iconChoices);
+    if (! $iconChoicesResolved->pluck('class')->contains($propertyType->icon)) {
+        $iconChoicesResolved = $iconChoicesResolved->prepend([
+            'class' => $propertyType->icon,
+            'label' => __('Current icon'),
+        ]);
+    }
+    $iconSelected = old('icon', $propertyType->icon);
+@endphp
+
+@section('title', __('Edit property type'))
+
+@section('toolbar')
+    @php
+        $breadcrumbItems = [
+            ['label' => 'Dashboard', 'url' => route('admin.dashboard.index')],
+            ['label' => __('Property types'), 'url' => route('admin.property_types.index')],
+            ['label' => __('Edit property type')],
+        ];
+    @endphp
+    <x-admin.breadcrumb :pageTitle="__('Edit property type')" :breadcrumbItems="$breadcrumbItems"/>
+@endsection
+
+<x-admin-layout>
+    <form method="POST" action="{{ route('admin.property_types.update', $propertyType) }}">
+        @csrf
+        @method('PUT')
+
+        <div class="row gx-5 gx-xl-10">
+            <div class="col-xxl-8 col-xl-8 mb-5 mb-xl-0">
+                <div class="card card-flush mb-7">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h2 class="d-flex align-items-center">
+                                <i class="bi bi-tag text-primary fs-3 me-2"></i>
+                                {{ __('General') }}
+                            </h2>
+                        </div>
+                    </div>
+                    <div class="card-body pt-0">
+                        <x-admin.form-group label="Name" name="name" required translatable>
+                            <input type="text"
+                                   id="property_type_name"
+                                   name="name"
+                                   class="form-control form-control-solid"
+                                   value="{{ old('name', $propertyType->name) }}"
+                                   placeholder="{{ __('Name') }}"/>
+                        </x-admin.form-group>
+
+                        <x-admin.form-group label="URL slug" name="slug" required
+                                            helper="{{ __('Lowercase, hyphens only. Used in URLs.') }}">
+                            <input type="text"
+                                   name="slug"
+                                   class="form-control form-control-solid"
+                                   value="{{ old('slug', $propertyType->slug) }}"
+                                   placeholder="residential-rent"
+                                   pattern="[a-z0-9]+(-[a-z0-9]+)*"
+                                   maxlength="191"/>
+                        </x-admin.form-group>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xxl-4 col-xl-4">
+                <div class="card card-flush mb-7">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h2 class="d-flex align-items-center">
+                                <i class="bi bi-palette text-primary fs-3 me-2"></i>
+                                {{ __('Appearance') }}
+                            </h2>
+                        </div>
+                    </div>
+                    <div class="card-body pt-0">
+                        <x-admin.form-group label="Icon" name="icon" required
+                                            helper="{{ __('Shown to users when choosing a property type.') }}">
+                            @include('property::admin.partials.bootstrap_icon_picker', [
+                                'name' => 'icon',
+                                'iconChoices' => $iconChoicesResolved->values()->all(),
+                                'selected' => $iconSelected,
+                            ])
+                        </x-admin.form-group>
+
+                        <x-admin.form-group label="Attribute family" name="attribute_family_id">
+                            <select name="attribute_family_id"
+                                    class="form-select form-select-solid"
+                                    data-control="select2"
+                                    data-placeholder="{{ __('No attribute family') }}">
+                                <option value="">{{ __('No attribute family') }}</option>
+                                @foreach($families as $family)
+                                    <option value="{{ $family->id }}" @selected((string) old('attribute_family_id', $propertyType->attribute_family_id) === (string) $family->id)>
+                                        {{ $family->name }} ({{ $family->code }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        </x-admin.form-group>
+                    </div>
+                </div>
+
+                <div class="card card-flush mb-7">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h2 class="d-flex align-items-center">
+                                <i class="bi bi-translate text-primary fs-3 me-2"></i>
+                                {{ __('Update Other Languages') }}
+                            </h2>
+                        </div>
+                    </div>
+                    <div class="card-body pt-0">
+                        <div class="form-check form-check-custom form-check-solid">
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   name="update_translations"
+                                   id="update_translations"
+                                   value="1"
+                                   @checked(old('update_translations', false))/>
+                            <label class="form-check-label fs-7 ms-2" for="update_translations">
+                                {{ __('Use Google Translate to update all other languages.') }}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end py-6">
+            <a href="{{ route('admin.property_types.index') }}"
+               class="btn btn-light btn-active-light-primary me-3">{{ __('Discard') }}</a>
+            <button type="submit" class="btn btn-primary">
+                <span class="indicator-label">{{ __('Save Changes') }}</span>
+            </button>
+        </div>
+    </form>
+</x-admin-layout>

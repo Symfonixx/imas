@@ -1,64 +1,64 @@
 {
   "Modules/Base/resources/assets/js/Pages/Index.vue": {
-    "file": "assets/Index-BKIZEW0Q.js",
+    "file": "assets/Index-Cxn5oG47.js",
     "name": "Index",
     "src": "Modules/Base/resources/assets/js/Pages/Index.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_App-CEQB57gT.js"
+      "_App-VCnd-Z8r.js"
     ],
     "css": [
-      "assets/Index-DjaCpWxJ.css"
+      "assets/Index-CHdTQ_ZT.css"
     ]
   },
   "Modules/User/resources/assets/js/Pages/Auth/ForgotPassword.vue": {
-    "file": "assets/ForgotPassword-Df3rRK-B.js",
+    "file": "assets/ForgotPassword-0h0-on6r.js",
     "name": "ForgotPassword",
     "src": "Modules/User/resources/assets/js/Pages/Auth/ForgotPassword.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_App-CEQB57gT.js"
+      "_App-VCnd-Z8r.js"
     ],
     "css": [
       "assets/ForgotPassword-tn0RQdqM.css"
     ]
   },
   "Modules/User/resources/assets/js/Pages/Auth/Login.vue": {
-    "file": "assets/Login-DlJQi_AP.js",
+    "file": "assets/Login-BT3CWlv1.js",
     "name": "Login",
     "src": "Modules/User/resources/assets/js/Pages/Auth/Login.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_App-CEQB57gT.js"
+      "_App-VCnd-Z8r.js"
     ],
     "css": [
       "assets/ForgotPassword-tn0RQdqM.css"
     ]
   },
   "Modules/User/resources/assets/js/Pages/Auth/Register.vue": {
-    "file": "assets/Register-DqPqRu_g.js",
+    "file": "assets/Register-bX7r10qp.js",
     "name": "Register",
     "src": "Modules/User/resources/assets/js/Pages/Auth/Register.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_App-CEQB57gT.js"
+      "_App-VCnd-Z8r.js"
     ],
     "css": [
       "assets/ForgotPassword-tn0RQdqM.css"
     ]
   },
   "Modules/User/resources/assets/js/Pages/Auth/ResetPassword.vue": {
-    "file": "assets/ResetPassword-CjMr6SNE.js",
+    "file": "assets/ResetPassword-CN2GVkSz.js",
     "name": "ResetPassword",
     "src": "Modules/User/resources/assets/js/Pages/Auth/ResetPassword.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_App-CEQB57gT.js"
+      "_App-VCnd-Z8r.js"
     ],
     "css": [
       "assets/ForgotPassword-tn0RQdqM.css"
@@ -68,8 +68,8 @@
     "file": "assets/App-CM3ZgFe_.css",
     "src": "_App-!~{008}~.js"
   },
-  "_App-CEQB57gT.js": {
-    "file": "assets/App-CEQB57gT.js",
+  "_App-VCnd-Z8r.js": {
+    "file": "assets/App-VCnd-Z8r.js",
     "name": "App",
     "imports": [
       "resources/js/app.js"
@@ -84,7 +84,7 @@
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-Dyp6lC89.js",
+    "file": "assets/app-Dnr9uVuh.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
@@ -96,7 +96,7 @@
       "Modules/User/resources/assets/js/Pages/Auth/ResetPassword.vue"
     ],
     "css": [
-      "assets/app-evpUSlrb.css"
+      "assets/app-D1EaTGT-.css"
     ]
   }
 }

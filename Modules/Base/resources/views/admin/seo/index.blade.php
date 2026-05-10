@@ -18,6 +18,8 @@
         'website_desc' => (string) ($seo->get('website_desc') ?: ''),
         'website_keywords' => (string) ($seo->get('website_keywords') ?: ''),
         'about_us' => (string) ($seo->get('about_us') ?: ''),
+        'about_turkey' => (string) ($seo->get('about_turkey') ?: ''),
+        'turkish_citizenship' => (string) ($seo->get('turkish_citizenship') ?: ''),
     ];
 
     $healthChecks = [
@@ -205,6 +207,43 @@
                             :hard-max="500"
                             unit="characters"
                         />
+
+                        {{-- About Turkey --}}
+                           <x-admin.seo-field
+                            name="data[about_turkey]"
+                            id="about_turkey"
+                            error-key="data.about_turkey"
+                            label="About Turkey"
+                            optimal-label="Optimal: 120–300 characters"
+                            :value="$values['about_turkey']"
+                            type="textarea"
+                            rows="4"
+                            placeholder="Türkiye Its Beautiful place"
+                            translatable
+                            :optimal-min="120"
+                            :optimal-max="300"
+                            :hard-max="500"
+                            unit="characters"
+                        />
+
+                         {{-- Turkish citizenship --}}
+                           <x-admin.seo-field
+                            name="data[turkish_citizenship]"
+                            id="turkish_citizenship"
+                            error-key="data.turkish_citizenship"
+                            label="Turkish Citizenship"
+                            optimal-label="Optimal: 120–300 characters"
+                            :value="$values['turkish_citizenship']"
+                            type="textarea"
+                            rows="4"
+                            placeholder="Turkish citizenship is available to foreigners through investment (starting at $400,000 for real estate)"
+                            translatable
+                            :optimal-min="120"
+                            :optimal-max="300"
+                            :hard-max="500"
+                            unit="characters"
+                        />
+
                     </div>
                 </div>
 

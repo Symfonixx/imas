@@ -2,12 +2,20 @@
 
 namespace Modules\Cms\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Cms\Database\Factories\BlogCategoryFactory;
 use Spatie\Translatable\HasTranslations;
 
 class BlogCategory extends Model
 {
+    use HasFactory;
     use HasTranslations;
+
+    protected static function newFactory(): BlogCategoryFactory
+    {
+        return BlogCategoryFactory::new();
+    }
 
     public $translatable = ['name', 'meta_title', 'meta_description', 'meta_keywords'];
 

@@ -1,42 +1,38 @@
-<!-- resources/js/Pages/Index.vue -->
 <template>
-    <head>
-        <title>Index | {{appName}}</title>
-    </head>
-    <app-layout>
-        <div class="container">
-            <div class="my-3">
-                <h1>Welcome to the Index Page</h1>
-                <p>This is the main content of the index page.</p>
-            </div>
-        </div>
+    <Head :title="`Home | ${appName}`"/>
 
-    </app-layout>
+    <AppLayout>
+        <HomeHero
+            :welcome-title="welcomeTitle"
+            :welcome-subtitle="welcomeSubtitle"
+            :slides="slides"
+            :property-types="propertyTypes"
+            :cities="cities"
+      
+        />
+
+        <FeaturedPropertiesSection :properties="featuredProperties"/>
+    </AppLayout>
 </template>
 
 <script setup>
-import {computed} from 'vue'
-import {usePage} from '@inertiajs/vue3'
-
-const page = usePage()
-
-const appName = computed(() => page.props.appName)
-
-</script>
-
-<script>
-
-
+import {computed} from 'vue';
+import {Head, usePage} from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/App.vue';
+import FeaturedPropertiesSection from '../components/FeaturedPropertiesSection.vue';
+import HomeHero from '../components/HomeHero.vue';
 
-export default {
-    components: {
-        AppLayout
-    }
+defineProps({
+    welcomeTitle: {type: String, required: true},
+    welcomeSubtitle: {type: String, required: true},
+    slides: {type: Array, default: () => []},
+    propertyTypes: {type: Array, default: () => []},
+    cities: {type: Array, default: () => []},
+    featuredProperties: {type: Array, default: () => []},
+    recommendedProperties: {type: Array, default: () => []},
+});
 
-};
+const page = usePage();
+
+const appName = computed(() => page.props.appName);
 </script>
-
-<style scoped>
-/* Add styles specific to the Index page here */
-</style>

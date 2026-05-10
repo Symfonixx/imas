@@ -1,10 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
+use Modules\Base\Http\Controllers\HomeController;
 
-Route::get('/', function () {
-    return Inertia::render('Base::Index', [
-        'test_val' => 'Prop value',
-    ]);
-});
+Route::get('/', [HomeController::class, 'index'])->name('home');

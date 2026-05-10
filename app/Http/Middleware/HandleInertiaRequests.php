@@ -6,10 +6,13 @@ use App;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Module;
-use Modules\Base\Models\Settings;
+use Modules\Base\Models\Seo;
+use Modules\Base\Repositories\Settings\SettingsRepository;
 
 class HandleInertiaRequests extends Middleware
 {
+    public function __construct(private readonly SettingsRepository $settingsRepository) {}
+
     /**
      * The root template that's loaded on the first page visit.
      *
@@ -43,14 +46,95 @@ class HandleInertiaRequests extends Middleware
             'appName' => config('app.name'),
             'csrf' => csrf_token(),
             'asset_path' => asset('/'),
+            'theme_url' => asset('theme/findhouses'),
             'storage_path' => asset('storage').'/',
             'locale' => App::currentLocale(),
             'translations' => $this->getTranslations(),
-            'settings' => Settings::pluck('value', 'key'),
+            'settings' => fn () => $this->sharedSettingsFlat(),
+            'globals' => fn () => $this->sharedGlobals(),
             'auth' => fn () => $request->user()
                 ? $request->user()->only('id', 'name', 'email', 'type')
                 : null,
         ]);
+    }
+
+    /**
+     * Raw settings key => value from storage (same keys as admin Website Configurations),
+     * plus contact_* aliases used by front-office Vue layouts.
+     *
+     * @return array<string, mixed>
+     */
+    protected function sharedSettingsFlat(): array
+    {
+        /** @var array<string, mixed> $flat */
+        $flat = $this->settingsRepository->allKeyValue()->all();
+
+        $flat['contact_phone'] = $flat['phone'] ?? ($flat['contact_phone'] ?? '');
+        $flat['contact_email'] = $flat['email'] ?? ($flat['contact_email'] ?? '');
+        $flat['contact_address'] = $flat['address'] ?? ($flat['contact_address'] ?? '');
+
+        return $flat;
+    }
+
+    /**
+     * Structured site-wide config for Inertia (contact, social, media URLs, SEO, about copy).
+     *
+     * @return array<string, mixed>
+     */
+    protected function sharedGlobals(): array
+    {
+        /** @var array<string, mixed> $settings */
+        $settings = $this->settingsRepository->allKeyValue()->all();
+
+        /** @var array<string, mixed> $seo */
+        $seo = Seo::allLocalizedKeyValue();
+
+        return [
+            'contact' => [
+                'phone' => (string) ($settings['phone'] ?? ''),
+                'email' => (string) ($settings['email'] ?? ''),
+                'address' => (string) ($settings['address'] ?? ''),
+                'map' => (string) ($settings['map'] ?? ''),
+            ],
+            'social' => [
+                'whatsapp' => (string) ($settings['whatsapp'] ?? ''),
+                'facebook' => (string) ($settings['facebook'] ?? ''),
+                'instagram' => (string) ($settings['instagram'] ?? ''),
+                'youtube' => (string) ($settings['youtube'] ?? ''),
+                'twitter' => (string) ($settings['twitter'] ?? ''),
+            ],
+            'media' => [
+                'white_logo' => $this->storagePublicUrl($settings['white_logo'] ?? null),
+                'black_logo' => $this->storagePublicUrl($settings['black_logo'] ?? null),
+                'meta_img' => $this->storagePublicUrl($settings['meta_img'] ?? null),
+                'about_us_banner' => $this->storagePublicUrl($settings['about_us_banner'] ?? null),
+            ],
+            'seo' => $seo,
+            'about' => [
+                'summary' => (string) ($seo['about_us'] ?? ''),
+                'content' => (string) ($seo['about_us_content'] ?? ''),
+                'youtube_embed' => (string) ($seo['about_us_youtube_embed'] ?? ''),
+                'meta_title' => (string) ($seo['about_us_meta_title'] ?? ''),
+                'meta_description' => (string) ($seo['about_us_meta_description'] ?? ''),
+                'meta_keywords' => (string) ($seo['about_us_meta_keywords'] ?? ''),
+            ],
+            'robots_txt' => (string) ($settings['robots_txt'] ?? ''),
+        ];
+    }
+
+    protected function storagePublicUrl(mixed $path, string $default = 'default.jpg'): string
+    {
+        $path = is_string($path) ? trim($path) : '';
+
+        if ($path === '') {
+            return asset('storage/'.$default);
+        }
+
+        if (preg_match('#^https?://#i', $path)) {
+            return $path;
+        }
+
+        return asset('storage/'.ltrim($path, '/'));
     }
 
     public function getTranslations(): array

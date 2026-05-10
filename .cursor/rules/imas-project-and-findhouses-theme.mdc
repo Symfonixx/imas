@@ -1,0 +1,136 @@
+---
+description: IMas real estate stack overview, module features, Find Houses theme file map, and rules for integrating the HTML theme into Laravel + Inertia + Vue user pages.
+globs: theme/**/*,resources/js/**/*,Modules/*/resources/assets/js/**/*,resources/css/**/*
+alwaysApply: false
+---
+
+# IMas — Project overview & Find Houses theme integration
+
+This repository is a **real estate** product built on the **HadoSaaS** modular Laravel starter (see repo root `README.md` and `DDD_LITE_ARCHITECTURE.md`). **Admin** workflows use Blade (and related tooling). **End-user (front-office) pages** are implemented with **Laravel + Inertia.js + Vue 3**, using Vite entrypoints `resources/css/app.css` and `resources/js/app.js`, with root shell `resources/views/app.blade.php`.
+
+Pair this rule with **Brand-accent-colors.mdc** for client Navy `#1a2a4a` and Gold `#d9a800` accent overrides (do not redesign base theme chrome).
+
+---
+
+## Application scope & features (by module)
+
+| Module | Role | Typical features / domains |
+|--------|------|-----------------------------|
+| **Core** | Shared infrastructure | Helpers, macros, contracts, cross-cutting services (e.g. translation), console commands |
+| **Base** | Platform configuration | Site settings, SEO, logs, media library, about-us admin content |
+| **User** | Identity & admin HR | Users, roles, permissions (Spatie), staff, dashboard, auth (`Register.vue`, etc.) |
+| **Cms** | Editorial content | Pages, blog, categories, FAQs |
+| **Corporate** | Marketing / company | Services, team, testimonials (admin routes under `admin`) |
+| **Property** | Real estate catalog | Properties (multilingual fields, types, locations, slides, attributes, citizenship flags, featured/recommended), Turkish citizenship admin screen |
+| **Support** | Lead capture | Subscribers, contact-oriented flows |
+
+**Routing conventions**
+
+- **Localized web routes**: Many modules wrap `routes/web.php` in `mcamara/laravel-localization` groups (`localeSessionRedirect`, `localizationRedirect`, `localeViewPath`).
+- **Admin**: `prefix('admin')`, `middleware(['web', 'auth', 'is_admin'])`, names prefixed with `admin.`.
+
+**Current front-office note**: Home is `Modules/Base/routes/web.php` → `Inertia::render('Base::Index')`. `Modules/Property/routes/web.php` registers `Route::resource('property', ...)` returning Blade views (`property::index`, etc.) — **still placeholders** relative to the Inertia + Find Houses direction described below.
+
+---
+
+## Theme repository layout
+
+Two distinct trees live under `theme/`:
+
+### 1. `theme/documentation/` — vendor HTML docs (Code-Theme)
+
+Static documentation for the template (Bootstrap-oriented docs CSS). **Reference only** for structure/CSS explanations — **not** the runtime asset source for the buyer-facing site.
+
+- Entry: `theme/documentation/index.html`
+- Examples: `theme/documentation/css/style.css`, `scrollbar.css`, `bootstrap.css`
+
+### 2. `theme/findhouses/` — **Find Houses** HTML5 multi-page template (primary integration source)
+
+This is the **purchase theme** used to build **user-facing** UI. Vendor: **Code-Theme** (“Find Houses”). Bootstrap-based, heavy use of archives CSS and jQuery-era plugins.
+
+**High-signal directories & files**
+
+| Path | Purpose |
+|------|---------|
+| `theme/findhouses/*.html` | Full page demos (home variants, listings, single property, blog, agents, auth, etc.) |
+| `theme/findhouses/css/` | Main styles: `bootstrap.min.css`, `styles.css`, `menu.css`, `maps.css`, component CSS (`animate`, `aos`, `magnific-popup`, `lightcase`, `owl.carousel`, `slick`, `search.css`, …) |
+| `theme/findhouses/css/colors/` | Color skins (e.g. `pink.css`) — switch via `<link id="color" href="css/colors/pink.css">` in demos |
+| `theme/findhouses/js/` | Theme scripts (sliders, maps, counters, `markers.json` for map markers per vendor docs, etc.) |
+| `theme/findhouses/images/` | Logos, placeholders, icons |
+| `theme/findhouses/font/` | Flaticon bundle (`flaticon.css`) |
+| `theme/findhouses/fonts/` | Additional icon/font assets |
+| `theme/findhouses/fontawesome-*` | Font Awesome 5.x web-font bundle |
+| `theme/findhouses/libs/` | Bundled third-party libs (Owl Carousel, tiny-slider, mmenu, hc-sticky, …) — treat as **vendor**; prefer CDN or npm equivalents when integrating if duplicates cause conflicts |
+
+**Representative demo pages** (map to product features when porting):
+
+- Home / hero / search: `index.html`, `index-*.html` (many layouts: map, slider, video, parallax)
+- Listings grid/list + map: `properties-*.html`, `properties-top-map-*.html`
+- Single property: `single-property-*.html`
+- Blog: `blog-*.html`
+- Agents / agencies: `agents-*.html`, `agencies-details.html`
+- Auth / account: `login.html`, `register.html`, `user-profile.html`, `submit-property.html`, `add-property.html`
+- Static: `faq.html`, `coming-soon.html`
+
+Use **`theme/findhouses/index.html`** as the canonical reference for **head asset order** (fonts → icon CSS → archives → `styles.css` → color skin).
+
+---
+
+## Integration rules — user pages (Laravel + Inertia + Vue)
+
+### Architecture
+
+1. **Source of truth for markup**  
+   Copy **structure and CSS class names** from the relevant `theme/findhouses/*.html` section into Vue SFCs (or small presentational subcomponents). Preserve theme classes so existing CSS keeps working.
+
+2. **Do not edit purchased theme files for behavior**  
+   Keep `theme/findhouses/**` as a **reference copy**. Apply brand and fixes in app-owned layers: `resources/css/app.css`, Vue scoped CSS where appropriate, or a dedicated `resources/css/findhouses-overrides.css` imported from `app.css` if the file grows.
+
+3. **Assets**  
+   - Prefer publishing needed static assets to `public/` (e.g. `public/theme/findhouses/...`) **or** importing/selectively copying into `resources/` if bundled via Vite.  
+   - Resolve paths: replace relative `href="css/..."` / `src="images/..."` with Laravel `asset()` or Vite-processed imports as appropriate.  
+   - **Fonts**: either self-host under `public` or mirror Google Fonts links from the demo `<head>` in `app.blade.php` / layout component once per app shell.
+
+4. **Shell**  
+   The Inertia root is `resources/views/app.blade.php` (`@vite`, `@inertia`). User-facing layout lives in Vue (e.g. `resources/js/Layouts/App.vue`). **Mirror** header/footer blocks from the theme HTML into that layout; page bodies stay as Inertia page components (e.g. `Modules/*/resources/assets/js/Pages/...`).
+
+5. **JavaScript**  
+   Theme demos assume **jQuery + plugins**. For Vue user pages:  
+   - Prefer **Vue-native** or **npm** replacements for sliders/maps where practical.  
+   - If you must run legacy theme JS, wrap initialization in `onMounted` and tear down in `onBeforeUnmount`, guarding double-init on client navigations.  
+   - Avoid loading duplicate Bootstrap versions; align with what `resources/css/app.css` / `package.json` already pull in.
+
+6. **Maps & `markers.json`**  
+   Vendor documentation (`theme/documentation`) points to `js/markers.json` for map marker configuration. When integrating maps, keep marker data in **config or API-fed JSON** the Vue layer can load — do not hardcode demo-only paths.
+
+7. **RTL / i18n**  
+   Root Blade sets `dir` from locale (`ar` → RTL). Ensure chosen Find Houses layout and overrides support RTL or supply mirrored utilities; test `Modules/**/lang/*.json` strings on real components.
+
+8. **Admin vs front-office**  
+   Do not mix Find Houses global CSS into **admin** Blade stacks unless explicitly intended — admin uses its own views under `Modules/*/resources/views/admin`.
+
+9. **Data binding**  
+   Replace static demo content with Inertia `props` from controllers/application services; keep DDD-lite boundaries (controllers thin; services/repositories for queries).
+
+10. **New routes**  
+    Register localized web routes in the owning module’s `routes/web.php`; return `Inertia::render()` with a namespaced page name (`VendorModule::PageName`) matching `Modules/*/resources/assets/js/Pages/`.
+
+---
+
+## Quick checklist when adding a user screen
+
+- [ ] Identify closest `theme/findhouses/*.html` prototype  
+- [ ] Port markup into Vue; keep theme classes  
+- [ ] Wire assets via `public/` or Vite; fix paths  
+- [ ] Apply accents per **Brand-accent-colors.mdc** (Gold/Navy), not raw theme pink  
+- [ ] Pass copy/media URLs from backend; avoid embedding demo text  
+- [ ] Confirm no duplicate jQuery/Bootstrap/plugin conflicts  
+- [ ] Smoke-test locale + RTL  
+
+---
+
+## Related paths in this repo
+
+- Module pages (Vue): `Modules/*/resources/assets/js/Pages/`  
+- Global Vue alias `@`: `resources/js/` (see `vite.config.js`)  
+- Starter README / architecture: `README.md`, `DDD_LITE_ARCHITECTURE.md`

@@ -2,12 +2,20 @@
 
 namespace Modules\Corporate\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Corporate\Database\Factories\TeamFactory;
 use Spatie\Translatable\HasTranslations;
 
 class Team extends Model
 {
+    use HasFactory;
     use HasTranslations;
+
+    protected static function newFactory(): TeamFactory
+    {
+        return TeamFactory::new();
+    }
 
     protected $table = 'teams';
 

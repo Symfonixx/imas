@@ -2,15 +2,23 @@
 
 namespace Modules\Property\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Modules\Property\Database\Factories\PropertyFactory;
 use Modules\User\Enums\CmsStatus;
 use Spatie\Translatable\HasTranslations;
 
 class Property extends Model
 {
+    use HasFactory;
     use HasTranslations;
+
+    protected static function newFactory(): PropertyFactory
+    {
+        return PropertyFactory::new();
+    }
 
     protected $table = 'properties';
 

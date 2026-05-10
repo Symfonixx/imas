@@ -1,4 +1,22 @@
-@import "bootstrap/dist/css/bootstrap.css";
-@import "bootstrap/dist/css/bootstrap.rtl.css";
-
 @import "toastr";
+
+/* Brand accent overrides (see .cursor/rules/Brand-accent-colors.mdc) — loads after theme CSS from app.blade.php */
+:root {
+    --brand-gold: #d9a800;
+    --brand-gold-hover: #eecb3a;
+    --brand-navy: #1a2a4a;
+    --brand-navy-hover: #0a1526;
+}
+
+.btn-yellow,
+.btn-primary:not(.btn-dash) {
+    background-color: var(--brand-gold) !important;
+    border-color: var(--brand-gold) !important;
+    color: var(--brand-navy) !important;
+}
+
+.btn-yellow:hover,
+.btn-primary:not(.btn-dash):hover {
+    background-color: var(--brand-gold-hover) !important;
+    border-color: var(--brand-gold-hover) !important;
+}

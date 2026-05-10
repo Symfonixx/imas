@@ -1,0 +1,217 @@
+---
+alwaysApply: false
+---
+Apply client brand colors (Navy #1a2a4a and Gold #d9a800) as accent replacements in the purchased light theme. Whenever creating or editing any Vue component, Blade template, or CSS — replace the theme's pink/primary accent color with Gold #d9a800 for buttons, CTAs, featured badges, active links, and icons. Use Navy #1a2a4a for tags like For Sale and For Rent, section labels, and dark overlays. Do not change backgrounds, cards, body text, layout, or typography from the original theme.
+
+---
+
+name: Brand Accent Colors
+description: Apply client brand colors (Navy + Gold) as accent replacements in the purchased light theme. Use this rule when working on any .vue file, Blade template, or CSS that involves accent colors — specifically buttons, badges, tags, labels, highlights, CTAs, active states, icons, underlines, or any element that currently uses the theme's pink/primary accent color. Do NOT use this rule to change backgrounds, cards, body text, or the overall theme layout — only replace accent and action colors.
+
+---
+
+# Brand Accent Color Rules
+
+## Stack: Laravel + Inertia + Vue 3 — Light Theme with Client Accent Override
+
+---
+
+## Context
+
+The project uses a **purchased light HTML/CSS/JS theme** as the base.
+The client has provided two brand colors to use as **accent replacements only**.
+The goal is to swap the theme's default pink/primary accent color with the client's Gold,
+and use Navy for secondary accents, labels, and tags.
+
+**Do not redesign the theme. Do not change backgrounds, typography, card layouts, or spacing.**
+Only replace accent-colored elements.
+
+---
+
+## Client Brand Colors (Accent Use Only)
+
+| Role             | Name | HEX       | When to use                                                                     |
+| ---------------- | ---- | --------- | ------------------------------------------------------------------------------- |
+| Primary accent   | Gold | `#d9a800` | Replaces pink — buttons, CTAs, highlights, featured badges, active links, icons |
+| Secondary accent | Navy | `#1a2a4a` | Labels, tags (For Sale, For Rent), section title underlines, hover overlays     |
+
+---
+
+## What to Replace
+
+### ✅ Replace these with Gold `#d9a800`
+
+- Primary buttons (the pink/red CTA buttons in the theme)
+- "Featured" badges on property cards
+- Active navigation link color
+- Icon accent color (the outline icons that are currently pink)
+- Hover underlines on links
+- Progress bars or highlight strips
+- "Add Listing" button background
+
+### ✅ Replace these with Navy `#1a2a4a`
+
+- Secondary tags like "For Sale", "For Rent" pill backgrounds
+- Section label text (small uppercase labels above headings)
+- Dark overlay badges on property card images
+- Footer background (if dark variant is needed)
+- Border accents on active/focused inputs
+
+### ❌ Do NOT change
+
+- White card backgrounds
+- Light gray page backgrounds
+- Body text color (dark gray / black from theme)
+- Card layout, grid, spacing
+- Typography (font family, sizes, weights)
+- Any color that is not an accent/action element
+
+---
+
+## Tailwind Config Addition
+
+Add only these two accent entries to your `tailwind.config.js`.
+Do not replace the theme's full color palette:
+
+```js
+theme: {
+  extend: {
+    colors: {
+      'brand-gold':  '#d9a800',
+      'brand-navy':  '#1a2a4a',
+      'brand-gold-hover': '#eecb3a',
+      'brand-navy-hover': '#0a1526',
+    },
+  },
+},
+```
+
+---
+
+## CSS Override (app.css)
+
+Add these variables and override classes after your theme's CSS import.
+This avoids touching the theme source files directly:
+
+```css
+:root {
+    --brand-gold: #d9a800;
+    --brand-gold-hover: #eecb3a;
+    --brand-navy: #1a2a4a;
+    --brand-navy-hover: #0a1526;
+}
+
+/* Primary accent — replaces theme pink */
+.btn-primary,
+.badge-featured,
+.nav-link.active,
+a.accent {
+    background-color: var(--brand-gold) !important;
+    border-color: var(--brand-gold) !important;
+    color: var(--brand-navy) !important;
+}
+
+.btn-primary:hover {
+    background-color: var(--brand-gold-hover) !important;
+    border-color: var(--brand-gold-hover) !important;
+}
+
+/* Secondary accent — replaces theme dark tags */
+.badge-sale,
+.badge-rent,
+.tag-label {
+    background-color: var(--brand-navy) !important;
+    color: #ffffff !important;
+}
+```
+
+---
+
+## Component Examples
+
+### Primary Button (replaces pink CTA)
+
+```vue
+<button
+    class="bg-brand-gold text-brand-navy hover:bg-brand-gold-hover font-medium px-6 py-2.5 rounded-lg transition-colors"
+>
+  Add Listing
+</button>
+```
+
+### Featured Badge (replaces pink badge)
+
+```vue
+<span
+    class="bg-brand-gold text-brand-navy text-xs font-semibold px-3 py-1 rounded"
+>
+  Featured
+</span>
+```
+
+### For Sale / For Rent Tag (replaces dark theme tag)
+
+```vue
+<span class="bg-brand-navy text-white text-xs font-medium px-3 py-1 rounded">
+  For Sale
+</span>
+
+<span class="bg-brand-navy text-white text-xs font-medium px-3 py-1 rounded">
+  For Rent
+</span>
+```
+
+### Active Nav Link
+
+```vue
+<a class="text-brand-gold border-b-2 border-brand-gold font-medium">
+  Home
+</a>
+```
+
+### Section Accent Underline
+
+```vue
+<h2 class="text-gray-900 text-2xl font-semibold">
+  Discover Popular Properties
+  <span class="block w-12 h-1 bg-brand-gold mt-2 rounded"></span>
+</h2>
+```
+
+### Icon Accent Color
+
+```vue
+<!-- If theme uses inline SVG or icon fonts, override color only -->
+<i class="theme-icon" style="color: var(--brand-gold)"></i>
+```
+
+---
+
+## Hard Rules
+
+1. **Only touch accent/action elements** — never touch backgrounds, body text, or layout classes from the theme.
+2. **Gold replaces pink** — wherever the purchased theme uses its primary pink/red accent, use `#d9a800`.
+3. **Navy replaces dark tags** — "For Sale", "For Rent", and similar labels use `#1a2a4a`.
+4. **Never use Gold as body text on white** — contrast is too low. Gold is for backgrounds and icons only.
+5. **Override theme CSS via `app.css`** — do not edit the purchased theme's source CSS files directly.
+6. **Text on Gold background must be Navy** `#1a2a4a` — never white or black on gold.
+7. **Text on Navy background must be white** `#ffffff`.
+
+---
+
+## Quick Reference
+
+| Theme element     | Was (pink theme) | Now (client brand)                |
+| ----------------- | ---------------- | --------------------------------- |
+| Primary button    | pink bg          | `#d9a800` gold bg, `#1a2a4a` text |
+| Featured badge    | pink bg          | `#d9a800` gold bg, `#1a2a4a` text |
+| For Sale tag      | dark gray bg     | `#1a2a4a` navy bg, white text     |
+| Active nav link   | pink text        | `#d9a800` gold text               |
+| Icon color        | pink             | `#d9a800` gold                    |
+| Section underline | pink             | `#d9a800` gold                    |
+| Footer (if dark)  | theme default    | `#1a2a4a` navy                    |
+
+---
+
+_Client colors from CMYK spec: Gold C:15/M:33/Y:100/K:0 → #d9a800 · Navy C:100/M:85/Y:30/K:30 → #1a2a4a_
+_Base theme: purchased light HTML/CSS/JS template — do not override theme structure._

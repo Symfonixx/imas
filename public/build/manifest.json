@@ -1,83 +1,90 @@
 {
   "Modules/Base/resources/assets/js/Pages/Index.vue": {
-    "file": "assets/Index-CJNHJppu.js",
+    "file": "assets/Index-BKIZEW0Q.js",
     "name": "Index",
     "src": "Modules/Base/resources/assets/js/Pages/Index.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "__plugin-vue_export-helper-Dl-eKD3P.js"
+      "_App-CEQB57gT.js"
     ],
     "css": [
-      "assets/Index-tn0RQdqM.css"
+      "assets/Index-DjaCpWxJ.css"
     ]
   },
   "Modules/User/resources/assets/js/Pages/Auth/ForgotPassword.vue": {
-    "file": "assets/ForgotPassword-DgK9N-rF.js",
+    "file": "assets/ForgotPassword-Df3rRK-B.js",
     "name": "ForgotPassword",
     "src": "Modules/User/resources/assets/js/Pages/Auth/ForgotPassword.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "__plugin-vue_export-helper-Dl-eKD3P.js"
+      "_App-CEQB57gT.js"
     ],
     "css": [
-      "assets/Index-tn0RQdqM.css"
+      "assets/ForgotPassword-tn0RQdqM.css"
     ]
   },
   "Modules/User/resources/assets/js/Pages/Auth/Login.vue": {
-    "file": "assets/Login-Be5685Hh.js",
+    "file": "assets/Login-DlJQi_AP.js",
     "name": "Login",
     "src": "Modules/User/resources/assets/js/Pages/Auth/Login.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "__plugin-vue_export-helper-Dl-eKD3P.js"
+      "_App-CEQB57gT.js"
     ],
     "css": [
-      "assets/Index-tn0RQdqM.css"
+      "assets/ForgotPassword-tn0RQdqM.css"
     ]
   },
   "Modules/User/resources/assets/js/Pages/Auth/Register.vue": {
-    "file": "assets/Register-CzZQ6uJg.js",
+    "file": "assets/Register-DqPqRu_g.js",
     "name": "Register",
     "src": "Modules/User/resources/assets/js/Pages/Auth/Register.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "__plugin-vue_export-helper-Dl-eKD3P.js"
+      "_App-CEQB57gT.js"
     ],
     "css": [
-      "assets/Index-tn0RQdqM.css"
+      "assets/ForgotPassword-tn0RQdqM.css"
     ]
   },
   "Modules/User/resources/assets/js/Pages/Auth/ResetPassword.vue": {
-    "file": "assets/ResetPassword-vYdgqUYF.js",
+    "file": "assets/ResetPassword-CjMr6SNE.js",
     "name": "ResetPassword",
     "src": "Modules/User/resources/assets/js/Pages/Auth/ResetPassword.vue",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "__plugin-vue_export-helper-Dl-eKD3P.js"
+      "_App-CEQB57gT.js"
     ],
     "css": [
-      "assets/Index-tn0RQdqM.css"
+      "assets/ForgotPassword-tn0RQdqM.css"
     ]
   },
-  "__plugin-vue_export-helper-Dl-eKD3P.js": {
-    "file": "assets/_plugin-vue_export-helper-Dl-eKD3P.js",
-    "name": "_plugin-vue_export-helper",
+  "_App-!~{008}~.js": {
+    "file": "assets/App-CM3ZgFe_.css",
+    "src": "_App-!~{008}~.js"
+  },
+  "_App-CEQB57gT.js": {
+    "file": "assets/App-CEQB57gT.js",
+    "name": "App",
     "imports": [
       "resources/js/app.js"
+    ],
+    "css": [
+      "assets/App-CM3ZgFe_.css"
     ]
   },
   "resources/css/app.css": {
-    "file": "assets/app-C9VfwaS-.css",
+    "file": "assets/app-4GDHriDz.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-CHt6SrVB.js",
+    "file": "assets/app-Dyp6lC89.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
@@ -87,6 +94,9 @@
       "Modules/User/resources/assets/js/Pages/Auth/Login.vue",
       "Modules/User/resources/assets/js/Pages/Auth/Register.vue",
       "Modules/User/resources/assets/js/Pages/Auth/ResetPassword.vue"
+    ],
+    "css": [
+      "assets/app-evpUSlrb.css"
     ]
   }
 }

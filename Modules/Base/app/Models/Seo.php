@@ -43,6 +43,18 @@ class Seo extends Model
     }
 
     /**
+     * All SEO rows as key => translated value for the current application locale.
+     *
+     * @return array<string, mixed>
+     */
+    public static function allLocalizedKeyValue(): array
+    {
+        return self::getAllSeoEntries()->mapWithKeys(
+            fn (self $model): array => [$model->key => $model->value]
+        )->all();
+    }
+
+    /**
      * Set SEO value by key.
      */
     public static function set(string $key, string $value, bool $updateTranslations = true): bool

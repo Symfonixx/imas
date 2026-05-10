@@ -2,12 +2,20 @@
 
 namespace Modules\Corporate\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Corporate\Database\Factories\CorporateServiceFactory;
 use Spatie\Translatable\HasTranslations;
 
 class CorporateService extends Model
 {
+    use HasFactory;
     use HasTranslations;
+
+    protected static function newFactory(): CorporateServiceFactory
+    {
+        return CorporateServiceFactory::new();
+    }
 
     protected $table = 'corporate_services';
 

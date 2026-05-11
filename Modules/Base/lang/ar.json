@@ -200,11 +200,19 @@
     "Use 3-8 focused keywords separated by commas.": "استخدم من 3 إلى 8 كلمات مفتاحية مركزة ومفصولة بفواصل.",
     "properties":{
         "featured_properties":"العقارات المميزة",
-        "we_provide_full_service_at_every_step":"نقدم خدمة كاملة في كل خطوة."
+        "we_provide_full_service_at_every_step":"نقدم خدمة كاملة في كل خطوة.",
+        "discover":"اكتشف",
+        "popular_properties":"العقارات الأكثر شعبية",
+        "featured":"مميز",
+        "sold_out":"مباع",
+        "recommended":"موصى به"
     },
     "services":{
         "title":"لماذا نحن؟",
         "description":"نقدم خدمة كاملة في كل خطوة."
+    },
+    "testimonials":{
+       "title":"آراء العملاء",
+        "description":"تعرّف على تجارب عملائنا الحقيقية وآرائهم الصادقة حول خدماتنا في العقارات والاستثمار، لأن ثقتكم تهمّنا في كل خطوة."
     }
-   
 }

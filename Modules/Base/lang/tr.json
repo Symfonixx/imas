@@ -200,10 +200,19 @@
     "Use 3-8 focused keywords separated by commas.": "Virgülle ayrılmış 3–8 odaklı anahtar kelime kullanın.",
     "properties":{
         "featured_properties":"Öne çıkan mülkler",
-        "we_provide_full_service_at_every_step":"Her adımda tam hizmet sağlıyoruz."
+        "we_provide_full_service_at_every_step":"Her adımda tam hizmet sağlıyoruz.",
+        "discover":"Keşfedin",
+        "popular_properties":"Popüler mülkler",
+        "featured":"Öne çıkan",
+        "sold_out":"Satıldı",
+        "recommended":"Önerilen"
     },
     "services":{
         "title":"Neden biz?",
         "description":"Her adımda tam hizmet sağlıyoruz."
+    },
+    "testimonials":{
+        "title":"Müşteri yorumları",
+        "description":"Müşterilerimizin gerçek deneyimlerini ve dürüst yorumlarını öğrenin, çünkü müşteri güvenimiz her adımda önemlidir."
     }
 }

@@ -8,6 +8,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Modules\Cms\Models\Slide;
 use Modules\Corporate\Models\CorporateService;
+use Modules\Corporate\Models\Testimonial;
 use Modules\Property\Enums\LocationType;
 use Modules\Property\Models\Location;
 use Modules\Property\Models\Property;
@@ -85,7 +86,7 @@ class HomeController extends Controller
             ->where('is_recommended', true)
             ->with($propertyCardWith)
             ->latest('updated_at')
-            ->limit(6)
+            ->limit(20)
             ->get()
             ->map(fn (Property $property) => $this->serializeHomeProperty($property))
             ->values()
@@ -110,6 +111,25 @@ class HomeController extends Controller
             ->values()
             ->all();
 
+        $testimonials = Testimonial::query()
+            ->published()
+            ->orderBy('rank')
+            ->orderBy('id')
+            ->get()
+            ->map(static function (Testimonial $testimonial) {
+                return [
+                    'id' => $testimonial->id,
+                    'name' => (string) ($testimonial->name ?? ''),
+                    'client' => (string) ($testimonial->client ?? ''),
+                    'avatar' => $testimonial->avatar_link,
+                    'position' => (string) ($testimonial->position ?? ''),
+                    'quote' => (string) ($testimonial->quote ?? ''),
+                    'link' => $testimonial->link,
+                ];
+            })
+            ->values()
+            ->all();
+
         return Inertia::render('Base::Index', [
             'welcomeTitle' => 'Find Your Dream Home',
             'welcomeSubtitle' => 'Browse curated listings and discover properties that match your goals.',
@@ -119,6 +139,7 @@ class HomeController extends Controller
             'featuredProperties' => $featuredProperties,
             'recommendedProperties' => $recommendedProperties,
             'corporateServices' => $corporateServices,
+            'testimonials' => $testimonials,
         ]);
     }
 

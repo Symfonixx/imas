@@ -199,11 +199,20 @@
     "Short page summary for search snippets.": "Short page summary for search snippets.",
     "properties":{
         "featured_properties":"Featured properties",
-        "we_provide_full_service_at_every_step":"We provide full service at every step."
+        "we_provide_full_service_at_every_step":"We provide full service at every step.",
+        "discover":"Discover",
+        "popular_properties":"Popular properties",
+        "featured":"Featured",
+        "sold_out":"Sold out",
+        "recommended":"Recommended"
     },
     "services":{
         "title":"Why choose us?",
         "description":"We provide full service at every step."
+    },
+    "testimonials":{
+        "title":"Client testimonials",
+        "description":"Learn about the real experiences and honest reviews of our customers about our services in real estate and investment, because your trust is important to us at every step."
     }
    
     

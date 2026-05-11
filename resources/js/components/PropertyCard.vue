@@ -1,5 +1,7 @@
 <template>
-    <div class="imas-property-card item col-lg-4 col-md-6 col-xs-12">
+    <div
+        class="imas-property-card item col-lg-4 col-md-6 col-xs-12 user-select-none"
+    >
         <div class="project-single">
             <div class="project-inner project-head">
                 <div class="homes">
@@ -8,13 +10,13 @@
                             v-if="property.is_featured"
                             class="homes-tag button alt featured"
                         >
-                            Featured
+                            {{ trans("properties.featured") }}
                         </div>
                         <div
                             v-if="property.is_sold_out"
                             class="homes-tag button alt imas-sold-out-badge"
                         >
-                            Sold Out
+                            {{ trans("properties.sold_out") }}
                         </div>
                         <div class="homes-price">{{ priceLabel }}</div>
                         <img
@@ -51,21 +53,30 @@
                 </h3>
                 <p class="homes-address mb-3">
                     <a :href="property.url">
-                        <i class="fa fa-map-marker"></i
-                        ><span>{{ addressLine }}</span>
+                        <i
+                            class="fa fa-map-marker imas-address-marker"
+                            aria-hidden="true"
+                        ></i>
+                        <span>{{ addressLine }}</span>
                     </a>
                 </p>
-                <ul v-if="hasHomesList" class="homes-list clearfix pb-3">
+                <ul
+                    v-if="hasHomesList"
+                    class="homes-list imas-homes-attrs pb-3"
+                >
                     <li
                         v-for="(attr, idx) in homesAttributes"
                         :key="`${attr.code}-${idx}`"
-                        class="the-icons"
+                        class="the-icons imas-homes-attr"
                     >
                         <i
-                            :class="[attributeIconClass(attr.code), 'mr-2']"
+                            :class="attributeIconClass(attr.code)"
+                            class="imas-homes-attr__icon"
                             aria-hidden="true"
                         ></i>
-                        <span>{{ attr.display }}</span>
+                        <span class="imas-homes-attr__text" dir="auto">{{
+                            attr.display
+                        }}</span>
                     </li>
                 </ul>
             </div>
@@ -84,6 +95,7 @@ const props = defineProps({
     },
 });
 
+const trans = (key) => page.props.translations[key] || key;
 const page = usePage();
 
 const locale = computed(() => page.props.locale || "en");
@@ -145,7 +157,7 @@ function attributeIconClass(code) {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 /* Uniform image frame; thumbnails use cover (no stretch). Badges stay above (z-index). */
 .imas-property-card .homes-img {
     aspect-ratio: 4 / 3;
@@ -168,6 +180,7 @@ function attributeIconClass(code) {
     margin-bottom: 0.5rem;
     min-height: calc(1.35em * 2);
     line-height: 1.35;
+    text-align: start;
 }
 
 .imas-property-title a {
@@ -199,5 +212,70 @@ function attributeIconClass(code) {
 
 .homes-img .imas-sold-out-badge:hover {
     color: #fff !important;
+}
+
+.homes-address {
+    text-align: start;
+}
+
+/* Space between map pin and address; margin-inline-end flips correctly in RTL. */
+.homes-address .imas-address-marker {
+    margin-inline-end: 10px;
+}
+
+/*
+ * Theme `.portfolio .homes-content .homes-list li` uses float:left + width:45%, which
+ * breaks RTL columns. Replace with a 2-col grid + flex rows (logical margins).
+ */
+.portfolio .imas-property-card .homes-content ul.imas-homes-attrs,
+.imas-property-card .homes-content ul.imas-homes-attrs {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 0.75rem;
+    row-gap: 0.25rem;
+    padding-left: 0 !important;
+    padding-inline-start: 0 !important;
+    margin: 0;
+    list-style: none;
+}
+
+.portfolio
+    .imas-property-card
+    .homes-content
+    ul.imas-homes-attrs
+    li.imas-homes-attr,
+.imas-property-card .homes-content ul.imas-homes-attrs li.imas-homes-attr {
+    float: none !important;
+    width: 100% !important;
+    min-width: 0;
+    max-width: 100%;
+    line-height: 1.35 !important;
+    padding-top: 0.35rem !important;
+    padding-bottom: 0.35rem !important;
+    display: flex !important;
+    align-items: center;
+}
+
+.portfolio
+    .imas-property-card
+    .homes-content
+    ul.imas-homes-attrs
+    li
+    i.imas-homes-attr__icon,
+.imas-property-card
+    .homes-content
+    ul.imas-homes-attrs
+    li
+    i.imas-homes-attr__icon {
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+    margin-inline-end: 0.35rem !important;
+    flex-shrink: 0;
+}
+
+.imas-property-card .homes-content ul.imas-homes-attrs .imas-homes-attr__text {
+    min-width: 0;
+    // flex: 1 1 auto;
+    text-align: start;
 }
 </style>

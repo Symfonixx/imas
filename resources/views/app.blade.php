@@ -41,6 +41,7 @@
 @inertia
 {{-- Minimal scripts for theme header / mobile nav (Bootstrap 4 + jQuery, aligned with Find Houses) --}}
 <script src="{{ $fh }}/js/jquery-3.5.1.min.js"></script>
+<script src="{{ $fh }}/js/owl.carousel.js"></script>
 <script src="{{ $fh }}/js/tether.min.js"></script>
 <script src="{{ $fh }}/js/bootstrap.min.js"></script>
 <script src="{{ $fh }}/js/mmenu.min.js"></script>

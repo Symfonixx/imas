@@ -3,11 +3,50 @@
 
 /* Brand accent overrides (see .cursor/rules/Brand-accent-colors.mdc) — loads after theme CSS from app.blade.php */
 :root {
+    /* —— Core brand (source tokens) —— */
     --brand-gold: #d9a800;
     --brand-gold-hover: #eecb3a;
     --brand-navy: #1a2a4a;
     --brand-navy-hover: #0a1526;
-  
+
+    /* —— Semantic text (navy scale; readable on light backgrounds) ——
+       Do not use --brand-gold for long body/description on white (low contrast). */
+    --color-text: var(--brand-navy);
+    --color-text-secondary: #2f3d5c;
+    --color-text-muted: #5a6578;
+    --color-text-subtle: #7a8496;
+    --color-text-inverse: #ffffff;
+
+    /* Eyebrows, section kicker, uppercase labels */
+    --color-label: var(--brand-navy);
+    --color-label-accent: var(--brand-gold);
+
+    /* —— Actions & CTAs —— */
+    --color-action-primary: var(--brand-gold);
+    --color-action-primary-hover: var(--brand-gold-hover);
+    --color-on-action-primary: var(--brand-navy);
+    --color-action-secondary: var(--brand-navy);
+    --color-action-secondary-hover: var(--brand-navy-hover);
+    --color-on-action-secondary: #ffffff;
+
+    /* Links: navy on white for readability; underline/hover can use gold */
+    --color-link: var(--brand-navy);
+    --color-link-hover: var(--brand-navy-hover);
+    --color-link-accent: var(--brand-gold);
+
+    /* Icons, focus ring, decorative emphasis (not paragraph text on white) */
+    --color-accent: var(--brand-gold);
+    --color-accent-soft: #f5ebc4;
+
+    /* —— Borders & dividers —— */
+    --color-border: #e2e6ef;
+    --color-border-strong: #c5cdd9;
+    --color-border-accent: var(--brand-gold);
+    --color-border-focus: var(--brand-navy);
+
+    /* —— Surfaces (subtle brand tint; keep cards mostly theme white) —— */
+    --color-surface-muted: #f4f6f9;
+    --color-surface-accent: var(--color-accent-soft);
 }
 
 .btn-yellow,
@@ -256,4 +295,18 @@ html.mm-right .mm-menu .mm-navbar .mm-title {
     white-space: nowrap !important;
     text-align: start !important;
     font-size: 13px !important;
+}
+
+/**
+ * Home testimonials (Owl): document `dir=rtl` reverses flex row, so `.owl-prev` / `.owl-next`
+ * swap sides while icons stay [prev=left, next=right] — looks broken. Keep the nav strip LTR;
+ * Owl Carousel `rtl: true` (set in HomeTestimonials.vue) still advances slides in RTL order.
+ */
+html[dir="rtl"] section.home-testimonials .owl-carousel.job_clientSlide .owl-nav {
+    direction: ltr;
+}
+
+/* Optional: ensure chevrons aren’t mirrored by global RTL rules inside those buttons */
+html[dir="rtl"] section.home-testimonials .owl-carousel.job_clientSlide .owl-nav .fa {
+    transform: none;
 }

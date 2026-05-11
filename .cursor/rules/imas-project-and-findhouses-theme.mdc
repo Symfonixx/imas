@@ -1,9 +1,6 @@
 ---
-description: IMas real estate stack overview, module features, Find Houses theme file map, and rules for integrating the HTML theme into Laravel + Inertia + Vue user pages.
-globs: theme/**/*,resources/js/**/*,Modules/*/resources/assets/js/**/*,resources/css/**/*
-alwaysApply: false
+alwaysApply: true
 ---
-
 # IMas — Project overview & Find Houses theme integration
 
 This repository is a **real estate** product built on the **HadoSaaS** modular Laravel starter (see repo root `README.md` and `DDD_LITE_ARCHITECTURE.md`). **Admin** workflows use Blade (and related tooling). **End-user (front-office) pages** are implemented with **Laravel + Inertia.js + Vue 3**, using Vite entrypoints `resources/css/app.css` and `resources/js/app.js`, with root shell `resources/views/app.blade.php`.

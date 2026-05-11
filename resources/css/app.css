@@ -1,4 +1,5 @@
 @import "toastr";
+@import "flag-icons/css/flag-icons.min.css";
 
 /* Brand accent overrides (see .cursor/rules/Brand-accent-colors.mdc) — loads after theme CSS from app.blade.php */
 :root {
@@ -19,4 +20,238 @@
 .btn-primary:not(.btn-dash):hover {
     background-color: var(--brand-gold-hover) !important;
     border-color: var(--brand-gold-hover) !important;
+}
+
+/* FindHouses mmenu off-canvas must overlay SPA content (hero, header, etc.). */
+html.mm-opened .mm-menu.mm-offcanvas,
+html.mm-opening .mm-menu.mm-offcanvas,
+html.mm-blocking .mm-menu.mm-offcanvas {
+    z-index: 10001 !important;
+}
+
+html.mm-blocking #mm-blocker {
+    z-index: 10000 !important;
+}
+
+/**
+ * RTL: Find Houses header (menu.css) uses physical floats and left/right offsets.
+ * Document direction alone does not mirror them — swap floats and flip key margins.
+ */
+html[dir="rtl"] #header .left-side,
+html[dir="rtl"] #header.cloned .left-side {
+    float: right !important;
+}
+
+html[dir="rtl"] #header .right-side,
+html[dir="rtl"] #header.cloned .right-side {
+    float: left !important;
+    margin-left: 0 !important;
+    margin-right: 30px !important;
+}
+
+html[dir="rtl"] #header #logo,
+html[dir="rtl"] #header #navigation,
+html[dir="rtl"] #header.cloned #logo,
+html[dir="rtl"] #header.cloned #navigation {
+    float: right !important;
+}
+
+html[dir="rtl"] #header #logo,
+html[dir="rtl"] #header.cloned #logo {
+    /* margin-right: 0 !important; */
+    margin-left: 40px !important;
+}
+
+html[dir="rtl"] #header #navigation,
+html[dir="rtl"] #header.cloned #navigation {
+    margin-left: 0 !important;
+    margin-right: 40px !important;
+}
+
+html[dir="rtl"] #header #navigation ul,
+html[dir="rtl"] #header.cloned #navigation ul {
+    float: right !important;
+}
+
+html[dir="rtl"] #header #navigation ul > li,
+html[dir="rtl"] #header.cloned #navigation ul > li {
+    float: right !important;
+}
+
+html[dir="rtl"] #header #navigation ul li ul,
+html[dir="rtl"] #header.cloned #navigation ul li ul {
+    left: auto !important;
+    right: 0 !important;
+}
+
+html[dir="rtl"] #header .header-widget,
+html[dir="rtl"] #header.cloned .header-widget {
+    text-align: left !important;
+}
+
+html[dir="rtl"] #header .header-widget .sign-in,
+html[dir="rtl"] #header.cloned .header-widget .sign-in {
+    margin-right: 0 !important;
+    margin-left: 25px !important;
+}
+
+html[dir="rtl"] #header .header-user-menu,
+html[dir="rtl"] #header.cloned .header-user-menu {
+    float: left !important;
+    margin-right: 0 !important;
+    margin-left: 50px !important;
+}
+
+html[dir="rtl"] #header .lang-wrap,
+html[dir="rtl"] #header.cloned .lang-wrap {
+    float: left !important;
+}
+
+html[dir="rtl"] #header .show-lang span,
+html[dir="rtl"] #header.cloned .show-lang span {
+    float: right !important;
+    margin-left: 0 !important;
+    margin-right: 10px !important;
+}
+
+html[dir="rtl"] #header .show-lang .fa-caret-down.arrlan,
+html[dir="rtl"] #header.cloned .show-lang .fa-caret-down.arrlan {
+    left: auto !important;
+    right: 80px !important;
+}
+
+/* Language list: anchor to inline-end of trigger; beat theme `left:-1px !important` + narrow width */
+html[dir="rtl"] #header .header-user-menu .lang-wrap ul.lang-tooltip,
+html[dir="rtl"] #header.cloned .header-user-menu .lang-wrap ul.lang-tooltip {
+    left: auto !important;
+    right: 0 !important;
+}
+
+@media only screen and (max-width: 1024px) {
+    html[dir="rtl"] #header .header-widget a.button.border,
+    html[dir="rtl"] #header.cloned .header-widget a.button.border {
+        float: left !important;
+    }
+
+    /* Mobile: logo stays centered; pin hamburger to inline-start (right in RTL) and CTA to opposite side */
+    html[dir="rtl"] #header .left-side,
+    html[dir="rtl"] #header.cloned .left-side {
+        float: none !important;
+        width: 100% !important;
+        position: relative !important;
+        min-height: 52px !important;
+    }
+
+    html[dir="rtl"] #header .mmenu-trigger,
+    html[dir="rtl"] #header.cloned .mmenu-trigger {
+        position: absolute !important;
+        top: 8px !important;
+        right: 12px !important;
+        left: auto !important;
+        margin: 0 !important;
+        z-index: 10002 !important;
+    }
+
+    /* Keep logo from sitting under the hamburger (logo is centered; trigger sits on inline-start). */
+    html[dir="rtl"] #header #logo,
+    html[dir="rtl"] #header.cloned #logo {
+        max-width: 48% !important;
+        width: 48% !important;
+        padding-inline-end: 58px !important;
+        box-sizing: border-box !important;
+        z-index: 1 !important;
+    }
+
+    html[dir="rtl"] #header .mmenu-trigger .hamburger,
+    html[dir="rtl"] #header.cloned .mmenu-trigger .hamburger {
+        /* left: auto !important; */
+        right: -35px !important;
+    }
+
+    html[dir="rtl"] #header .right-side,
+    html[dir="rtl"] #header.cloned .right-side {
+        float: none !important;
+        width: auto !important;
+        margin: 0 !important;
+        position: absolute !important;
+        top: 8px !important;
+        left: 12px !important;
+        right: auto !important;
+        z-index: 1000 !important;
+    }
+}
+
+/* mmenu: right drawer (html.mm-right) — theme menu.css only slides page for LEFT drawer (+80%). */
+html.mm-right .mm-menu.mm-offcanvas {
+    left: auto !important;
+    right: 0 !important;
+}
+
+html.mm-right.mm-opening .mm-menu.mm-opened ~ .mm-slideout,
+html.mm-right.mm-opened .mm-menu.mm-opened ~ .mm-slideout {
+    transform: translate3d(-80%, 0, 0) !important;
+}
+
+@media all and (max-width: 175px) {
+    html.mm-right.mm-opening .mm-menu.mm-opened ~ .mm-slideout,
+    html.mm-right.mm-opened .mm-menu.mm-opened ~ .mm-slideout {
+        transform: translate3d(-140px, 0, 0) !important;
+    }
+}
+
+@media all and (min-width: 550px) {
+    html.mm-right.mm-opening .mm-menu.mm-opened ~ .mm-slideout,
+    html.mm-right.mm-opened .mm-menu.mm-opened ~ .mm-slideout {
+        transform: translate3d(-440px, 0, 0) !important;
+    }
+}
+
+/* List + panels RTL; avoid forcing dir on root .mm-menu (breaks off-canvas transforms in some builds). */
+html[dir="rtl"] .mm-menu .mm-panels,
+html[dir="rtl"] .mm-menu .mm-panel,
+html[dir="rtl"] .mm-menu .mm-listview {
+    direction: rtl !important;
+    text-align: start !important;
+}
+
+/* Close control: visible X on dark navbar (injected in UserNavbar / mmenu.js). */
+.mm-menu .mm-navbar .mm-btn.mm-close:before,
+.mm-menu .mm-navbar .mm-btn.mm-close:after {
+    border-color: #fff !important;
+}
+
+html[dir="rtl"] .mm-menu .mm-navbar .mm-btn.mm-close,
+html.mm-right .mm-menu .mm-navbar .mm-btn.mm-close {
+    left: auto !important;
+    right: 0 !important;
+}
+
+html[dir="rtl"] .mm-menu .mm-navbar .mm-title,
+html.mm-right .mm-menu .mm-navbar .mm-title {
+    padding-inline: 48px !important;
+}
+
+/* Widen language dropdown for all locales (theme default 100px clips labels) */
+#header .header-user-menu .lang-wrap ul.lang-tooltip,
+#header.cloned .header-user-menu .lang-wrap ul.lang-tooltip {
+    min-width: 9.5rem !important;
+    width: max-content !important;
+    max-width: min(22rem, 92vw) !important;
+}
+
+#header .header-user-menu .lang-wrap ul.lang-tooltip > li,
+#header.cloned .header-user-menu .lang-wrap ul.lang-tooltip > li {
+    width: 100% !important;
+    float: none !important;
+    text-align: start !important;
+}
+
+#header .header-user-menu .lang-wrap ul.lang-tooltip > li > a,
+#header.cloned .header-user-menu .lang-wrap ul.lang-tooltip > li > a {
+    float: none !important;
+    display: block !important;
+    width: 100% !important;
+    white-space: nowrap !important;
+    text-align: start !important;
+    font-size: 13px !important;
 }

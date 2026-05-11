@@ -1,199 +1,280 @@
 /* ----------------- Start Document ----------------- */
-(function($){
-"use strict";
+(function ($) {
+    "use strict";
 
-$(document).ready(function(){
-
+    $(document).ready(function () {
+        /*--------------------------------------------------*/
+        /*  Mobile Menu - mmenu.js
 	/*--------------------------------------------------*/
-	/*  Mobile Menu - mmenu.js
-	/*--------------------------------------------------*/
-	$(function() {
-		function mmenuInit() {
-			var wi = $(window).width();
-			if(wi <= '992') {
+        $(function () {
+            function attachMmenuCloseButton() {
+                var $page = $(".mm-page").first().length
+                    ? $(".mm-page").first()
+                    : $("#app");
+                var pageId = $page.attr("id");
+                if (!pageId) {
+                    return;
+                }
+                $(".mm-menu.mm-offcanvas").each(function () {
+                    var $menu = $(this);
+                    var $rootPanel = $menu.find("> .mm-panels > .mm-panel").first();
+                    var $navbar = $rootPanel.children(".mm-navbar").first();
+                    if (!$navbar.length || $navbar.find("a.mm-close").length) {
+                        return;
+                    }
+                    var isRtl =
+                        document.documentElement.getAttribute("dir") ===
+                            "rtl" ||
+                        document.documentElement.dir === "rtl";
+                    var label = isRtl ? "إغلاق القائمة" : "Close menu";
+                    $navbar.prepend(
+                        '<a class="mm-btn mm-close" href="#' +
+                            pageId +
+                            '" aria-label="' +
+                            label +
+                            '"></a>',
+                    );
+                });
+            }
 
-				$('#footer').removeClass("sticky-footer");
+            function mmenuInit() {
+                var wi = $(window).width();
+                if (wi <= "992") {
+                    $("#footer").removeClass("sticky-footer");
 
-				$(".mmenu-init" ).remove();
-				$("#navigation").clone().addClass("mmenu-init").insertBefore("#navigation").removeAttr('id').removeClass('style-1 style-2').find('ul').removeAttr('id');
-				$(".mmenu-init").find(".container").removeClass("container");
+                    $(".mmenu-init").remove();
+                    if (!$("#navigation").length || !$.fn.mmenu) {
+                        return;
+                    }
+                    $("#navigation")
+                        .clone()
+                        .addClass("mmenu-init")
+                        .insertBefore("#navigation")
+                        .removeAttr("id")
+                        .removeClass("style-1 style-2")
+                        .find("ul")
+                        .removeAttr("id");
+                    $(".mmenu-init")
+                        .find(".container")
+                        .removeClass("container");
 
-				$(".mmenu-init").mmenu({
-				 	"counters": true
-				}, {
-				 // configuration
-				 offCanvas: {
-				    pageNodetype: "#wrapper"
-				 }
-				});
+                    var isRtl =
+                        document.documentElement.getAttribute("dir") ===
+                            "rtl" ||
+                        document.documentElement.dir === "rtl";
 
-				var mmenuAPI = $(".mmenu-init").data( "mmenu" );
-				var $icon = $(".hamburger");
+                    $(".mmenu-init").mmenu(
+                        {
+                            counters: true,
+                        },
+                        {
+                            // configuration
+                            offCanvas: {
+                                // Inertia mounts inside `#app`; using it as the page makes the header slide out too.
+                                pageSelector: "#app",
+                                position: isRtl ? "right" : "left",
+                            },
+                        },
+                    );
 
-				$(".mmenu-trigger").click(function() {
-					mmenuAPI.open();
-				});
+                    var mmenuAPI = $(".mmenu-init").data("mmenu");
+                    if (!mmenuAPI) {
+                        return;
+                    }
+                    var $icon = $(".hamburger");
 
-				mmenuAPI.bind( "open:finish", function() {
-				   setTimeout(function() {
-				      $icon.addClass( "is-active" );
-				   });
-				});
-				mmenuAPI.bind( "close:finish", function() {
-				   setTimeout(function() {
-				      $icon.removeClass( "is-active" );
-				   });
-				});
+                    $(".mmenu-trigger")
+                        .off("click.imasMmenu")
+                        .on("click.imasMmenu", function () {
+                        mmenuAPI.open();
+                    });
 
+                    mmenuAPI.bind("open:finish", function () {
+                        setTimeout(function () {
+                            $icon.addClass("is-active");
+                            attachMmenuCloseButton();
+                        });
+                    });
+                    mmenuAPI.bind("close:finish", function () {
+                        setTimeout(function () {
+                            $icon.removeClass("is-active");
+                        });
+                    });
 
-			}
-			$(".mm-next").addClass("mm-fullsubopen");
-		}
-		mmenuInit();
-		$(window).resize(function() { mmenuInit(); });
-	});
+                    setTimeout(function () {
+                        attachMmenuCloseButton();
+                    }, 0);
+                }
+                $(".mm-next").addClass("mm-fullsubopen");
+            }
+            mmenuInit();
+            $(window).resize(function () {
+                mmenuInit();
+            });
+        });
 
-    /*  User Menu */
-    $('.user-menu').on('click', function(){
-		$(this).toggleClass('active');
-	});
+        /*  User Menu */
+        $(".user-menu").on("click", function () {
+            $(this).toggleClass("active");
+        });
 
-
+        /*----------------------------------------------------*/
+        /*  Sticky Header
 	/*----------------------------------------------------*/
-	/*  Sticky Header
-	/*----------------------------------------------------*/
-	$( "#header" ).not( "#header-container.header-style-2 #header" ).clone(true).addClass('cloned unsticky').insertAfter( "#header" );
-	$( "#navigation.style-2" ).clone(true).addClass('cloned unsticky').insertAfter( "#navigation.style-2" );
+        $("#header")
+            .not("#header-container.header-style-2 #header")
+            .clone(true)
+            .addClass("cloned unsticky")
+            .insertAfter("#header");
+        $("#navigation.style-2")
+            .clone(true)
+            .addClass("cloned unsticky")
+            .insertAfter("#navigation.style-2");
 
-	// Logo for header style 2
-	$( "#logo .sticky-logo" ).clone(true).prependTo("#navigation.style-2.cloned ul#responsive");
+        // Logo for header style 2
+        $("#logo .sticky-logo")
+            .clone(true)
+            .prependTo("#navigation.style-2.cloned ul#responsive");
 
+        // sticky header script
+        var headerOffset = $("#header-container").height() * 2; // height on which the sticky header will shows
 
-	// sticky header script
-	var headerOffset = $("#header-container").height() * 2; // height on which the sticky header will shows
+        $(window).scroll(function () {
+            if ($(window).scrollTop() >= headerOffset) {
+                $("#header.cloned").addClass("sticky").removeClass("unsticky");
+                $("#navigation.style-2.cloned")
+                    .addClass("sticky")
+                    .removeClass("unsticky");
+            } else {
+                $("#header.cloned").addClass("unsticky").removeClass("sticky");
+                $("#navigation.style-2.cloned")
+                    .addClass("unsticky")
+                    .removeClass("sticky");
+            }
+        });
 
-	$(window).scroll(function(){
-		if($(window).scrollTop() >= headerOffset){
-			$("#header.cloned").addClass('sticky').removeClass("unsticky");
-			$("#navigation.style-2.cloned").addClass('sticky').removeClass("unsticky");
-		} else {
-			$("#header.cloned").addClass('unsticky').removeClass("sticky");
-			$("#navigation.style-2.cloned").addClass('unsticky').removeClass("sticky");
-		}
-	});
-
-
-
-
-	/*----------------------------------------------------*/
-	/*  Tabs
-	/*----------------------------------------------------*/
-
-	var $tabsNav    = $('.tabs-nav'),
-	$tabsNavLis = $tabsNav.children('li');
-
-	$tabsNav.each(function() {
-		 var $this = $(this);
-
-		 $this.next().children('.tab-content').stop(true,true).hide()
-		 .first().show();
-
-		 $this.children('li').first().addClass('active').stop(true,true).show();
-	});
-
-	$tabsNavLis.on('click', function(e) {
-		 var $this = $(this);
-
-		 $this.siblings().removeClass('active').end()
-		 .addClass('active');
-
-		 $this.parent().next().children('.tab-content').stop(true,true).hide()
-		 .siblings( $this.find('a').attr('href') ).fadeIn();
-
-		 e.preventDefault();
-	});
-	var hash = window.location.hash;
-	var anchor = $('.tabs-nav a[href="' + hash + '"]');
-	if (anchor.length === 0) {
-		 $(".tabs-nav li:first").addClass("active").show(); //Activate first tab
-		 $(".tab-content:first").show(); //Show first tab content
-	} else {
-		 console.log(anchor);
-		 anchor.parent('li').click();
-	}
-
-
-
-	/*----------------------------------------------------*/
-	/*	Toggle
+        /*----------------------------------------------------*/
+        /*  Tabs
 	/*----------------------------------------------------*/
 
-	$(".toggle-container").hide();
+        var $tabsNav = $(".tabs-nav"),
+            $tabsNavLis = $tabsNav.children("li");
 
-	$('.trigger, .trigger.opened').on('click', function(a){
-		$(this).toggleClass('active');
-		a.preventDefault();
-	});
+        $tabsNav.each(function () {
+            var $this = $(this);
 
-	$(".trigger").on('click', function(){
-		$(this).next(".toggle-container").slideToggle(300);
-	});
+            $this
+                .next()
+                .children(".tab-content")
+                .stop(true, true)
+                .hide()
+                .first()
+                .show();
 
-	$(".trigger.opened").addClass("active").next(".toggle-container").show();
+            $this
+                .children("li")
+                .first()
+                .addClass("active")
+                .stop(true, true)
+                .show();
+        });
 
+        $tabsNavLis.on("click", function (e) {
+            var $this = $(this);
 
-	/*----------------------------------------------------*/
-	/* Panel Dropdown
-	/*----------------------------------------------------*/
-    function close_panel_dropdown() {
-		$('.panel-dropdown').removeClass("active");
-		$('.fs-inner-container.content').removeClass("faded-out");
-    }
+            $this.siblings().removeClass("active").end().addClass("active");
 
-    $('.panel-dropdown a').on('click', function(e) {
+            $this
+                .parent()
+                .next()
+                .children(".tab-content")
+                .stop(true, true)
+                .hide()
+                .siblings($this.find("a").attr("href"))
+                .fadeIn();
 
-		if ( $(this).parent().is(".active") ) {
-            close_panel_dropdown();
+            e.preventDefault();
+        });
+        var hash = window.location.hash;
+        var anchor = $('.tabs-nav a[href="' + hash + '"]');
+        if (anchor.length === 0) {
+            $(".tabs-nav li:first").addClass("active").show(); //Activate first tab
+            $(".tab-content:first").show(); //Show first tab content
         } else {
-            close_panel_dropdown();
-            $(this).parent().addClass('active');
-			$('.fs-inner-container.content').addClass("faded-out");
+            console.log(anchor);
+            anchor.parent("li").click();
         }
 
-        e.preventDefault();
+        /*----------------------------------------------------*/
+        /*	Toggle
+	/*----------------------------------------------------*/
+
+        $(".toggle-container").hide();
+
+        $(".trigger, .trigger.opened").on("click", function (a) {
+            $(this).toggleClass("active");
+            a.preventDefault();
+        });
+
+        $(".trigger").on("click", function () {
+            $(this).next(".toggle-container").slideToggle(300);
+        });
+
+        $(".trigger.opened")
+            .addClass("active")
+            .next(".toggle-container")
+            .show();
+
+        /*----------------------------------------------------*/
+        /* Panel Dropdown
+	/*----------------------------------------------------*/
+        function close_panel_dropdown() {
+            $(".panel-dropdown").removeClass("active");
+            $(".fs-inner-container.content").removeClass("faded-out");
+        }
+
+        $(".panel-dropdown a").on("click", function (e) {
+            if ($(this).parent().is(".active")) {
+                close_panel_dropdown();
+            } else {
+                close_panel_dropdown();
+                $(this).parent().addClass("active");
+                $(".fs-inner-container.content").addClass("faded-out");
+            }
+
+            e.preventDefault();
+        });
+
+        // Apply / Close buttons
+        $(".panel-buttons button").on("click", function (e) {
+            $(".panel-dropdown").removeClass("active");
+            $(".fs-inner-container.content").removeClass("faded-out");
+        });
+
+        // Closes dropdown on click outside the conatainer
+        var mouse_is_inside = false;
+
+        $(".panel-dropdown").hover(
+            function () {
+                mouse_is_inside = true;
+            },
+            function () {
+                mouse_is_inside = false;
+            },
+        );
+
+        $("body").mouseup(function () {
+            if (!mouse_is_inside) close_panel_dropdown();
+        });
+
+        // Adjusting Panel Dropdown Width
+        $(window).on("load resize", function () {
+            var panelTrigger = $(".booking-widget .panel-dropdown a");
+            $(".booking-widget .panel-dropdown .panel-dropdown-content").css({
+                width: panelTrigger.outerWidth(),
+            });
+        });
+
+        // ------------------ End Document ------------------ //
     });
-
-    // Apply / Close buttons
-    $('.panel-buttons button').on('click', function(e) {
-	    $('.panel-dropdown').removeClass('active');
-		$('.fs-inner-container.content').removeClass("faded-out");
-    });
-
-    // Closes dropdown on click outside the conatainer
-	var mouse_is_inside = false;
-
-	$('.panel-dropdown').hover(function(){
-	    mouse_is_inside=true;
-	}, function(){
-	    mouse_is_inside=false;
-	});
-
-	$("body").mouseup(function(){
-	    if(! mouse_is_inside) close_panel_dropdown();
-	});
-
-
-	// Adjusting Panel Dropdown Width
-	$(window).on('load resize', function() {
-	   var panelTrigger = $('.booking-widget .panel-dropdown a');
-	   $('.booking-widget .panel-dropdown .panel-dropdown-content').css({
-	      'width' : panelTrigger.outerWidth()
-	   });
-	});
-
-
-// ------------------ End Document ------------------ //
-});
-
 })(this.jQuery);
-

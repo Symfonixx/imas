@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use Module;
 use Modules\Base\Models\Seo;
 use Modules\Base\Repositories\Settings\SettingsRepository;
@@ -49,7 +50,9 @@ class HandleInertiaRequests extends Middleware
             'theme_url' => asset('theme/findhouses'),
             'storage_path' => asset('storage').'/',
             'locale' => App::currentLocale(),
+            'text_direction' => App::getLocale() === 'ar' ? 'rtl' : 'ltr',
             'translations' => $this->getTranslations(),
+            'locale_switcher' => fn () => $this->getLocaleSwitcher(),
             'settings' => fn () => $this->sharedSettingsFlat(),
             'globals' => fn () => $this->sharedGlobals(),
             'auth' => fn () => $request->user()
@@ -145,10 +148,6 @@ class HandleInertiaRequests extends Middleware
         $locale = app()->getLocale();
         $translations = [];
 
-        if ($locale === 'en') {
-            return $translations;
-        }
-
         // Iterate through each module to process the language file
         foreach ($modules as $module) {
             $modulePath = $module->getPath(); // Path to the module
@@ -165,5 +164,28 @@ class HandleInertiaRequests extends Middleware
         }
 
         return $translations;
+    }
+
+    /**
+     * @return array<int, array{code: string, native: string, url: string}>
+     */
+    protected function getLocaleSwitcher(): array
+    {
+        $order = ['en', 'tr', 'ar'];
+        $supported = LaravelLocalization::getSupportedLocales();
+        $items = [];
+
+        foreach ($order as $code) {
+            if (! isset($supported[$code])) {
+                continue;
+            }
+            $items[] = [
+                'code' => $code,
+                'native' => (string) ($supported[$code]['native'] ?? $code),
+                'url' => LaravelLocalization::getLocalizedURL($code),
+            ];
+        }
+
+        return $items;
     }
 }

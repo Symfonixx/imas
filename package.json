@@ -19,6 +19,7 @@
         "@inertiajs/progress": "^0.1.2",
         "@inertiajs/vue3": "^1.2.0",
         "bootstrap": "^5.3.3",
+        "flag-icons": "^7.5.0",
         "nprogress": "^0.2.0",
         "path": "^0.12.7",
         "toastr": "^2.1.4",

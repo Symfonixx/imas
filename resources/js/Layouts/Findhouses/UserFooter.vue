@@ -38,10 +38,15 @@
                             <h3>{{ trans('Navigation') }}</h3>
                             <div class="nav-footer">
                                 <ul>
-                                    <li><Link :href="route('home')">{{ trans('Home') }}</Link></li>
-                                    <li><Link :href="route('property.index')">{{ trans('Properties') }}</Link></li>
-                                    <li><a href="#">{{ trans('About Us') }}</a></li>
-                                    <li class="no-mgb"><a href="#">{{ trans('Contact Us') }}</a></li>
+                                    <li v-for="item in mainNavLinks" :key="item.key">
+                                        <Link :href="item.href">{{ trans(item.key) }}</Link>
+                                    </li>
+                                </ul>
+                                <ul class="nav-pages">
+                                    <li class="font-weight-bold">{{ trans('Pages') }}</li>
+                                    <li v-for="item in pagesNavLinks" :key="item.key">
+                                        <Link :href="item.href">{{ trans(item.key) }}</Link>
+                                    </li>
                                 </ul>
                                 <ul class="nav-right">
                                     <li v-if="!auth"><Link :href="route('login')">{{ trans('Login') }}</Link></li>
@@ -108,6 +113,13 @@
 import {computed} from 'vue';
 import {Link, usePage} from '@inertiajs/vue3';
 
+const props = defineProps({
+    navLinks: {
+        type: Array,
+        default: () => [],
+    },
+});
+
 const page = usePage();
 
 const themeUrl = computed(() => page.props.theme_url || '');
@@ -121,6 +133,14 @@ const tagline = computed(() => settings.value.tagline || page.props.appName);
 const fallbackAddress = '95 South Park Avenue, USA';
 const fallbackPhone = '+456 875 369 208';
 const fallbackEmail = 'support@example.com';
+
+const mainNavLinks = computed(() =>
+    (props.navLinks || []).filter((l) => l?.href),
+);
+const pagesNavLinks = computed(() => {
+    const pages = (props.navLinks || []).find((l) => l?.children?.length);
+    return pages?.children || [];
+});
 
 function trans(key) {
     return page.props.translations[key] || key;

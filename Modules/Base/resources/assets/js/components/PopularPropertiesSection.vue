@@ -6,7 +6,7 @@
         <div class="container-fluid">
             <div class="sec-title discover">
                 <h2>
-                    <span>{{ titlePrefix }} </span>{{ titleSuffix }}
+                    <span>{{ title }} </span>
                 </h2>
                 <p>{{ subtitle }}</p>
             </div>
@@ -88,13 +88,9 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
-    titlePrefix: {
+    title: {
         type: String,
-        default: "Discover",
-    },
-    titleSuffix: {
-        type: String,
-        default: "Popular properties",
+        default: "",
     },
     subtitle: {
         type: String,

@@ -22,13 +22,13 @@
         <HomeServices :services="corporateServices" />
         <PopularPropertiesSection
             :properties="recommendedProperties"
-            :title-prefix="trans('properties.discover')"
-            :title-suffix="trans('properties.popular_properties')"
+                :title="trans('properties.title')"
             :subtitle="
                 trans('properties.we_provide_full_service_at_every_step')
             "
         />
         <HomeTestimonials :testimonials="testimonials" />
+        <HomeArticlesSection :articles="articles" />
     </AppLayout>
 </template>
 
@@ -40,6 +40,7 @@ import FeaturedPropertiesSection from "../components/FeaturedPropertiesSection.v
 import PopularPropertiesSection from "../components/PopularPropertiesSection.vue";
 import HomeServices from "../components/HomeServices.vue";
 import HomeTestimonials from "../components/HomeTestimonials.vue";
+import HomeArticlesSection from "../components/HomeArticlesSection.vue";
 import HomeHero from "../components/HomeHero.vue";
 const page = usePage();
 function trans(key) {
@@ -55,6 +56,7 @@ defineProps({
     recommendedProperties: { type: Array, default: () => [] },
     corporateServices: { type: Array, default: () => [] },
     testimonials: { type: Array, default: () => [] },
+    articles: { type: Array, default: () => [] },
 });
 
 const appName = computed(() => page.props.appName);

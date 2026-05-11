@@ -200,7 +200,7 @@
     "properties":{
         "featured_properties":"Featured properties",
         "we_provide_full_service_at_every_step":"We provide full service at every step.",
-        "discover":"Discover",
+        "title":"Discover popular properties",
         "popular_properties":"Popular properties",
         "featured":"Featured",
         "sold_out":"Sold out",
@@ -213,6 +213,11 @@
     "testimonials":{
         "title":"Client testimonials",
         "description":"Learn about the real experiences and honest reviews of our customers about our services in real estate and investment, because your trust is important to us at every step."
+    },
+    "articles":{
+        "title":"Articles & Tips",
+        "description":"Stay up to date with the latest news and insights from our experts.",
+        "read_more":"Read more..."
     }
    
     

@@ -7,7 +7,6 @@
             <div class="sec-title">
                 <h2>
                     <span> {{ trans("testimonials.title") }}</span>
-                   
                 </h2>
                 <p>{{ trans("testimonials.description") }}</p>
             </div>
@@ -18,13 +17,11 @@
                 <div
                     v-for="item in testimonials"
                     :key="item.id"
-                    class="singleJobClinet"
+                    class="singleJobClinet bg-gray"
                 >
-                    <p  class="quote" v-html="item.quote"></p>
+                    <p class="quote" v-html="item.quote"></p>
                     <div class="detailJC">
-                        <span
-                            ><img :src="item.avatar" :alt="item.name"
-                        /></span>
+                        <span><img :src="item.avatar" :alt="item.name" /></span>
                         <h5>
                             <a
                                 v-if="item.link"
@@ -44,13 +41,7 @@
 </template>
 
 <script setup>
-import {
-    onBeforeUnmount,
-    onMounted,
-    ref,
-    nextTick,
-    watch,
-} from "vue";
+import { onBeforeUnmount, onMounted, ref, nextTick, watch } from "vue";
 import { usePage } from "@inertiajs/vue3";
 const page = usePage();
 function trans(key) {
@@ -83,8 +74,7 @@ function initOwl() {
     if (!$ || !el || !props.testimonials.length) return;
     const $el = $(el);
     if ($el.data("owl.carousel")) return;
-    const rtl =
-        String(page.props.text_direction || "").toLowerCase() === "rtl";
+    const rtl = String(page.props.text_direction || "").toLowerCase() === "rtl";
     $el.owlCarousel({
         rtl,
         items: 2,
@@ -141,12 +131,14 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped lang="scss">
-.quote{
+.quote {
     // font-size: 1.2rem;
     // font-weight: 400;
     text-align: start;
     // margin: 0.3rem auto 0;
     // max-width: 500px;
-  
+}
+section {
+    background-color: white !important;
 }
 </style>

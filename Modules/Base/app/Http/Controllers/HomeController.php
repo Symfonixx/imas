@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
+use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
+use Modules\Cms\Models\Blog;
 use Modules\Cms\Models\Slide;
 use Modules\Corporate\Models\CorporateService;
 use Modules\Corporate\Models\Testimonial;
@@ -130,6 +132,28 @@ class HomeController extends Controller
             ->values()
             ->all();
 
+        $articles = Blog::query()
+            ->featured()
+            ->latest('created_at')
+            ->limit(3)
+            ->get()
+            ->map(static function (Blog $blog) {
+                $description = (string) ($blog->description ?? '');
+
+                return [
+                    'id' => $blog->id,
+                    'title' => (string) ($blog->title ?? ''),
+                    'excerpt' => Str::limit(strip_tags($description), 150),
+                    'image' => $blog->image_link,
+                    'slug' => $blog->slug,
+                    'url' => LaravelLocalization::localizeUrl('/blog/'.$blog->slug),
+                    'visits' => (int) $blog->visits,
+                    'date' => $blog->created_at?->locale(app()->getLocale())->translatedFormat('d M Y') ?? '',
+                ];
+            })
+            ->values()
+            ->all();
+
         return Inertia::render('Base::Index', [
             'welcomeTitle' => 'Find Your Dream Home',
             'welcomeSubtitle' => 'Browse curated listings and discover properties that match your goals.',
@@ -140,6 +164,7 @@ class HomeController extends Controller
             'recommendedProperties' => $recommendedProperties,
             'corporateServices' => $corporateServices,
             'testimonials' => $testimonials,
+            'articles' => $articles,
         ]);
     }
 

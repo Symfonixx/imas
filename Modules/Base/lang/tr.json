@@ -201,7 +201,7 @@
     "properties":{
         "featured_properties":"Öne çıkan mülkler",
         "we_provide_full_service_at_every_step":"Her adımda tam hizmet sağlıyoruz.",
-        "discover":"Keşfedin",
+        "title":"Popüler mülkleri keşfedin",
         "popular_properties":"Popüler mülkler",
         "featured":"Öne çıkan",
         "sold_out":"Satıldı",
@@ -214,5 +214,10 @@
     "testimonials":{
         "title":"Müşteri yorumları",
         "description":"Müşterilerimizin gerçek deneyimlerini ve dürüst yorumlarını öğrenin, çünkü müşteri güvenimiz her adımda önemlidir."
+    },
+    "articles":{
+        "title":"Son gönderiler",
+        "description":"Son gönderilerimizden haberdar olun.",
+        "read_more":"Devamını oku..."
     }
 }

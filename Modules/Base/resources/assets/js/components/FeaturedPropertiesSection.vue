@@ -12,25 +12,36 @@
                     :property="property"
                 />
             </div>
-            <div class="bg-all">
-                <a
-                    href="properties-full-grid-1.html"
-                    class="btn btn-outline-light imas-featured-view-more"
-                    >{{ trans("global.view_more") }}</a
-                >
-            </div>
+            <ReadMore
+                :href="viewMoreHref"
+                :text="trans('global.view_more')"
+            />
         </div>
     </section>
 </template>
 
 <script setup>
+import { computed } from "vue";
 import { usePage } from "@inertiajs/vue3";
+import ReadMore from "@/components/buttons/ReadMore.vue";
 
 const page = usePage();
 
 function trans(key) {
     return page.props.translations[key] || key;
 }
+
+const viewMoreHref = computed(() => {
+    try {
+        if (typeof route === "function" && route().has?.("property.index")) {
+            return route("property.index");
+        }
+    } catch {
+        /* ignore */
+    }
+
+    return "/property";
+});
 
 defineProps({
     properties: {
@@ -47,20 +58,3 @@ defineProps({
     },
 });
 </script>
-
-<!-- Unscoped: document `dir` lives on <html>, outside the component subtree. -->
-<style>
-html[dir="rtl"] .imas-featured-view-more.btn.btn-outline-light:after {
-    content: "\f0a8";
-    left: auto;
-    right: 0.5rem;
-}
-
-html[dir="rtl"] .imas-featured-view-more.btn.btn-outline-light:hover:after {
-    left: auto;
-    right: 1rem;
-    color: #fff;
-    -webkit-transform: rotateZ(360deg);
-    transform: rotateZ(360deg);
-}
-</style>

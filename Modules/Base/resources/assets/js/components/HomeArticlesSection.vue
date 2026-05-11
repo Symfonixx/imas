@@ -20,14 +20,20 @@
                     </div>
                 </div>
             </div>
+            <ReadMore
+            class="btnMarginTop"
+                href="#"
+                :text="trans('global.view_more')"
+            />
         </div>
     </section>
 </template>
 
 <script setup>
+
 import { usePage } from "@inertiajs/vue3";
 import ArticleCard from "@/components/articles/ArticleCard.vue";
-
+import ReadMore from "@/components/buttons/ReadMore.vue";
 defineProps({
     articles: {
         type: Array,
@@ -44,4 +50,7 @@ function trans(key) {
 
 <style scoped lang="scss">
 
+.btnMarginTop{
+    margin-top: 30px !important;
+}
 </style>

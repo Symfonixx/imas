@@ -1,4 +1,7 @@
 {
+    "global":{
+        "view_more":"View more"
+    },
     "Name": "Name",
     "Language": "Language",
     "All rights are reserved": "All rights reserved",
@@ -89,6 +92,18 @@
     "Personal Image Field Is Required": "Personal image is required",
     "Are you sure you want to delete it?": "Are you sure you want to delete it?",
     "Home": "Home",
+    "Buy Real Estate": "Buy real estate",
+    "Turkish Citizenship": "Turkish citizenship",
+    "Contact us": "Contact us",
+    "Pages": "Pages",
+    "News & Laws": "News & laws",
+    "Property Management": "Property management",
+    "About Turkey": "About Turkey",
+    "Services": "Services",
+    "Enter Keyword...": "Enter keyword…",
+    "Property Type": "Property type",
+    "Location": "Location",
+    "Search Now": "Search now",
     "Logs & Bugs": "Logs & bugs",
     "Log Code": "Log code",
     "Log title": "Log title",
@@ -182,5 +197,14 @@
     "Recommended dimensions: 1920px × 600px.": "Recommended dimensions: 1920px × 600px.",
     "About page title shown in search results.": "About page title shown in search results.",
     "Short page summary for search snippets.": "Short page summary for search snippets.",
-    "Use 3-8 focused keywords separated by commas.": "Use 3–8 focused keywords separated by commas."
+    "properties":{
+        "featured_properties":"Featured properties",
+        "we_provide_full_service_at_every_step":"We provide full service at every step."
+    },
+    "services":{
+        "title":"Why choose us?",
+        "description":"We provide full service at every step."
+    }
+   
+    
 }

@@ -47,11 +47,11 @@
                                     </li>
                                 </ul>
                             </li>
-                            <li v-if="auth?.type === 'admin'">
+                            <!-- <li v-if="auth?.type === 'admin'">
                                 <a :href="route('admin.dashboard.index')">{{
                                     trans("Dashboard")
                                 }}</a>
-                            </li>
+                            </li> -->
                             <li class="d-xl-none mb-2 mt-2">
                                 <span >{{
                                     trans("Language")

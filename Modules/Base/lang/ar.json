@@ -1,4 +1,7 @@
 {
+    "global":{
+        "view_more":"عرض المزيد"
+    },
     "Name": "الاسم",
     "Language": "اللغة",
     "All rights are reserved": "جميع الحقوق محفوظة",
@@ -89,6 +92,18 @@
     "Personal Image Field Is Required": "حقل الصورة الشخصية مطلوب",
     "Are you sure you want to delete it?": "هل أنت متأكد أنك تريد حذفه؟",
     "Home": "الصفحة الرئيسية",
+    "Buy Real Estate": "شراء عقار",
+    "Turkish Citizenship": "الجنسية التركية",
+    "Contact us": "اتصل بنا",
+    "Pages": "صفحات",
+    "News & Laws": "الأخبار والقوانين",
+    "Property Management": "إدارة العقارات",
+    "About Turkey": "عن تركيا",
+    "Services": "الخدمات",
+    "Enter Keyword...": "أدخل كلمة البحث…",
+    "Property Type": "نوع العقار",
+    "Location": "الموقع",
+    "Search Now": "ابحث الآن",
     "Logs & Bugs": "السجلات والأخطاء",
     "Log Code": "رمز السجل",
     "Log title": "عنوان السجل",
@@ -182,5 +197,14 @@
     "Recommended dimensions: 1920px × 600px.": "الأبعاد الموصى بها: 1920 × 600 بكسل.",
     "About page title shown in search results.": "عنوان صفحة من نحن الذي يظهر في نتائج البحث.",
     "Short page summary for search snippets.": "ملخص قصير للصفحة يظهر في مقتطفات البحث.",
-    "Use 3-8 focused keywords separated by commas.": "استخدم من 3 إلى 8 كلمات مفتاحية مركزة ومفصولة بفواصل."
+    "Use 3-8 focused keywords separated by commas.": "استخدم من 3 إلى 8 كلمات مفتاحية مركزة ومفصولة بفواصل.",
+    "properties":{
+        "featured_properties":"العقارات المميزة",
+        "we_provide_full_service_at_every_step":"نقدم خدمة كاملة في كل خطوة."
+    },
+    "services":{
+        "title":"لماذا نحن؟",
+        "description":"نقدم خدمة كاملة في كل خطوة."
+    }
+   
 }

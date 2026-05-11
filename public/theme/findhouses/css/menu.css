@@ -186,7 +186,7 @@ a.button.border {
     padding: 9px 19px;
 }
 a.button.border, a.button {
-    background-color: #FF385C;
+    background-color: #d9a800;
     top: 0;
     padding: 10px 20px;
     color: #fff;
@@ -504,8 +504,8 @@ a.button.border, a.button {
     border-radius: 3px;
 }
 #navigation.style-1 ul li:hover {
-    background-color: #FF385C;
-    color: #FF385C;
+    background-color: #d9a800;
+    color: #d9a800;
 }
 #navigation.style-1 ul li:hover a {
     color: #fff;

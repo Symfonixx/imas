@@ -3,9 +3,11 @@
 namespace Modules\Base\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 use Modules\Cms\Models\Slide;
+use Modules\Corporate\Models\CorporateService;
 use Modules\Property\Enums\LocationType;
 use Modules\Property\Models\Location;
 use Modules\Property\Models\Property;
@@ -89,6 +91,25 @@ class HomeController extends Controller
             ->values()
             ->all();
 
+        $corporateServices = CorporateService::query()
+            ->featured()
+            ->latest('updated_at')
+            ->limit(3)
+            ->get(['id', 'title', 'slug', 'description', 'image'])
+            ->map(static function (CorporateService $service) {
+                $description = (string) ($service->description ?? '');
+
+                return [
+                    'id' => $service->id,
+                    'title' => (string) ($service->title ?? ''),
+                    'slug' => $service->slug,
+                    'description' => Str::limit(strip_tags($description), 280),
+                    'image' => $service->image_link,
+                ];
+            })
+            ->values()
+            ->all();
+
         return Inertia::render('Base::Index', [
             'welcomeTitle' => 'Find Your Dream Home',
             'welcomeSubtitle' => 'Browse curated listings and discover properties that match your goals.',
@@ -97,6 +118,7 @@ class HomeController extends Controller
             'cities' => $cities,
             'featuredProperties' => $featuredProperties,
             'recommendedProperties' => $recommendedProperties,
+            'corporateServices' => $corporateServices,
         ]);
     }
 

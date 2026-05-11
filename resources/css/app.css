@@ -7,13 +7,15 @@
     --brand-gold-hover: #eecb3a;
     --brand-navy: #1a2a4a;
     --brand-navy-hover: #0a1526;
+  
 }
 
 .btn-yellow,
 .btn-primary:not(.btn-dash) {
     background-color: var(--brand-gold) !important;
     border-color: var(--brand-gold) !important;
-    color: var(--brand-navy) !important;
+    color: white !important;
+    /* color: var(--brand-navy) !important; */
 }
 
 .btn-yellow:hover,

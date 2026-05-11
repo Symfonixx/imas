@@ -1,81 +1,82 @@
 .header-top {
-	background: #FF385C;
+    background: #d9a800;
 }
-a.button.border, a.button {
-    background: #FF385C;
+a.button.border,
+a.button {
+    background: #d9a800;
 }
 #main-menu ul li a:hover {
-	background: #FF385C;
+    background: #d9a800;
 }
 #main-menu .dropdown-menu a:hover {
-	background: #FF385C;
+    background: #d9a800;
 }
 .bloq-search input[type="text"] {
-	border: 1px solid #FF385C;
+    border: 1px solid #d9a800;
 }
 .bloq-search input[type="submit"] {
-	background: #FF385C;
+    background: #d9a800;
 }
 .google-maps .filter {
-	background: #FF385C;
+    background: #d9a800;
 }
 .section-title:before {
-	background-color: #FF385C;
+    background-color: #d9a800;
 }
 .parallax-searchs .form-group .nice-select i,
 .parallax-searchs .form-group .nice-select:hover {
-    color: #FF385C;
+    color: #d9a800;
 }
 .nice-select .option:hover,
 .parallax-searchs .form-group .btn {
-    background: #FF385C !important;
+    background: #d9a800 !important;
 }
 .listing-hidden-content.blue {
-    background: #FF385C;
+    background: #d9a800;
 }
 .section-title h2 {
-	color: #FF385C;
+    color: #d9a800;
 }
 .recently .homes-content .homes-list li {
-	color: #FF385C;
+    color: #d9a800;
 }
 .recently .homes-content .homes-list li i {
-	color: #FF385C;
+    color: #d9a800;
 }
 .btn.btn-outline-light,
 .first-footer .newsletters h3::after {
-    background: #FF385C;
+    background: #d9a800;
 }
 .welcome-title h2 span,
 .welcome-title h2 span {
-	color: #FF385C;
+    color: #d9a800;
 }
 .welcome .popup-youtube,
 .first-footer .contactus ul li .fa {
-	color: #FF385C;
+    color: #d9a800;
 }
 .welcome .wprt-image-video .iq-waves .waves {
-	background: rgb(250, 41, 100) none repeat scroll 0 0 padding-box;
+    background: rgb(250, 41, 100) none repeat scroll 0 0 padding-box;
 }
 .services-home .bg-base,
 .first-footer .bloq-email .email input[type="submit"] {
-	background: #FF385C;
+    background: #d9a800;
 }
 #navigation.style-1 .current {
-    color: #FF385C;
+    color: #d9a800;
 }
 #navigation.style-1 ul li:hover {
-    background: #FF385C;
+    background: #d9a800;
 }
 .feature-cities-1 .listing-badges .featured {
-    background: #FF385C;
+    background: #d9a800;
 }
 .services-home a.text-base,
 .twitter-widget.contuct .twitter-area .text h5 a {
-	color: #FF385C;
+    color: #d9a800;
 }
 .portfolio .homes-content .homes-list li {
-	color: #FF385C;
+    color: #d9a800;
 }
 .portfolio .homes-content .homes-list li i {
     color: #696969;
@@ -85,267 +86,270 @@ a.button.border, a.button {
     color: #696969;
     font-size: 16px;
 }
-.top-location .owl-theme .owl-nav [class*=owl-] {
-	background: #FF385C;
+.top-location .owl-theme .owl-nav [class*="owl-"] {
+    background: #d9a800;
 }
 .blog-section .news-item a:hover h3 {
-	color: #FF385C;
+    color: #d9a800;
 }
 .blog-section .news-link {
-	color: #FF385C;
+    color: #d9a800;
 }
 .testimonials .test-1 p::before {
-	color: #FF385C;
+    color: #d9a800;
 }
 .testimonials .test-1 h3 {
-	color: #FF385C;
+    color: #d9a800;
 }
 .owl-dot.active {
-	background: #FF385C !important;
+    background: #d9a800 !important;
 }
 .counterup .countr .fa {
-	color: #FF385C;
+    color: #d9a800;
 }
 .realhome_subscribe input {
-	border-color: #FF385C;
+    border-color: #d9a800;
 }
 .realhome_form_subscribe button {
-	background: #FF385C;
-	border: 2px solid #FF385C;
+    background: #d9a800;
+    border: 2px solid #d9a800;
 }
 .first-footer .netabout h3::after,
 .first-footer .navigation h3::after,
 .first-footer .widget h3::after,
 .first-footer .contactus h3::after {
-	background-color: #FF385C;
+    background-color: #d9a800;
 }
 .first-footer .btn {
-	background: #FF385C;
+    background: #d9a800;
 }
 .first-footer .btn:hover {
-	background: transparent;
+    background: transparent;
 }
 .navigation ul li a:hover {
-	color: #FF385C;
+    color: #d9a800;
 }
 .twitter-widget.contuct .twitter-area .icon-holder i {
-	color: #FF385C;
+    color: #d9a800;
 }
 .twitter-widget.contuct .twitter-area .text h4,
 .inner-pages .twitter-widget.contuct .twitter-area .text h4 {
-	color: #FF385C;
+    color: #d9a800;
 }
 .second-footer {
-	background: #303441;
+    background: #303441;
 }
 .go-up {
-	background: #FF385C;
+    background: #d9a800;
 }
 @media only screen and (max-width: 991px) {
-.homepage-6 .bg-all {
-    margin-top: 30px !important;
+    .homepage-6 .bg-all {
+        margin-top: 30px !important;
     }
 }
 .main-search-field {
-	background: #FF385C;
+    background: #d9a800;
 }
 .btn-default.btn-theme-colored2:hover {
-	background: #FF385C;
+    background: #d9a800;
 }
 .text-theme-colored2 {
-	color: #FF385C !important;
+    color: #d9a800 !important;
 }
 .btn-dark.btn-theme-colored {
-	background-color: #FF385C;
+    background-color: #d9a800;
 }
 .parallax-search .form-group .nice-select:hover {
-	color: #FF385C;
+    color: #d9a800;
 }
 .parallax-search .form-group .nice-select i {
-	color: #FF385C;
+    color: #d9a800;
 }
 .parallax-search .form-group .list li:hover {
-	background: #FF385C;
+    background: #d9a800;
 }
 .parallax-search .form-group .btn {
-	background: #FF385C;
+    background: #d9a800;
 }
 .inner-pages .blog .active-view-btn:hover {
-	background: #FF385C !important;
+    background: #d9a800 !important;
 }
 .inner-pages .change-view-btn:hover {
-	color: #FF385C !important;
+    color: #d9a800 !important;
 }
 .inner-pages .blog .block-heading .change-view-btn.lde:hover {
-	background: #FF385C;
+    background: #d9a800;
 }
 .inner-pages .blog .section-heading .media .media-left i {
-	background: #FF385C;
+    background: #d9a800;
 }
 .inner-pages .blog .main-search-field select {
-	background: #FF385C;
+    background: #d9a800;
 }
 .inner-pages .blog .at-input {
-	border: 2px solid #FF385C;
+    border: 2px solid #d9a800;
 }
 .inner-pages .blog .ui-widget.ui-widget-content {
-	background: #FF385C;
+    background: #d9a800;
 }
 .inner-pages .blog .hvr-bounce-to-right {
-	background: #FF385C;
+    background: #d9a800;
 }
 .inner-pages .widget h5::after {
-	background-color: #FF385C;
+    background-color: #d9a800;
 }
 .inner-pages .portfolio .footer i {
-	color: #FF385C;
+    color: #d9a800;
 }
 .inner-pages .recent-post .tags a:hover {
-	color: #FF385C;
-	border-color: #FF385C;
+    color: #d9a800;
+    border-color: #d9a800;
 }
 .page-item.active .page-link {
-    background: #FF385C;
-    border-color: #FF385C;
+    background: #d9a800;
+    border-color: #d9a800;
 }
 .page-link {
-    color: #FF385C;
+    color: #d9a800;
 }
 .inner-pages .blog .homes-content.details-2 .fa {
-	color: #FF385C;
+    color: #d9a800;
 }
 .inner-pages .blog .sorting-options h5 {
-	color: #FF385C;
+    color: #d9a800;
 }
 .inner-pages .blog .homes-content h5::after,
 .inner-pages .blog .blog-info.details h5::after,
 .inner-pages .blog .property-location h5::after,
 .inner-pages .blog .team.assigned h5::after {
-	color: #FF385C;
-	background-color: #FF385C;
+    color: #d9a800;
+    background-color: #d9a800;
 }
 .inner-pages .blog .homes-content.details .fa {
-	color: #FF385C;
+    color: #d9a800;
 }
 .inner-pages .button.alt {
-	background-color: #FF385C;
+    background-color: #d9a800;
 }
 .inner-pages .agent-details a:hover {
-	color: #FF385C;
+    color: #d9a800;
 }
 .inner-pages .agent-details .fa {
-	color: #FF385C;
+    color: #d9a800;
 }
 .inner-pages .about-us .who-1 h2 span {
-	color: #FF385C;
+    color: #d9a800;
 }
 .inner-pages .about-us .wprt-image-video .icon-wrap {
-	background-color: #FF385C;
+    background-color: #d9a800;
 }
 .bg-2 .button {
-    border-color: #FF385C;
+    border-color: #d9a800;
 }
 .inner-pages .panel .panel-heading a {
-	background: #FF385C;
+    background: #d9a800;
 }
 .plan-price {
-	background: #FF385C;
+    background: #d9a800;
 }
 .plan-price:after {
-	border-top-color: #FF385C;
+    border-top-color: #d9a800;
 }
 .plan a.btn {
-	background: #FF385C;
+    background: #d9a800;
 }
 .inner-pages .top-headings h2 {
-	color: #FF385C;
+    color: #d9a800;
 }
 .inner-pages .port-info .btn {
-	background: #FF385C;
-	border: 1px solid #FF385C;
+    background: #d9a800;
+    border: 1px solid #d9a800;
 }
-#login .btn_1, a.btn_1 {
-    background: #FF385C;
+#login .btn_1,
+a.btn_1 {
+    background: #d9a800;
 }
 .inner-pages .blog .social .date {
-	background-color: #FF385C;
+    background-color: #d9a800;
 }
 .blog-pots figure {
-	background: #FF385C;
+    background: #d9a800;
 }
 .blog .blog-pots .fa {
-	color: #FF385C;
+    color: #d9a800;
 }
 .btn-secondary {
-	background: #FF385C;
+    background: #d9a800;
 }
 .single-blog-post .img-box .overlay {
-	background: rgba(250, 41, 100, 0.8);
+    background: rgba(250, 41, 100, 0.8);
 }
 .inner-pages .form-control {
-	border: 1px solid #FF385C;
+    border: 1px solid #d9a800;
 }
 .inner-pages .input-group-btn .btn-primary {
-	background: #FF385C;
-	border: 1px solid #FF385C;
+    background: #d9a800;
+    border: 1px solid #d9a800;
 }
 .inner-pages .input-group-btn .btn-primary:hover {
-	color: #FF385C;
+    color: #d9a800;
 }
 .inner-pages .comments-info h5 {
-	color: #FF385C;
+    color: #d9a800;
 }
 .inner-pages .comments h3::after,
 .inner-pages .leve-comments h3::after {
-	background-color: #FF385C;
+    background-color: #d9a800;
 }
 .inner-pages .leve-comments .btn {
-	background: #FF385C;
-	border: 1px solid #FF385C;
+    background: #d9a800;
+    border: 1px solid #d9a800;
 }
 .inner-pages .leve-comments .btn:hover {
-	border: 1px solid #FF385C;
+    border: 1px solid #d9a800;
 }
 .inner-pages .contact-us .btn {
-	background: #FF385C;
-	border: 1px solid #FF385C;
+    background: #d9a800;
+    border: 1px solid #d9a800;
 }
 .inner-pages .contact-us .btn:hover {
-	border: 1px solid #FF385C;
+    border: 1px solid #d9a800;
 }
 .inner-pages .call-info h3::after {
-	background-color: #FF385C;
+    background-color: #d9a800;
 }
 .inner-pages .call-info ul li .fa {
-	color: #FF385C;
+    color: #d9a800;
 }
 .inner-pages .single-add-property > h3 {
-	color: #FF385C;
+    color: #d9a800;
 }
 .inner-pages .prperty-submit-button > button {
-	background: #FF385C none repeat scroll 0 0;
+    background: #d9a800 none repeat scroll 0 0;
 }
-.leaflet-div-icon, .map-marker {
-	background-color: #FF385C;
-	border: 5px solid #FF385C;
+.leaflet-div-icon,
+.map-marker {
+    background-color: #d9a800;
+    border: 5px solid #d9a800;
 }
-.leaflet-div-icon:before, .map-marker:before {
-	border-top-color: #FF385C;
+.leaflet-div-icon:before,
+.map-marker:before {
+    border-top-color: #d9a800;
 }
 .listing-window-image:before {
-	background-color: #FF385C;
+    background-color: #d9a800;
 }
 .listing-window-content h3 {
-	background-color: #FF385C;
+    background-color: #d9a800;
 }
 .blog-section .action-list .fa-comment {
-    color: #FF385C;
+    color: #d9a800;
 }
 .blog-section .action-list .fa-share-alt {
-    color: #FF385C;
+    color: #d9a800;
 }
 .blog-section .action-list .fa-heart {
-    color: #FF385C;
+    color: #d9a800;
 }
 section.pricing-table {
     padding: 6rem 0;

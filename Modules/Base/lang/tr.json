@@ -1,4 +1,7 @@
 {
+    "global":{
+        "view_more":"Daha fazla görüntüle"
+    },
     "Name": "Ad",
     "Language": "Dil",
     "All rights are reserved": "Tüm hakları saklıdır",
@@ -89,6 +92,18 @@
     "Personal Image Field Is Required": "Kişisel görsel alanı zorunludur",
     "Are you sure you want to delete it?": "Silmek istediğinizden emin misiniz?",
     "Home": "Ana sayfa",
+    "Buy Real Estate": "Gayrimenkul satın al",
+    "Turkish Citizenship": "Türk vatandaşlığı",
+    "Contact us": "Bize ulaşın",
+    "Pages": "Sayfalar",
+    "News & Laws": "Haberler ve yasalar",
+    "Property Management": "Gayrimenkul yönetimi",
+    "About Turkey": "Türkiye hakkında",
+    "Services": "Hizmetler",
+    "Enter Keyword...": "Anahtar kelime girin…",
+    "Property Type": "Mülk tipi",
+    "Location": "Konum",
+    "Search Now": "Şimdi ara",
     "Logs & Bugs": "Günlükler ve hatalar",
     "Log Code": "Günlük kodu",
     "Log title": "Günlük başlığı",
@@ -182,5 +197,13 @@
     "Recommended dimensions: 1920px × 600px.": "Önerilen boyutlar: 1920 × 600 piksel.",
     "About page title shown in search results.": "Arama sonuçlarında görünen hakkımızda sayfası başlığı.",
     "Short page summary for search snippets.": "Arama özetlerinde görünen kısa sayfa özeti.",
-    "Use 3-8 focused keywords separated by commas.": "Virgülle ayrılmış 3–8 odaklı anahtar kelime kullanın."
+    "Use 3-8 focused keywords separated by commas.": "Virgülle ayrılmış 3–8 odaklı anahtar kelime kullanın.",
+    "properties":{
+        "featured_properties":"Öne çıkan mülkler",
+        "we_provide_full_service_at_every_step":"Her adımda tam hizmet sağlıyoruz."
+    },
+    "services":{
+        "title":"Neden biz?",
+        "description":"Her adımda tam hizmet sağlıyoruz."
+    }
 }

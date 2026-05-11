@@ -163,7 +163,44 @@ class HandleInertiaRequests extends Middleware
             }
         }
 
-        return $translations;
+        return $this->flattenTranslationsForInertia($translations);
+    }
+
+    /**
+     * Nested JSON groups (e.g. {"hero": {"title": "…"}}) become dot keys ("hero.title") so
+     * Vue can keep using trans("hero.title") with a flat lookup on page.props.translations.
+     *
+     * @param  array<string, mixed>  $input
+     * @return array<string, mixed>
+     */
+    protected function flattenTranslationsForInertia(array $input, string $prefix = ''): array
+    {
+        $result = [];
+
+        foreach ($input as $key => $value) {
+            $segment = (string) $key;
+            $path = $prefix === '' ? $segment : $prefix.'.'.$segment;
+
+            if (is_array($value) && $this->isAssocTranslationArray($value)) {
+                $result = array_merge($result, $this->flattenTranslationsForInertia($value, $path));
+            } else {
+                $result[$path] = $value;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param  array<mixed>  $arr
+     */
+    protected function isAssocTranslationArray(array $arr): bool
+    {
+        if ($arr === []) {
+            return false;
+        }
+
+        return array_keys($arr) !== range(0, count($arr) - 1);
     }
 
     /**

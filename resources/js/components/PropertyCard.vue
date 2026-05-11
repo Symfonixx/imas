@@ -1,5 +1,5 @@
 <template>
-    <div class="item col-lg-4 col-md-6 col-xs-12">
+    <div class="imas-property-card item col-lg-4 col-md-6 col-xs-12">
         <div class="project-single">
             <div class="project-inner project-head">
                 <div class="homes">
@@ -21,37 +21,41 @@
                             :src="property.thumbnail_url"
                             :alt="displayTitle"
                             class="img-responsive"
-                        >
+                        />
                     </a>
                 </div>
                 <div class="button-effect">
-                    <a :href="property.url" class="btn"><i class="fa fa-link"></i></a>
+                    <a :href="property.url" class="btn"
+                        ><i class="fa fa-link"></i
+                    ></a>
                     <a
                         v-if="property.youtube_video_url"
                         :href="property.youtube_video_url"
                         class="btn popup-video popup-youtube"
                         target="_blank"
                         rel="noopener noreferrer"
-                    ><i class="fas fa-video"></i></a>
+                        ><i class="fas fa-video"></i
+                    ></a>
                     <a
                         :href="property.thumbnail_url"
                         class="img-poppu btn"
                         target="_blank"
                         rel="noopener noreferrer"
-                    ><i class="fa fa-photo"></i></a>
+                        ><i class="fa fa-photo"></i
+                    ></a>
                 </div>
             </div>
             <div class="homes-content">
-                <h3><a :href="property.url">{{ displayTitle }}</a></h3>
+                <h3 class="imas-property-title">
+                    <a :href="property.url">{{ displayTitle }}</a>
+                </h3>
                 <p class="homes-address mb-3">
                     <a :href="property.url">
-                        <i class="fa fa-map-marker"></i><span>{{ addressLine }}</span>
+                        <i class="fa fa-map-marker"></i
+                        ><span>{{ addressLine }}</span>
                     </a>
                 </p>
-                <ul
-                    v-if="hasHomesList"
-                    class="homes-list clearfix pb-3"
-                >
+                <ul v-if="hasHomesList" class="homes-list clearfix pb-3">
                     <li
                         v-for="(attr, idx) in homesAttributes"
                         :key="`${attr.code}-${idx}`"
@@ -70,8 +74,8 @@
 </template>
 
 <script setup>
-import {computed} from 'vue';
-import {usePage} from '@inertiajs/vue3';
+import { computed } from "vue";
+import { usePage } from "@inertiajs/vue3";
 
 const props = defineProps({
     property: {
@@ -82,29 +86,33 @@ const props = defineProps({
 
 const page = usePage();
 
-const locale = computed(() => page.props.locale || 'en');
+const locale = computed(() => page.props.locale || "en");
 
 const displayTitle = computed(() => {
     const t = props.property.title;
 
-    return typeof t === 'string' && t.trim() !== '' ? t : props.property.project_name || props.property.project_code || 'Property';
+    return typeof t === "string" && t.trim() !== ""
+        ? t
+        : props.property.project_name ||
+              props.property.project_code ||
+              "Property";
 });
 
 const addressLine = computed(() => {
     const loc = props.property.location?.name;
 
-    return typeof loc === 'string' && loc.trim() !== '' ? loc : '—';
+    return typeof loc === "string" && loc.trim() !== "" ? loc : "—";
 });
 
 function formatMoney(amount) {
     const n = Number(amount);
-    if (! Number.isFinite(n)) {
-        return '—';
+    if (!Number.isFinite(n)) {
+        return "—";
     }
 
     return new Intl.NumberFormat(locale.value, {
-        style: 'currency',
-        currency: 'USD',
+        style: "currency",
+        currency: "USD",
         maximumFractionDigits: 0,
     }).format(n);
 }
@@ -112,37 +120,81 @@ function formatMoney(amount) {
 const priceLabel = computed(() => formatMoney(props.property.price));
 
 const homesAttributes = computed(() =>
-    Array.isArray(props.property.attributes) ? props.property.attributes : []
+    Array.isArray(props.property.attributes) ? props.property.attributes : [],
 );
 
 const hasHomesList = computed(() => homesAttributes.value.length > 0);
 
 const ATTRIBUTE_ICON_CLASS = {
-    built_in_area: 'flaticon-square',
-    bedrooms: 'flaticon-bed',
-    bedroom: 'flaticon-bed',
-    bathrooms: 'flaticon-bathtub',
-    bathroom: 'flaticon-bathtub',
-    garage: 'flaticon-car',
-    garages: 'flaticon-car',
-    parking: 'flaticon-car',
+    built_in_area: "flaticon-square",
+    bedrooms: "flaticon-bed",
+    bedroom: "flaticon-bed",
+    bathrooms: "flaticon-bathtub",
+    bathroom: "flaticon-bathtub",
+    garage: "flaticon-car",
+    garages: "flaticon-car",
+    parking: "flaticon-car",
 };
 
 function attributeIconClass(code) {
-    if (! code || typeof code !== 'string') {
-        return 'flaticon-square';
+    if (!code || typeof code !== "string") {
+        return "flaticon-square";
     }
 
-    return ATTRIBUTE_ICON_CLASS[code.toLowerCase()] || 'flaticon-square';
+    return ATTRIBUTE_ICON_CLASS[code.toLowerCase()] || "flaticon-square";
 }
-
 </script>
 
 <style scoped>
+/* Uniform image frame; thumbnails use cover (no stretch). Badges stay above (z-index). */
+.imas-property-card .homes-img {
+    aspect-ratio: 4 / 3;
+}
+
+.imas-property-card .homes-img img.img-responsive {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    object-fit: cover;
+    object-position: center;
+    z-index: 0;
+}
+
+/* Reserve two lines so short titles align; long titles clamp with ellipsis. */
+.imas-property-title {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    min-height: calc(1.35em * 2);
+    line-height: 1.35;
+}
+
+.imas-property-title a {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-word;
+}
+
 .imas-sold-out-badge {
     background-color: #dc3545 !important;
     color: #fff !important;
     border-color: #dc3545 !important;
+    /* Match `.portfolio .homes-tag.sale` (top-right in LTR). Physical sides + html[dir] mirror RTL reliably
+       because some ancestors use LTR, so `inset-inline-*` alone may not flip. */
+    top: 0;
+    margin-top: 15px;
+    right: 15px;
+    left: auto;
+}
+
+:global(html[dir="rtl"]) .imas-sold-out-badge {
+    right: auto !important;
+    left: 15px !important;
 }
 
 .homes-img .imas-sold-out-badge:hover {

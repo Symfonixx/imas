@@ -46,68 +46,12 @@
                             </div>
 
                             <div class="imas-hero-filter">
-                                <div class="banner-search-wrap">
-                                    <form
-                                        class="tab-content"
-                                        method="get"
-                                        :action="propertyIndexUrl"
-                                    >
-                                        <input type="hidden" name="purpose" :value="purpose">
-
-                                        <div class="tab-pane fade show active">
-                                            <div class="rld-main-search">
-                                                <div class="row ">
-                                                    <div class="rld-single-input">
-                                                        <input
-                                                            v-model="searchKeyword"
-                                                            type="search"
-                                                            name="q"
-                                                            autocomplete="off"
-                                                            :placeholder="trans('Enter Keyword...')"
-                                                        >
-                                                    </div>
-                                                    <div class="rld-single-select ml-22">
-                                                        <select
-                                                            v-model="searchPropertyTypeId"
-                                                            class="select single-select wide"
-                                                            name="property_type_id"
-                                                        >
-                                                            <option value="">{{ trans('Property Type') }}</option>
-                                                            <option
-                                                                v-for="t in propertyTypes"
-                                                                :key="t.id"
-                                                                :value="String(t.id)"
-                                                            >
-                                                                {{ t.name }}
-                                                            </option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="rld-single-select">
-                                                        <select
-                                                            v-model="searchLocationId"
-                                                            class="select single-select wide mr-0"
-                                                            name="location_id"
-                                                        >
-                                                            <option value="">{{ trans('Location') }}</option>
-                                                            <option
-                                                                v-for="c in cities"
-                                                                :key="c.id"
-                                                                :value="String(c.id)"
-                                                            >
-                                                                {{ c.name }}
-                                                            </option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="imas-hero-search-actions col-12 col-lg-2 col-xl-2 pl-0">
-                                                        <button type="submit" class="btn btn-yellow btn-block">
-                                                            {{ trans('Search Now') }}
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
+                                <HomeHeroPropertySearch
+                                    :action="propertyIndexUrl"
+                                    :purpose="purpose"
+                                    :property-types="propertyTypes"
+                                    :cities="cities"
+                                />
                             </div>
                         </div>
                     </div>
@@ -119,7 +63,7 @@
 
 <script setup>
 import {computed, onBeforeUnmount, onMounted, ref, watch} from 'vue';
-import {usePage} from '@inertiajs/vue3';
+import HomeHeroPropertySearch from './HomeHeroPropertySearch.vue';
 
 const props = defineProps({
     welcomeTitle: {type: String, required: true},
@@ -130,13 +74,7 @@ const props = defineProps({
 
 });
 
-const page = usePage();
-
 const purpose = ref('sale');
-
-const searchKeyword = ref('');
-const searchPropertyTypeId = ref('');
-const searchLocationId = ref('');
 
 const activeSlideIndex = ref(0);
 let slideTimer = null;
@@ -167,10 +105,6 @@ const heroSubtitle = computed(() =>
 );
 
 const propertyIndexUrl = computed(() => route('property.index'));
-
-function trans(key) {
-    return page.props.translations[key] || key;
-}
 
 function goToSlide(index) {
     activeSlideIndex.value = index;
@@ -236,10 +170,7 @@ onBeforeUnmount(() => {
     flex-direction: column;
 }
 
-/*
- * Only the outer hero grid may be a column stack. Nested `.row` inside `.rld-main-search`
- * must stay Bootstrap row (horizontal on lg+) — a descendant `.hero-main .row` rule breaks it.
- */
+/* Only the outer hero grid is a column stack; the property search bar uses its own flex row. */
 .imas-hero-slider .hero-main > .container > .row {
     flex: 1 1 auto;
     display: flex;
@@ -287,26 +218,6 @@ onBeforeUnmount(() => {
     width: 100%;
     max-width: 100%;
     padding-top: 1rem;
-}
-
-/* Search button: theme `.rld-main-search .btn { width:100% }` — pin column end on lg+, center on small screens */
-@media (min-width: 992px) {
-    .imas-hero-filter .imas-hero-search-actions {
-        margin-left: auto;
-    }
-}
-
-@media (max-width: 991px) {
-    .imas-hero-filter .imas-hero-search-actions {
-        display: flex;
-        justify-content: center;
-        margin-top: 0.5rem;
-    }
-
-    .imas-hero-filter .imas-hero-search-actions .btn.btn-yellow {
-        width: auto !important;
-        min-width: 200px;
-    }
 }
 
 .imas-hero-slider__layers {

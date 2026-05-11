@@ -51,9 +51,9 @@
                                 <ul class="nav-right">
                                     <li v-if="!auth"><Link :href="route('login')">{{ trans('Login') }}</Link></li>
                                     <li v-if="!auth"><Link :href="route('register')">{{ trans('Register') }}</Link></li>
-                                    <li v-if="auth?.type === 'admin'" class="no-mgb">
+                                    <!-- <li v-if="auth?.type === 'admin'" class="no-mgb">
                                         <a :href="route('admin.dashboard.index')">{{ trans('Dashboard') }}</a>
-                                    </li>
+                                    </li> -->
                                 </ul>
                             </div>
                         </div>

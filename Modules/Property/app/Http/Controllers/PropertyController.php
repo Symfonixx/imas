@@ -3,22 +3,10 @@
 namespace Modules\Property\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Inertia\Inertia;
-use Inertia\Response;
-use Modules\Property\Enums\LocationType;
-use Modules\Property\Models\Location;
-use Modules\Property\Models\Property;
-use Modules\Property\Models\PropertyType;
-use Modules\Property\Presentation\ListingPropertyAttributesPresenter;
-use Modules\User\Enums\CmsStatus;
-use Symfony\Component\HttpFoundation\JsonResponse;
 
 class PropertyController extends Controller
 {
- 
     /**
      * Show the form for creating a new resource.
      */

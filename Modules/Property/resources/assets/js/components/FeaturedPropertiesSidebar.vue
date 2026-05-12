@@ -146,7 +146,7 @@ function formatMoney(amount) {
 }
 
 function statRows(p) {
-    const attrs = Array.isArray(p.attributes) ? p.attributes : [];
+    const attrs = Array.isArray(p.highlights) ? p.highlights : [];
     return attrs.slice(0, 4).map((a) => ({
         label: a.name || a.code || "",
         value: a.display || "",

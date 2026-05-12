@@ -188,7 +188,7 @@ class PropertyController extends Controller
 
         return $request->validate([
             'title' => ['required', 'string', 'max:255'],
-            'project_name' => ['nullable', 'string', 'max:255'],
+            'project_name' => ['required', 'string', 'max:255'],
             'project_code' => ['required', 'string', 'max:128', $uniqueProjectCode],
             'overview' => ['required', 'string'],
             'thumbnail' => [$property === null ? 'required' : 'nullable', 'image', 'max:4096'],
@@ -282,7 +282,7 @@ class PropertyController extends Controller
                 $autoTranslate
             ),
             'project_name' => $this->buildTranslatedValue(
-                $validated['project_name'] ?? $validated['title'],
+                $validated['project_name'],
                 $property?->getTranslations('project_name') ?? [],
                 $autoTranslate
             ),

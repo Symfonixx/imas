@@ -49,6 +49,11 @@
                    value="{{ old('project_code', optional($property)->project_code) }}"/>
         </x-admin.form-group>
 
+        <x-admin.form-group label="Project name" name="project_name" required translatable>
+            <input id="project_name" type="text" name="project_name" class="form-control form-control-solid"
+                   value="{{ old('project_name', optional($property)->project_name) }}"/>
+        </x-admin.form-group>
+
         <x-admin.form-group label="Project title" name="title" required translatable>
             <input id="title" type="text" name="title" class="form-control form-control-solid"
                    value="{{ old('title', optional($property)->title) }}"/>

@@ -121,5 +121,27 @@
     "SEO Metadata": "بيانات SEO",
     "Banner": "البانر",
     "The district field is required when area is not selected.": "حقل الحي مطلوب عند عدم اختيار المنطقة.",
-    "The area field is required when district is not selected.": "حقل المنطقة مطلوب عند عدم اختيار الحي."
+    "The area field is required when district is not selected.": "حقل المنطقة مطلوب عند عدم اختيار الحي.",
+    "Listings": "القوائم",
+    "listing_page": {
+        "find_your_house": "اعثر على منزلك",
+        "enter_keyword": "أدخل كلمة البحث...",
+        "location": "الموقع",
+        "all_locations": "كل المواقع",
+        "property_type": "نوع العقار",
+        "all_types": "كل الأنواع",
+        "search": "بحث",
+        "sort_by": "ترتيب حسب",
+        "price_low_high": "السعر (من الأقل للأعلى)",
+        "price_high_low": "السعر (من الأعلى للأقل)",
+        "search_results": "نتائج البحث",
+        "results_count": ":count نتيجة بحث",
+        "feature_properties": "عقارات مميزة",
+        "recent_properties": "أحدث العقارات",
+        "for_sale": "للبيع",
+        "list_view": "عرض قائمة",
+        "grid_view": "عرض شبكة",
+        "breadcrumb_home": "الرئيسية",
+        "breadcrumb_listings": "القوائم"
+    }
 }

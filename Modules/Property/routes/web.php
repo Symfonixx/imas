@@ -15,3 +15,5 @@ use Modules\Property\Http\Controllers\PropertyController;
 */
 
 Route::resource('property', PropertyController::class)->names('property');
+
+Route::get('/property', [PropertyController::class, 'index'])->name('property.index');

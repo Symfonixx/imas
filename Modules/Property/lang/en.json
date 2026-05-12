@@ -121,5 +121,27 @@
     "SEO Metadata": "SEO Metadata",
     "Banner": "Banner",
     "The district field is required when area is not selected.": "The district field is required when area is not selected.",
-    "The area field is required when district is not selected.": "The area field is required when district is not selected."
+    "The area field is required when district is not selected.": "The area field is required when district is not selected.",
+    "Listings": "Listings",
+    "listing_page": {
+        "find_your_house": "Find Your House",
+        "enter_keyword": "Enter Keyword...",
+        "location": "Location",
+        "all_locations": "All locations",
+        "property_type": "Property Type",
+        "all_types": "All types",
+        "search": "Search",
+        "sort_by": "Sort by",
+        "price_low_high": "Price (low to high)",
+        "price_high_low": "Price (high to low)",
+        "search_results": "Search results",
+        "results_count": ":count search results",
+        "feature_properties": "Feature Properties",
+        "recent_properties": "Recent Properties",
+        "for_sale": "For Sale",
+        "list_view": "List view",
+        "grid_view": "Grid view",
+        "breadcrumb_home": "Home",
+        "breadcrumb_listings": "Listings"
+    }
 }

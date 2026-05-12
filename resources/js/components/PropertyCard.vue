@@ -1,6 +1,7 @@
 <template>
     <div
-        class="imas-property-card item col-lg-4 col-md-6 col-xs-12 user-select-none"
+        class="imas-property-card item user-select-none"
+        :class="columnClass"
     >
         <div class="project-single">
             <div class="project-inner project-head">
@@ -93,10 +94,15 @@ const props = defineProps({
         type: Object,
         required: true,
     },
+    columnClass: {
+        type: String,
+        default: "col-lg-4 col-md-6 col-xs-12",
+    },
 });
 
-const trans = (key) => page.props.translations[key] || key;
 const page = usePage();
+
+const trans = (key) => page.props.translations[key] || key;
 
 const locale = computed(() => page.props.locale || "en");
 

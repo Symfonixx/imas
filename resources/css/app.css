@@ -310,3 +310,69 @@ html[dir="rtl"] section.home-testimonials .owl-carousel.job_clientSlide .owl-nav
 html[dir="rtl"] section.home-testimonials .owl-carousel.job_clientSlide .owl-nav .fa {
     transform: none;
 }
+
+/**
+ * Inner pages: solid navbar (not `.head-tr`) stays in document flow so content does not slide under it.
+ * Home keeps `.head-tr` from App.vue (`transparent-navbar`): absolute overlay + white logo links.
+ */
+#header-container.imas-navbar-solid {
+    position: relative !important;
+    width: 100%;
+    z-index: 99999;
+    background: #fff !important;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
+}
+
+#header-container.imas-navbar-solid #navigation.style-1 ul li > a,
+#header-container.imas-navbar-solid #navigation.style-1 ul li > span > a,
+#header-container.imas-navbar-solid #navigation.style-1 ul li > a:not(.button),
+#header-container.imas-navbar-solid .sign-in a,
+#header-container.imas-navbar-solid .sign-in .show-reg-form,
+#header-container.imas-navbar-solid .header-user-name,
+#header-container.imas-navbar-solid .lang-switch-row,
+#header-container.imas-navbar-solid .show-lang span strong {
+    color: #707070 !important;
+}
+
+#header-container.imas-navbar-solid #navigation.style-1 ul ul li a {
+    color: #505050 !important;
+}
+
+#header-container.imas-navbar-solid #navigation.style-1 ul li > a:hover,
+#header-container.imas-navbar-solid .sign-in a:hover {
+    color: #444 !important;
+}
+
+#header-container.imas-navbar-solid .mmenu-trigger .hamburger-inner,
+#header-container.imas-navbar-solid .mmenu-trigger .hamburger-inner::before,
+#header-container.imas-navbar-solid .mmenu-trigger .hamburger-inner::after {
+    background-color: #707070 !important;
+}
+
+#header-container.imas-navbar-solid .show-lang .fa-caret-down.arrlan {
+    color: #707070 !important;
+}
+
+/* Sticky clone (scroll) matches inner-page bar */
+#header-container.imas-navbar-solid #header.cloned.sticky,
+#header-container.imas-navbar-solid #header.cloned.unsticky {
+    background: #fff !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+#header-container.imas-navbar-solid #header.cloned #navigation.style-1 ul li > a,
+#header-container.imas-navbar-solid #header.cloned .sign-in a,
+#header-container.imas-navbar-solid #header.cloned .header-user-name,
+#header-container.imas-navbar-solid #header.cloned .show-lang span strong {
+    color: #707070 !important;
+}
+
+#header-container.imas-navbar-solid #header.cloned .mmenu-trigger .hamburger-inner,
+#header-container.imas-navbar-solid #header.cloned .mmenu-trigger .hamburger-inner::before,
+#header-container.imas-navbar-solid #header.cloned .mmenu-trigger .hamburger-inner::after {
+    background-color: #707070 !important;
+}
+
+#header-container.imas-navbar-solid .dropdown-logout {
+    color: #707070 !important;
+}

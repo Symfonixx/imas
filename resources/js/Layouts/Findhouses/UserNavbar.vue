@@ -1,6 +1,14 @@
 <template>
-    <header id="header-container" class="header head-tr">
-        <div id="header" class="head-tr bottom">
+    <header
+        id="header-container"
+        class="header"
+        :class="transparentNavbar ? 'head-tr' : 'imas-navbar-solid'"
+    >
+        <div
+            id="header"
+            class="bottom"
+            :class="{ 'head-tr': transparentNavbar }"
+        >
             <div class="container container-header">
                 <div class="left-side">
                     <div id="logo">
@@ -22,7 +30,11 @@
                             </span>
                         </button>
                     </div>
-                    <nav id="navigation" class="style-1 head-tr">
+                    <nav
+                        id="navigation"
+                        class="style-1"
+                        :class="{ 'head-tr': transparentNavbar }"
+                    >
                         <ul id="responsive">
                             <li
                                 v-for="item in navLinks"
@@ -233,10 +245,14 @@ import {
 } from "vue";
 import { Link, router, usePage } from "@inertiajs/vue3";
 
-defineProps({
+const props = defineProps({
     navLinks: {
         type: Array,
         default: () => [],
+    },
+    transparentNavbar: {
+        type: Boolean,
+        default: true,
     },
 });
 
@@ -249,7 +265,14 @@ const themeUrl = computed(() => page.props.theme_url || "");
 const auth = computed(() => page.props.auth);
 
 const mediaData = computed(() => page.props.globals.media || {});
-const logoUrl = computed(() => mediaData.value.white_logo || "");
+const logoUrl = computed(() => {
+    const m = mediaData.value;
+    if (props.transparentNavbar) {
+        return m.white_logo || m.black_logo || "";
+    }
+
+    return m.black_logo || m.white_logo || "";
+});
 
 const localeSwitcher = computed(() => page.props.locale_switcher || []);
 const currentLocale = computed(() => page.props.locale || "en");
@@ -499,6 +522,11 @@ function reinitHeaderChromeForLocale() {
 
 watch(
     () => page.props.locale,
+    () => reinitHeaderChromeForLocale(),
+);
+
+watch(
+    () => props.transparentNavbar,
     () => reinitHeaderChromeForLocale(),
 );
 

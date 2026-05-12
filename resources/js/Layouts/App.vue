@@ -1,6 +1,9 @@
 <template>
     <div id="wrapper">
-        <UserNavbar :nav-links="navLinks" />
+        <UserNavbar
+            :nav-links="navLinks"
+            :transparent-navbar="navbarTransparent"
+        />
         <div class="clearfix"></div>
         <slot />
         <UserFooter :nav-links="navLinks" />
@@ -14,6 +17,19 @@ import UserNavbar from "@/Layouts/Findhouses/UserNavbar.vue";
 import UserFooter from "@/Layouts/Findhouses/UserFooter.vue";
 
 const page = usePage();
+
+/** Home hero uses overlay header (white logo / light links). Inner pages need solid bar + in-flow height. */
+const navbarTransparent = computed(() => {
+    try {
+        if (typeof route === "function" && route().current?.("home")) {
+            return true;
+        }
+    } catch {
+        /* Ziggy may be unavailable during SSR/tests */
+    }
+    const c = page.component || "";
+    return /Base\/Index$/i.test(String(c));
+});
 
 function safeRoute(name, fallbackHref = "#") {
     try {

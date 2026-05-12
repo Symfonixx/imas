@@ -16,11 +16,16 @@ class LocationController extends Controller
     public function __construct(private readonly LocationApplicationService $locationService)
     {
         $this->setActive('properties');
-        $this->setActive('locations');
     }
 
     public function index()
     {
+        if (request()->query('type') === 'city') {
+            $this->setActive('location_cities');
+        } else {
+            $this->setActive('locations');
+        }
+
         $tree = Location::nestedForest(request()->query('type'));
 
         return view('property::admin.location.index', compact('tree'));
@@ -28,6 +33,8 @@ class LocationController extends Controller
 
     public function create()
     {
+        $this->setActive('locations');
+
         $parentOptions = Location::orderedForAdmin();
 
         return view('property::admin.location.create', compact('parentOptions'));
@@ -45,6 +52,8 @@ class LocationController extends Controller
 
     public function edit(Location $location)
     {
+        $this->setActive('locations');
+
         $blockedIds = array_merge([$location->id], Location::descendantIdsOf($location->id));
         $parentOptions = Location::query()
             ->whereNotIn('id', $blockedIds)

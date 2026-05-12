@@ -87,8 +87,8 @@ class Property extends Model
         return $this->hasMany(PropertySlide::class, 'property_id')->orderBy('position');
     }
 
-    public function attributeValues(): HasMany
+    public function unitTypes(): HasMany
     {
-        return $this->hasMany(PropertyAttributeValue::class, 'property_id');
+        return $this->hasMany(UnitType::class, 'property_id')->orderBy('id');
     }
 }

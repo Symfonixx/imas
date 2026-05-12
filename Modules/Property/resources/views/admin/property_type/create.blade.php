@@ -73,20 +73,6 @@
                                 'selected' => $iconSelected,
                             ])
                         </x-admin.form-group>
-
-                        <x-admin.form-group label="Attribute family" name="attribute_family_id">
-                            <select name="attribute_family_id"
-                                    class="form-select form-select-solid"
-                                    data-control="select2"
-                                    data-placeholder="{{ __('No attribute family') }}">
-                                <option value="">{{ __('No attribute family') }}</option>
-                                @foreach($families as $family)
-                                    <option value="{{ $family->id }}" @selected((string) old('attribute_family_id') === (string) $family->id)>
-                                        {{ $family->name }} ({{ $family->code }})
-                                    </option>
-                                @endforeach
-                            </select>
-                        </x-admin.form-group>
                     </div>
                 </div>
             </div>

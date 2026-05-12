@@ -7,6 +7,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Modules\Cms\Application\Shared\Queries\ContentListQuery;
 use Modules\Core\Http\Requests\DeleteMultiRequest;
+use Modules\Core\Support\AdminImageInput;
 use Modules\Corporate\Application\CorporateService\Commands\UpsertCorporateServiceCommand;
 use Modules\Corporate\Application\CorporateService\CorporateServiceApplicationService;
 use Modules\Corporate\Data\CorporateServiceData;
@@ -17,7 +18,7 @@ class CorporateServiceController extends Controller
 {
     public function __construct(private readonly CorporateServiceApplicationService $corporateServiceService)
     {
-        $this->setActive('corporate');
+        $this->setActive('cms');
         $this->setActive('corporate_services');
     }
 
@@ -88,8 +89,8 @@ class CorporateServiceController extends Controller
             'meta_title' => $request->input('meta_title'),
             'meta_description' => $request->input('meta_description'),
             'meta_keywords' => $request->input('meta_keywords'),
-            'image' => $request->file('img') ?: $request->input('img_media_path'),
-            'meta_image' => $request->file('meta_img') ?: $request->input('meta_img_media_path'),
+            'image' => AdminImageInput::resolveFileOrMediaPath($request, 'img', 'img_media_path'),
+            'meta_image' => AdminImageInput::resolveFileOrMediaPath($request, 'meta_img', 'meta_img_media_path'),
             'status' => $request->has('publish') ? CmsStatus::PUBLISHED : CmsStatus::ARCHIVED,
             'featured' => $request->boolean('featured'),
         ];

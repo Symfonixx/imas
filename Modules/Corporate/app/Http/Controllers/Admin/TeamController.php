@@ -7,6 +7,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Modules\Cms\Application\Shared\Queries\ContentListQuery;
 use Modules\Core\Http\Requests\DeleteMultiRequest;
+use Modules\Core\Support\AdminImageInput;
 use Modules\Corporate\Application\Team\Commands\UpsertTeamCommand;
 use Modules\Corporate\Application\Team\TeamApplicationService;
 use Modules\Corporate\Data\TeamData;
@@ -83,7 +84,7 @@ class TeamController extends Controller
                 ? (string) $request->input('position')
                 : null,
             'link' => $request->filled('link') ? (string) $request->input('link') : null,
-            'avatar' => $request->file('img') ?: $request->input('img_media_path'),
+            'avatar' => AdminImageInput::resolveFileOrMediaPath($request, 'img', 'img_media_path'),
             'rank' => (int) $request->input('rank', 0),
             'status' => $request->has('publish') ? CmsStatus::PUBLISHED : CmsStatus::ARCHIVED,
         ];

@@ -12,6 +12,7 @@ use Modules\Cms\Application\Slide\SlideApplicationService;
 use Modules\Cms\Data\SlideData;
 use Modules\Cms\Models\Slide;
 use Modules\Core\Http\Requests\DeleteMultiRequest;
+use Modules\Core\Support\AdminImageInput;
 use Modules\User\Enums\CmsStatus;
 
 class SlideController extends Controller
@@ -79,7 +80,7 @@ class SlideController extends Controller
      */
     private function assertImagePresentForStore($image): void
     {
-        if ($image === null || $image === '') {
+        if ($image === null || $image === '' || $image === AdminImageInput::REMOVED) {
             throw ValidationException::withMessages([
                 'img' => __('validation.required', ['attribute' => __('Image')]),
             ]);
@@ -99,7 +100,7 @@ class SlideController extends Controller
             'link' => $link !== null && trim((string) $link) !== '' ? trim((string) $link) : null,
             'rank' => (int) $request->input('rank', 0),
             'status' => $request->has('publish') ? CmsStatus::PUBLISHED : CmsStatus::ARCHIVED,
-            'image' => $request->file('img') ?: $request->input('img_media_path'),
+            'image' => AdminImageInput::resolveFileOrMediaPath($request, 'img', 'img_media_path'),
         ];
     }
 }

@@ -97,10 +97,14 @@
             <div class="container-fluid sd-f">
                 <p>{{ year }} © {{ appName }} — {{ trans('All Rights Reserved.') }}</p>
                 <ul class="netsocials">
-                    <li><a href="#" aria-label="Facebook"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
-                    <li><a href="#" aria-label="Twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
-                    <li><a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a></li>
-                    <li><a href="#" aria-label="YouTube"><i class="fa fa-youtube" aria-hidden="true"></i></a></li>
+                    <li v-for="item in footerSocialLinks" :key="item.key">
+                        <a
+                            :href="item.href"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            :aria-label="item.label"
+                        ><i :class="item.icon" aria-hidden="true"></i></a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -140,6 +144,26 @@ const mainNavLinks = computed(() =>
 const pagesNavLinks = computed(() => {
     const pages = (props.navLinks || []).find((l) => l?.children?.length);
     return pages?.children || [];
+});
+
+const footerSocialLinks = computed(() => {
+    const s = settings.value;
+    const defs = [
+        {key: 'facebook', label: 'Facebook', icon: 'fa fa-facebook'},
+        {key: 'twitter', label: 'Twitter', icon: 'fa fa-twitter'},
+        {key: 'instagram', label: 'Instagram', icon: 'fab fa-instagram'},
+        {key: 'youtube', label: 'YouTube', icon: 'fa fa-youtube'},
+        {key: 'tiktok', label: 'TikTok', icon: 'fab fa-tiktok'},
+    ];
+    return defs
+        .map((d) => {
+            const raw = String(s[d.key] ?? '').trim();
+            if (!raw) {
+                return null;
+            }
+            return {...d, href: raw};
+        })
+        .filter(Boolean);
 });
 
 function trans(key) {

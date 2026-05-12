@@ -13,7 +13,6 @@ use Modules\Core\Http\Requests\DeleteMultiRequest;
 use Modules\Property\Application\PropertyType\Commands\UpsertPropertyTypeCommand;
 use Modules\Property\Application\PropertyType\PropertyTypeApplicationService;
 use Modules\Property\Data\PropertyTypeData;
-use Modules\Property\Models\AttributeFamily;
 use Modules\Property\Models\PropertyType;
 
 class PropertyTypeController extends Controller
@@ -27,7 +26,7 @@ class PropertyTypeController extends Controller
     public function index()
     {
         $model = $this->propertyTypeService->paginate(new ContentListQuery, [
-            'id', 'name', 'slug', 'icon', 'attribute_family_id', 'created_at',
+            'id', 'name', 'slug', 'icon', 'created_at',
         ]);
 
         return view('property::admin.property_type.index', compact('model'));
@@ -87,7 +86,6 @@ class PropertyTypeController extends Controller
     {
         return [
             'iconChoices' => config('property.bootstrap_icons', []),
-            'families' => AttributeFamily::query()->orderBy('code')->get(['id', 'name', 'code']),
         ];
     }
 
@@ -100,7 +98,6 @@ class PropertyTypeController extends Controller
             'name' => (string) $request->input('name'),
             'slug' => Str::slug((string) $request->input('slug')),
             'icon' => (string) $request->input('icon'),
-            'attribute_family_id' => $request->filled('attribute_family_id') ? (int) $request->input('attribute_family_id') : null,
         ];
     }
 
@@ -120,7 +117,6 @@ class PropertyTypeController extends Controller
             'name' => ['required', 'string', 'min:2', 'max:255'],
             'slug' => ['required', 'string', 'max:191', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $uniqueSlug],
             'icon' => ['required', 'string', 'max:128', Rule::in($allowedIcons)],
-            'attribute_family_id' => ['nullable', 'integer', 'exists:attribute_families,id'],
         ])->validate();
     }
 }

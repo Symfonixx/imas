@@ -15,7 +15,6 @@ class PropertyTypeModelRepository implements PropertyTypeRepository
     {
         return PropertyType::query()
             ->select($columns)
-            ->with('attributeFamily:id,name,code')
             ->orderBy('slug')
             ->paginate(Config::get('core.page_size', 10));
     }

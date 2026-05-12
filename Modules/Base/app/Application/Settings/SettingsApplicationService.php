@@ -26,9 +26,16 @@ class SettingsApplicationService
      * @param  array<string, UploadedFile>  $images
      * @param  array<string, mixed>  $data
      * @param  array<string, string|null>  $mediaPaths
+     * @param  array<string, mixed>  $removedImageKeys  Keys from admin image-input remove (value "1"); clears setting without deleting files.
      */
-    public function update(array $images = [], array $data = [], array $mediaPaths = []): void
+    public function update(array $images = [], array $data = [], array $mediaPaths = [], array $removedImageKeys = []): void
     {
+        foreach ($removedImageKeys as $key => $flag) {
+            if ($flag === '1' || $flag === 1 || $flag === true) {
+                $this->settingsRepository->set((string) $key, null);
+            }
+        }
+
         foreach ($images as $key => $file) {
             $oldFile = $this->settingsRepository->get($key);
             $path = $this->upload($file, 'settings', $key, $oldFile ?: null);
@@ -36,8 +43,11 @@ class SettingsApplicationService
         }
 
         foreach ($mediaPaths as $key => $path) {
-            if (is_string($path) && trim($path) !== '') {
-                $this->settingsRepository->set((string) $key, trim($path));
+            if (is_string($path)) {
+                $path = trim($path);
+            }
+            if (is_string($path) && $path !== '' && strcasecmp($path, 'null') !== 0) {
+                $this->settingsRepository->set((string) $key, $path);
             }
         }
 

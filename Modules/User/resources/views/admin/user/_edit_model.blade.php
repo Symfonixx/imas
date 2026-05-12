@@ -58,15 +58,7 @@
                         </div>
 
                         <div class="col-md-12 mb-7">
-                            <label for="password" class="form-label">{{__('Password')}}</label>
-                            <input type="password" id="password"
-                                   class="form-control form-control-solid @error('password') is-invalid @enderror"
-                                   name="password">
-                            @error('password')
-                            <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                            @enderror
+                            <x-admin.password-field input-id="password_user_edit_{{ $user->id }}"/>
                         </div>
 
                     </div>

@@ -29,7 +29,6 @@
             <th class="min-w-60px">{{ __('Icon') }}</th>
             <th class="min-w-220px">{{ __('Name') }}</th>
             <th class="min-w-160px">{{ __('Slug') }}</th>
-            <th class="min-w-220px">{{ __('Attribute family') }}</th>
             <th class="min-w-150px">{{ __('Created At') }}</th>
             <th class="min-w-100px text-end rounded-end"></th>
         </tr>
@@ -49,14 +48,6 @@
                 </td>
                 <td class="fw-bold">{{ $row->name }}</td>
                 <td><code>{{ $row->slug }}</code></td>
-                <td>
-                    @if($row->attributeFamily)
-                        <span class="text-gray-800">{{ $row->attributeFamily->name }}</span>
-                        <div class="text-muted fs-8"><code>{{ $row->attributeFamily->code }}</code></div>
-                    @else
-                        <span class="text-muted">—</span>
-                    @endif
-                </td>
                 <td class="text-muted fs-7">{{ $row->created_at->diffForHumans() }}</td>
                 <td class="text-end">
                     <a href="{{ route('admin.property_types.edit', $row) }}"

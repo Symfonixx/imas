@@ -12,12 +12,11 @@ class AboutUsController extends Controller
     public function __construct(
         private readonly SettingsApplicationService $settingsService,
         private readonly SeoApplicationService $seoService
-    ) {
-        $this->setActive('settings');
-    }
+    ) {}
 
     public function index()
     {
+        $this->setActive('cms');
         $this->setActive('about_us');
         $settings = $this->settingsService->allKeyValue();
         $seo = $this->seoService->allKeyValue();
@@ -29,7 +28,8 @@ class AboutUsController extends Controller
     {
         $this->settingsService->update(
             images: $request->file('imgs', []),
-            mediaPaths: (array) $request->input('imgs_media', [])
+            mediaPaths: (array) $request->input('imgs_media', []),
+            removedImageKeys: (array) $request->input('imgs_remove', [])
         );
 
         $this->seoService->update(

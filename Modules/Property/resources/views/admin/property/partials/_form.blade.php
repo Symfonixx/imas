@@ -2,402 +2,609 @@
     $isEdit = isset($property);
     $seoMeta = $isEdit ? ($property->metadata ?? []) : [];
     $defaultStatus = old('status', $isEdit ? (($property->status?->value) ?? 'Published') : 'Published');
-    $editArea = $isEdit ? $property->location : null;
-    $selectedAreaIdValue = old('location_id', $editArea?->id);
+    $selectedAreaIdValue = old('location_id', $isEdit ? $property->location_id : null);
+
+    $prefillCityId = null;
+    $prefillDistrictId = null;
+    if ($selectedAreaIdValue) {
+        $prefillLoc = \Modules\Property\Models\Location::query()
+            ->with(['parent:id,parent_id,type', 'parent.parent:id,parent_id,type'])
+            ->find((int) $selectedAreaIdValue);
+        if ($prefillLoc && $prefillLoc->type === \Modules\Property\Enums\LocationType::Area && $prefillLoc->parent) {
+            $prefillDistrictId = $prefillLoc->parent_id;
+            $par = $prefillLoc->parent;
+            if ($par->type === \Modules\Property\Enums\LocationType::District) {
+                $prefillCityId = $par->parent_id;
+            } elseif ($par->type === \Modules\Property\Enums\LocationType::City) {
+                $prefillCityId = $par->id;
+                $prefillDistrictId = null;
+            }
+        }
+    }
+
+    $rawOldUt = old('unit_types');
+    if (is_array($rawOldUt) && $rawOldUt !== []) {
+        $unitTypeRowsForView = array_values($rawOldUt);
+    } elseif ($isEdit && $property->unitTypes->isNotEmpty()) {
+        $unitTypeRowsForView = $property->unitTypes->map(fn ($u) => [
+            'id' => $u->id,
+            'name' => $u->name,
+            'min_area' => $u->min_area,
+            'max_area' => $u->max_area,
+            'price' => $u->price,
+        ])->all();
+    } else {
+        $unitTypeRowsForView = [];
+    }
+
+    $unitTypeOptions = $unitTypeOptions ?? config('property.unit_type_options', []);
 @endphp
 
 <div class="card card-flush mb-7">
     <div class="card-body">
-        <div class="stepper stepper-pills" id="property_stepper">
-            <div class="stepper-nav property-stepper-nav mb-10">
-                @for($step = 1; $step <= 6; $step++)
-                    <div class="stepper-item {{ $step === 1 ? 'current' : '' }}" data-step="{{ $step }}">
-                        <div class="stepper-wrapper">
-                            <div class="stepper-icon w-40px h-40px">
-                                <i class="stepper-check bi bi-check-lg"></i>
-                                <span class="stepper-number">{{ $step }}</span>
-                            </div>
-                            <div class="stepper-label">
-                                <h3 class="stepper-title">{{ __("Step $step") }}</h3>
-                            </div>
-                        </div>
-                        @if($step < 6)
-                            <div class="stepper-line h-40px"></div>
-                        @endif
-                    </div>
-                @endfor
-            </div>
+        <input type="hidden" name="price" value="{{ old('price', $isEdit ? $property->price : 0) }}">
 
-            <div data-step-content="1">
-                <div class="row mb-2">
-                    <div class="col-xl-8">
-                        <x-admin.form-group label="Title" name="title" required translatable>
-                            <input id="title" type="text" name="title" class="form-control form-control-solid"
-                                   value="{{ old('title', $property->title ?? '') }}"/>
-                        </x-admin.form-group>
-                        <x-admin.form-group label="Project name" name="project_name" required translatable>
-                            <input type="text" name="project_name" class="form-control form-control-solid"
-                                   value="{{ old('project_name', $property->project_name ?? '') }}"/>
-                        </x-admin.form-group>
-                        <x-admin.form-group label="Project code" name="project_code" required>
-                            <input id="slug" type="text" name="project_code" class="form-control form-control-solid"
-                                   value="{{ old('project_code', $property->project_code ?? '') }}"/>
-                        </x-admin.form-group>
-                        <x-admin.form-group label="Overview" name="overview" required translatable>
-                            <textarea class="form-control form-control-solid" name="overview"
-                                      rows="8">{{ old('overview', $property->overview ?? '') }}</textarea>
-                        </x-admin.form-group>
-                    </div>
-                    <div class="col-xl-4">
-                        <x-admin.form-group label="Thumbnail" name="thumbnail" required>
-                            <x-admin.image-input name="thumbnail"
-                                                 :preview="$isEdit ? ($property->thumbnail ? asset('storage/' . $property->thumbnail) : null) : null"/>
-                        </x-admin.form-group>
-                        <x-admin.form-group label="Status" name="status" required>
-                            <select name="status" class="form-select form-select-solid" data-control="select2"
-                                    data-hide-search="true">
-                                @foreach($statuses as $status)
-                                    <option value="{{ $status->value }}" @selected($defaultStatus === $status->value)>
-                                        {{ __($status->value) }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </x-admin.form-group>
-                        <x-admin.form-group label="Area" name="location_id" required>
-                            <select id="location_id" name="location_id" class="form-select form-select-solid"
-                                    data-control="select2" data-placeholder="{{ __('Select area') }}">
-                                <option value="">{{ __('Select area') }}</option>
-                                @foreach(($areas ?? []) as $area)
-                                    <option
-                                        value="{{ $area['id'] }}" @selected((string) $selectedAreaIdValue === (string) $area['id'])>{{ $area['label'] ?? $area['name'] }}</option>
-                                @endforeach
-                            </select>
-                        </x-admin.form-group>
-                    </div>
-                </div>
-            </div>
+        <x-admin.form-group label="Project code" name="project_code" required>
+            <input id="slug" type="text" name="project_code" class="form-control form-control-solid"
+                   value="{{ old('project_code', optional($property)->project_code) }}"/>
+        </x-admin.form-group>
 
-            <div class="d-none" data-step-content="2">
-                <x-admin.form-group label="Property type" name="property_type_id" required>
-                    <select name="property_type_id" id="property_type_id" class="form-select form-select-solid"
-                            data-control="select2" data-placeholder="{{ __('Select property type') }}">
-                        <option value="">{{ __('Select property type') }}</option>
-                        @foreach($propertyTypes as $propertyType)
-                            <option
-                                value="{{ $propertyType['id'] }}" @selected((string) old('property_type_id', $property->property_type_id ?? '') === (string) $propertyType['id'])>
-                                {{ $propertyType['name'] }}
+        <x-admin.form-group label="Project title" name="title" required translatable>
+            <input id="title" type="text" name="title" class="form-control form-control-solid"
+                   value="{{ old('title', optional($property)->title) }}"/>
+        </x-admin.form-group>
+
+        <x-admin.form-group label="Overview" name="overview" required translatable>
+            <textarea class="form-control form-control-solid" name="overview"
+                      rows="8">{{ old('overview', optional($property)->overview) }}</textarea>
+        </x-admin.form-group>
+
+        <div class="row mb-2">
+            <div class="col-xl-8">
+                <x-admin.form-group label="Thumbnail" name="thumbnail" :required="! $isEdit">
+                    <x-admin.image-input name="thumbnail"
+                                         :preview="$isEdit && $property->thumbnail ? asset('storage/' . $property->thumbnail) : null"/>
+                </x-admin.form-group>
+            </div>
+            <div class="col-xl-4">
+                <x-admin.form-group label="Status" name="status" required>
+                    <select name="status" class="form-select form-select-solid" data-control="select2"
+                            data-hide-search="true">
+                        @foreach($statuses as $status)
+                            <option value="{{ $status->value }}" @selected($defaultStatus === $status->value)>
+                                {{ __($status->value) }}
                             </option>
                         @endforeach
                     </select>
                 </x-admin.form-group>
-                <div class="alert alert-info">
-                    {{ __('Attributes are loaded from the selected property type family.') }}
-                </div>
             </div>
+        </div>
 
-            <div class="d-none" data-step-content="3">
-                <div id="dynamic-attributes-container"></div>
+        <div class="row mb-2">
+            <div class="col-md-4">
+                <x-admin.form-group label="City" name="city_id">
+                    <select id="city_id" class="form-select form-select-solid">
+                        <option value="">{{ __('Select city') }}</option>
+                        @foreach(($cities ?? []) as $city)
+                            <option
+                                value="{{ $city['id'] }}" @selected((string) ($prefillCityId ?? '') === (string) $city['id'])>{{ $city['name'] }}</option>
+                        @endforeach
+                    </select>
+                </x-admin.form-group>
             </div>
-
-            <div class="d-none" data-step-content="4">
-                <div class="row mb-2">
-                    <div class="col-md-4">
-                        <x-admin.form-group label="Price" name="price">
-                            <input type="number" step="0.01" min="0" class="form-control form-control-solid"
-                                   name="price" value="{{ old('price', $property->price ?? 0) }}"/>
-                        </x-admin.form-group>
-                    </div>
-                    <div class="col-md-4">
-                        <x-admin.form-group label="Min area" name="min_area">
-                            <input type="number" step="0.01" min="0" class="form-control form-control-solid"
-                                   name="min_area" value="{{ old('min_area', $property->min_area ?? '') }}"/>
-                        </x-admin.form-group>
-                    </div>
-                    <div class="col-md-4">
-                        <x-admin.form-group label="Max area" name="max_area">
-                            <input type="number" step="0.01" min="0" class="form-control form-control-solid"
-                                   name="max_area" value="{{ old('max_area', $property->max_area ?? '') }}"/>
-                        </x-admin.form-group>
-                    </div>
-                </div>
+            <div class="col-md-4">
+                <x-admin.form-group label="Municipality" name="district_id">
+                    <select id="district_id" class="form-select form-select-solid"
+                            @disabled(! $prefillCityId)>
+                        <option value="">{{ __('Select district') }}</option>
+                    </select>
+                </x-admin.form-group>
             </div>
+            <div class="col-md-4">
+                <x-admin.form-group label="Location" name="location_id" required>
+                    <select id="location_id" name="location_id" class="form-select form-select-solid"
+                            @disabled(! $prefillDistrictId)>
+                        <option value="">{{ __('Select area') }}</option>
+                    </select>
+                </x-admin.form-group>
+            </div>
+        </div>
 
-            <div class="d-none" data-step-content="5">
-                <x-admin.form-group label="Why to buy" name="why_to_buy" required translatable>
-                    <textarea class="form-control form-control-solid" name="why_to_buy"
-                              rows="8">{{ old('why_to_buy', $property->why_to_buy ?? '') }}</textarea>
-                </x-admin.form-group>
-                <x-admin.form-group label="Facilities" name="facilities" translatable>
-                    <textarea class="form-control form-control-solid" name="facilities"
-                              rows="8">{{ old('facilities', $property->facilities ?? '') }}</textarea>
-                </x-admin.form-group>
-                <x-admin.form-group label="Content" name="content" required translatable>
-                    <textarea id="tinymce" class="form-control form-control-solid"
-                              name="content">{!! old('content', $property->content ?? '') !!}</textarea>
-                </x-admin.form-group>
-                <x-admin.form-group label="Youtube video url" name="youtube_video_url">
-                    <input type="url" name="youtube_video_url" class="form-control form-control-solid"
-                           value="{{ old('youtube_video_url', $property->youtube_video_url ?? '') }}"/>
-                </x-admin.form-group>
-                <div class="row mb-2">
-                    <div class="col-md-6">
-                        <x-admin.form-group label="Latitude" name="lat">
-                            <input type="text" inputmode="decimal" name="lat" class="form-control form-control-solid"
-                                   value="{{ old('lat', $property->lat ?? '') }}"/>
-                        </x-admin.form-group>
-                    </div>
-                    <div class="col-md-6">
-                        <x-admin.form-group label="Longitude" name="lng">
-                            <input type="text" inputmode="decimal" name="lng" class="form-control form-control-solid"
-                                   value="{{ old('lng', $property->lng ?? '') }}"/>
-                        </x-admin.form-group>
-                    </div>
-                </div>
-                <div class="row mb-2">
-                    <div class="col-md-6 mb-2">
-                        <x-admin.toggle-switch name="is_sold_out" label="Sold out"
-                                               :checked="(bool) old('is_sold_out', $property->is_sold_out ?? false)"/>
-                    </div>
-                    <div class="col-md-6 mb-2">
-                        <x-admin.toggle-switch name="is_recommended" label="Recommended"
-                                               :checked="(bool) old('is_recommended', $property->is_recommended ?? false)"/>
-                    </div>
-                    <div class="col-md-6 mb-2">
-                        <x-admin.toggle-switch name="is_citizenship_eligible" label="Citizenship eligible"
-                                               :checked="(bool) old('is_citizenship_eligible', $property->is_citizenship_eligible ?? false)"/>
-                    </div>
-                    <div class="col-md-6 mb-2">
-                        <x-admin.toggle-switch name="is_featured" label="Featured"
-                                               :checked="(bool) old('is_featured', $property->is_featured ?? false)"
-                                               last/>
+        <x-admin.form-group label="Project type" name="property_type_id" required>
+            <select name="property_type_id" id="property_type_id" class="form-select form-select-solid"
+                    data-control="select2" data-placeholder="{{ __('Select property type') }}">
+                <option value="">{{ __('Select property type') }}</option>
+                @foreach($propertyTypes as $propertyType)
+                    <option
+                        value="{{ $propertyType['id'] }}" @selected((string) old('property_type_id', optional($property)->property_type_id ?? '') === (string) $propertyType['id'])>
+                        {{ $propertyType['name'] }}
+                    </option>
+                @endforeach
+            </select>
+        </x-admin.form-group>
 
-                    </div>
-                </div>
-
-                <x-admin.form-group label="Property slides" name="slides" helper="{{ __('Maximum 20 images.') }}">
-                    <div class="dropzone border-dashed border-primary rounded p-5 text-center"
-                         id="property-slides-dropzone">
-                        <div class="dz-message needsclick">
-                            <i class="bi bi-cloud-upload fs-1 text-primary"></i>
-                            <div class="ms-4">
-                                <h3 class="fs-5 fw-bold text-gray-900 mb-1">{{ __('Drop files here or click to upload.') }}</h3>
-                                <span
-                                    class="fs-7 fw-semibold text-gray-500">{{ __('You can upload up to 20 files.') }}</span>
-                            </div>
-                        </div>
-                        <input type="file" name="slides[]" id="slides-input" class="d-none" accept="image/*" multiple>
-                    </div>
-                    <div class="text-muted fs-7 mt-2" id="slides-count-text">{{ __('No files selected.') }}</div>
-                    @if($isEdit && $property->slides->isNotEmpty())
-                        <div class="row mt-4">
-                            @foreach($property->slides as $slide)
-                                <div class="col-md-2 mb-3">
-                                    <img src="{{ asset('storage/' . $slide->image) }}" class="img-fluid rounded border"
-                                         alt="slide">
+        <div class="fv-row mb-7">
+            <label class="form-label fw-semibold fs-6">{{ __('Unit types') }}</label>
+            <div class="text-muted fs-7 mb-3">{{ __('Add one row per layout. Choose a type, then enter area and starting price.') }}</div>
+            <div id="unit-type-rows">
+                @foreach($unitTypeRowsForView as $i => $ut)
+                    @php
+                        $nameVal = (string) ($ut['name'] ?? '');
+                        $inPreset = $nameVal !== '' && in_array($nameVal, $unitTypeOptions, true);
+                    @endphp
+                    <div class="card card-bordered mb-4 js-unit-row" data-row-index="{{ $i }}">
+                        <div class="card-body py-4">
+                            <div class="row g-3 align-items-end">
+                                <div class="col-lg-3 col-md-6">
+                                    <label class="form-label">{{ __('Unit type') }}</label>
+                                    <select class="form-select form-select-solid js-unit-preset">
+                                        <option value="">{{ __('Select') }}</option>
+                                        @foreach($unitTypeOptions as $opt)
+                                            <option
+                                                value="{{ $opt }}" @selected($inPreset && $nameVal === $opt)>{{ $opt }}</option>
+                                        @endforeach
+                                        <option
+                                            value="__other__" @selected($nameVal !== '' && ! $inPreset)>{{ __('Other') }}</option>
+                                    </select>
+                                    <input type="text"
+                                           class="form-control form-control-solid mt-2 js-unit-custom {{ ($nameVal !== '' && ! $inPreset) ? '' : 'd-none' }}"
+                                           value="{{ ($nameVal !== '' && ! $inPreset) ? $nameVal : '' }}"
+                                           placeholder="{{ __('Custom unit type') }}"
+                                           autocomplete="off">
                                 </div>
-                            @endforeach
+                                <div class="col-lg-8">
+                                    <div class="row g-3 js-unit-numeric {{ $nameVal !== '' ? '' : 'd-none' }}">
+                                        <div class="col-md-4">
+                                            <label class="form-label">{{ __('Min area') }}</label>
+                                            <input type="number" step="0.01" min="0" class="form-control form-control-solid"
+                                                   name="unit_types[{{ $i }}][min_area]"
+                                                   value="{{ old("unit_types.$i.min_area", $ut['min_area'] ?? '') }}">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">{{ __('Max area') }}</label>
+                                            <input type="number" step="0.01" min="0" class="form-control form-control-solid"
+                                                   name="unit_types[{{ $i }}][max_area]"
+                                                   value="{{ old("unit_types.$i.max_area", $ut['max_area'] ?? '') }}">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">{{ __('Starting price') }}</label>
+                                            <input type="number" step="0.01" min="0" class="form-control form-control-solid"
+                                                   name="unit_types[{{ $i }}][price]"
+                                                   value="{{ old("unit_types.$i.price", $ut['price'] ?? '') }}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-1 col-md-6 text-lg-end">
+                                    <button type="button" class="btn btn-sm btn-light-danger js-remove-unit-row"
+                                            title="{{ __('Remove') }}">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <input type="hidden" name="unit_types[{{ $i }}][id]" class="js-unit-id"
+                                   value="{{ $ut['id'] ?? '' }}">
+                            <input type="hidden" name="unit_types[{{ $i }}][name]" class="js-unit-name-hidden"
+                                   value="{{ $nameVal }}">
                         </div>
-                    @endif
+                    </div>
+                @endforeach
+            </div>
+            <button type="button" class="btn btn-sm btn-light-primary" id="add-unit-type-row">
+                <i class="bi bi-plus-lg"></i> {{ __('Add unit type') }}
+            </button>
+        </div>
+
+        <x-admin.form-group label="Why to buy this property" name="why_to_buy" required translatable>
+            <textarea class="form-control form-control-solid" name="why_to_buy"
+                      rows="6">{{ old('why_to_buy', optional($property)->why_to_buy) }}</textarea>
+        </x-admin.form-group>
+
+        <x-admin.form-group label="Facilities" name="facilities" translatable>
+            <textarea class="form-control form-control-solid" name="facilities"
+                      rows="6">{{ old('facilities', optional($property)->facilities) }}</textarea>
+        </x-admin.form-group>
+
+        <x-admin.form-group label="Location specifications" name="content" required translatable>
+            <textarea class="form-control form-control-solid" name="content"
+                      rows="8">{{ old('content', optional($property)->content) }}</textarea>
+        </x-admin.form-group>
+
+        <div class="row mb-2">
+            <div class="col-md-6">
+                <x-admin.form-group label="Latitude" name="lat">
+                    <input type="text" inputmode="decimal" name="lat" class="form-control form-control-solid"
+                           value="{{ old('lat', optional($property)->lat) }}"/>
                 </x-admin.form-group>
             </div>
-
-            <div class="d-none" data-step-content="6">
-                @include('cms::admin.partials._seo_section', [
-                    'metaTitle' => old('meta_title', $seoMeta['meta_title'] ?? ''),
-                    'metaDescription' => old('meta_description', $seoMeta['meta_description'] ?? ''),
-                    'metaKeywords' => old('meta_keywords', implode(', ', $seoMeta['meta_keywords'] ?? [])),
-                    'metaImagePreview' => null,
-                    'titleSource' => '#title',
-                    'descSource' => '#meta_description',
-                    'slugSource' => '#slug',
-                    'baseUrl' => url('/') . '/properties/',
-                ])
-
-                <x-admin.form-group label="Schema JSON-LD" name="meta_schema">
-                    <textarea class="form-control form-control-solid" rows="5"
-                              name="meta_schema">{{ old('meta_schema', $seoMeta['schema'] ?? '') }}</textarea>
+            <div class="col-md-6">
+                <x-admin.form-group label="Longitude" name="lng">
+                    <input type="text" inputmode="decimal" name="lng" class="form-control form-control-solid"
+                           value="{{ old('lng', optional($property)->lng) }}"/>
                 </x-admin.form-group>
-
-                @include('cms::admin.partials._seo_aside', [
-                    'hasFeaturedImage' => $isEdit && !empty($property->thumbnail),
-                    'hasMetaImage' => false,
-                    'includeShortDescription' => false,
-                ])
             </div>
+        </div>
 
-            <div class="d-flex justify-content-between mt-10">
-                <button type="button" class="btn btn-light" id="property-prev">{{ __('Back') }}</button>
-                <div>
-                    <a href="{{ route('admin.properties.index') }}" class="btn btn-light me-3">{{ __('Discard') }}</a>
-                    <button type="button" class="btn btn-primary" id="property-next">{{ __('Next') }}</button>
-                    <button type="submit" class="btn btn-primary d-none"
-                            id="property-submit">{{ __('Save Changes') }}</button>
+        <div class="card card-bordered mb-7">
+            <div class="card-body py-4">
+                <x-admin.toggle-switch name="is_sold_out" label="Sold out"
+                                       :checked="(bool) old('is_sold_out', optional($property)->is_sold_out ?? false)"/>
+                <x-admin.toggle-switch name="is_recommended" label="Recommended"
+                                       :checked="(bool) old('is_recommended', optional($property)->is_recommended ?? false)"/>
+                <x-admin.toggle-switch name="is_citizenship_eligible" label="Suitable for citizenship"
+                                       :checked="(bool) old('is_citizenship_eligible', optional($property)->is_citizenship_eligible ?? false)"/>
+                <x-admin.toggle-switch name="is_featured" label="Featured"
+                                       :checked="(bool) old('is_featured', optional($property)->is_featured ?? false)"
+                                       last/>
+            </div>
+        </div>
+
+        <x-admin.form-group label="Youtube link" name="youtube_video_url">
+            <input type="url" name="youtube_video_url" class="form-control form-control-solid"
+                   value="{{ old('youtube_video_url', optional($property)->youtube_video_url) }}"/>
+        </x-admin.form-group>
+
+        <x-admin.form-group label="Add photos" name="slides" helper="{{ __('Maximum 20 images.') }}">
+            <div class="dropzone border-dashed border-primary rounded p-5 text-center" id="property-slides-dropzone">
+                <div class="dz-message needsclick">
+                    <i class="bi bi-cloud-upload fs-1 text-primary"></i>
+                    <div class="ms-4">
+                        <h3 class="fs-5 fw-bold text-gray-900 mb-1">{{ __('Drop files here or click to upload.') }}</h3>
+                        <span
+                            class="fs-7 fw-semibold text-gray-500">{{ __('You can upload up to 20 files.') }}</span>
+                    </div>
                 </div>
+                <input type="file" name="slides[]" id="slides-input" class="d-none" accept="image/*" multiple>
             </div>
+            <div class="text-muted fs-7 mt-2" id="slides-count-text">{{ __('No files selected.') }}</div>
+            @if($isEdit && $property->slides->isNotEmpty())
+                <div class="row mt-4">
+                    @foreach($property->slides as $slide)
+                        <div class="col-md-2 mb-3">
+                            <img src="{{ asset('storage/'.$slide->image) }}" class="img-fluid rounded border"
+                                 alt="slide">
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+        </x-admin.form-group>
+
+        <div class="separator separator-dashed my-10"></div>
+        <h3 class="fw-bold mb-5">{{ __('SEO settings') }}</h3>
+
+        @include('cms::admin.partials._seo_section', [
+            'metaTitle' => old('meta_title', $seoMeta['meta_title'] ?? ''),
+            'metaDescription' => old('meta_description', $seoMeta['meta_description'] ?? ''),
+            'metaKeywords' => old('meta_keywords', implode(', ', $seoMeta['meta_keywords'] ?? [])),
+            'metaImagePreview' => null,
+            'titleSource' => '#title',
+            'descSource' => '#meta_description',
+            'slugSource' => '#slug',
+            'baseUrl' => url('/').'/properties/',
+        ])
+
+        <x-admin.form-group label="Schema JSON-LD" name="meta_schema">
+            <textarea class="form-control form-control-solid" rows="5"
+                      name="meta_schema">{{ old('meta_schema', $seoMeta['schema'] ?? '') }}</textarea>
+        </x-admin.form-group>
+
+        @include('cms::admin.partials._seo_aside', [
+            'hasFeaturedImage' => $isEdit && ! empty($property->thumbnail),
+            'hasMetaImage' => false,
+            'includeShortDescription' => false,
+        ])
+
+        <div class="d-flex justify-content-end gap-3 mt-10">
+            <a href="{{ route('admin.properties.index') }}" class="btn btn-light">{{ __('Discard') }}</a>
+            <button type="submit" class="btn btn-primary" id="property-submit">{{ $isEdit ? __('Save Changes') : __('Save') }}</button>
         </div>
     </div>
 </div>
 
-@section('js')
-    @include('base::shared._tinymce')
-    <style>
-        #property_stepper .property-stepper-nav {
-            display: grid;
-            grid-template-columns: repeat(6, minmax(0, 1fr));
-            gap: 12px;
-            width: 100%;
-        }
-
-        #property_stepper .stepper-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            text-align: center;
-            min-height: 82px;
-        }
-
-        #property_stepper .stepper-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-        }
-
-        #property_stepper .stepper-icon {
-            border-radius: 999px;
-        }
-
-        #property_stepper .stepper-line {
-            display: none;
-        }
-
-        @media (max-width: 991px) {
-            #property_stepper .property-stepper-nav {
-                grid-template-columns: repeat(3, minmax(0, 1fr));
-            }
-        }
-    </style>
+@push('scripts')
     <script>
-        (async () => {
-            const contents = [...document.querySelectorAll('[data-step-content]')];
-            const items = [...document.querySelectorAll('.stepper-item')];
-            const nextBtn = document.getElementById('property-next');
-            const prevBtn = document.getElementById('property-prev');
-            const submitBtn = document.getElementById('property-submit');
-            const typeSelect = document.getElementById('property_type_id');
-            const dynamicContainer = document.getElementById('dynamic-attributes-container');
-            let step = 1;
+        (function () {
+            const LOCATION_CHILDREN_URL = @json(route('admin.properties.location_children'));
+            const TYPE_DISTRICT = 'district';
+            const TYPE_AREA = 'area';
+            const IS_EDIT = @json($isEdit);
+            const PREFILL_CITY_ID = @json($prefillCityId);
+            const PREFILL_DISTRICT_ID = @json($prefillDistrictId);
+            const PREFILL_AREA_ID = @json($selectedAreaIdValue);
+            const UNIT_TYPE_PRESETS = @json($unitTypeOptions);
+            const OTHER_VALUE = '__other__';
 
-            const renderStep = () => {
-                contents.forEach((content) => {
-                    content.classList.toggle('d-none', Number(content.dataset.stepContent) !== step);
+            const $city = window.jQuery ? window.jQuery('#city_id') : null;
+            const $district = window.jQuery ? window.jQuery('#district_id') : null;
+            const $area = window.jQuery ? window.jQuery('#location_id') : null;
+
+            async function fetchLocations(parentId, type) {
+                const params = new URLSearchParams();
+                if (parentId !== null && parentId !== undefined && parentId !== '') {
+                    params.set('parent_id', String(parentId));
+                }
+                params.set('type', type);
+                const res = await fetch(`${LOCATION_CHILDREN_URL}?${params.toString()}`, {
+                    headers: {'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest'},
                 });
+                if (!res.ok) {
+                    return [];
+                }
+                const data = await res.json();
+
+                return Array.isArray(data.items) ? data.items : [];
+            }
+
+            function fillSelect($select, items, selectedId, placeholder) {
+                if (!$select || !$select.length) {
+                    return;
+                }
+                const sel = $select[0];
+                const current = selectedId !== null && selectedId !== undefined && selectedId !== ''
+                    ? String(selectedId)
+                    : '';
+                sel.innerHTML = '';
+                const opt0 = document.createElement('option');
+                opt0.value = '';
+                opt0.textContent = placeholder;
+                sel.appendChild(opt0);
                 items.forEach((item) => {
-                    const itemStep = Number(item.dataset.step);
-                    item.classList.toggle('current', itemStep === step);
-                    item.classList.toggle('completed', itemStep < step);
+                    const o = document.createElement('option');
+                    o.value = String(item.id);
+                    o.textContent = item.name;
+                    if (current !== '' && String(item.id) === current) {
+                        o.selected = true;
+                    }
+                    sel.appendChild(o);
                 });
-                prevBtn.disabled = step === 1;
-                nextBtn.classList.toggle('d-none', step === 6);
-                submitBtn.classList.toggle('d-none', step !== 6);
-            };
-
-            nextBtn.addEventListener('click', async () => {
-                if (step < 6) step += 1;
-                renderStep();
-                if (step === 3 && typeSelect?.value) {
-                    await loadAttributes();
+                $select.prop('disabled', items.length === 0);
+                if (current) {
+                    $select.val(current);
                 }
-            });
-            prevBtn.addEventListener('click', () => {
-                if (step > 1) step -= 1;
-                renderStep();
-            });
+                $select.trigger('change');
+            }
 
-            const dynamicValues = @json(old('dynamic_values', $isEdit ? $property->attributeValues->keyBy('attribute.code')->map(function ($item) {
-                return $item->value_text ?? $item->value_number ?? $item->value_boolean;
-            })->all() : []));
+            async function onCityChange() {
+                const cityId = $city?.val();
+                fillSelect($district, [], '', @json(__('Select district')));
+                fillSelect($area, [], '', @json(__('Select area')));
+                if (!cityId) {
+                    $district?.prop('disabled', true);
+                    $area?.prop('disabled', true);
 
-            const renderAttributeInput = (attribute) => {
-                const name = `dynamic_values[${attribute.code}]`;
-                const required = attribute.is_required ? 'required' : '';
-                const oldValue = dynamicValues[attribute.code] ?? '';
-                if (attribute.type === 'boolean') {
-                    const normalizedBoolean = oldValue === true ? '1' : (oldValue === false ? '0' : String(oldValue));
-                    return `<select class="form-select form-select-solid" name="${name}" ${required}>
-                        <option value="">{{ __('Select') }}</option>
-                        <option value="1" ${normalizedBoolean === '1' ? 'selected' : ''}>{{ __('Yes') }}</option>
-                        <option value="0" ${normalizedBoolean === '0' ? 'selected' : ''}>{{ __('No') }}</option>
-                    </select>`;
+                    return;
                 }
-                if (attribute.type === 'select' || attribute.type === 'multiselect') {
-                    const normalizedValues = Array.isArray(oldValue) ? oldValue.map(String) : [String(oldValue)];
-                    const options = (attribute.options || [])
-                        .map((option) => {
-                            const isSelected = normalizedValues.includes(String(option));
-                            return `<option value="${option}" ${isSelected ? 'selected' : ''}>${option}</option>`;
-                        })
-                        .join('');
-                    const multiple = attribute.type === 'multiselect' ? 'multiple' : '';
-                    const inputName = attribute.type === 'multiselect' ? `${name}[]` : name;
-                    return `<select class="form-select form-select-solid" name="${inputName}" ${required} ${multiple}>${options}</select>`;
+                const districts = await fetchLocations(cityId, TYPE_DISTRICT);
+                fillSelect($district, districts, '', @json(__('Select district')));
+                $district?.prop('disabled', districts.length === 0);
+                $area?.prop('disabled', true);
+            }
+
+            async function onDistrictChange() {
+                const districtId = $district?.val();
+                fillSelect($area, [], '', @json(__('Select area')));
+                if (!districtId) {
+                    $area?.prop('disabled', true);
+
+                    return;
                 }
-                if (attribute.type === 'numeric' || attribute.type === 'price') {
-                    return `<input type="number" step="0.01" class="form-control form-control-solid" name="${name}" value="${oldValue}" ${required}>`;
+                const areas = await fetchLocations(districtId, TYPE_AREA);
+                fillSelect($area, areas, '', @json(__('Select area')));
+                $area?.prop('disabled', areas.length === 0);
+            }
+
+            function initLocationCascade() {
+                if (!$city?.length) {
+                    return;
                 }
-
-                return `<input type="text" class="form-control form-control-solid" name="${name}" value="${oldValue}" ${required}>`;
-            };
-
-            let attributesRequestCounter = 0;
-
-            const loadAttributes = async () => {
-                const propertyTypeId = typeSelect.value;
-                dynamicContainer.innerHTML = '';
-                if (!propertyTypeId) return;
-
-                const requestId = ++attributesRequestCounter;
-
-                try {
-                    const response = await fetch(`{{ route('admin.properties.attributes') }}?property_type_id=${propertyTypeId}`);
-                    if (!response.ok) {
-                        throw new Error('Failed to load attributes');
-                    }
-
-                    const data = await response.json();
-                    if (requestId !== attributesRequestCounter) {
+                $city.off('change.propertyLoc');
+                $district.off('change.propertyLoc');
+                (async () => {
+                    if (!PREFILL_CITY_ID) {
                         return;
                     }
-
-                    if (!data.attributes.length) {
-                        dynamicContainer.innerHTML = `<div class="alert alert-light-info">{{ __('No dynamic attributes in selected family.') }}</div>`;
-                        return;
+                    $city.val(String(PREFILL_CITY_ID)).trigger('change');
+                    const districts = await fetchLocations(PREFILL_CITY_ID, TYPE_DISTRICT);
+                    fillSelect($district, districts, PREFILL_DISTRICT_ID, @json(__('Select district')));
+                    $district?.prop('disabled', districts.length === 0);
+                    if (PREFILL_DISTRICT_ID) {
+                        const areas = await fetchLocations(PREFILL_DISTRICT_ID, TYPE_AREA);
+                        fillSelect($area, areas, PREFILL_AREA_ID, @json(__('Select area')));
+                        $area?.prop('disabled', areas.length === 0);
+                    } else {
+                        fillSelect($area, [], '', @json(__('Select area')));
+                        $area?.prop('disabled', true);
                     }
+                })().finally(() => {
+                    $city.on('change.propertyLoc', onCityChange);
+                    $district.on('change.propertyLoc', onDistrictChange);
+                });
+            }
 
-                    data.attributes.forEach((attribute) => {
-                        const html = `
-                            <div class="mb-6">
-                                <label class="form-label fw-semibold">${attribute.name}</label>
-                                ${renderAttributeInput(attribute)}
-                            </div>
-                        `;
-                        dynamicContainer.insertAdjacentHTML('beforeend', html);
+            const unitRowsEl = document.getElementById('unit-type-rows');
+            const addUnitBtn = document.getElementById('add-unit-type-row');
+            let unitRowIndex = unitRowsEl ? unitRowsEl.querySelectorAll('.js-unit-row').length : 0;
+
+            function syncUnitRowHidden(row) {
+                const preset = row.querySelector('.js-unit-preset');
+                const custom = row.querySelector('.js-unit-custom');
+                const hidden = row.querySelector('.js-unit-name-hidden');
+                const numeric = row.querySelector('.js-unit-numeric');
+                if (!preset || !hidden) {
+                    return;
+                }
+                let name = '';
+                const pv = preset.value;
+                if (pv === OTHER_VALUE) {
+                    name = (custom && custom.value) ? custom.value.trim() : '';
+                    custom?.classList.toggle('d-none', false);
+                } else if (pv) {
+                    name = pv;
+                    custom?.classList.add('d-none');
+                } else {
+                    custom?.classList.add('d-none');
+                }
+                hidden.value = name;
+                if (numeric) {
+                    numeric.classList.toggle('d-none', name === '');
+                }
+            }
+
+            function bindUnitRow(row) {
+                const preset = row.querySelector('.js-unit-preset');
+                const custom = row.querySelector('.js-unit-custom');
+                preset?.addEventListener('change', () => syncUnitRowHidden(row));
+                custom?.addEventListener('input', () => syncUnitRowHidden(row));
+                row.querySelector('.js-remove-unit-row')?.addEventListener('click', () => {
+                    row.remove();
+                    reindexUnitRows();
+                });
+                syncUnitRowHidden(row);
+            }
+
+            function reindexUnitRows() {
+                if (!unitRowsEl) {
+                    return;
+                }
+                [...unitRowsEl.querySelectorAll('.js-unit-row')].forEach((row, i) => {
+                    row.dataset.rowIndex = String(i);
+                    row.querySelectorAll('[name^="unit_types["]').forEach((el) => {
+                        const n = el.getAttribute('name');
+                        if (!n) {
+                            return;
+                        }
+                        el.setAttribute('name', n.replace(/unit_types\[\d+]/, `unit_types[${i}]`));
                     });
-                } catch (error) {
-                    dynamicContainer.innerHTML = `<div class="alert alert-light-danger">{{ __('No dynamic attributes in selected family.') }}</div>`;
-                }
-            };
+                });
+                unitRowIndex = unitRowsEl.querySelectorAll('.js-unit-row').length;
+            }
 
-            typeSelect.addEventListener('change', loadAttributes);
-            renderStep();
-            loadAttributes();
+            function addUnitRow() {
+                if (!unitRowsEl) {
+                    return;
+                }
+                const i = unitRowIndex++;
+                const wrap = document.createElement('div');
+                wrap.className = 'card card-bordered mb-4 js-unit-row';
+                wrap.dataset.rowIndex = String(i);
+                const body = document.createElement('div');
+                body.className = 'card-body py-4';
+                const row = document.createElement('div');
+                row.className = 'row g-3 align-items-end';
+                const colPreset = document.createElement('div');
+                colPreset.className = 'col-lg-3 col-md-6';
+                const lblPreset = document.createElement('label');
+                lblPreset.className = 'form-label';
+                lblPreset.textContent = @json(__('Unit type'));
+                const sel = document.createElement('select');
+                sel.className = 'form-select form-select-solid js-unit-preset';
+                const opt0 = document.createElement('option');
+                opt0.value = '';
+                opt0.textContent = @json(__('Select'));
+                sel.appendChild(opt0);
+                UNIT_TYPE_PRESETS.forEach((p) => {
+                    const o = document.createElement('option');
+                    o.value = p;
+                    o.textContent = p;
+                    sel.appendChild(o);
+                });
+                const optOther = document.createElement('option');
+                optOther.value = OTHER_VALUE;
+                optOther.textContent = @json(__('Other'));
+                sel.appendChild(optOther);
+                const custom = document.createElement('input');
+                custom.type = 'text';
+                custom.className = 'form-control form-control-solid mt-2 d-none js-unit-custom';
+                custom.placeholder = @json(__('Custom unit type'));
+                custom.autocomplete = 'off';
+                colPreset.appendChild(lblPreset);
+                colPreset.appendChild(sel);
+                colPreset.appendChild(custom);
+                const colNum = document.createElement('div');
+                colNum.className = 'col-lg-8';
+                const numWrap = document.createElement('div');
+                numWrap.className = 'row g-3 js-unit-numeric d-none';
+                [['min_area', @json(__('Min area'))], ['max_area', @json(__('Max area'))], ['price', @json(__('Starting price'))]].forEach(([field, labelText]) => {
+                    const c = document.createElement('div');
+                    c.className = 'col-md-4';
+                    const l = document.createElement('label');
+                    l.className = 'form-label';
+                    l.textContent = labelText;
+                    const inp = document.createElement('input');
+                    inp.type = 'number';
+                    inp.step = '0.01';
+                    inp.min = '0';
+                    inp.className = 'form-control form-control-solid';
+                    inp.name = `unit_types[${i}][${field}]`;
+                    c.appendChild(l);
+                    c.appendChild(inp);
+                    numWrap.appendChild(c);
+                });
+                colNum.appendChild(numWrap);
+                const colRm = document.createElement('div');
+                colRm.className = 'col-lg-1 col-md-6 text-lg-end';
+                const btnRm = document.createElement('button');
+                btnRm.type = 'button';
+                btnRm.className = 'btn btn-sm btn-light-danger js-remove-unit-row';
+                btnRm.title = @json(__('Remove'));
+                btnRm.innerHTML = '<i class="bi bi-trash"></i>';
+                colRm.appendChild(btnRm);
+                row.appendChild(colPreset);
+                row.appendChild(colNum);
+                row.appendChild(colRm);
+                const hidId = document.createElement('input');
+                hidId.type = 'hidden';
+                hidId.name = `unit_types[${i}][id]`;
+                hidId.className = 'js-unit-id';
+                hidId.value = '';
+                const hidName = document.createElement('input');
+                hidName.type = 'hidden';
+                hidName.name = `unit_types[${i}][name]`;
+                hidName.className = 'js-unit-name-hidden';
+                hidName.value = '';
+                body.appendChild(row);
+                body.appendChild(hidId);
+                body.appendChild(hidName);
+                wrap.appendChild(body);
+                unitRowsEl.appendChild(wrap);
+                bindUnitRow(wrap);
+            }
+
+            document.querySelectorAll('.js-unit-row').forEach(bindUnitRow);
+            addUnitBtn?.addEventListener('click', () => addUnitRow());
+
+            const propertyForm = document.getElementById('property-form');
+            propertyForm?.addEventListener('submit', () => {
+                document.querySelectorAll('.js-unit-row').forEach((row) => syncUnitRowHidden(row));
+                document.querySelectorAll('.js-unit-row').forEach((row) => {
+                    const h = row.querySelector('.js-unit-name-hidden');
+                    if (!h || !String(h.value).trim()) {
+                        row.remove();
+                    }
+                });
+                reindexUnitRows();
+                propertyForm.querySelectorAll('input[name="unit_types_sync_empty"]').forEach((el) => el.remove());
+                if (!IS_EDIT || !unitRowsEl) {
+                    return;
+                }
+                const hasUnitField = propertyForm.querySelector('[name^="unit_types["]');
+                if (!hasUnitField) {
+                    const m = document.createElement('input');
+                    m.type = 'hidden';
+                    m.name = 'unit_types_sync_empty';
+                    m.value = '1';
+                    propertyForm.appendChild(m);
+                }
+            });
+
+            if (window.jQuery && window.jQuery.fn.select2) {
+                window.jQuery('#property_type_id, select[name="status"]').select2();
+            }
+            initLocationCascade();
 
             const dropzone = document.getElementById('property-slides-dropzone');
             const slidesInput = document.getElementById('slides-input');
             const slidesCountText = document.getElementById('slides-count-text');
-            dropzone?.addEventListener('click', () => slidesInput.click());
+            dropzone?.addEventListener('click', () => slidesInput?.click());
             slidesInput?.addEventListener('change', () => {
                 const count = slidesInput.files?.length ?? 0;
                 if (slidesCountText) {
@@ -406,10 +613,6 @@
                         : `{{ __('No files selected.') }}`;
                 }
             });
-
-            if (window.jQuery && window.jQuery.fn.select2) {
-                window.jQuery('#location_id, #property_type_id').select2();
-            }
         })();
     </script>
-@endsection
+@endpush

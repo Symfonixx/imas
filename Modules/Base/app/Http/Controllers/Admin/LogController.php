@@ -10,6 +10,7 @@ class LogController extends Controller
 {
     public function __construct(private readonly LogApplicationService $logService)
     {
+        $this->setActive('settings');
         $this->setActive('logs');
     }
 

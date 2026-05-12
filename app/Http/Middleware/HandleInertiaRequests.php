@@ -105,6 +105,7 @@ class HandleInertiaRequests extends Middleware
                 'instagram' => (string) ($settings['instagram'] ?? ''),
                 'youtube' => (string) ($settings['youtube'] ?? ''),
                 'twitter' => (string) ($settings['twitter'] ?? ''),
+                'tiktok' => (string) ($settings['tiktok'] ?? ''),
             ],
             'media' => [
                 'white_logo' => $this->storagePublicUrl($settings['white_logo'] ?? null),

@@ -7,22 +7,19 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Throwable;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Modules\Core\Http\Requests\DeleteMultiRequest;
-use Modules\Property\Enums\AttributeType;
+use Modules\Core\Support\AdminImageInput;
 use Modules\Property\Enums\LocationType;
 use Modules\Property\Models\Location;
 use Modules\Property\Models\Property;
-use Modules\Property\Models\PropertyAttribute;
-use Modules\Property\Models\PropertyAttributeValue;
-use Modules\Property\Models\PropertySlide;
 use Modules\Property\Models\PropertyType;
 use Modules\User\Enums\CmsStatus;
+use Throwable;
 
 class PropertyController extends Controller
 {
@@ -49,14 +46,16 @@ class PropertyController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $validated = $this->validatePayload($request);
+        $validated = $this->filterEmptyUnitTypes($this->validatePayload($request));
 
         DB::beginTransaction();
 
         try {
             $property = Property::query()->create($this->buildPropertyPayload($request, $validated));
             $this->syncSlides($property, $request);
-            $this->syncAttributeValues($property, $request, (int) $validated['property_type_id']);
+            if (array_key_exists('unit_types', $validated)) {
+                $this->syncUnitTypes($property, $validated['unit_types']);
+            }
             DB::commit();
         } catch (Throwable $e) {
             DB::rollBack();
@@ -69,7 +68,7 @@ class PropertyController extends Controller
 
     public function edit(Property $property)
     {
-        $property->load(['slides', 'attributeValues.attribute', 'location.parent.parent']);
+        $property->load(['slides', 'unitTypes', 'location.parent.parent']);
 
         return view('property::admin.property.edit', array_merge(
             $this->formShared(),
@@ -81,12 +80,16 @@ class PropertyController extends Controller
 
     public function update(Request $request, Property $property): RedirectResponse
     {
-        $validated = $this->validatePayload($request, $property);
+        $validated = $this->filterEmptyUnitTypes($this->validatePayload($request, $property));
 
         DB::transaction(function () use ($request, $validated, $property): void {
             $property->update($this->buildPropertyPayload($request, $validated, $property));
             $this->syncSlides($property, $request);
-            $this->syncAttributeValues($property, $request, (int) $validated['property_type_id']);
+            if ($request->filled('unit_types_sync_empty')) {
+                $this->syncUnitTypes($property, []);
+            } elseif (array_key_exists('unit_types', $validated)) {
+                $this->syncUnitTypes($property, $validated['unit_types']);
+            }
         });
 
         return redirect()->route('admin.properties.index');
@@ -115,36 +118,6 @@ class PropertyController extends Controller
         return back();
     }
 
-    public function attributesByPropertyType(Request $request): JsonResponse
-    {
-        $propertyTypeId = (int) $request->query('property_type_id', 0);
-        $propertyType = PropertyType::query()->find($propertyTypeId);
-
-        if (! $propertyType || ! $propertyType->attribute_family_id) {
-            return response()->json(['attributes' => []]);
-        }
-
-        $attributes = PropertyAttribute::query()
-            ->select(['attributes.id', 'attributes.name', 'attributes.code', 'attributes.type', 'attributes.options', 'attributes.is_required'])
-            ->join('attribute_family_attribute as afa', 'afa.attribute_id', '=', 'attributes.id')
-            ->where('afa.attribute_family_id', $propertyType->attribute_family_id)
-            ->orderBy('afa.position')
-            ->get()
-            ->map(function (PropertyAttribute $attribute): array {
-                return [
-                    'id' => $attribute->id,
-                    'name' => $this->translatedName($attribute->name),
-                    'code' => $attribute->code,
-                    'type' => $attribute->type?->value ?? (string) $attribute->type,
-                    'options' => $attribute->options ?? [],
-                    'is_required' => (bool) $attribute->is_required,
-                ];
-            })
-            ->values();
-
-        return response()->json(['attributes' => $attributes]);
-    }
-
     public function locationChildren(Request $request): JsonResponse
     {
         $parentId = $request->query('parent_id');
@@ -170,35 +143,30 @@ class PropertyController extends Controller
      */
     private function formShared(): array
     {
-        $areas = Location::query()
-            ->with(['parent:id,name,parent_id', 'parent.parent:id,name'])
-            ->where('type', LocationType::Area->value)
+        $cities = Location::query()
+            ->where('type', LocationType::City->value)
             ->orderBy('id')
-            ->get(['id', 'name', 'parent_id'])
-            ->map(fn (Location $area): array => [
-                'id' => $area->id,
-                'name' => $this->translatedName($area->name),
-                'label' => sprintf(
-                    '%s -> %s',
-                    $this->translatedName($area->parent?->parent?->name ?? $area->parent?->name ?? ''),
-                    $this->translatedName($area->name)
-                ),
+            ->get(['id', 'name'])
+            ->map(fn (Location $city): array => [
+                'id' => $city->id,
+                'name' => $this->translatedName($city->name),
             ])
             ->values();
 
         $propertyTypes = PropertyType::query()
             ->orderBy('id')
-            ->get(['id', 'name', 'attribute_family_id'])
+            ->get(['id', 'name'])
             ->map(fn (PropertyType $propertyType): array => [
                 'id' => $propertyType->id,
                 'name' => $this->translatedName($propertyType->name),
-                'attribute_family_id' => $propertyType->attribute_family_id,
             ])
             ->values();
 
         return [
+            'property' => null,
             'propertyTypes' => $propertyTypes,
-            'areas' => $areas,
+            'cities' => $cities,
+            'unitTypeOptions' => config('property.unit_type_options', []),
             'statuses' => CmsStatus::cases(),
         ];
     }
@@ -213,9 +181,14 @@ class PropertyController extends Controller
             $uniqueProjectCode->ignore($property->id);
         }
 
+        $unitTypeIdRules = ['nullable', 'integer'];
+        if ($property !== null) {
+            $unitTypeIdRules[] = Rule::exists('unit_types', 'id')->where('property_id', $property->id);
+        }
+
         return $request->validate([
             'title' => ['required', 'string', 'max:255'],
-            'project_name' => ['required', 'string', 'max:255'],
+            'project_name' => ['nullable', 'string', 'max:255'],
             'project_code' => ['required', 'string', 'max:128', $uniqueProjectCode],
             'overview' => ['required', 'string'],
             'thumbnail' => [$property === null ? 'required' : 'nullable', 'image', 'max:4096'],
@@ -242,7 +215,41 @@ class PropertyController extends Controller
             'meta_schema' => ['nullable', 'string'],
             'slides' => ['nullable', 'array', 'max:20'],
             'slides.*' => ['image', 'max:4096'],
+            'unit_types' => ['nullable', 'array', 'max:100'],
+            'unit_types.*.id' => $unitTypeIdRules,
+            'unit_types.*.name' => ['nullable', 'string', 'max:255'],
+            'unit_types.*.min_area' => ['nullable', 'numeric', 'min:0'],
+            'unit_types.*.max_area' => ['nullable', 'numeric', 'min:0'],
+            'unit_types.*.price' => ['nullable', 'numeric', 'min:0'],
         ]);
+    }
+
+    /**
+     * @param  array<string, mixed>  $validated
+     * @return array<string, mixed>
+     */
+    private function filterEmptyUnitTypes(array $validated): array
+    {
+        if (! array_key_exists('unit_types', $validated) || ! is_array($validated['unit_types'])) {
+            return $validated;
+        }
+
+        $validated['unit_types'] = array_values(array_filter(
+            $validated['unit_types'],
+            static function (mixed $row): bool {
+                if (! is_array($row)) {
+                    return false;
+                }
+
+                return trim((string) ($row['name'] ?? '')) !== '';
+            }
+        ));
+
+        if ($validated['unit_types'] === []) {
+            unset($validated['unit_types']);
+        }
+
+        return $validated;
     }
 
     /**
@@ -254,13 +261,16 @@ class PropertyController extends Controller
         $autoTranslate = $property === null;
 
         $thumbnailPath = $property?->thumbnail;
-        if ($request->hasFile('thumbnail')) {
+        if (AdminImageInput::isRemoved($request, 'thumbnail')) {
+            $thumbnailPath = null;
+        } elseif ($request->hasFile('thumbnail')) {
             if ($thumbnailPath) {
                 Storage::disk('public')->delete($thumbnailPath);
             }
             $thumbnailPath = $request->file('thumbnail')->store('properties/thumbnails', 'public');
         } elseif ($request->filled('thumbnail_media_path')) {
-            $thumbnailPath = (string) $request->input('thumbnail_media_path');
+            $path = trim((string) $request->input('thumbnail_media_path'));
+            $thumbnailPath = strcasecmp($path, 'null') === 0 ? null : $path;
         }
 
         return [
@@ -272,7 +282,7 @@ class PropertyController extends Controller
                 $autoTranslate
             ),
             'project_name' => $this->buildTranslatedValue(
-                $validated['project_name'],
+                $validated['project_name'] ?? $validated['title'],
                 $property?->getTranslations('project_name') ?? [],
                 $autoTranslate
             ),
@@ -318,6 +328,63 @@ class PropertyController extends Controller
         ];
     }
 
+    /**
+     * Replace or upsert rows from the request: existing ids are updated, new rows are created,
+     * and any stored unit types not present in the payload are removed.
+     *
+     * @param  array<int, array<string, mixed>>  $rows
+     */
+    private function syncUnitTypes(Property $property, array $rows): void
+    {
+        $keepIds = [];
+
+        foreach ($rows as $row) {
+            $name = trim((string) ($row['name'] ?? ''));
+            if ($name === '') {
+                continue;
+            }
+
+            $data = [
+                'name' => $name,
+                'min_area' => $this->nullableDecimal($row['min_area'] ?? null),
+                'max_area' => $this->nullableDecimal($row['max_area'] ?? null),
+                'price' => $this->nullableDecimal($row['price'] ?? null),
+            ];
+
+            $id = isset($row['id']) ? (int) $row['id'] : 0;
+            $unitType = $id > 0
+                ? $property->unitTypes()->whereKey($id)->first()
+                : null;
+
+            if ($unitType !== null) {
+                $unitType->update($data);
+                $keepIds[] = $unitType->id;
+
+                continue;
+            }
+
+            $created = $property->unitTypes()->create($data);
+            $keepIds[] = $created->id;
+        }
+
+        if ($keepIds === []) {
+            $property->unitTypes()->delete();
+
+            return;
+        }
+
+        $property->unitTypes()->whereNotIn('id', $keepIds)->delete();
+    }
+
+    private function nullableDecimal(mixed $value): ?float
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        return (float) $value;
+    }
+
     private function syncSlides(Property $property, Request $request): void
     {
         if (! $request->hasFile('slides')) {
@@ -337,51 +404,6 @@ class PropertyController extends Controller
                 'image' => $path,
                 'position' => $index,
             ]);
-        }
-    }
-
-    private function syncAttributeValues(Property $property, Request $request, int $propertyTypeId): void
-    {
-        $propertyType = PropertyType::query()->find($propertyTypeId);
-        if (! $propertyType || ! $propertyType->attribute_family_id) {
-            PropertyAttributeValue::query()->where('property_id', $property->id)->delete();
-
-            return;
-        }
-
-        $attributes = PropertyAttribute::query()
-            ->join('attribute_family_attribute as afa', 'afa.attribute_id', '=', 'attributes.id')
-            ->where('afa.attribute_family_id', $propertyType->attribute_family_id)
-            ->get(['attributes.*']);
-
-        $inputs = (array) $request->input('dynamic_values', []);
-        $property->attributeValues()->delete();
-
-        foreach ($attributes as $attribute) {
-            $rawValue = $inputs[$attribute->code] ?? null;
-            if ($rawValue === null || $rawValue === '') {
-                continue;
-            }
-
-            $payload = [
-                'attribute_id' => $attribute->id,
-                'value_text' => null,
-                'value_number' => null,
-                'value_boolean' => null,
-            ];
-
-            $type = $attribute->type instanceof AttributeType ? $attribute->type : AttributeType::tryFrom((string) $attribute->type);
-            if ($type === AttributeType::Numeric || $type === AttributeType::Price) {
-                $payload['value_number'] = (float) $rawValue;
-            } elseif ($type === AttributeType::Boolean) {
-                $payload['value_boolean'] = filter_var($rawValue, FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE) ?? false;
-            } else {
-                $payload['value_text'] = is_array($rawValue)
-                    ? json_encode(array_values($rawValue), JSON_UNESCAPED_UNICODE)
-                    : (string) $rawValue;
-            }
-
-            $property->attributeValues()->create($payload);
         }
     }
 

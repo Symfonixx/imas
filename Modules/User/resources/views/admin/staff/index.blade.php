@@ -33,7 +33,10 @@
                         confirmButton: "btn fw-bold btn-danger",
                         cancelButton: "btn fw-bold btn-active-light-primary"
                     }
-                }).then((function (e) {
+                }).then(function (result) {
+                    if (!result.isConfirmed) {
+                        return;
+                    }
                     makeAjaxRequest('/admin/staffs/' + id, 'DELETE', null, "json", function (res) {
                         if (res.success) {
                             toastr.success('{{ __('The Operation Done Successfully') }}');
@@ -41,7 +44,7 @@
                         }
 
                     })
-                }))
+                })
             })
         })
     </script>

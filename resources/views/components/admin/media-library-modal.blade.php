@@ -154,6 +154,10 @@
 
                     if (state.targetInput) {
                         state.targetInput.value = path;
+                        var root = state.targetInput.closest('.admin-image-input');
+                        if (root && typeof window.adminImageInputClearRemoveFor === 'function') {
+                            window.adminImageInputClearRemoveFor(root);
+                        }
                     }
                     if (state.targetPreview) {
                         state.targetPreview.style.backgroundImage = "url('" + url + "')";

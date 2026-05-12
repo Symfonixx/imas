@@ -13,10 +13,6 @@ return new class extends Migration
             $table->json('name');
             $table->string('slug')->unique();
             $table->string('icon', 128);
-            $table->foreignId('attribute_family_id')
-                ->nullable()
-                ->constrained('attribute_families')
-                ->nullOnDelete();
             $table->timestamps();
         });
     }

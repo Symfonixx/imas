@@ -5,7 +5,6 @@ namespace Modules\Property\Providers;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
-use Modules\Property\Models\PropertyAttribute;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -19,10 +18,6 @@ class RouteServiceProvider extends ServiceProvider
     public function boot(): void
     {
         parent::boot();
-
-        Route::bind('attribute', function (string $value) {
-            return PropertyAttribute::query()->whereKey($value)->firstOrFail();
-        });
     }
 
     /**

@@ -24,10 +24,12 @@ class SettingsController extends Controller
     public function store(Request $request)
     {
         $mediaPaths = (array) $request->input('imgs_media', []);
+        $removed = (array) $request->input('imgs_remove', []);
         $this->settingsService->update(
             $request->file('imgs', []),
             $request->input('data', []),
-            $mediaPaths
+            $mediaPaths,
+            $removed
         );
 
         return back();

@@ -177,6 +177,19 @@
                        value="{{$settings->get('twitter')}}" placeholder="https://www.twitter.com/xxxx"/>
             </div>
         </div>
+        <div class="row mb-8">
+            <!--begin::Col-->
+            <div class="col-xl-3">
+                <div class="fs-6 fw-bold mt-2 mb-3"><i
+                        class="fab fa-tiktok mx-1 text-dark"></i> {{__('TikTok')}}</div>
+            </div>
+            <!--end::Col-->
+            <!--begin::Col-->
+            <div class="col-xl-9 fv-row">
+                <input type="text" class="form-control form-control-solid" name="data[tiktok]"
+                       value="{{$settings->get('tiktok')}}" placeholder="https://www.tiktok.com/@xxxx"/>
+            </div>
+        </div>
 
 
     </x-admin.create-card>

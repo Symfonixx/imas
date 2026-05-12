@@ -8,21 +8,26 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Log;
 use Modules\Cms\Models\BlogCategory;
+use Modules\Core\Support\AdminImageInput;
 use Modules\Core\Traits\ExceptionHandlerTrait;
 use Modules\Core\Traits\FileTrait;
 
-class BlogCategoryModelRepository implements BlogCategoryRepository {
+class BlogCategoryModelRepository implements BlogCategoryRepository
+{
     use ExceptionHandlerTrait, FileTrait;
 
-    public function all(array $columns = ['*']): LengthAwarePaginator {
+    public function all(array $columns = ['*']): LengthAwarePaginator
+    {
         return BlogCategory::select($columns)->latest()->paginate(Config::get('core.page_size', 10));
     }
 
-    public function find(int $id, array $columns = ['*']): ?BlogCategory {
+    public function find(int $id, array $columns = ['*']): ?BlogCategory
+    {
         return BlogCategory::find($id, $columns);
     }
 
-    public function store(array $data): mixed {
+    public function store(array $data): mixed
+    {
         return $this->execute(function () use ($data) {
             $categoryData = $this->prepareCategoryData($data);
             BlogCategory::create($categoryData);
@@ -65,6 +70,8 @@ class BlogCategoryModelRepository implements BlogCategoryRepository {
         $metaImage = $data['meta_image'] ?? null;
         if ($metaImage instanceof UploadedFile) {
             $metaImage = $this->upload($metaImage, 'cms/blog-categories', $data['slug'] ?? null, $category?->meta_image);
+        } elseif ($metaImage === AdminImageInput::REMOVED) {
+            $metaImage = null;
         } elseif ($metaImage === '' || $metaImage === null) {
             $metaImage = $category?->meta_image;
         }
@@ -75,21 +82,25 @@ class BlogCategoryModelRepository implements BlogCategoryRepository {
         ]);
     }
 
-    public function update(array $data, BlogCategory $category, bool $updateTranslations = false): mixed {
+    public function update(array $data, BlogCategory $category, bool $updateTranslations = false): mixed
+    {
         return $this->execute(function () use ($data, $category, $updateTranslations) {
             $categoryData = $this->prepareCategoryData($data, $category, $updateTranslations);
             $category->update($categoryData);
             session()->flushMessage(true);
+
             return true;
         });
     }
 
-    public function deleteMulti(array $ids): ?bool {
+    public function deleteMulti(array $ids): ?bool
+    {
         return $this->execute(function () use ($ids) {
             // If BlogCategory ever has images/files, delete them here (structure for extensibility)
             BlogCategory::destroy($ids);
             // Optionally clear cache or handle related cleanup here
             session()->flushMessage(true);
+
             return true;
         });
     }

@@ -16,6 +16,7 @@ class MediaLibraryController extends Controller
 
     public function __construct()
     {
+        $this->setActive('cms');
         $this->setActive('media_library');
     }
 

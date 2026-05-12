@@ -4,6 +4,7 @@ namespace Modules\User\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use Modules\Core\Support\AdminImageInput;
 use Modules\Core\Traits\FileTrait;
 use Modules\User\Http\Requests\UpdateProfileRequest;
 
@@ -31,7 +32,9 @@ class ProfileController extends Controller
             $data['password'] = Hash::make($request->string('password')->toString());
         }
 
-        if ($request->hasFile('img')) {
+        if (AdminImageInput::isRemoved($request, 'img')) {
+            $data['img'] = null;
+        } elseif ($request->hasFile('img')) {
             $data['img'] = $this->upload(
                 file: $request->file('img'),
                 dir: 'users',
@@ -39,7 +42,8 @@ class ProfileController extends Controller
                 old: $user->img
             );
         } elseif ($request->filled('img_media_path')) {
-            $data['img'] = (string) $request->input('img_media_path');
+            $path = trim((string) $request->input('img_media_path'));
+            $data['img'] = strcasecmp($path, 'null') === 0 ? null : $path;
         }
 
         $user->update($data);

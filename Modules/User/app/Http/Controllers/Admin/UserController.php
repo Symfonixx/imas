@@ -4,15 +4,15 @@ namespace Modules\User\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Modules\User\Application\User\UserManagementApplicationService;
 use Modules\User\app\Data\UserData;
+use Modules\User\Application\User\UserManagementApplicationService;
 use Modules\User\Http\Requests\StoreUserRequest;
 
 class UserController extends Controller
 {
     public function __construct(protected UserManagementApplicationService $userService)
     {
-        $this->setActive('hr');
+        $this->setActive('support');
         $this->setActive('users');
     }
 

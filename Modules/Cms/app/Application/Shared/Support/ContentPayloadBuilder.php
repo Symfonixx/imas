@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
 use Modules\Core\Contracts\Translation\TranslatorInterface;
+use Modules\Core\Support\AdminImageInput;
 use Modules\Core\Traits\FileTrait;
 
 class ContentPayloadBuilder
@@ -96,6 +97,10 @@ class ContentPayloadBuilder
 
     private function resolveImagePath(UploadedFile|string|null $image, string $uploadPath, string $slug, ?string $existingImage): ?string
     {
+        if ($image === AdminImageInput::REMOVED) {
+            return null;
+        }
+
         if (is_string($image) && trim($image) !== '') {
             return $image;
         }

@@ -13,7 +13,7 @@ class TurkishCitizenshipController extends Controller
         private readonly SettingsApplicationService $settingsService,
         private readonly SeoApplicationService $seoService
     ) {
-        $this->setActive('settings');
+        $this->setActive('cms');
         $this->setActive('turkish_citizenship');
     }
 
@@ -29,7 +29,8 @@ class TurkishCitizenshipController extends Controller
     {
         $this->settingsService->update(
             images: $request->file('imgs', []),
-            mediaPaths: (array) $request->input('imgs_media', [])
+            mediaPaths: (array) $request->input('imgs_media', []),
+            removedImageKeys: (array) $request->input('imgs_remove', [])
         );
 
         $this->seoService->update(

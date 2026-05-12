@@ -3,7 +3,6 @@
 namespace Modules\Property\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\Translatable\HasTranslations;
 
 class PropertyType extends Model
@@ -18,15 +17,5 @@ class PropertyType extends Model
         'name',
         'slug',
         'icon',
-        'attribute_family_id',
     ];
-
-    protected $casts = [
-        'attribute_family_id' => 'integer',
-    ];
-
-    public function attributeFamily(): BelongsTo
-    {
-        return $this->belongsTo(AttributeFamily::class, 'attribute_family_id');
-    }
 }

@@ -1,6 +1,8 @@
 {
     "global":{
-        "view_more":"View more"
+        "view_more":"View more",
+        "next":"Next",
+        "previous":"Previous"
     },
     "Name": "Name",
     "Language": "Language",
@@ -204,7 +206,8 @@
         "popular_properties":"Popular properties",
         "featured":"Featured",
         "sold_out":"Sold out",
-        "recommended":"Recommended"
+        "recommended":"Recommended",
+        "property_Listings":"property::Listings"
     },
     "services":{
         "title":"Why choose us?",

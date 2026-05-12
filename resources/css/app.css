@@ -376,3 +376,7 @@ html[dir="rtl"] section.home-testimonials .owl-carousel.job_clientSlide .owl-nav
 #header-container.imas-navbar-solid .dropdown-logout {
     color: #707070 !important;
 }
+
+.text-start{
+    text-align: start !important;
+}

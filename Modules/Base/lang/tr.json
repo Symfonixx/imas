@@ -1,6 +1,8 @@
 {
     "global":{
-        "view_more":"Daha fazla görüntüle"
+        "view_more":"Daha fazla görüntüle",
+        "next":"Sonraki",
+        "previous":"Önceki"
     },
     "Name": "Ad",
     "Language": "Dil",
@@ -205,7 +207,8 @@
         "popular_properties":"Popüler mülkler",
         "featured":"Öne çıkan",
         "sold_out":"Satıldı",
-        "recommended":"Önerilen"
+        "recommended":"Önerilen",
+        "property_Listings":"Mülk listeleri"
     },
     "services":{
         "title":"Neden biz?",

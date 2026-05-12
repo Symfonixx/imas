@@ -5,7 +5,7 @@ alwaysApply: true
 
 This repository is a **real estate** product built on the **HadoSaaS** modular Laravel starter (see repo root `README.md` and `DDD_LITE_ARCHITECTURE.md`). **Admin** workflows use Blade (and related tooling). **End-user (front-office) pages** are implemented with **Laravel + Inertia.js + Vue 3**, using Vite entrypoints `resources/css/app.css` and `resources/js/app.js`, with root shell `resources/views/app.blade.php`.
 
-Pair this rule with **Brand-accent-colors.mdc** for client Navy `#1a2a4a` and Gold `#d9a800` accent overrides (do not redesign base theme chrome).
+Pair this rule with **Brand-accent-colors.mdc** for client Navy `#1a2a4a` and Gold `#d9a800` accent overrides (do not redesign base theme chrome). For Inertia `<Head>` conventions (global vs hub vs detail SEO), see **front-office-seo-inertia.mdc**.
 
 ---
 
@@ -121,6 +121,7 @@ Use **`theme/findhouses/index.html`** as the canonical reference for **head asse
 - [ ] Wire assets via `public/` or Vite; fix paths  
 - [ ] Apply accents per **Brand-accent-colors.mdc** (Gold/Navy), not raw theme pink  
 - [ ] Pass copy/media URLs from backend; avoid embedding demo text  
+- [ ] Apply **front-office-seo-inertia.mdc** (hub vs detail `<Head>` / meta / canonical)  
 - [ ] Confirm no duplicate jQuery/Bootstrap/plugin conflicts  
 - [ ] Smoke-test locale + RTL  
 

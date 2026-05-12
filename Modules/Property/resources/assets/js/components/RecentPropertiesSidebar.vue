@@ -1,6 +1,6 @@
 <template>
-    <div class="widget-boxed mt-5">
-        <div class="widget-boxed-header">
+    <div class="widget-boxed mt-5 imas-recent-properties-sidebar">
+        <div class="widget-boxed-header d-flex justify-content-between align-items-center">
             <h4>{{ trans("listing_page.recent_properties") }}</h4>
         </div>
         <div class="widget-boxed-body">
@@ -83,8 +83,94 @@ function formatMoney(amount) {
 }
 </script>
 
-<style scoped>
-.recent-post .recent-main:not(:last-child) {
+<style lang="scss">
+/* Unique root: overrides theme `.inner-pages .recent-img img` (90×70 + margin-right). */
+.imas-recent-properties-sidebar .recent-post .recent-main:not(:last-child) {
     margin-bottom: 1.5rem;
+}
+
+.imas-recent-properties-sidebar .recent-main {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 0.875rem;
+}
+
+.imas-recent-properties-sidebar .recent-img {
+    flex: 0 0 120px;
+    width: 120px;
+    height: 70px;
+    min-width: 120px;
+    min-height: 70px;
+    max-width: 120px;
+    max-height: 70px;
+    overflow: hidden;
+    border-radius: 4px;
+}
+
+.imas-recent-properties-sidebar .recent-img > a {
+    display: block;
+    width: 100%;
+    height: 100%;
+    line-height: 0;
+}
+
+.imas-recent-properties-sidebar .recent-img img {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+    object-fit: cover;
+    object-position: center;
+    margin: 0 !important;
+}
+
+.imas-recent-properties-sidebar .info-img {
+    flex: 1 1 0;
+    min-width: 0;
+    text-align: start;
+}
+
+.imas-recent-properties-sidebar .info-img a {
+    display: block;
+    text-align: start;
+}
+
+.imas-recent-properties-sidebar .info-img p {
+    text-align: start;
+    margin-bottom: 0;
+}
+
+.imas-recent-properties-sidebar .info-img h6 {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    line-clamp: 2;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    line-height: 1.35;
+    margin: 0;
+    text-align: start;
+    /* Reserve two lines so rows align when title is short */
+    min-height: calc(1.35em * 2);
+}
+
+@media screen and (max-width: 992px) {
+    .inner-pages .imas-recent-properties-sidebar .recent-main {
+        flex-wrap: nowrap;
+    }
+
+    .inner-pages .imas-recent-properties-sidebar .info-img {
+        margin-top: 0;
+    }
+}
+
+.inner-pages .imas-recent-properties-sidebar .recent-img img {
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
 }
 </style>

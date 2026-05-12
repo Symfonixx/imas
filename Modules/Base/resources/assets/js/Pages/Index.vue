@@ -1,5 +1,72 @@
 <template>
-    <Head :title="`Home | ${appName}`" />
+    <Head :title="documentTitle">
+        <meta
+            v-if="metaDescription"
+            head-key="description"
+            name="description"
+            :content="metaDescription"
+        />
+        <meta
+            v-if="metaKeywords"
+            head-key="keywords"
+            name="keywords"
+            :content="metaKeywords"
+        />
+        <link
+            v-if="canonicalUrl"
+            head-key="canonical"
+            rel="canonical"
+            :href="canonicalUrl"
+        />
+        <meta
+            v-if="ogTitle"
+            head-key="og:title"
+            property="og:title"
+            :content="ogTitle"
+        />
+        <meta
+            v-if="ogDescription"
+            head-key="og:description"
+            property="og:description"
+            :content="ogDescription"
+        />
+        <meta
+            v-if="ogImage"
+            head-key="og:image"
+            property="og:image"
+            :content="ogImage"
+        />
+        <meta head-key="og:type" property="og:type" content="website" />
+        <meta
+            v-if="ogUrl"
+            head-key="og:url"
+            property="og:url"
+            :content="ogUrl"
+        />
+        <meta
+            head-key="twitter:card"
+            name="twitter:card"
+            :content="twitterCard"
+        />
+        <meta
+            v-if="ogTitle"
+            head-key="twitter:title"
+            name="twitter:title"
+            :content="ogTitle"
+        />
+        <meta
+            v-if="ogDescription"
+            head-key="twitter:description"
+            name="twitter:description"
+            :content="ogDescription"
+        />
+        <meta
+            v-if="ogImage"
+            head-key="twitter:image"
+            name="twitter:image"
+            :content="ogImage"
+        />
+    </Head>
 
     <AppLayout>
         <HomeHero
@@ -43,6 +110,67 @@ import HomeTestimonials from "../components/HomeTestimonials.vue";
 import HomeArticlesSection from "../components/HomeArticlesSection.vue";
 import HomeHero from "../components/HomeHero.vue";
 const page = usePage();
+
+const globals = computed(() => page.props.globals ?? {});
+const seo = computed(() => globals.value.seo ?? {});
+const media = computed(() => globals.value.media ?? {});
+
+function pickSeoString(...keys) {
+    const s = seo.value;
+    for (const key of keys) {
+        const v = s[key];
+        if (typeof v === "string" && v.trim() !== "") {
+            return v.trim();
+        }
+    }
+    return "";
+}
+
+const documentTitle = computed(() => {
+    const fromSeo = pickSeoString(
+        "site_meta_title",
+        "main_title",
+        "website_name",
+    );
+    if (fromSeo) {
+        return fromSeo;
+    }
+    return `Home | ${page.props.appName}`;
+});
+
+const metaDescription = computed(() =>
+    pickSeoString("site_meta_description", "website_desc"),
+);
+
+const metaKeywords = computed(() =>
+    pickSeoString("site_meta_keywords", "website_keywords"),
+);
+
+const ogTitle = computed(() => documentTitle.value);
+const ogDescription = computed(() => metaDescription.value);
+
+const ogImage = computed(() => {
+    const url = media.value.meta_img;
+    return typeof url === "string" && url.trim() !== "" ? url.trim() : "";
+});
+
+const canonicalUrl = computed(() => {
+    if (typeof route !== "function" || !route().has?.("home")) {
+        return "";
+    }
+    try {
+        return route("home");
+    } catch {
+        return "";
+    }
+});
+
+const ogUrl = computed(() => canonicalUrl.value);
+
+const twitterCard = computed(() =>
+    ogImage.value ? "summary_large_image" : "summary",
+);
+
 function trans(key) {
     return page.props.translations[key] || key;
 }
@@ -59,5 +187,4 @@ defineProps({
     articles: { type: Array, default: () => [] },
 });
 
-const appName = computed(() => page.props.appName);
 </script>

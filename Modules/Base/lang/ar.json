@@ -1,6 +1,8 @@
 {
     "global":{
-        "view_more":"عرض المزيد"
+        "view_more":"عرض المزيد",
+        "next":"التالي",
+        "previous":"السابق"
     },
     "Name": "الاسم",
     "Language": "اللغة",
@@ -204,7 +206,8 @@
         "title":"اكتشف العقارات الاكثر شعبية",
         "featured":"مميز",
         "sold_out":"مباع",
-        "recommended":"موصى به"
+        "recommended":"موصى به",
+        "property_Listings":"قائمة العقارات"
     },
     "services":{
         "title":"لماذا نحن؟",

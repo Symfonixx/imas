@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\Property\Http\Controllers\PropertyController;
+use Modules\Property\Http\Controllers\Property\PropertyController as PropertyPropertyController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,4 +17,4 @@ use Modules\Property\Http\Controllers\PropertyController;
 
 Route::resource('property', PropertyController::class)->names('property');
 
-Route::get('/property', [PropertyController::class, 'index'])->name('property.index');
+Route::get('/property', [PropertyPropertyController::class, 'index'])->name('property.index');

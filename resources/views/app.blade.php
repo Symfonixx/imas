@@ -37,7 +37,7 @@
     @routes
     @inertiaHead
 </head>
-<body class="homepage-9 hp-6 homepage-1 mh">
+<body class="homepage-9 hp-6 homepage-1 mh ">
 @inertia
 {{-- Minimal scripts for theme header / mobile nav (Bootstrap 4 + jQuery, aligned with Find Houses) --}}
 <script src="{{ $fh }}/js/jquery-3.5.1.min.js"></script>

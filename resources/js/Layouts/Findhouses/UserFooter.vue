@@ -6,7 +6,7 @@
                     <div class="col-lg-3 col-md-6">
                         <div class="netabout">
                             <Link :href="route('home')" class="logo">
-                                <img :src="`${themeUrl}/images/logo-footer.svg`" alt="">
+                                <img :src="logoUrl" alt="logo" class="footer_logo">
                             </Link>
                             <p>{{ tagline }}</p>
                         </div>
@@ -126,6 +126,11 @@ const themeUrl = computed(() => page.props.theme_url || '');
 const auth = computed(() => page.props.auth);
 const appName = computed(() => page.props.appName);
 const settings = computed(() => page.props.settings || {});
+const mediaData = computed(() => page.props.globals.media || {});
+const logoUrl = computed(() => {
+    const m = mediaData.value;
+    return m.black_logo || m.white_logo || "";
+});
 
 const year = new Date().getFullYear();
 
@@ -146,3 +151,13 @@ function trans(key) {
     return page.props.translations[key] || key;
 }
 </script>
+
+
+<style scoped>
+.logo {
+    height: 60px;
+    width: 60px;
+    object-fit: contain;
+    /* transform: translate3d(0, 0, 0); */
+}
+</style>

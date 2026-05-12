@@ -39,7 +39,9 @@
                             <li
                                 v-for="item in navLinks"
                                 :key="item.key"
-                                :class="{ 'has-submenu': item?.children?.length }"
+                                :class="{
+                                    'has-submenu': item?.children?.length,
+                                }"
                             >
                                 <Link v-if="item.href" :href="item.href">
                                     {{ trans(item.key) }}
@@ -65,9 +67,7 @@
                                 }}</a>
                             </li> -->
                             <li class="d-xl-none mb-2 mt-2">
-                                <span >{{
-                                    trans("Language")
-                                }}</span>
+                                <span>{{ trans("Language") }}</span>
                                 <ul class="list-unstyled mb-0 pl-0">
                                     <li
                                         v-for="loc in localeSwitcher"
@@ -85,9 +85,13 @@
                                             "
                                         >
                                             <span
-                                                v-if="flagCountryClass(loc.code)"
+                                                v-if="
+                                                    flagCountryClass(loc.code)
+                                                "
                                                 class="fi lang-switch-flag"
-                                                :class="flagCountryClass(loc.code)"
+                                                :class="
+                                                    flagCountryClass(loc.code)
+                                                "
                                                 aria-hidden="true"
                                             ></span>
                                             {{ loc.native }}
@@ -194,7 +198,7 @@
                             <span class="show-lang-trigger-inner">
                                 <span
                                     v-if="flagCountryClass(currentLocale)"
-                                    class="fi lang-switch-flag lang-switch-flag--trigger "
+                                    class="fi lang-switch-flag lang-switch-flag--trigger"
                                     :class="flagCountryClass(currentLocale)"
                                     aria-hidden="true"
                                 ></span>
@@ -211,7 +215,8 @@
                                     href="#"
                                     class="lang-switch-row"
                                     :class="{
-                                        'current-lan': loc.code === currentLocale,
+                                        'current-lan':
+                                            loc.code === currentLocale,
                                     }"
                                     role="option"
                                     :aria-selected="loc.code === currentLocale"
@@ -219,7 +224,7 @@
                                 >
                                     <span
                                         v-if="flagCountryClass(loc.code)"
-                                        class="fi lang-switch-flag "
+                                        class="fi lang-switch-flag"
                                         :class="flagCountryClass(loc.code)"
                                         aria-hidden="true"
                                     ></span>
@@ -562,10 +567,10 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-.show-lang span strong{
-    padding:0 !important;
+.show-lang span strong {
+    padding: 0 !important;
 }
-.lang-switch-flag--trigger{
+.lang-switch-flag--trigger {
     font-size: 1.3em !important;
 }
 .show-lang .fa-caret-down.arrlan {

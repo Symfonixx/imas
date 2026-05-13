@@ -48,17 +48,70 @@ class HandleInertiaRequests extends Middleware
             'csrf' => csrf_token(),
             'asset_path' => asset('/'),
             'theme_url' => asset('theme/findhouses'),
-            'storage_path' => asset('storage').'/',
+            'storage_path' => asset('storage') . '/',
             'locale' => App::currentLocale(),
             'text_direction' => App::getLocale() === 'ar' ? 'rtl' : 'ltr',
             'translations' => $this->getTranslations(),
-            'locale_switcher' => fn () => $this->getLocaleSwitcher(),
-            'settings' => fn () => $this->sharedSettingsFlat(),
-            'globals' => fn () => $this->sharedGlobals(),
-            'auth' => fn () => $request->user()
-                ? $request->user()->only('id', 'name', 'email', 'type')
-                : null,
+            'locale_switcher' => fn() => $this->getLocaleSwitcher(),
+            'settings' => fn() => $this->sharedSettingsFlat(),
+            'globals' => fn() => $this->sharedGlobals(),
+            'auth' => fn() => $this->sharedAuthPayload($request),
         ]);
+    }
+
+    /**
+     * Front-office auth: full {@see $user->name}, compact {@see authNavDisplayName()}
+     * for nav, public avatar URLs via {@see \App\Models\User::getAvatarAttribute()}.
+     *
+     * @return array<string, mixed>|null
+     */
+    protected function sharedAuthPayload(Request $request): ?array
+    {
+        $user = $request->user();
+        if ($user === null) {
+            return null;
+        }
+
+        $avatarUrl = $user->avatar;
+
+        return [
+            'id' => $user->id,
+            'name' => $user->name,
+            'nav_display_name' => $this->authNavDisplayName((string) $user->name),
+            'email' => $user->email,
+            'type' => $user->type,
+            'img' => $avatarUrl,
+            'avatar' => $avatarUrl,
+        ];
+    }
+
+    /**
+     * Navbar label: one word → full name; two or more words → first character
+     * of each word joined (Unicode-safe), e.g. "Ahmed Sanad" → "AS".
+     */
+    protected function authNavDisplayName(string $name): string
+    {
+        $name = trim($name);
+        if ($name === '') {
+            return '';
+        }
+
+        $parts = preg_split('/\s+/u', $name, -1, PREG_SPLIT_NO_EMPTY);
+        if ($parts === false || $parts === []) {
+            return $name;
+        }
+
+        $count = count($parts);
+        if ($count === 1) {
+            return $parts[0];
+        }
+
+        $initials = '';
+        foreach ($parts as $part) {
+            $initials .= mb_substr($part, 0, 1);
+        }
+
+        return mb_strtoupper($initials);
     }
 
     /**
@@ -131,14 +184,14 @@ class HandleInertiaRequests extends Middleware
         $path = is_string($path) ? trim($path) : '';
 
         if ($path === '') {
-            return asset('storage/'.$default);
+            return asset('storage/' . $default);
         }
 
         if (preg_match('#^https?://#i', $path)) {
             return $path;
         }
 
-        return asset('storage/'.ltrim($path, '/'));
+        return asset('storage/' . ltrim($path, '/'));
     }
 
     public function getTranslations(): array
@@ -152,7 +205,7 @@ class HandleInertiaRequests extends Middleware
         // Iterate through each module to process the language file
         foreach ($modules as $module) {
             $modulePath = $module->getPath(); // Path to the module
-            $langFilePath = $modulePath."/lang/$locale.json";
+            $langFilePath = $modulePath . "/lang/$locale.json";
 
             if (file_exists($langFilePath)) {
                 // Decode the JSON file and merge with translations
@@ -180,7 +233,7 @@ class HandleInertiaRequests extends Middleware
 
         foreach ($input as $key => $value) {
             $segment = (string) $key;
-            $path = $prefix === '' ? $segment : $prefix.'.'.$segment;
+            $path = $prefix === '' ? $segment : $prefix . '.' . $segment;
 
             if (is_array($value) && $this->isAssocTranslationArray($value)) {
                 $result = array_merge($result, $this->flattenTranslationsForInertia($value, $path));

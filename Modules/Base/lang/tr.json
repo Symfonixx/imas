@@ -2,10 +2,13 @@
     "global":{
         "view_more":"Daha fazla görüntüle",
         "next":"Sonraki",
-        "previous":"Önceki"
+        "previous":"Önceki",
+        "LogOut":"Çıkış yap",
+        "profile":"Profil"
     },
     "Name": "Ad",
     "Language": "Dil",
+    "Social media": "Sosyal medya",
     "All rights are reserved": "Tüm hakları saklıdır",
     "Developed By Symfonix": "Symfonix tarafından geliştirilmiştir",
     "Dashboard": "Kontrol paneli",

@@ -2,10 +2,13 @@
     "global":{
         "view_more":"View more",
         "next":"Next",
-        "previous":"Previous"
+        "previous":"Previous",
+        "LogOut":"Log out",
+        "profile":"Profile"
     },
     "Name": "Name",
     "Language": "Language",
+    "Social media": "Social media",
     "All rights are reserved": "All rights reserved",
     "Developed By Symfonix": "Developed by Symfonix",
     "Dashboard": "Dashboard",

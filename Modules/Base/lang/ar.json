@@ -2,10 +2,13 @@
     "global":{
         "view_more":"عرض المزيد",
         "next":"التالي",
-        "previous":"السابق"
+        "previous":"السابق",
+        "LogOut":"تسجيل الخروج",
+        "profile":"الحساب الشخصي"
     },
     "Name": "الاسم",
     "Language": "اللغة",
+    "Social media": "وسائل التواصل الاجتماعي",
     "All rights are reserved": "جميع الحقوق محفوظة",
     "Developed By Symfonix": "تم تطويره بواسطة Symfonix",
     "Dashboard": "لوحة التحكم الرئيسية",

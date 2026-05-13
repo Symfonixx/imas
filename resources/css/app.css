@@ -140,7 +140,7 @@ html[dir="rtl"] #header .header-user-menu,
 html[dir="rtl"] #header.cloned .header-user-menu {
     float: left !important;
     margin-right: 0 !important;
-    margin-left: 50px !important;
+    /* margin-left: 50px !important; */
 }
 
 html[dir="rtl"] #header .lang-wrap,
@@ -302,12 +302,19 @@ html.mm-right .mm-menu .mm-navbar .mm-title {
  * swap sides while icons stay [prev=left, next=right] — looks broken. Keep the nav strip LTR;
  * Owl Carousel `rtl: true` (set in HomeTestimonials.vue) still advances slides in RTL order.
  */
-html[dir="rtl"] section.home-testimonials .owl-carousel.job_clientSlide .owl-nav {
+html[dir="rtl"]
+    section.home-testimonials
+    .owl-carousel.job_clientSlide
+    .owl-nav {
     direction: ltr;
 }
 
 /* Optional: ensure chevrons aren’t mirrored by global RTL rules inside those buttons */
-html[dir="rtl"] section.home-testimonials .owl-carousel.job_clientSlide .owl-nav .fa {
+html[dir="rtl"]
+    section.home-testimonials
+    .owl-carousel.job_clientSlide
+    .owl-nav
+    .fa {
     transform: none;
 }
 
@@ -353,6 +360,20 @@ html[dir="rtl"] section.home-testimonials .owl-carousel.job_clientSlide .owl-nav
     color: #707070 !important;
 }
 
+/* Theme `.homepage-1 .header-user-name:before` forces white; override for solid bar (FontAwesome chevron). */
+#header-container.imas-navbar-solid .header-user-name:before,
+#header-container.imas-navbar-solid
+    #header.cloned.sticky
+    .header-user-name:before,
+#header-container.imas-navbar-solid
+    #header.cloned.unsticky
+    .header-user-name:before,
+#header-container.imas-navbar-solid
+    #navigation.style-2.cloned
+    .header-user-name:before {
+    color: #707070 !important;
+}
+
 /* Sticky clone (scroll) matches inner-page bar */
 #header-container.imas-navbar-solid #header.cloned.sticky,
 #header-container.imas-navbar-solid #header.cloned.unsticky {
@@ -360,16 +381,30 @@ html[dir="rtl"] section.home-testimonials .owl-carousel.job_clientSlide .owl-nav
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
-#header-container.imas-navbar-solid #header.cloned #navigation.style-1 ul li > a,
+#header-container.imas-navbar-solid
+    #header.cloned
+    #navigation.style-1
+    ul
+    li
+    > a,
 #header-container.imas-navbar-solid #header.cloned .sign-in a,
 #header-container.imas-navbar-solid #header.cloned .header-user-name,
 #header-container.imas-navbar-solid #header.cloned .show-lang span strong {
     color: #707070 !important;
 }
 
-#header-container.imas-navbar-solid #header.cloned .mmenu-trigger .hamburger-inner,
-#header-container.imas-navbar-solid #header.cloned .mmenu-trigger .hamburger-inner::before,
-#header-container.imas-navbar-solid #header.cloned .mmenu-trigger .hamburger-inner::after {
+#header-container.imas-navbar-solid
+    #header.cloned
+    .mmenu-trigger
+    .hamburger-inner,
+#header-container.imas-navbar-solid
+    #header.cloned
+    .mmenu-trigger
+    .hamburger-inner::before,
+#header-container.imas-navbar-solid
+    #header.cloned
+    .mmenu-trigger
+    .hamburger-inner::after {
     background-color: #707070 !important;
 }
 
@@ -377,6 +412,6 @@ html[dir="rtl"] section.home-testimonials .owl-carousel.job_clientSlide .owl-nav
     color: #707070 !important;
 }
 
-.text-start{
+.text-start {
     text-align: start !important;
 }

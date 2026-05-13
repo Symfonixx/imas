@@ -1,5 +1,6 @@
 <template>
     <div id="wrapper">
+        <UserTopBar />
         <UserNavbar
             :nav-links="navLinks"
             :transparent-navbar="navbarTransparent"
@@ -14,6 +15,7 @@
 import { computed, watch } from "vue";
 import { usePage } from "@inertiajs/vue3";
 import UserNavbar from "@/Layouts/Findhouses/UserNavbar.vue";
+import UserTopBar from "@/Layouts/Findhouses/UserTopBar.vue";
 import UserFooter from "@/Layouts/Findhouses/UserFooter.vue";
 
 const page = usePage();
@@ -27,8 +29,9 @@ const navbarTransparent = computed(() => {
     } catch {
         /* Ziggy may be unavailable during SSR/tests */
     }
-    const c = page.component || "";
-    return /Base\/Index$/i.test(String(c));
+    const c = String(page.component || "");
+    // Match Inertia name from `Inertia::render('Base::Index', …)` (also tolerate `Base/Index`).
+    return /^Base(::|\/)Index$/i.test(c);
 });
 
 function safeRoute(name, fallbackHref = "#") {

@@ -131,7 +131,10 @@
                     </nav>
                 </div>
 
-                <div class="right-side d-none d-none d-lg-none d-xl-flex">
+                <div
+                    v-if="auth"
+                    class="right-side d-none d-none d-lg-none d-xl-flex"
+                >
                     <div class="header-widget">
                         <Link :href="route('register')" class="button border">
                             {{ trans("Add Listing") }}
@@ -140,26 +143,52 @@
                     </div>
                 </div>
 
-                <div v-if="auth" class="header-user-menu user-menu add">
-                    <div class="header-user-name">
-                        <span
-                            ><img
-                                :src="`${themeUrl}/images/testimonials/ts-1.jpg`"
-                                alt=""
-                        /></span>
-                        {{ trans("Hi") }}, {{ auth.name }}!
+                <div
+                    v-if="auth"
+                    ref="userMenuWrapRef"
+                    class="header-user-menu user-menu add UserMenu "
+                    :class="{ active: userMenuOpen }"
+                >
+                    <div
+                        class="header-user-name"
+                        role="button"
+                        tabindex="0"
+                        :aria-expanded="userMenuOpen"
+                        aria-haspopup="true"
+                        :aria-label="trans('Account menu')"
+                        @click.stop="toggleUserMenu"
+                        @keydown.enter.prevent="toggleUserMenu"
+                        @keydown.space.prevent="toggleUserMenu"
+                    >
+                        <span><img :src="auth.avatar" alt="" /></span>
+                        {{ trans("Hi") }} {{ auth.nav_display_name }}
                     </div>
-                    <ul>
+                    <ul class="imas-user-menu-dropdown text-start">
+                        <li v-if="isAdmin">
+                            <Link
+                                class="imas-user-menu-dropdown__item"
+                                :href="route('admin.dashboard.index')"
+                                @click="userMenuOpen = false"
+                            >
+                                {{ trans("Dashboard") }}
+                            </Link>
+                        </li>
                         <li>
-                            <a :href="route('home')">{{ trans("Profile") }}</a>
+                            <Link
+                                class="imas-user-menu-dropdown__item"
+                                :href="profileHref"
+                                @click="userMenuOpen = false"
+                            >
+                                {{ trans("global.profile") }}
+                            </Link>
                         </li>
                         <li>
                             <button
                                 type="button"
-                                class="dropdown-logout"
+                                class="imas-user-menu-dropdown__item dropdown-logout"
                                 @click="logout"
                             >
-                                {{ trans("Log Out") }}
+                                {{ trans("global.LogOut") }}
                             </button>
                         </li>
                     </ul>
@@ -177,7 +206,7 @@
                 </div>
 
                 <div
-                    class="header-user-menu user-menu add d-none d-lg-none d-xl-flex"
+                    class="header-user-menu user-menu add d-none d-lg-none d-xl-flex mx-2 p-0"
                 >
                     <div
                         ref="langWrapRef"
@@ -265,9 +294,20 @@ const page = usePage();
 
 const langMenuOpen = ref(false);
 const langWrapRef = ref(null);
+const userMenuOpen = ref(false);
+const userMenuWrapRef = ref(null);
 
 const themeUrl = computed(() => page.props.theme_url || "");
 const auth = computed(() => page.props.auth);
+
+const isAdmin = computed(() => auth.value?.type === "admin");
+
+const profileHref = computed(() => {
+    if (isAdmin.value) {
+        return route("admin.profile.edit");
+    }
+    return route("home");
+});
 
 const mediaData = computed(() => page.props.globals.media || {});
 const logoUrl = computed(() => {
@@ -307,15 +347,26 @@ function flagCountryClass(localeCode) {
 
 function toggleLangMenu() {
     langMenuOpen.value = !langMenuOpen.value;
+    if (langMenuOpen.value) {
+        userMenuOpen.value = false;
+    }
 }
 
-function closeLangMenuOnOutsideClick(event) {
-    const el = langWrapRef.value;
-    if (!el || !langMenuOpen.value) {
-        return;
-    }
-    if (!el.contains(event.target)) {
+function toggleUserMenu() {
+    userMenuOpen.value = !userMenuOpen.value;
+    if (userMenuOpen.value) {
         langMenuOpen.value = false;
+    }
+}
+
+function closeHeaderDropdownsOnOutsideClick(event) {
+    const langEl = langWrapRef.value;
+    if (langEl && langMenuOpen.value && !langEl.contains(event.target)) {
+        langMenuOpen.value = false;
+    }
+    const userEl = userMenuWrapRef.value;
+    if (userEl && userMenuOpen.value && !userEl.contains(event.target)) {
+        userMenuOpen.value = false;
     }
 }
 
@@ -325,6 +376,7 @@ function switchLocale(url) {
 }
 
 function logout() {
+    userMenuOpen.value = false;
     router.post(route("logout"));
 }
 
@@ -517,6 +569,7 @@ function teardownStickyHeaderClone() {
 
 function reinitHeaderChromeForLocale() {
     langMenuOpen.value = false;
+    userMenuOpen.value = false;
     nextTick(() => {
         teardownStickyHeaderClone();
         teardownMobileMenuMmenu();
@@ -536,7 +589,7 @@ watch(
 );
 
 onMounted(() => {
-    document.addEventListener("click", closeLangMenuOnOutsideClick);
+    document.addEventListener("click", closeHeaderDropdownsOnOutsideClick);
 
     nextTick(() => {
         initStickyHeaderClone();
@@ -554,7 +607,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-    document.removeEventListener("click", closeLangMenuOnOutsideClick);
+    document.removeEventListener("click", closeHeaderDropdownsOnOutsideClick);
 
     teardownStickyHeaderClone();
     teardownMobileMenuMmenu();
@@ -576,15 +629,51 @@ onBeforeUnmount(() => {
 .show-lang .fa-caret-down.arrlan {
     left: 90px;
 }
+/* Override Find Houses `float: left` + `text-align: left` on dropdown rows so LTR/RTL both align to inline-start. */
+.header-user-menu.user-menu .imas-user-menu-dropdown {
+    text-align: start !important;
+    /* margin-left: 50px !important; */
+}
+
+.header-user-menu.user-menu .imas-user-menu-dropdown > li {
+    float: none !important;
+    text-align: start !important;
+    width: 100% !important;
+}
+
+.header-user-menu.user-menu .imas-user-menu-dropdown__item {
+    box-sizing: border-box;
+    color: #696969;
+    cursor: pointer;
+    display: block !important;
+    float: none !important;
+    font: inherit;
+    line-height: 22px;
+    padding: 5px 15px;
+    text-align: start !important;
+    text-decoration: none;
+    width: 100% !important;
+}
+
+.header-user-menu.user-menu a.imas-user-menu-dropdown__item:hover {
+    color: #66676b;
+}
+
 .dropdown-logout {
     background: none;
     border: 0;
-    color: inherit;
-    cursor: pointer;
-    font: inherit;
-    padding: 0;
-    text-align: start;
-    width: 100%;
+}
+
+.header-user-menu.user-menu
+    .imas-user-menu-dropdown__item.dropdown-logout:hover {
+    color: #66676b;
+}
+
+/* styles.css loads after menu.css and forces .header-user-menu ul hidden — re-open when .active (Vue toggle). */
+.header-user-menu.user-menu.active > ul {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translate3d(0, 0, 0) !important;
 }
 
 /* Theme leaves .lang-tooltip permanently hidden; toggle visibility in JS. */
@@ -616,4 +705,13 @@ onBeforeUnmount(() => {
 .lang-switch-flag--trigger {
     font-size: 1em;
 }
+.UserMenu{
+    /* margin-inline-end: 50px !important;
+        */
+
+        margin:0 50px !important;
+}
+/* html[dir="rtl"] .header-user-menu.user-menu.add{
+    margin-left: 50px !important;
+} */
 </style>

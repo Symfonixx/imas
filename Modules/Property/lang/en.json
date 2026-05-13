@@ -97,5 +97,14 @@
     "Remove": "Remove",
     "Other": "Other",
     "Why to buy this property": "Why to buy this property",
-    "Add one row per layout. Choose a type, then enter area and starting price.": "Add one row per layout. Choose a type, then enter area and starting price."
+    "Add one row per layout. Choose a type, then enter area and starting price.": "Add one row per layout. Choose a type, then enter area and starting price.",
+    "Project unit types": "Project unit types",
+    "Add project unit type": "Add project unit type",
+    "Edit project unit type": "Edit project unit type",
+    "Search in project unit types": "Search in project unit types",
+    "Sort order": "Sort order",
+    "Active": "Active",
+    "Lower numbers appear first in property forms.": "Lower numbers appear first in property forms.",
+    "e.g. 2+1": "e.g. 2+1",
+    "Created at": "Created at"
 }

@@ -40,15 +40,7 @@
                     <span class="menu-arrow"></span>
                 </span>
                 <div class="menu-sub menu-sub-accordion {{ isset($active['location_cities']) || isset($active['locations']) || isset($active['property_types']) || isset($active['project_unit_types']) ? 'show' : '' }}">
-                    <div class="menu-item">
-                        <a class="menu-link {{ isset($active['location_cities']) ? 'active' : '' }}"
-                           href="{{ route('admin.locations.index', ['type' => 'city']) }}">
-                            <span class="menu-bullet">
-                                <span class="bullet bullet-dot"></span>
-                            </span>
-                            <span class="menu-title">{{ __('Cities & municipalities') }}</span>
-                        </a>
-                    </div>
+      
                     <div class="menu-item">
                         <a class="menu-link {{ isset($active['locations']) ? 'active' : '' }}"
                            href="{{ route('admin.locations.index') }}">
@@ -65,6 +57,15 @@
                                 <span class="bullet bullet-dot"></span>
                             </span>
                             <span class="menu-title">{{ __('Project type') }}</span>
+                        </a>
+                    </div>
+                    <div class="menu-item">
+                        <a class="menu-link {{ isset($active['project_unit_types']) ? 'active' : '' }}"
+                           href="{{ route('admin.project_unit_types.index') }}">
+                            <span class="menu-bullet">
+                                <span class="bullet bullet-dot"></span>
+                            </span>
+                            <span class="menu-title">{{ __('Project unit types') }}</span>
                         </a>
                     </div>
 

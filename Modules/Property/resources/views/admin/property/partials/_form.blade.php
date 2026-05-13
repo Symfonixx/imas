@@ -28,6 +28,7 @@
     } elseif ($isEdit && $property->unitTypes->isNotEmpty()) {
         $unitTypeRowsForView = $property->unitTypes->map(fn ($u) => [
             'id' => $u->id,
+            'catalog_id' => $u->catalog_id,
             'name' => $u->name,
             'min_area' => $u->min_area,
             'max_area' => $u->max_area,
@@ -37,26 +38,24 @@
         $unitTypeRowsForView = [];
     }
 
-    $unitTypeOptions = $unitTypeOptions ?? config('property.unit_type_options', []);
+    $catalogItems = $projectUnitTypesCatalog ?? [];
 @endphp
 
 <div class="card card-flush mb-7">
     <div class="card-body">
-        <input type="hidden" name="price" value="{{ old('price', $isEdit ? $property->price : 0) }}">
-
         <x-admin.form-group label="Project code" name="project_code" required>
             <input id="slug" type="text" name="project_code" class="form-control form-control-solid"
                    value="{{ old('project_code', optional($property)->project_code) }}"/>
         </x-admin.form-group>
 
-        <x-admin.form-group label="Project name" name="project_name" required translatable>
-            <input id="project_name" type="text" name="project_name" class="form-control form-control-solid"
-                   value="{{ old('project_name', optional($property)->project_name) }}"/>
-        </x-admin.form-group>
-
         <x-admin.form-group label="Project title" name="title" required translatable>
             <input id="title" type="text" name="title" class="form-control form-control-solid"
                    value="{{ old('title', optional($property)->title) }}"/>
+        </x-admin.form-group>
+
+        <x-admin.form-group label="Project name" name="project_name" translatable>
+            <input id="project_name" type="text" name="project_name" class="form-control form-control-solid"
+                   value="{{ old('project_name', optional($property)->project_name) }}"/>
         </x-admin.form-group>
 
         <x-admin.form-group label="Overview" name="overview" required translatable>
@@ -128,14 +127,37 @@
             </select>
         </x-admin.form-group>
 
+        <div class="row mb-2">
+            <div class="col-md-4">
+                <x-admin.form-group label="Price" name="price">
+                    <input type="number" step="0.01" min="0" name="price" class="form-control form-control-solid"
+                           value="{{ old('price', $isEdit ? optional($property)->price : '') }}"/>
+                </x-admin.form-group>
+            </div>
+            <div class="col-md-4">
+                <x-admin.form-group label="Min area" name="min_area">
+                    <input type="number" step="0.01" min="0" name="min_area" class="form-control form-control-solid"
+                           value="{{ old('min_area', $isEdit ? optional($property)->min_area : '') }}"/>
+                </x-admin.form-group>
+            </div>
+            <div class="col-md-4">
+                <x-admin.form-group label="Max area" name="max_area">
+                    <input type="number" step="0.01" min="0" name="max_area" class="form-control form-control-solid"
+                           value="{{ old('max_area', $isEdit ? optional($property)->max_area : '') }}"/>
+                </x-admin.form-group>
+            </div>
+        </div>
+
         <div class="fv-row mb-7">
             <label class="form-label fw-semibold fs-6">{{ __('Unit types') }}</label>
             <div class="text-muted fs-7 mb-3">{{ __('Add one row per layout. Choose a type, then enter area and starting price.') }}</div>
             <div id="unit-type-rows">
                 @foreach($unitTypeRowsForView as $i => $ut)
                     @php
-                        $nameVal = (string) ($ut['name'] ?? '');
-                        $inPreset = $nameVal !== '' && in_array($nameVal, $unitTypeOptions, true);
+                        $nameVal = (string) old("unit_types.$i.name", $ut['name'] ?? '');
+                        $cid = old("unit_types.$i.catalog_id", $ut['catalog_id'] ?? '');
+                        $catalogIds = collect($catalogItems)->pluck('id')->map(fn ($v) => (string) $v)->all();
+                        $inCatalog = $cid !== null && $cid !== '' && in_array((string) $cid, $catalogIds, true);
                     @endphp
                     <div class="card card-bordered mb-4 js-unit-row" data-row-index="{{ $i }}">
                         <div class="card-body py-4">
@@ -144,21 +166,21 @@
                                     <label class="form-label">{{ __('Unit type') }}</label>
                                     <select class="form-select form-select-solid js-unit-preset">
                                         <option value="">{{ __('Select') }}</option>
-                                        @foreach($unitTypeOptions as $opt)
-                                            <option
-                                                value="{{ $opt }}" @selected($inPreset && $nameVal === $opt)>{{ $opt }}</option>
+                                        @foreach($catalogItems as $c)
+                                            <option value="{{ $c['id'] }}" data-label="{{ e($c['name']) }}"
+                                                @selected((string) $cid === (string) $c['id'])>{{ $c['name'] }}</option>
                                         @endforeach
                                         <option
-                                            value="__other__" @selected($nameVal !== '' && ! $inPreset)>{{ __('Other') }}</option>
+                                            value="__other__" @selected($nameVal !== '' && ! $inCatalog)>{{ __('Other') }}</option>
                                     </select>
                                     <input type="text"
-                                           class="form-control form-control-solid mt-2 js-unit-custom {{ ($nameVal !== '' && ! $inPreset) ? '' : 'd-none' }}"
-                                           value="{{ ($nameVal !== '' && ! $inPreset) ? $nameVal : '' }}"
+                                           class="form-control form-control-solid mt-2 js-unit-custom {{ ($nameVal !== '' && ! $inCatalog) ? '' : 'd-none' }}"
+                                           value="{{ ($nameVal !== '' && ! $inCatalog) ? $nameVal : '' }}"
                                            placeholder="{{ __('Custom unit type') }}"
                                            autocomplete="off">
                                 </div>
                                 <div class="col-lg-8">
-                                    <div class="row g-3 js-unit-numeric {{ $nameVal !== '' ? '' : 'd-none' }}">
+                                    <div class="row g-3 js-unit-numeric {{ ($nameVal !== '' || $inCatalog) ? '' : 'd-none' }}">
                                         <div class="col-md-4">
                                             <label class="form-label">{{ __('Min area') }}</label>
                                             <input type="number" step="0.01" min="0" class="form-control form-control-solid"
@@ -188,6 +210,8 @@
                             </div>
                             <input type="hidden" name="unit_types[{{ $i }}][id]" class="js-unit-id"
                                    value="{{ $ut['id'] ?? '' }}">
+                            <input type="hidden" name="unit_types[{{ $i }}][catalog_id]" class="js-unit-catalog-id"
+                                   value="{{ $inCatalog ? $cid : '' }}">
                             <input type="hidden" name="unit_types[{{ $i }}][name]" class="js-unit-name-hidden"
                                    value="{{ $nameVal }}">
                         </div>
@@ -315,7 +339,7 @@
             const PREFILL_CITY_ID = @json($prefillCityId);
             const PREFILL_DISTRICT_ID = @json($prefillDistrictId);
             const PREFILL_AREA_ID = @json($selectedAreaIdValue);
-            const UNIT_TYPE_PRESETS = @json($unitTypeOptions);
+            const CATALOG_ITEMS = @json($catalogItems);
             const OTHER_VALUE = '__other__';
 
             const $city = window.jQuery ? window.jQuery('#city_id') : null;
@@ -433,6 +457,7 @@
                 const preset = row.querySelector('.js-unit-preset');
                 const custom = row.querySelector('.js-unit-custom');
                 const hidden = row.querySelector('.js-unit-name-hidden');
+                const catalogHidden = row.querySelector('.js-unit-catalog-id');
                 const numeric = row.querySelector('.js-unit-numeric');
                 if (!preset || !hidden) {
                     return;
@@ -440,17 +465,30 @@
                 let name = '';
                 const pv = preset.value;
                 if (pv === OTHER_VALUE) {
+                    if (catalogHidden) {
+                        catalogHidden.value = '';
+                    }
                     name = (custom && custom.value) ? custom.value.trim() : '';
-                    custom?.classList.toggle('d-none', false);
+                    custom?.classList.remove('d-none');
                 } else if (pv) {
-                    name = pv;
+                    if (catalogHidden) {
+                        catalogHidden.value = pv;
+                    }
+                    const opt = preset.selectedOptions[0];
+                    name = (opt && opt.dataset && opt.dataset.label)
+                        ? String(opt.dataset.label).trim()
+                        : (opt ? String(opt.textContent || '').trim() : '');
                     custom?.classList.add('d-none');
                 } else {
+                    if (catalogHidden) {
+                        catalogHidden.value = '';
+                    }
                     custom?.classList.add('d-none');
                 }
                 hidden.value = name;
                 if (numeric) {
-                    numeric.classList.toggle('d-none', name === '');
+                    const hasCatalog = catalogHidden && String(catalogHidden.value).trim() !== '';
+                    numeric.classList.toggle('d-none', name === '' && ! hasCatalog);
                 }
             }
 
@@ -506,10 +544,11 @@
                 opt0.value = '';
                 opt0.textContent = @json(__('Select'));
                 sel.appendChild(opt0);
-                UNIT_TYPE_PRESETS.forEach((p) => {
+                CATALOG_ITEMS.forEach((item) => {
                     const o = document.createElement('option');
-                    o.value = p;
-                    o.textContent = p;
+                    o.value = String(item.id);
+                    o.textContent = item.name;
+                    o.dataset.label = item.name;
                     sel.appendChild(o);
                 });
                 const optOther = document.createElement('option');
@@ -561,6 +600,11 @@
                 hidId.name = `unit_types[${i}][id]`;
                 hidId.className = 'js-unit-id';
                 hidId.value = '';
+                const hidCatalog = document.createElement('input');
+                hidCatalog.type = 'hidden';
+                hidCatalog.name = `unit_types[${i}][catalog_id]`;
+                hidCatalog.className = 'js-unit-catalog-id';
+                hidCatalog.value = '';
                 const hidName = document.createElement('input');
                 hidName.type = 'hidden';
                 hidName.name = `unit_types[${i}][name]`;
@@ -568,6 +612,7 @@
                 hidName.value = '';
                 body.appendChild(row);
                 body.appendChild(hidId);
+                body.appendChild(hidCatalog);
                 body.appendChild(hidName);
                 wrap.appendChild(body);
                 unitRowsEl.appendChild(wrap);
@@ -582,7 +627,9 @@
                 document.querySelectorAll('.js-unit-row').forEach((row) => syncUnitRowHidden(row));
                 document.querySelectorAll('.js-unit-row').forEach((row) => {
                     const h = row.querySelector('.js-unit-name-hidden');
-                    if (!h || !String(h.value).trim()) {
+                    const c = row.querySelector('.js-unit-catalog-id');
+                    const keep = (h && String(h.value).trim() !== '') || (c && String(c.value).trim() !== '');
+                    if (! keep) {
                         row.remove();
                     }
                 });

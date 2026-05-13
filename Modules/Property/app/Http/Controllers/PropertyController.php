@@ -12,7 +12,6 @@ use Modules\Property\Enums\LocationType;
 use Modules\Property\Models\Location;
 use Modules\Property\Models\Property;
 use Modules\Property\Models\PropertyType;
-use Modules\Property\Presentation\ListingPropertyAttributesPresenter;
 use Modules\User\Enums\CmsStatus;
 use Symfony\Component\HttpFoundation\JsonResponse;
 

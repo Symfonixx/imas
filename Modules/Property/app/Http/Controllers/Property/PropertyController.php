@@ -23,11 +23,7 @@ class PropertyController extends Controller
      */
     private array $propertyCardWith = [
         'location:id,name',
-        'propertyType:id,name,slug,attribute_family_id',
-        'propertyType.attributeFamily',
-        'propertyType.attributeFamily.attributes',
-        'attributeValues',
-        'attributeValues.attribute',
+        'propertyType:id,name,slug',
     ];
 
     public function __construct(

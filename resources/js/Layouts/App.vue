@@ -47,20 +47,21 @@ function safeRoute(name, fallbackHref = "#") {
 }
 
 const navLinks = computed(() => [
-    { key: "Home", href: safeRoute("home", "/") },
-    { key: "Buy Real Estate", href: safeRoute("property.index") },
+    { key: "navBar.Home", href: safeRoute("home", "/") },
+    { key: "navBar.Buy Real Estate", href: safeRoute("property.index") },
+    { key: "navBar.Blogs", href: safeRoute("blog.index") },
     {
-        key: "Turkish Citizenship",
+        key: "navBar.Turkish Citizenship",
         href: safeRoute("turkish-citizenship", "/turkish-citizenship"),
     },
-    { key: "Contact us", href: "/contact-us" },
+    // { key: "Contact us", href: "/contact-us" },
     {
-        key: "Pages",
+        key: "navBar.Pages",
         children: [
-            { key: "News & Laws", href: "/news-laws" },
-            { key: "Property Management", href: "/property-management" },
-            { key: "About Turkey", href: "/about-turkey" },
-            { key: "Services", href: "/services" },
+            { key: "navBar.News & Laws", href: "/news-laws" },
+            { key: "navBar.Property Management", href: "/property-management" },
+            { key: "navBar.About Turkey", href: "/about-turkey" },
+            { key: "navBar.Services", href: "/services" },
         ],
     },
     // { key: "About us", href: "/about-us" },

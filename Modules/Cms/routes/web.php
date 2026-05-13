@@ -10,3 +10,11 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+use Illuminate\Support\Facades\Route;
+use Modules\Cms\Http\Controllers\BlogController;
+
+Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
+
+
+//Route::get('/property', [PropertyPropertyController::class, 'index'])->name('property.index');

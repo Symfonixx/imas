@@ -247,7 +247,28 @@
         "title":"Articles & Tips",
         "description":"Stay up to date with the latest news and insights from our experts.",
         "read_more":"Read more..."
+    },
+    "blogs":{
+        "hub_title":"Blog",
+        "breadcrumb_home":"Home",
+        "breadcrumb_blog":"Blog",
+        "recent_posts":"Recent posts",
+        "categories":"Categories",
+        "search_placeholder":"Search articles…",
+        "search":"Search",
+        "no_posts":"No posts found.",
+        "all_categories":"All categories"
+    },
+    "navBar":{
+        "Home":"Home",
+        "Buy Real Estate":"Buy real estate",
+        "Blogs":"Blogs",
+        "Turkish Citizenship":"Turkish citizenship",
+        "Contact us":"Contact us",
+        "Pages":"Pages",
+        "News & Laws":"News & laws",
+        "Property Management":"Property management",
+        "About Turkey":"About Turkey",
+        "Services":"Services"
     }
-   
-    
 }

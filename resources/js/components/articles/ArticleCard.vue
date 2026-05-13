@@ -1,11 +1,12 @@
 <template>
     <div
         class="news-item imas-article-card w-100 h-100"
-        :class="{ 'no-mb': isLast }"
+        :class="[{ 'no-mb': isLast }, themeRootClass]"
     >
         <a :href="article.url" class="news-img-link imas-article-card__img-link">
             <div class="news-item-img imas-article-card__img">
                 <img
+                    class="img-responsive"
                     :src="article.image"
                     :alt="article.title"
                 />
@@ -51,6 +52,10 @@ defineProps({
     readMoreLabel: {
         type: String,
         default: "Read more...",
+    },
+    themeRootClass: {
+        type: String,
+        default: "",
     },
 });
 </script>

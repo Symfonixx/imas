@@ -248,5 +248,28 @@
         "title":"Son gönderiler",
         "description":"Son gönderilerimizden haberdar olun.",
         "read_more":"Devamını oku..."
+    },
+    "blogs":{
+        "hub_title":"Blog",
+        "breadcrumb_home":"Ana sayfa",
+        "breadcrumb_blog":"Blog",
+        "recent_posts":"Son yazılar",
+        "categories":"Kategoriler",
+        "search_placeholder":"Yazılarda ara…",
+        "search":"Ara",
+        "no_posts":"Yazı bulunamadı.",
+        "all_categories":"Tüm kategoriler"
+    },
+    "navBar":{
+        "Home":"Ana sayfa",
+        "Buy Real Estate":"Gayrimenkul satın al",
+        "Blogs":"Bloglar",
+        "Turkish Citizenship":"Türk vatandaşlığı",
+        "Contact us":"Bize ulaşın",
+        "Pages":"Sayfalar",
+        "News & Laws":"Haberler ve yasalar",
+        "Property Management":"Gayrimenkul yönetimi",
+        "About Turkey":"Türkiye hakkında",
+        "Services":"Hizmetler"
     }
 }

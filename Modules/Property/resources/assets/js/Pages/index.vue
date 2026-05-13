@@ -83,11 +83,11 @@
                                 <div class="text-heading text-left">
                                     <p class="pb-2">
                                         <Link :href="route('home')">{{
-                                            trans("listing_page.breadcrumb_home")
+                                            trans("navBar.Home")
                                         }}</Link>
                                         &nbsp;/&nbsp;
                                         <span>{{
-                                            trans("listing_page.breadcrumb_listings")
+                                            trans("navBar.Buy Real Estate")
                                         }}</span>
                                     </p>
                                 </div>

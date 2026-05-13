@@ -97,15 +97,7 @@
     "The field must be 3 characters at least": "يجب أن يتكون الحقل من 3 أحرف على الأقل",
     "Personal Image Field Is Required": "حقل الصورة الشخصية مطلوب",
     "Are you sure you want to delete it?": "هل أنت متأكد أنك تريد حذفه؟",
-    "Home": "الصفحة الرئيسية",
-    "Buy Real Estate": "شراء عقار",
-    "Turkish Citizenship": "الجنسية التركية",
-    "Contact us": "اتصل بنا",
-    "Pages": "صفحات",
-    "News & Laws": "الأخبار والقوانين",
-    "Property Management": "إدارة العقارات",
-    "About Turkey": "عن تركيا",
-    "Services": "الخدمات",
+   
     "Enter Keyword...": "أدخل كلمة البحث…",
     "Property Type": "نوع العقار",
     "Location": "الموقع",
@@ -247,5 +239,28 @@
         "title":"المقالات والتوصيات",
         "description":"ابق على اطلاع على أحدث الأخبار والرؤى من خبرائنا.",
         "read_more":"اقرأ المزيد..."
+    },
+    "blogs":{
+        "hub_title":"المدونة",
+        "breadcrumb_home":"الرئيسية",
+        "breadcrumb_blog":"المدونة",
+        "recent_posts":"أحدث المقالات",
+        "categories":"التصنيفات",
+        "search_placeholder":"ابحث في المقالات…",
+        "search":"بحث",
+        "no_posts":"لا توجد مقالات.",
+        "all_categories":"كل التصنيفات"
+    },
+    "navBar":{
+        "Home":"الرئيسية",
+        "Buy Real Estate":"شراء العقارات",
+        "Blogs":"المدونات",
+        "Turkish Citizenship":"الجنسية التركية",
+        "Contact us":"اتصل بنا",
+        "Pages":"الصفحات",
+        "News & Laws":"الأخبار والقوانين",
+        "Property Management":"إدارة العقارات",
+        "About Turkey":"عن تركيا",
+        "Services":"الخدمات"
     }
 }

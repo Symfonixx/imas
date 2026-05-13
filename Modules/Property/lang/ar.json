@@ -97,5 +97,14 @@
     "Remove": "حذف",
     "Other": "أخرى",
     "Why to buy this property": "لماذا تشتري هذا العقار",
-    "Add one row per layout. Choose a type, then enter area and starting price.": "أضف صفاً لكل مخطط. اختر النوع ثم أدخل المساحة والسعر الابتدائي."
+    "Add one row per layout. Choose a type, then enter area and starting price.": "أضف صفاً لكل مخطط. اختر النوع ثم أدخل المساحة والسعر الابتدائي.",
+    "Project unit types": "أنواع وحدات المشروع",
+    "Add project unit type": "إضافة نوع وحدة مشروع",
+    "Edit project unit type": "تعديل نوع وحدة المشروع",
+    "Search in project unit types": "البحث في أنواع وحدات المشروع",
+    "Sort order": "ترتيب العرض",
+    "Active": "نشط",
+    "Lower numbers appear first in property forms.": "الأرقام الأصغر تظهر أولاً في نماذج العقارات.",
+    "e.g. 2+1": "مثال: 2+1",
+    "Created at": "تاريخ الإنشاء"
 }

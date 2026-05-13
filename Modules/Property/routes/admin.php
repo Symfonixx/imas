@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\Property\Http\Controllers\Admin\LocationController;
+use Modules\Property\Http\Controllers\Admin\ProjectUnitTypeController;
 use Modules\Property\Http\Controllers\Admin\PropertyController;
 use Modules\Property\Http\Controllers\Admin\PropertyTypeController;
 use Modules\Property\Http\Controllers\Admin\TurkishCitizenshipController;
@@ -14,6 +15,10 @@ Route::middleware('can:Property Management')->group(function () {
     Route::delete('property_types/deleteMulti', [PropertyTypeController::class, 'deleteMulti'])
         ->name('property_types.deleteMulti');
     Route::resource('property_types', PropertyTypeController::class)->except(['destroy', 'show']);
+
+    Route::delete('project_unit_types/deleteMulti', [ProjectUnitTypeController::class, 'deleteMulti'])
+        ->name('project_unit_types.deleteMulti');
+    Route::resource('project_unit_types', ProjectUnitTypeController::class)->except(['destroy', 'show']);
 
     Route::get('properties/location-children', [PropertyController::class, 'locationChildren'])
         ->name('properties.location_children');

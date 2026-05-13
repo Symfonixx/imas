@@ -26,7 +26,7 @@
                 </div>
             </th>
             <th>{{ __('Thumbnail') }}</th>
-            <th>{{ __('Title') }}</th>
+            <th>{{ __('Project name') }}</th>
             <th>{{ __('Project code') }}</th>
             <th>{{ __('Property type') }}</th>
             <th>{{ __('Location') }}</th>
@@ -36,6 +36,9 @@
         </thead>
         <tbody class="text-gray-600 fw-semibold">
         @foreach($model as $row)
+            @php
+                $listName = $row->project_name ?: $row->title;
+            @endphp
             <tr>
                 <td>
                     <div class="form-check form-check-sm form-check-custom form-check-solid">
@@ -45,9 +48,9 @@
                 <td>
                     <img src="{{ $row->thumbnail ? asset('storage/' . $row->thumbnail) : asset('images/blank.png') }}"
                          class="w-60px h-60px object-fit-cover rounded"
-                         alt="{{ $row->title }}"/>
+                         alt="{{ $listName }}"/>
                 </td>
-                <td class="fw-bold">{{ $row->title }}</td>
+                <td class="fw-bold">{{ $listName }}</td>
                 <td><code>{{ $row->project_code }}</code></td>
                 <td>{{ $row->propertyType?->name ?? '—' }}</td>
                 <td>{{ $row->location?->name ?? '—' }}</td>

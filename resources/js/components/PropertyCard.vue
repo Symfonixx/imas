@@ -138,7 +138,7 @@ function formatMoney(amount) {
 const priceLabel = computed(() => formatMoney(props.property.price));
 
 const homesAttributes = computed(() =>
-    Array.isArray(props.property.attributes) ? props.property.attributes : [],
+    Array.isArray(props.property.highlights) ? props.property.highlights : [],
 );
 
 const hasHomesList = computed(() => homesAttributes.value.length > 0);

@@ -12,7 +12,7 @@ use Modules\Property\Enums\LocationType;
 use Modules\Property\Models\Location;
 use Modules\Property\Models\Property;
 use Modules\Property\Models\PropertyType;
-use Modules\Property\Presentation\ListingPropertyAttributesPresenter;
+use Modules\Property\Support\ListingCardHighlightBuilder;
 use Modules\User\Enums\CmsStatus;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -25,10 +25,6 @@ class PropertyController extends Controller
         'location:id,name',
         'propertyType:id,name,slug',
     ];
-
-    public function __construct(
-        private readonly ListingPropertyAttributesPresenter $listingPropertyAttributes,
-    ) {}
 
     /**
      * Display a listing of the resource.
@@ -227,7 +223,7 @@ class PropertyController extends Controller
             'is_sold_out' => (bool) $property->is_sold_out,
             'youtube_video_url' => $property->youtube_video_url,
             'updated_at' => $property->updated_at?->toIso8601String(),
-            'attributes' => $this->listingPropertyAttributes->present($property),
+            'highlights' => ListingCardHighlightBuilder::forProperty($property),
         ];
     }
 

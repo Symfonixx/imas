@@ -15,15 +15,11 @@ use Modules\Property\Enums\LocationType;
 use Modules\Property\Models\Location;
 use Modules\Property\Models\Property;
 use Modules\Property\Models\PropertyType;
-use Modules\Property\Presentation\ListingPropertyAttributesPresenter;
+use Modules\Property\Support\ListingCardHighlightBuilder;
 use Modules\User\Enums\CmsStatus;
 
 class HomeController extends Controller
 {
-    public function __construct(
-        private readonly ListingPropertyAttributesPresenter $listingPropertyAttributes,
-    ) {}
-
     public function index(): Response
     {
         $slides = Slide::query()
@@ -196,7 +192,7 @@ class HomeController extends Controller
             'is_sold_out' => (bool) $property->is_sold_out,
             'youtube_video_url' => $property->youtube_video_url,
             'updated_at' => $property->updated_at?->toIso8601String(),
-            'attributes' => $this->listingPropertyAttributes->present($property),
+            'highlights' => ListingCardHighlightBuilder::forProperty($property),
         ];
     }
 }

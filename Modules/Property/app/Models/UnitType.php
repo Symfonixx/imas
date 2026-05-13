@@ -14,6 +14,7 @@ class UnitType extends Model
      */
     protected $fillable = [
         'property_id',
+        'catalog_id',
         'name',
         'min_area',
         'max_area',
@@ -22,6 +23,7 @@ class UnitType extends Model
 
     protected $casts = [
         'property_id' => 'integer',
+        'catalog_id' => 'integer',
         'min_area' => 'decimal:2',
         'max_area' => 'decimal:2',
         'price' => 'decimal:2',
@@ -30,5 +32,10 @@ class UnitType extends Model
     public function property(): BelongsTo
     {
         return $this->belongsTo(Property::class, 'property_id');
+    }
+
+    public function catalog(): BelongsTo
+    {
+        return $this->belongsTo(ProjectUnitType::class, 'catalog_id');
     }
 }

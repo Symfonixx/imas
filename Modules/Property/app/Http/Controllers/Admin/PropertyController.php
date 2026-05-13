@@ -16,6 +16,7 @@ use Modules\Core\Http\Requests\DeleteMultiRequest;
 use Modules\Core\Support\AdminImageInput;
 use Modules\Property\Enums\LocationType;
 use Modules\Property\Models\Location;
+use Modules\Property\Models\ProjectUnitType;
 use Modules\Property\Models\Property;
 use Modules\Property\Models\PropertyType;
 use Modules\User\Enums\CmsStatus;
@@ -162,11 +163,22 @@ class PropertyController extends Controller
             ])
             ->values();
 
+        $projectUnitTypesCatalog = ProjectUnitType::query()
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get(['id', 'name'])
+            ->map(fn (ProjectUnitType $row): array => [
+                'id' => $row->id,
+                'name' => $this->translatedName($row->name),
+            ])
+            ->values();
+
         return [
             'property' => null,
             'propertyTypes' => $propertyTypes,
             'cities' => $cities,
-            'unitTypeOptions' => config('property.unit_type_options', []),
+            'projectUnitTypesCatalog' => $projectUnitTypesCatalog,
             'statuses' => CmsStatus::cases(),
         ];
     }
@@ -217,6 +229,11 @@ class PropertyController extends Controller
             'slides.*' => ['image', 'max:4096'],
             'unit_types' => ['nullable', 'array', 'max:100'],
             'unit_types.*.id' => $unitTypeIdRules,
+            'unit_types.*.catalog_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('project_unit_types', 'id'),
+            ],
             'unit_types.*.name' => ['nullable', 'string', 'max:255'],
             'unit_types.*.min_area' => ['nullable', 'numeric', 'min:0'],
             'unit_types.*.max_area' => ['nullable', 'numeric', 'min:0'],
@@ -239,6 +256,9 @@ class PropertyController extends Controller
             static function (mixed $row): bool {
                 if (! is_array($row)) {
                     return false;
+                }
+                if (isset($row['catalog_id']) && (int) $row['catalog_id'] > 0) {
+                    return true;
                 }
 
                 return trim((string) ($row['name'] ?? '')) !== '';
@@ -339,12 +359,21 @@ class PropertyController extends Controller
         $keepIds = [];
 
         foreach ($rows as $row) {
+            $catalogId = isset($row['catalog_id']) ? (int) $row['catalog_id'] : 0;
+            $catalog = $catalogId > 0
+                ? ProjectUnitType::query()->whereKey($catalogId)->first()
+                : null;
+
             $name = trim((string) ($row['name'] ?? ''));
+            if ($name === '' && $catalog !== null) {
+                $name = trim($this->translatedName($catalog->name));
+            }
             if ($name === '') {
                 continue;
             }
 
             $data = [
+                'catalog_id' => $catalog?->id,
                 'name' => $name,
                 'min_area' => $this->nullableDecimal($row['min_area'] ?? null),
                 'max_area' => $this->nullableDecimal($row['max_area'] ?? null),

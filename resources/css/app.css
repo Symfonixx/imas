@@ -78,113 +78,94 @@ html.mm-blocking #mm-blocker {
  * RTL: Find Houses header (menu.css) uses physical floats and left/right offsets.
  * Document direction alone does not mirror them — swap floats and flip key margins.
  */
-html[dir="rtl"] #header .left-side,
-html[dir="rtl"] #header.cloned .left-side {
+html[dir="rtl"] #header .left-side {
     float: right !important;
 }
 
-html[dir="rtl"] #header .right-side,
-html[dir="rtl"] #header.cloned .right-side {
+html[dir="rtl"] #header .right-side {
     float: left !important;
     margin-left: 0 !important;
     margin-right: 30px !important;
 }
 
 html[dir="rtl"] #header #logo,
-html[dir="rtl"] #header #navigation,
-html[dir="rtl"] #header.cloned #logo,
-html[dir="rtl"] #header.cloned #navigation {
+html[dir="rtl"] #header #navigation {
     float: right !important;
 }
 
-html[dir="rtl"] #header #logo,
-html[dir="rtl"] #header.cloned #logo {
+html[dir="rtl"] #header #logo {
     /* margin-right: 0 !important; */
     margin-left: 40px !important;
 }
 
-html[dir="rtl"] #header #navigation,
-html[dir="rtl"] #header.cloned #navigation {
+html[dir="rtl"] #header #navigation {
     margin-left: 0 !important;
     margin-right: 40px !important;
 }
 
-html[dir="rtl"] #header #navigation ul,
-html[dir="rtl"] #header.cloned #navigation ul {
+html[dir="rtl"] #header #navigation ul {
     float: right !important;
 }
 
-html[dir="rtl"] #header #navigation ul > li,
-html[dir="rtl"] #header.cloned #navigation ul > li {
+html[dir="rtl"] #header #navigation ul > li {
     float: right !important;
 }
 
-html[dir="rtl"] #header #navigation ul li ul,
-html[dir="rtl"] #header.cloned #navigation ul li ul {
+html[dir="rtl"] #header #navigation ul li ul {
     left: auto !important;
     right: 0 !important;
 }
 
-html[dir="rtl"] #header .header-widget,
-html[dir="rtl"] #header.cloned .header-widget {
+html[dir="rtl"] #header .header-widget {
     text-align: left !important;
 }
 
-html[dir="rtl"] #header .header-widget .sign-in,
-html[dir="rtl"] #header.cloned .header-widget .sign-in {
+html[dir="rtl"] #header .header-widget .sign-in {
     margin-right: 0 !important;
     margin-left: 25px !important;
 }
 
-html[dir="rtl"] #header .header-user-menu,
-html[dir="rtl"] #header.cloned .header-user-menu {
+html[dir="rtl"] #header .header-user-menu {
     float: left !important;
     margin-right: 0 !important;
     /* margin-left: 50px !important; */
 }
 
-html[dir="rtl"] #header .lang-wrap,
-html[dir="rtl"] #header.cloned .lang-wrap {
+html[dir="rtl"] #header .lang-wrap {
     float: left !important;
 }
 
-html[dir="rtl"] #header .show-lang span,
-html[dir="rtl"] #header.cloned .show-lang span {
+html[dir="rtl"] #header .show-lang span {
     float: right !important;
     margin-left: 0 !important;
     margin-right: 10px !important;
 }
 
-html[dir="rtl"] #header .show-lang .fa-caret-down.arrlan,
-html[dir="rtl"] #header.cloned .show-lang .fa-caret-down.arrlan {
+html[dir="rtl"] #header .show-lang .fa-caret-down.arrlan {
     left: auto !important;
     right: 80px !important;
 }
 
 /* Language list: anchor to inline-end of trigger; beat theme `left:-1px !important` + narrow width */
-html[dir="rtl"] #header .header-user-menu .lang-wrap ul.lang-tooltip,
-html[dir="rtl"] #header.cloned .header-user-menu .lang-wrap ul.lang-tooltip {
+html[dir="rtl"] #header .header-user-menu .lang-wrap ul.lang-tooltip {
     left: auto !important;
     right: 0 !important;
 }
 
 @media only screen and (max-width: 1024px) {
-    html[dir="rtl"] #header .header-widget a.button.border,
-    html[dir="rtl"] #header.cloned .header-widget a.button.border {
+    html[dir="rtl"] #header .header-widget a.button.border {
         float: left !important;
     }
 
     /* Mobile: logo stays centered; pin hamburger to inline-start (right in RTL) and CTA to opposite side */
-    html[dir="rtl"] #header .left-side,
-    html[dir="rtl"] #header.cloned .left-side {
+    html[dir="rtl"] #header .left-side {
         float: none !important;
         width: 100% !important;
         position: relative !important;
         min-height: 52px !important;
     }
 
-    html[dir="rtl"] #header .mmenu-trigger,
-    html[dir="rtl"] #header.cloned .mmenu-trigger {
+    html[dir="rtl"] #header .mmenu-trigger {
         position: absolute !important;
         top: 8px !important;
         right: 12px !important;
@@ -194,8 +175,7 @@ html[dir="rtl"] #header.cloned .header-user-menu .lang-wrap ul.lang-tooltip {
     }
 
     /* Keep logo from sitting under the hamburger (logo is centered; trigger sits on inline-start). */
-    html[dir="rtl"] #header #logo,
-    html[dir="rtl"] #header.cloned #logo {
+    html[dir="rtl"] #header #logo {
         max-width: 48% !important;
         width: 48% !important;
         padding-inline-end: 58px !important;
@@ -203,14 +183,12 @@ html[dir="rtl"] #header.cloned .header-user-menu .lang-wrap ul.lang-tooltip {
         z-index: 1 !important;
     }
 
-    html[dir="rtl"] #header .mmenu-trigger .hamburger,
-    html[dir="rtl"] #header.cloned .mmenu-trigger .hamburger {
+    html[dir="rtl"] #header .mmenu-trigger .hamburger {
         /* left: auto !important; */
         right: -35px !important;
     }
 
-    html[dir="rtl"] #header .right-side,
-    html[dir="rtl"] #header.cloned .right-side {
+    html[dir="rtl"] #header .right-side {
         float: none !important;
         width: auto !important;
         margin: 0 !important;
@@ -273,22 +251,19 @@ html.mm-right .mm-menu .mm-navbar .mm-title {
 }
 
 /* Widen language dropdown for all locales (theme default 100px clips labels) */
-#header .header-user-menu .lang-wrap ul.lang-tooltip,
-#header.cloned .header-user-menu .lang-wrap ul.lang-tooltip {
+#header .header-user-menu .lang-wrap ul.lang-tooltip {
     min-width: 9.5rem !important;
     width: max-content !important;
     max-width: min(22rem, 92vw) !important;
 }
 
-#header .header-user-menu .lang-wrap ul.lang-tooltip > li,
-#header.cloned .header-user-menu .lang-wrap ul.lang-tooltip > li {
+#header .header-user-menu .lang-wrap ul.lang-tooltip > li {
     width: 100% !important;
     float: none !important;
     text-align: start !important;
 }
 
-#header .header-user-menu .lang-wrap ul.lang-tooltip > li > a,
-#header.cloned .header-user-menu .lang-wrap ul.lang-tooltip > li > a {
+#header .header-user-menu .lang-wrap ul.lang-tooltip > li > a {
     float: none !important;
     display: block !important;
     width: 100% !important;
@@ -316,6 +291,68 @@ html[dir="rtl"]
     .owl-nav
     .fa {
     transform: none;
+}
+
+/**
+ * Scroll-pinned header (replaces theme jQuery `#header.cloned` so Vue/Inertia stay on the visible bar).
+ * Enter animation matches menu.css `#header.cloned.unsticky` → `.sticky` (0.3s transform + visibility).
+ */
+#header.bottom.imas-scroll-pinned {
+    background-color: #fff;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.12);
+    left: 0;
+    opacity: 1;
+    padding-bottom: 20px;
+    padding-top: 18px;
+    pointer-events: none;
+    position: fixed;
+    right: 0;
+    top: 0;
+    transform: translate3d(0, -100%, 0);
+    transition:
+        transform 0.3s ease,
+        visibility 0.3s ease;
+    visibility: hidden;
+    width: 100%;
+    z-index: 999;
+}
+
+#header.bottom.imas-scroll-pinned.imas-scroll-pinned--in {
+    pointer-events: auto;
+    transform: translate3d(0, 0, 0);
+    visibility: visible;
+}
+
+#header.bottom.imas-scroll-pinned #logo img {
+    margin-top: 1px;
+    max-width: 120px;
+    transform: translate3d(0, 0, 0);
+}
+
+.imas-header-scroll-spacer {
+    flex-shrink: 0;
+    pointer-events: none;
+    width: 100%;
+}
+
+/* Transparent overlay home: after scroll threshold, match former clone ink.
+   Body keeps `.homepage-1` (app.blade.php) — theme forces white on `.header-user-name`; override label + chevron. */
+#header-container.head-tr.imas-header-scroll-pinned .header-user-name,
+#header-container.head-tr.imas-header-scroll-pinned .header-user-name:before,
+#header-container.head-tr.imas-header-scroll-pinned .sign-in a,
+#header-container.head-tr.imas-header-scroll-pinned .show-lang span strong,
+#header-container.head-tr.imas-header-scroll-pinned .fa-caret-down:before {
+    color: #707070 !important;
+}
+
+#header-container.head-tr.imas-header-scroll-pinned .mmenu-trigger .hamburger-inner,
+#header-container.head-tr.imas-header-scroll-pinned
+    .mmenu-trigger
+    .hamburger-inner::before,
+#header-container.head-tr.imas-header-scroll-pinned
+    .mmenu-trigger
+    .hamburger-inner::after {
+    background-color: #707070 !important;
 }
 
 /**
@@ -363,10 +400,7 @@ html[dir="rtl"]
 /* Theme `.homepage-1 .header-user-name:before` forces white; override for solid bar (FontAwesome chevron). */
 #header-container.imas-navbar-solid .header-user-name:before,
 #header-container.imas-navbar-solid
-    #header.cloned.sticky
-    .header-user-name:before,
-#header-container.imas-navbar-solid
-    #header.cloned.unsticky
+    #header.bottom.imas-scroll-pinned
     .header-user-name:before,
 #header-container.imas-navbar-solid
     #navigation.style-2.cloned
@@ -374,35 +408,43 @@ html[dir="rtl"]
     color: #707070 !important;
 }
 
-/* Sticky clone (scroll) matches inner-page bar */
-#header-container.imas-navbar-solid #header.cloned.sticky,
-#header-container.imas-navbar-solid #header.cloned.unsticky {
+/* Pinned scroll bar matches inner-page chrome */
+#header-container.imas-navbar-solid #header.bottom.imas-scroll-pinned {
     background: #fff !important;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 #header-container.imas-navbar-solid
-    #header.cloned
+    #header.bottom.imas-scroll-pinned
     #navigation.style-1
     ul
     li
     > a,
-#header-container.imas-navbar-solid #header.cloned .sign-in a,
-#header-container.imas-navbar-solid #header.cloned .header-user-name,
-#header-container.imas-navbar-solid #header.cloned .show-lang span strong {
+#header-container.imas-navbar-solid
+    #header.bottom.imas-scroll-pinned
+    .sign-in
+    a,
+#header-container.imas-navbar-solid
+    #header.bottom.imas-scroll-pinned
+    .header-user-name,
+#header-container.imas-navbar-solid
+    #header.bottom.imas-scroll-pinned
+    .show-lang
+    span
+    strong {
     color: #707070 !important;
 }
 
 #header-container.imas-navbar-solid
-    #header.cloned
+    #header.bottom.imas-scroll-pinned
     .mmenu-trigger
     .hamburger-inner,
 #header-container.imas-navbar-solid
-    #header.cloned
+    #header.bottom.imas-scroll-pinned
     .mmenu-trigger
     .hamburger-inner::before,
 #header-container.imas-navbar-solid
-    #header.cloned
+    #header.bottom.imas-scroll-pinned
     .mmenu-trigger
     .hamburger-inner::after {
     background-color: #707070 !important;

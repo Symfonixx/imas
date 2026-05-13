@@ -250,6 +250,7 @@
     },
     "blogs":{
         "hub_title":"Blog",
+        "blog_details":"Blog details",
         "breadcrumb_home":"Home",
         "breadcrumb_blog":"Blog",
         "recent_posts":"Recent posts",

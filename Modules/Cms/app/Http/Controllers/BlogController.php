@@ -44,26 +44,8 @@ class BlogController extends Controller
             fn (Blog $blog) => $this->serializeBlog($blog),
         );
 
-        $recentBlogs = Blog::query()
-            ->published()
-            ->with(['category:id,name,slug'])
-            ->latest()
-            ->limit(4)
-            ->get()
-            ->map(fn (Blog $blog) => $this->serializeBlog($blog))
-            ->values()
-            ->all();
-
-        $categories = BlogCategory::query()
-            ->orderBy('slug')
-            ->get(['id', 'name', 'slug'])
-            ->map(static fn (BlogCategory $category) => [
-                'id' => $category->id,
-                'name' => $category->name,
-                'slug' => $category->slug,
-            ])
-            ->values()
-            ->all();
+        $recentBlogs = $this->recentPublishedBlogs();
+        $categories = $this->categoriesList();
 
         $filters = [
             'q' => $keyword !== '' ? $keyword : null,
@@ -77,6 +59,64 @@ class BlogController extends Controller
             'categories' => $categories,
             'filters' => $filters,
         ]);
+    }
+
+    public function show(string $slug): Response
+    {
+        $blog = Blog::query()
+            ->published()
+            ->where('slug', $slug)
+            ->with(['category:id,name,slug'])
+            ->firstOrFail();
+
+        return Inertia::render('Cms::Show', [
+            'title' => (string) $blog->title,
+            'blog' => $this->serializeBlogDetail($blog),
+            'recentBlogs' => $this->recentPublishedBlogs(exceptId: $blog->id),
+            'categories' => $this->categoriesList(),
+            'filters' => [
+                'q' => null,
+                'category_id' => $blog->category_id,
+            ],
+        ]);
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private function categoriesList(): array
+    {
+        return BlogCategory::query()
+            ->orderBy('slug')
+            ->get(['id', 'name', 'slug'])
+            ->map(static fn (BlogCategory $category) => [
+                'id' => $category->id,
+                'name' => $category->name,
+                'slug' => $category->slug,
+            ])
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private function recentPublishedBlogs(?int $exceptId = null, int $limit = 4): array
+    {
+        $query = Blog::query()
+            ->published()
+            ->with(['category:id,name,slug'])
+            ->latest();
+
+        if ($exceptId !== null) {
+            $query->where('id', '!=', $exceptId);
+        }
+
+        return $query->limit($limit)
+            ->get()
+            ->map(fn (Blog $b) => $this->serializeBlog($b))
+            ->values()
+            ->all();
     }
 
     /**
@@ -114,6 +154,54 @@ class BlogController extends Controller
             'description' => $blog->description,
             'excerpt' => Str::limit(strip_tags($description), 150),
             'image' => $blog->image_link,
+            'featured' => (bool) $blog->featured,
+            'visits' => (int) $blog->visits,
+            'created_at' => $blog->created_at?->toIso8601String(),
+            'date' => $blog->created_at?->locale(app()->getLocale())->translatedFormat('d M Y') ?? '',
+            'url' => LaravelLocalization::localizeUrl('/blog/'.$blog->slug),
+            'category' => $blog->category
+                ? [
+                    'id' => $blog->category->id,
+                    'name' => $blog->category->name,
+                    'slug' => $blog->category->slug,
+                ]
+                : null,
+        ];
+    }
+
+    /**
+     * Full blog payload for the detail page (content + SEO meta).
+     *
+     * @return array<string, mixed>
+     */
+    private function serializeBlogDetail(Blog $blog): array
+    {
+        $description = (string) ($blog->description ?? '');
+        $metaTitle = $blog->meta_title;
+        if ($metaTitle === null || trim((string) $metaTitle) === '') {
+            $metaTitle = $blog->title;
+        }
+        $metaDescription = $blog->meta_description;
+        if ($metaDescription === null || trim(strip_tags((string) $metaDescription)) === '') {
+            $metaDescription = Str::limit(strip_tags($description), 160);
+        }
+
+        return [
+            'id' => $blog->id,
+            'title' => $blog->title,
+            'slug' => $blog->slug,
+            'description' => $blog->description,
+            'content' => $blog->content,
+            'excerpt' => Str::limit(strip_tags($description), 150),
+            'image' => $blog->image_link,
+            'meta_image' => $blog->meta_image_link,
+            'meta' => [
+                'title' => $metaTitle,
+                'description' => $metaDescription,
+                'keywords' => $blog->meta_keywords,
+                'image' => $blog->meta_image_link,
+                'canonical_url' => LaravelLocalization::localizeUrl('/blog/'.$blog->slug),
+            ],
             'featured' => (bool) $blog->featured,
             'visits' => (int) $blog->visits,
             'created_at' => $blog->created_at?->toIso8601String(),

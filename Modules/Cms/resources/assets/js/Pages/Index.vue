@@ -70,19 +70,10 @@
 
     <AppLayout>
         <div class="inner-pages imas-blog-section-anchor" ref="blogSectionRef">
-            <section class="headings">
-                <div class="text-heading text-center">
-                    <div class="container">
-                        <h1>{{ title }}</h1>
-                        <h2>
-                            <Link :href="route('home')"
-                                >{{ trans("navBar.Home") }}
-                            </Link>
-                            &nbsp;/&nbsp; {{ trans("navBar.Blogs") }}
-                        </h2>
-                    </div>
-                </div>
-            </section>
+            <InnerPageHeadingHero
+                :page-title="title"
+                :items="blogHeadingItems"
+            />
             <!-- END SECTION HEADINGS -->
             <!-- START SECTION BLOG -->
             <section class="blog blog-section">
@@ -124,119 +115,13 @@
                                 </div>
                             </div>
                         </div>
-                        <aside class="col-lg-3 col-md-12">
-                            <div class="widget">
-                                <h5 class="font-weight-bold mb-4 text-start">
-                                    {{ trans("blogs.search") }}
-                                </h5>
-                                <form
-                                    :action="route('blog.index')"
-                                    method="get"
-                                >
-                                    <input
-                                        v-if="filters.category_id"
-                                        type="hidden"
-                                        name="category_id"
-                                        :value="filters.category_id"
-                                    />
-                                    <div class="input-group">
-                                        <input
-                                            type="text"
-                                            name="q"
-                                            class="form-control"
-                                            :placeholder="
-                                                trans(
-                                                    'blogs.search_placeholder',
-                                                )
-                                            "
-                                            :value="filters.q ?? ''"
-                                            autocomplete="off"
-                                        />
-                                        <span class="input-group-btn mx-1">
-                                            <button
-                                                class="btn btn-primary"
-                                                type="submit"
-                                            >
-                                                <i
-                                                    class="fa fa-search"
-                                                    aria-hidden="true"
-                                                ></i>
-                                            </button>
-                                        </span>
-                                    </div>
-                                </form>
-                                <div class="recent-post py-5">
-                                    <h5 class="font-weight-bold text-start">
-                                        {{ trans("blogs.categories") }}
-                                    </h5>
-                                    <ul>
-                                        <li>
-                                            <Link
-                                                :href="categoryIndexUrl(null)"
-                                            >
-                                                <i
-                                                    class="fa fa-caret-right"
-                                                    aria-hidden="true"
-                                                ></i
-                                                >{{
-                                                    trans(
-                                                        "blogs.all_categories",
-                                                    )
-                                                }}
-                                            </Link>
-                                        </li>
-                                        <li v-for="c in categories" :key="c.id">
-                                            <Link
-                                                :href="categoryIndexUrl(c.id)"
-                                            >
-                                                <i
-                                                    class="fa fa-caret-right"
-                                                    aria-hidden="true"
-                                                ></i
-                                                >{{ c.name }}
-                                            </Link>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div
-                                    class="widget-boxed mt-5 imas-recent-blogs-sidebar"
-                                >
-                                    <div
-                                        class="widget-boxed-header d-flex justify-content-between align-items-center"
-                                    >
-                                        <h4>
-                                            {{ trans("blogs.recent_posts") }}
-                                        </h4>
-                                    </div>
-                                    <div class="widget-boxed-body">
-                                        <div class="recent-post">
-                                            <div
-                                                v-for="r in recentBlogs"
-                                                :key="r.id"
-                                                class="recent-main"
-                                            >
-                                                <div class="recent-img">
-                                                    <a :href="r.url">
-                                                        <img
-                                                            :src="r.image"
-                                                            :alt="r.title"
-                                                        />
-                                                    </a>
-                                                </div>
-                                                <div class="info-img">
-                                                    <a :href="r.url">
-                                                        <h6>{{ r.title }}</h6>
-                                                    </a>
-                                                    <p class="mt-1">
-                                                        {{ r.date }}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </aside>
+                        <BlogListingSidebar
+                            :search-action="blogIndexUrl"
+                            :filters="filters"
+                            :categories="categories"
+                            :recent-blogs="recentBlogs"
+                            :category-url="categoryIndexUrl"
+                        />
                     </div>
                     <nav
                         v-if="paginationLinks.length > 0"
@@ -280,6 +165,8 @@ import { computed, ref, onMounted } from "vue";
 import { Head, Link, usePage } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/App.vue";
 import ArticleCard from "@/components/articles/ArticleCard.vue";
+import BlogListingSidebar from "../Components/BlogListingSidebar.vue";
+import InnerPageHeadingHero from "@/components/global/InnerPageHeadingHero.vue";
 
 const props = defineProps({
     title: { type: String, required: true },
@@ -350,6 +237,36 @@ function trans(key) {
     return page.props.translations[key] || key;
 }
 
+const blogHeadingItems = computed(() => {
+    const rows = [];
+    try {
+        if (typeof route === "function" && route().has?.("home")) {
+            rows.push({
+                title: trans("navBar.Home"),
+                href: route("home"),
+            });
+        }
+    } catch {
+        /* Ziggy may be unavailable */
+    }
+    rows.push({
+        title: trans("navBar.Blogs"),
+        href: null,
+    });
+    return rows;
+});
+
+const blogIndexUrl = computed(() => {
+    try {
+        if (typeof route === "function" && route().has?.("blog.index")) {
+            return route("blog.index");
+        }
+    } catch {
+        /* ignore */
+    }
+    return "";
+});
+
 /** Preserve text search when switching category (and vice versa). */
 function categoryIndexUrl(categoryId) {
     const params = {};
@@ -398,106 +315,3 @@ const paginationLinks = computed(() => {
 });
 </script>
 
-<style lang="scss">
-/* Same layout as RecentPropertiesSidebar.vue; distinct root class from property sidebar. */
-.imas-recent-blogs-sidebar .recent-post .recent-main:not(:last-child) {
-    margin-bottom: 1.5rem;
-}
-
-.imas-recent-blogs-sidebar .recent-main {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    gap: 0.875rem;
-}
-
-.imas-recent-blogs-sidebar .recent-img {
-    flex: 0 0 80px;
-    width: 80px;
-    height: 70px;
-    min-width: 80px;
-    min-height: 70px;
-    max-width: 80px;
-    max-height: 70px;
-    overflow: hidden;
-    border-radius: 4px;
-}
-
-.imas-recent-blogs-sidebar .recent-img > a {
-    display: block;
-    width: 100%;
-    height: 100%;
-    line-height: 0;
-}
-
-.imas-recent-blogs-sidebar .recent-img img {
-    display: block;
-    width: 100% !important;
-    height: 100% !important;
-    max-width: none !important;
-    max-height: none !important;
-    object-fit: cover;
-    object-position: center;
-    margin: 0 !important;
-}
-
-.imas-recent-blogs-sidebar .info-img {
-    flex: 1 1 0;
-    min-width: 0;
-    text-align: start;
-}
-
-.imas-recent-blogs-sidebar .info-img a {
-    display: block;
-    text-align: start;
-}
-
-.imas-recent-blogs-sidebar .info-img p {
-    text-align: start;
-    margin-bottom: 0;
-}
-
-.imas-recent-blogs-sidebar .info-img h6 {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    line-clamp: 2;
-    -webkit-line-clamp: 2;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    word-break: break-word;
-    overflow-wrap: anywhere;
-    line-height: 1.35;
-    margin: 0;
-    text-align: start;
-    min-height: calc(1.35em * 2);
-}
-
-@media screen and (max-width: 992px) {
-    .inner-pages .imas-recent-blogs-sidebar .recent-main {
-        flex-wrap: nowrap;
-    }
-
-    .inner-pages .imas-recent-blogs-sidebar .info-img {
-        margin-top: 0;
-    }
-}
-
-.inner-pages .imas-recent-blogs-sidebar .recent-img img {
-    width: 100% !important;
-    height: 100% !important;
-    margin: 0 !important;
-}
-</style>
-
-<style scoped lang="scss">
-.inner-pages .recent-post ul li {
-    text-align: start !important;
-
-    html[dir="ltr"] & i {
-        transform: rotate(180deg) !important;
-    }
-    i {
-        margin-inline-end: 10px !important;
-    }
-}
-</style>

@@ -242,6 +242,7 @@
     },
     "blogs":{
         "hub_title":"المدونة",
+        "blog_details":"تفاصيل المدونة",
         "breadcrumb_home":"الرئيسية",
         "breadcrumb_blog":"المدونة",
         "recent_posts":"أحدث المقالات",

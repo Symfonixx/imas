@@ -251,6 +251,7 @@
     },
     "blogs":{
         "hub_title":"Blog",
+        "blog_details":"Blog detayları",
         "breadcrumb_home":"Ana sayfa",
         "breadcrumb_blog":"Blog",
         "recent_posts":"Son yazılar",

@@ -1,13 +1,23 @@
 <template>
     <header
+        ref="headerContainerRef"
         id="header-container"
         class="header"
-        :class="transparentNavbar ? 'head-tr' : 'imas-navbar-solid'"
+        :class="[
+            transparentNavbar ? 'head-tr' : 'imas-navbar-solid',
+            { 'imas-header-scroll-pinned': headerPinned },
+        ]"
     >
         <div
+            ref="headerBarRef"
             id="header"
             class="bottom"
-            :class="{ 'head-tr': transparentNavbar }"
+            :class="{
+                'head-tr': transparentNavbar && !headerPinned,
+                'imas-scroll-pinned': headerPinned,
+                'imas-scroll-pinned--in':
+                    headerPinned && headerPinnedVisible,
+            }"
         >
             <div class="container container-header">
                 <div class="left-side">
@@ -33,7 +43,7 @@
                     <nav
                         id="navigation"
                         class="style-1"
-                        :class="{ 'head-tr': transparentNavbar }"
+                        :class="{ 'head-tr': transparentNavbar && !headerPinned }"
                     >
                         <ul id="responsive">
                             <li
@@ -146,7 +156,7 @@
                 <div
                     v-if="auth"
                     ref="userMenuWrapRef"
-                    class="header-user-menu user-menu add UserMenu "
+                    class="header-user-menu user-menu add UserMenu"
                     :class="{ active: userMenuOpen }"
                 >
                     <div
@@ -265,6 +275,12 @@
                 </div>
             </div>
         </div>
+        <div
+            v-show="headerPinned"
+            class="imas-header-scroll-spacer"
+            :style="{ height: `${scrollPinSpacerPx}px` }"
+            aria-hidden="true"
+        ></div>
     </header>
 </template>
 
@@ -296,6 +312,18 @@ const langMenuOpen = ref(false);
 const langWrapRef = ref(null);
 const userMenuOpen = ref(false);
 const userMenuWrapRef = ref(null);
+const headerContainerRef = ref(null);
+const headerBarRef = ref(null);
+/** Pinned bar uses the real Vue-managed `#header` (no jQuery clone). */
+const headerPinned = ref(false);
+/** Second phase: slide/visibility in (mirrors theme `#header.cloned` unsticky → sticky). */
+const headerPinnedVisible = ref(false);
+const scrollPinSpacerPx = ref(0);
+
+let scrollPinRaf = 0;
+let scrollPinAnimToken = 0;
+let onScrollPinnedBound = null;
+let onResizePinnedBound = null;
 
 const themeUrl = computed(() => page.props.theme_url || "");
 const auth = computed(() => page.props.auth);
@@ -312,7 +340,7 @@ const profileHref = computed(() => {
 const mediaData = computed(() => page.props.globals.media || {});
 const logoUrl = computed(() => {
     const m = mediaData.value;
-    if (props.transparentNavbar) {
+    if (props.transparentNavbar && !headerPinned.value) {
         return m.white_logo || m.black_logo || "";
     }
 
@@ -501,79 +529,118 @@ function teardownMobileMenuMmenu() {
     mmenuApi = null;
 }
 
-/**
- * Theme sticky header (see `public/theme/findhouses/js/mmenu.js`): clones `#header` into `#header.cloned`.
- * That runs on `document.ready` before Inertia mounts the navbar, so `#header` does not exist yet.
- * Re-run clone + scroll handling once the real header is in the DOM.
- */
-function initStickyHeaderClone() {
+/** Remove theme / legacy jQuery header clones (they duplicate DOM without Vue bindings). */
+function removeLegacyHeaderClones() {
     const $ = window.jQuery;
-    if (!$) {
+    if ($) {
+        $("#header.cloned").remove();
+        $("#navigation.style-2.cloned").remove();
         return;
     }
-
-    const $origHeader = $("#header").first();
-    if (!$origHeader.length || $origHeader.next("#header.cloned").length) {
-        return;
-    }
-
-    $origHeader
-        .not("#header-container.header-style-2 #header")
-        .clone(true)
-        .addClass("cloned unsticky")
-        .insertAfter("#header");
-
-    $("#navigation.style-2")
-        .clone(true)
-        .addClass("cloned unsticky")
-        .insertAfter("#navigation.style-2");
-    $("#logo .sticky-logo")
-        .clone(true)
-        .prependTo("#navigation.style-2.cloned ul#responsive");
-
-    function syncStickyLogo() {
-        const stickySrc = $("#header:not(.cloned) #logo img")
-            .first()
-            .attr("data-sticky-logo");
-        if (stickySrc) {
-            $("#header.cloned #logo img").first().attr("src", stickySrc);
-        }
-    }
-
-    function onStickyScroll() {
-        const headerOffset = $("#header-container").height() * 2;
-        if ($(window).scrollTop() >= headerOffset) {
-            $("#header.cloned").addClass("sticky").removeClass("unsticky");
-            $("#navigation.style-2.cloned")
-                .addClass("sticky")
-                .removeClass("unsticky");
-        } else {
-            $("#header.cloned").addClass("unsticky").removeClass("sticky");
-            $("#navigation.style-2.cloned")
-                .addClass("unsticky")
-                .removeClass("sticky");
-        }
-        syncStickyLogo();
-    }
-
-    $(window).on("scroll.imasSticky load.imasSticky", onStickyScroll);
-    onStickyScroll();
+    document.querySelectorAll("#header.cloned").forEach((el) => el.remove());
+    document
+        .querySelectorAll("#navigation.style-2.cloned")
+        .forEach((el) => el.remove());
 }
 
-function teardownStickyHeaderClone() {
-    const $ = window.jQuery;
-    $(window).off(".imasSticky");
-    $("#header.cloned").remove();
-    $("#navigation.style-2.cloned").remove();
+function prefersReducedMotion() {
+    return (
+        typeof window !== "undefined" &&
+        window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ===
+            true
+    );
+}
+
+function updateScrollPinnedHeader() {
+    const bar = headerBarRef.value;
+    if (!bar) {
+        return;
+    }
+    const h = bar.offsetHeight || 0;
+    const threshold = Math.max(h * 2, 1);
+    const next = window.scrollY >= threshold;
+
+    if (next === headerPinned.value) {
+        if (next) {
+            scrollPinSpacerPx.value = h;
+        }
+        return;
+    }
+
+    if (next) {
+        scrollPinAnimToken += 1;
+        const token = scrollPinAnimToken;
+        headerPinned.value = true;
+        scrollPinSpacerPx.value = h;
+        if (prefersReducedMotion()) {
+            headerPinnedVisible.value = true;
+            return;
+        }
+        headerPinnedVisible.value = false;
+        nextTick(() => {
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    if (scrollPinAnimToken !== token || !headerPinned.value) {
+                        return;
+                    }
+                    headerPinnedVisible.value = true;
+                });
+            });
+        });
+    } else {
+        scrollPinAnimToken += 1;
+        headerPinnedVisible.value = false;
+        headerPinned.value = false;
+        scrollPinSpacerPx.value = 0;
+    }
+}
+
+function scheduleScrollPinnedUpdate() {
+    if (scrollPinRaf) {
+        return;
+    }
+    scrollPinRaf = requestAnimationFrame(() => {
+        scrollPinRaf = 0;
+        updateScrollPinnedHeader();
+    });
+}
+
+function initScrollPinnedHeader() {
+    removeLegacyHeaderClones();
+    onScrollPinnedBound = () => scheduleScrollPinnedUpdate();
+    onResizePinnedBound = () => scheduleScrollPinnedUpdate();
+    window.addEventListener("scroll", onScrollPinnedBound, { passive: true });
+    window.addEventListener("resize", onResizePinnedBound);
+    scheduleScrollPinnedUpdate();
+}
+
+function teardownScrollPinnedHeader() {
+    if (onScrollPinnedBound) {
+        window.removeEventListener("scroll", onScrollPinnedBound);
+        onScrollPinnedBound = null;
+    }
+    if (onResizePinnedBound) {
+        window.removeEventListener("resize", onResizePinnedBound);
+        onResizePinnedBound = null;
+    }
+    if (scrollPinRaf) {
+        cancelAnimationFrame(scrollPinRaf);
+        scrollPinRaf = 0;
+    }
+    scrollPinAnimToken += 1;
+    headerPinnedVisible.value = false;
+    headerPinned.value = false;
+    scrollPinSpacerPx.value = 0;
+    removeLegacyHeaderClones();
 }
 
 function reinitHeaderChromeForLocale() {
     langMenuOpen.value = false;
     userMenuOpen.value = false;
     nextTick(() => {
-        teardownStickyHeaderClone();
+        teardownScrollPinnedHeader();
         teardownMobileMenuMmenu();
-        initStickyHeaderClone();
+        initScrollPinnedHeader();
         initMobileMenuMmenu();
     });
 }
@@ -592,7 +659,7 @@ onMounted(() => {
     document.addEventListener("click", closeHeaderDropdownsOnOutsideClick);
 
     nextTick(() => {
-        initStickyHeaderClone();
+        initScrollPinnedHeader();
         initMobileMenuMmenu();
     });
 
@@ -609,7 +676,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
     document.removeEventListener("click", closeHeaderDropdownsOnOutsideClick);
 
-    teardownStickyHeaderClone();
+    teardownScrollPinnedHeader();
     teardownMobileMenuMmenu();
 
     const $ = window.jQuery;
@@ -705,11 +772,11 @@ onBeforeUnmount(() => {
 .lang-switch-flag--trigger {
     font-size: 1em;
 }
-.UserMenu{
+.UserMenu {
     /* margin-inline-end: 50px !important;
         */
 
-        margin:0 50px !important;
+    margin: 0 50px !important;
 }
 /* html[dir="rtl"] .header-user-menu.user-menu.add{
     margin-left: 50px !important;

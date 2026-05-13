@@ -15,6 +15,9 @@ use Illuminate\Support\Facades\Route;
 use Modules\Cms\Http\Controllers\BlogController;
 
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
+Route::get('/blog/{slug}', [BlogController::class, 'show'])
+    ->where('slug', '[A-Za-z0-9\-]+')
+    ->name('blog.show');
 
 
 //Route::get('/property', [PropertyPropertyController::class, 'index'])->name('property.index');

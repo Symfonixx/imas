@@ -12,6 +12,11 @@ class ContactFormModelRepository implements ContactFormRepository
         return ContactForm::query()->latest()->paginate(config('core.page_size'));
     }
 
+    public function create(array $attributes): ContactForm
+    {
+        return ContactForm::query()->create($attributes);
+    }
+
     public function deleteMulti(array $ids): bool
     {
         ContactForm::destroy($ids);

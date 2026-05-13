@@ -1,5 +1,8 @@
 <?php
 
+use Modules\Support\Http\Controllers\ContactUsController;
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -10,3 +13,6 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+Route::get('contact-us', [ContactUsController::class, 'index'])->name('support.contact-us');
+Route::post('contact-us', [ContactUsController::class, 'store'])->name('support.contact-us.store');

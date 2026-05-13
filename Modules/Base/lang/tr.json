@@ -100,6 +100,7 @@
     "Home": "Ana sayfa",
     "Buy Real Estate": "Gayrimenkul satın al",
     "Turkish Citizenship": "Türk vatandaşlığı",
+    "suitable_properties_for": "Türk vatandaşlığı için uygun mülkler",
     "Contact us": "Bize ulaşın",
     "Pages": "Sayfalar",
     "News & Laws": "Haberler ve yasalar",
@@ -272,5 +273,22 @@
         "Property Management":"Gayrimenkul yönetimi",
         "About Turkey":"Türkiye hakkında",
         "Services":"Hizmetler"
+    },
+    "contact_us":{
+        "title":"Bize ulaşın",
+        "our_location":"Konumumuz",
+        "contact_details":"İletişim bilgileri",
+        "Please_find_below_contact_details_and_contact_us_today":"Aşağıdaki iletişim bilgilerinden bize ulaşabilirsiniz.",
+        "first_name":"Ad",
+        "last_name":"Soyad",
+        "email":"E-posta",
+        "phone_optional":"Telefon (isteğe bağlı)",
+        "subject_optional":"Konu (isteğe bağlı)",
+        "message":"Mesaj",
+        "submit":"Gönder",
+        "message_sent":"Mesajınız başarıyla gönderildi.",
+        "send_failed":"Bir sorun oluştu. Lütfen tekrar deneyin.",
+        "map_not_configured":"Harita henüz yapılandırılmadı.",
+        "follow_us":"Bizi takip edin"
     }
 }

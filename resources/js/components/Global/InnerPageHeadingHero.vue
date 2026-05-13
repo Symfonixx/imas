@@ -39,3 +39,11 @@ defineProps({
     },
 });
 </script>
+
+<style scoped lang="scss">
+
+// .inner-pages .headings {
+//     background-image: none !important;
+//     background-color: var(--brand-navy-light) !important;
+// }
+</style>

@@ -7,7 +7,9 @@
     --brand-gold: #d9a800;
     --brand-gold-hover: #eecb3a;
     --brand-navy: #1a2a4a;
+    --brand-navy-light: color-mix(in srgb, var(--brand-navy) 90%, transparent);
     --brand-navy-hover: #0a1526;
+
 
     /* —— Semantic text (navy scale; readable on light backgrounds) ——
        Do not use --brand-gold for long body/description on white (low contrast). */
@@ -458,3 +460,5 @@ html[dir="rtl"]
     text-align: start !important;
     /* border-bottom: 1px solid red !important; */
 }
+
+

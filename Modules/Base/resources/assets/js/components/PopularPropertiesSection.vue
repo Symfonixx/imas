@@ -4,13 +4,23 @@
         class="featured portfolio rec-pro disc"
     >
         <div class="container-fluid">
-            <div class="sec-title discover">
+            <div v-if="!hideTitle" class="sec-title discover">
                 <h2>
                     <span>{{ title }} </span>
                 </h2>
                 <p>{{ subtitle }}</p>
             </div>
             <div class="portfolio col-xl-12">
+                <CustomHeading
+                    class="pl-3"
+                    v-if="hideTitle"
+                    :title="
+                        trans('suitable_properties_for') +
+                        ' ' +
+                        trans('Turkish Citizenship')
+                    "
+                    :text-color="headingTextColor"
+                />
                 <div class="imas-popular-rail">
                     <div
                         ref="viewportRef"
@@ -75,9 +85,13 @@ import {
     watch,
 } from "vue";
 import { usePage } from "@inertiajs/vue3";
+import CustomHeading from "@/components/Global/CustomHeading.vue";
 
 const page = usePage();
 
+function trans(key) {
+    return page.props.translations[key] || key;
+}
 /** RTL/LTR for card content; scroll rail stays `dir="ltr"` so scrollLeft is reliable. */
 const slideTextDir = computed(() =>
     page.props.text_direction === "rtl" ? "rtl" : "ltr",
@@ -95,6 +109,15 @@ const props = defineProps({
     subtitle: {
         type: String,
         default: "",
+    },
+    hideTitle: {
+        type: Boolean,
+        default: false,
+    },
+    headingTextColor: {
+        type: String,
+        default: "#43475A",
+        // default: "#333333",
     },
 });
 
@@ -355,8 +378,8 @@ onBeforeUnmount(() => {
     margin-bottom: 0;
     padding: 0;
     text-align: center;
-    li{
-        button{
+    li {
+        button {
             outline: none !important;
         }
     }
@@ -379,6 +402,21 @@ onBeforeUnmount(() => {
     min-width: 15px;
     min-height: 15px;
     box-sizing: border-box;
+}
+
+.imas-popular-dots.slick-dots li {
+    color: var(--brand-gold, #d9a800) !important;
+    -webkit-box-shadow: inset 0 0 0 2px var(--brand-gold, #d9a800) !important;
+    box-shadow: inset 0 0 0 2px var(--brand-gold, #d9a800) !important;
+}
+
+.imas-popular-dots.slick-dots li.slick-active {
+    -webkit-box-shadow: inset 0 0 0 6px var(--brand-gold, #d9a800) !important;
+    box-shadow: inset 0 0 0 6px var(--brand-gold, #d9a800) !important;
+}
+
+.imas-popular-dots.slick-dots li:after {
+    background-color: var(--brand-gold, #d9a800) !important;
 }
 
 /* Theme PropertyCard is a Bootstrap column — full width inside carousel slide. */
@@ -410,5 +448,21 @@ onBeforeUnmount(() => {
 /* Keep dot order LTR so index 0 matches the leading page in both directions. */
 html[dir="rtl"] ul.imas-popular-dots {
     direction: ltr;
+}
+
+.sec-title {
+    color: #111 !important;
+}
+
+.sec-title h2 {
+    color: #111 !important;
+}
+
+.sec-title h2 span {
+    color: #111 !important;
+}
+
+.sec-title p {
+    color: #111 !important;
 }
 </style>

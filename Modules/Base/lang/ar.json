@@ -186,7 +186,8 @@
     "Contacts": "جهات الاتصال",
     "Newsletter Subscribers": "مشتركو النشرة الإخبارية",
     "Users": "المستخدمون",
-
+    "Turkish Citizenship": "الجنسية التركية"  ,
+    "suitable_properties_for": "العقارات المناسبة من اجل",
     "Choose from library": "اختر من المكتبة",
     "Attachment Details": "تفاصيل المرفق",
     "Select an image to see details.": "حدّد صورة لعرض التفاصيل.",
@@ -263,5 +264,22 @@
         "Property Management":"إدارة العقارات",
         "About Turkey":"عن تركيا",
         "Services":"الخدمات"
+    },
+    "contact_us":{
+        "title":"اتصل بنا",
+        "our_location":"موقعنا",
+        "contact_details":"بيانات الاتصال",
+        "Please_find_below_contact_details_and_contact_us_today":"فيما يلي بيانات الاتصال، تواصل معنا اليوم.",
+        "first_name":"الاسم الأول",
+        "last_name":"اسم العائلة",
+        "email":"البريد الإلكتروني",
+        "phone_optional":"الهاتف (اختياري)",
+        "subject_optional":"الموضوع (اختياري)",
+        "message":"الرسالة",
+        "submit":"إرسال",
+        "message_sent":"تم إرسال رسالتك بنجاح.",
+        "send_failed":"حدث خطأ. يرجى المحاولة مرة أخرى.",
+        "map_not_configured":"لم يتم إعداد الخريطة بعد.",
+        "follow_us":"تابعنا"
     }
 }

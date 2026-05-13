@@ -54,10 +54,10 @@ const navLinks = computed(() => [
         key: "navBar.Turkish Citizenship",
         href: safeRoute("turkish-citizenship", "/turkish-citizenship"),
     },
-    // { key: "Contact us", href: "/contact-us" },
     {
         key: "navBar.Pages",
         children: [
+            { key: "Contact us", href: safeRoute("support.contact-us", "/contact-us") },
             { key: "navBar.News & Laws", href: "/news-laws" },
             { key: "navBar.Property Management", href: "/property-management" },
             { key: "navBar.About Turkey", href: "/about-turkey" },

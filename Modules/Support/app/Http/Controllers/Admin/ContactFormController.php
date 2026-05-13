@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Support\app\Http\Controllers\Admin;
+namespace Modules\Support\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Modules\Core\Http\Requests\DeleteMultiRequest;

@@ -184,4 +184,7 @@ function trans(key) {
     object-fit: contain;
     /* transform: translate3d(0, 0, 0); */
 }
+.first-footer .top-footer{
+    /* background-color: var(--brand-navy-light) !important; */
+}
 </style>

@@ -44,6 +44,9 @@ class HandleInertiaRequests extends Middleware
     {
 
         return array_merge(parent::share($request), [
+            'flash' => fn () => [
+                'contact_sent' => (bool) $request->session()->get('contact_sent'),
+            ],
             'appName' => config('app.name'),
             'csrf' => csrf_token(),
             'asset_path' => asset('/'),

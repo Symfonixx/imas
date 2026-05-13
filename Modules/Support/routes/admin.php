@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\Support\app\Http\Controllers\Admin\ContactFormController;
-use Modules\Support\app\Http\Controllers\Admin\SubscriberController;
+use Modules\Support\Http\Controllers\Admin\ContactFormController;
+use Modules\Support\Http\Controllers\Admin\SubscriberController;
 
 Route::middleware('can:Support Management')->group(function () {
     // Subscriber routes

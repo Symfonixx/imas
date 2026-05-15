@@ -86,7 +86,7 @@
             tip="Use 3–8 highly relevant keywords separated by commas."
             optimal-label="Optimal: 3–8 keywords"
             :value="$metaKeywords"
-            placeholder="keyword 1, keyword 2, keyword 3"
+            placeholder="{{ __('keyword 1, keyword 2, keyword 3') }}"
             translatable
             :optimal-min="3"
             :optimal-max="8"

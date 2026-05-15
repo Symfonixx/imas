@@ -129,10 +129,22 @@
     "Default keywords for the site. Use 3–8 highly relevant terms separated by commas.": "الكلمات المفتاحية الافتراضية للموقع. استخدم 3–8 كلمات مفصولة بفواصل.",
     "Brief company \/ product description, used on the homepage and about sections.": "وصف موجز للشركة \/ المنتج، يُستخدم في الصفحة الرئيسية وأقسام عنا.",
 
+    "Aim for 50–60 characters. Place the most important keyword near the beginning.": "استهدف 50–60 حرفاً، وضع الكلمة المفتاحية الأهم في البداية.",
+    "A compelling summary in 120–160 characters increases the click-through rate.": "ملخص جذّاب من 120–160 حرفاً يزيد من نسبة النقر.",
+    "Use 3–8 highly relevant keywords separated by commas.": "استخدم 3–8 كلمات مفتاحية وثيقة الصلة مفصولة بفواصل.",
+    "Write a clear, concise summary (120–160 chars) — it may be shown in search results.": "اكتب ملخصاً واضحاً ومختصراً (120–160 حرفاً) فقد يُعرض ضمن نتائج البحث.",
+    "keyword 1, keyword 2, keyword 3": "كلمة مفتاحية 1، كلمة مفتاحية 2، كلمة مفتاحية 3",
+    "Page title shown in search results.": "عنوان الصفحة المعروض في نتائج البحث.",
+    "About page title shown in search results.": "عنوان صفحة «من نحن» المعروض في نتائج البحث.",
+    "Short page summary for search snippets.": "ملخص قصير للصفحة يظهر في مقتطفات البحث.",
+    "Use 3-8 focused keywords separated by commas.": "استخدم 3–8 كلمات مفتاحية مركّزة مفصولة بفواصل.",
+
     "Optimal: 3–30 characters": "الأمثل: 3–30 حرفاً",
     "Optimal: 30–70 characters": "الأمثل: 30–70 حرفاً",
+    "Optimal: 30-70 characters": "الأمثل: 30–70 حرفاً",
     "Optimal: 50–60 characters": "الأمثل: 50–60 حرفاً",
     "Optimal: 120–160 characters": "الأمثل: 120–160 حرفاً",
+    "Optimal: 120-160 characters": "الأمثل: 120–160 حرفاً",
     "Optimal: 120–300 characters": "الأمثل: 120–300 حرفاً",
     "Optimal: 3–8 keywords": "الأمثل: 3–8 كلمات",
 

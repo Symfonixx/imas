@@ -441,7 +441,7 @@ Author: Hadi Hilal
                         <div class="text-dark order-2 order-md-1">
                             <span class="text-muted fw-bold me-1">{{__('All rights are reserved')}} 2026©</span>
                             <a href="https://symfonix.io" target="_blank"
-                               class="text-gray-700 text-hover-primary">{{__('Developed By Hadi Hilal')}} </a>
+                               class="text-gray-700 text-hover-primary">{{__('Developed By Symfonix')}} </a>
                         </div>
                         <!--end::Copyright-->
                         <!--begin::Menu-->

@@ -1,5 +1,5 @@
 @php
-    $defaultIcon = $iconChoices[0]['class'] ?? 'bi bi-buildings';
+    $defaultIcon = $iconChoices[0]['class'] ?? 'bi bi-boxes';
     $iconSelected = old('icon', $defaultIcon);
 @endphp
 

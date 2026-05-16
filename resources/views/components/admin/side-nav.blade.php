@@ -21,7 +21,7 @@
 
         <div class="menu-sub menu-sub-accordion {{ isset($active['properties']) ? 'show' : '' }}">
             <div class="menu-item">
-                <a class="menu-link {{ request()->routeIs('admin.properties.index') ? 'active' : '' }}"
+                <a class="menu-link {{isset($active['projects']) ? 'active' : '' }}"
                    href="{{ route('admin.properties.index') }}">
                     <span class="menu-bullet">
                         <span class="bullet bullet-dot"></span>
@@ -40,7 +40,7 @@
                     <span class="menu-arrow"></span>
                 </span>
                 <div class="menu-sub menu-sub-accordion {{ isset($active['location_cities']) || isset($active['locations']) || isset($active['property_types']) || isset($active['project_unit_types']) ? 'show' : '' }}">
-      
+
                     <div class="menu-item">
                         <a class="menu-link {{ isset($active['locations']) ? 'active' : '' }}"
                            href="{{ route('admin.locations.index') }}">

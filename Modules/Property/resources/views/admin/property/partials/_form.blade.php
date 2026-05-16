@@ -1,4 +1,4 @@
-@php
+﻿@php
     $isEdit = isset($property);
     $seoMeta = $isEdit ? ($property->metadata ?? []) : [];
     $defaultStatus = old('status', $isEdit ? (($property->status?->value) ?? 'Published') : 'Published');
@@ -43,34 +43,34 @@
 
 <div class="card card-flush mb-7">
     <div class="card-body">
-        <x-admin.form-group label="Project code" name="project_code" required>
-            <input id="slug" type="text" name="project_code" class="form-control form-control-solid"
-                   value="{{ old('project_code', optional($property)->project_code) }}"/>
-        </x-admin.form-group>
-
-        <x-admin.form-group label="Project title" name="title" required translatable>
-            <input id="title" type="text" name="title" class="form-control form-control-solid"
-                   value="{{ old('title', optional($property)->title) }}"/>
-        </x-admin.form-group>
-
-        <x-admin.form-group label="Project name" name="project_name" translatable>
-            <input id="project_name" type="text" name="project_name" class="form-control form-control-solid"
-                   value="{{ old('project_name', optional($property)->project_name) }}"/>
-        </x-admin.form-group>
-
-        <x-admin.form-group label="Overview" name="overview" required translatable>
-            <textarea class="form-control form-control-solid" name="overview"
-                      rows="8">{{ old('overview', optional($property)->overview) }}</textarea>
-        </x-admin.form-group>
-
         <div class="row mb-2">
-            <div class="col-xl-8">
+            <div class="col-xl-12">
                 <x-admin.form-group label="Thumbnail" name="thumbnail" :required="! $isEdit">
                     <x-admin.image-input name="thumbnail"
                                          :preview="$isEdit && $property->thumbnail ? asset('storage/' . $property->thumbnail) : null"/>
                 </x-admin.form-group>
             </div>
-            <div class="col-xl-4">
+
+        </div>
+        <div class="row">
+
+            <div class="col-xl-6">
+                <x-admin.form-group label="Project type" name="property_type_id" required>
+                    <select name="property_type_id" id="property_type_id" class="form-select form-select-solid"
+                            data-control="select2" data-placeholder="{{ __('Select property type') }}">
+                        <option value="">{{ __('Select property type') }}</option>
+                        @foreach($propertyTypes as $propertyType)
+                            <option
+                                value="{{ $propertyType['id'] }}" @selected((string) old('property_type_id', optional($property)->property_type_id ?? '') === (string) $propertyType['id'])>
+                                {{ $propertyType['name'] }}
+                            </option>
+                        @endforeach
+                    </select>
+                </x-admin.form-group>
+            </div>
+
+            <div class="col-xl-6">
+
                 <x-admin.form-group label="Status" name="status" required>
                     <select name="status" class="form-select form-select-solid" data-control="select2"
                             data-hide-search="true">
@@ -82,7 +82,36 @@
                     </select>
                 </x-admin.form-group>
             </div>
+
+            <div class="col-xl-6">
+                <x-admin.form-group label="Project code" name="project_code" required>
+                    <input id="slug" type="text" name="project_code" class="form-control form-control-solid"
+                           value="{{ old('project_code', optional($property)->project_code) }}"/>
+                </x-admin.form-group>
+            </div>
+
+            <div class="col-xl-6">
+                <x-admin.form-group label="Project name" name="project_name" translatable>
+                    <input id="project_name" type="text" name="project_name" class="form-control form-control-solid"
+                           value="{{ old('project_name', optional($property)->project_name) }}"/>
+                </x-admin.form-group>
+            </div>
+
+
+            <div class="col-12">
+                <x-admin.form-group label="Project title" name="title" required translatable>
+                    <input id="title" type="text" name="title" class="form-control form-control-solid"
+                           value="{{ old('title', optional($property)->title) }}"/>
+                </x-admin.form-group>
+
+
+                <x-admin.form-group label="Overview" name="overview" required translatable>
+            <textarea class="form-control form-control-solid" name="overview"
+                      rows="8">{{ old('overview', optional($property)->overview) }}</textarea>
+                </x-admin.form-group>
+            </div>
         </div>
+
 
         <div class="row mb-2">
             <div class="col-md-4">
@@ -99,7 +128,7 @@
             <div class="col-md-4">
                 <x-admin.form-group label="Municipality" name="district_id">
                     <select id="district_id" class="form-select form-select-solid"
-                            @disabled(! $prefillCityId)>
+                        @disabled(! $prefillCityId)>
                         <option value="">{{ __('Select district') }}</option>
                     </select>
                 </x-admin.form-group>
@@ -107,50 +136,18 @@
             <div class="col-md-4">
                 <x-admin.form-group label="Location" name="location_id" required>
                     <select id="location_id" name="location_id" class="form-select form-select-solid"
-                            @disabled(! $prefillDistrictId)>
+                        @disabled(! $prefillDistrictId)>
                         <option value="">{{ __('Select area') }}</option>
                     </select>
                 </x-admin.form-group>
             </div>
         </div>
 
-        <x-admin.form-group label="Project type" name="property_type_id" required>
-            <select name="property_type_id" id="property_type_id" class="form-select form-select-solid"
-                    data-control="select2" data-placeholder="{{ __('Select property type') }}">
-                <option value="">{{ __('Select property type') }}</option>
-                @foreach($propertyTypes as $propertyType)
-                    <option
-                        value="{{ $propertyType['id'] }}" @selected((string) old('property_type_id', optional($property)->property_type_id ?? '') === (string) $propertyType['id'])>
-                        {{ $propertyType['name'] }}
-                    </option>
-                @endforeach
-            </select>
-        </x-admin.form-group>
-
-        <div class="row mb-2">
-            <div class="col-md-4">
-                <x-admin.form-group label="Price" name="price">
-                    <input type="number" step="0.01" min="0" name="price" class="form-control form-control-solid"
-                           value="{{ old('price', $isEdit ? optional($property)->price : '') }}"/>
-                </x-admin.form-group>
-            </div>
-            <div class="col-md-4">
-                <x-admin.form-group label="Min area" name="min_area">
-                    <input type="number" step="0.01" min="0" name="min_area" class="form-control form-control-solid"
-                           value="{{ old('min_area', $isEdit ? optional($property)->min_area : '') }}"/>
-                </x-admin.form-group>
-            </div>
-            <div class="col-md-4">
-                <x-admin.form-group label="Max area" name="max_area">
-                    <input type="number" step="0.01" min="0" name="max_area" class="form-control form-control-solid"
-                           value="{{ old('max_area', $isEdit ? optional($property)->max_area : '') }}"/>
-                </x-admin.form-group>
-            </div>
-        </div>
 
         <div class="fv-row mb-7">
             <label class="form-label fw-semibold fs-6">{{ __('Unit types') }}</label>
-            <div class="text-muted fs-7 mb-3">{{ __('Add one row per layout. Choose a type, then enter area and starting price.') }}</div>
+            <div
+                class="text-muted fs-7 mb-3">{{ __('Add one row per layout. Choose a type, then enter area and starting price.') }}</div>
             <div id="unit-type-rows">
                 @foreach($unitTypeRowsForView as $i => $ut)
                     @php
@@ -180,22 +177,26 @@
                                            autocomplete="off">
                                 </div>
                                 <div class="col-lg-8">
-                                    <div class="row g-3 js-unit-numeric {{ ($nameVal !== '' || $inCatalog) ? '' : 'd-none' }}">
+                                    <div
+                                        class="row g-3 js-unit-numeric {{ ($nameVal !== '' || $inCatalog) ? '' : 'd-none' }}">
                                         <div class="col-md-4">
                                             <label class="form-label">{{ __('Min area') }}</label>
-                                            <input type="number" step="0.01" min="0" class="form-control form-control-solid"
+                                            <input type="number" step="0.01" min="0"
+                                                   class="form-control form-control-solid"
                                                    name="unit_types[{{ $i }}][min_area]"
                                                    value="{{ old("unit_types.$i.min_area", $ut['min_area'] ?? '') }}">
                                         </div>
                                         <div class="col-md-4">
                                             <label class="form-label">{{ __('Max area') }}</label>
-                                            <input type="number" step="0.01" min="0" class="form-control form-control-solid"
+                                            <input type="number" step="0.01" min="0"
+                                                   class="form-control form-control-solid"
                                                    name="unit_types[{{ $i }}][max_area]"
                                                    value="{{ old("unit_types.$i.max_area", $ut['max_area'] ?? '') }}">
                                         </div>
                                         <div class="col-md-4">
                                             <label class="form-label">{{ __('Starting price') }}</label>
-                                            <input type="number" step="0.01" min="0" class="form-control form-control-solid"
+                                            <input type="number" step="0.01" min="0"
+                                                   class="form-control form-control-solid"
                                                    name="unit_types[{{ $i }}][price]"
                                                    value="{{ old("unit_types.$i.price", $ut['price'] ?? '') }}">
                                         </div>
@@ -324,7 +325,8 @@
 
         <div class="d-flex justify-content-end gap-3 mt-10">
             <a href="{{ route('admin.properties.index') }}" class="btn btn-light">{{ __('Discard') }}</a>
-            <button type="submit" class="btn btn-primary" id="property-submit">{{ $isEdit ? __('Save Changes') : __('Save') }}</button>
+            <button type="submit" class="btn btn-primary"
+                    id="property-submit">{{ $isEdit ? __('Save Changes') : __('Save') }}</button>
         </div>
     </div>
 </div>
@@ -488,7 +490,7 @@
                 hidden.value = name;
                 if (numeric) {
                     const hasCatalog = catalogHidden && String(catalogHidden.value).trim() !== '';
-                    numeric.classList.toggle('d-none', name === '' && ! hasCatalog);
+                    numeric.classList.toggle('d-none', name === '' && !hasCatalog);
                 }
             }
 
@@ -629,7 +631,7 @@
                     const h = row.querySelector('.js-unit-name-hidden');
                     const c = row.querySelector('.js-unit-catalog-id');
                     const keep = (h && String(h.value).trim() !== '') || (c && String(c.value).trim() !== '');
-                    if (! keep) {
+                    if (!keep) {
                         row.remove();
                     }
                 });

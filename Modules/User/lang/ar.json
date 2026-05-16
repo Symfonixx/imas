@@ -59,5 +59,8 @@
     "Allowed file types: png, jpg, jpeg, webp": "أنواع الملفات المسموحة: png, jpg, jpeg, webp",
     "New Password": "كلمة المرور الجديدة",
     "Cancel": "إلغاء",
-    "Remove": "حذف"
+    "Remove": "حذف",
+    "Last Login": "آخر تسجيل دخول",
+    "My Profile": "ملفي الشخصي",
+    "No data available in table": "لا توجد بيانات متاحة في الجدول"
 }

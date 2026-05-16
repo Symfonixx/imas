@@ -19,6 +19,7 @@ use Modules\Property\Models\Location;
 use Modules\Property\Models\ProjectUnitType;
 use Modules\Property\Models\Property;
 use Modules\Property\Models\PropertyType;
+use Modules\Property\Support\PropertyMetricsFromUnitTypes;
 use Modules\User\Enums\CmsStatus;
 use Throwable;
 
@@ -32,6 +33,7 @@ class PropertyController extends Controller
 
     public function index()
     {
+        $this->setActive('projects');
         $model = Property::query()
             ->with(['location:id,name,type', 'propertyType:id,name'])
             ->latest()
@@ -42,6 +44,7 @@ class PropertyController extends Controller
 
     public function create()
     {
+        $this->setActive('projects');
         return view('property::admin.property.create', $this->formShared());
     }
 
@@ -52,7 +55,10 @@ class PropertyController extends Controller
         DB::beginTransaction();
 
         try {
-            $property = Property::query()->create($this->buildPropertyPayload($request, $validated));
+            $property = Property::query()->create(array_merge(
+                $this->buildPropertyPayload($request, $validated),
+                $this->metricsFromUnitTypeRows($validated['unit_types'] ?? [])
+            ));
             $this->syncSlides($property, $request);
             if (array_key_exists('unit_types', $validated)) {
                 $this->syncUnitTypes($property, $validated['unit_types']);
@@ -69,6 +75,7 @@ class PropertyController extends Controller
 
     public function edit(Property $property)
     {
+        $this->setActive('projects');
         $property->load(['slides', 'unitTypes', 'location.parent.parent']);
 
         return view('property::admin.property.edit', array_merge(
@@ -81,11 +88,21 @@ class PropertyController extends Controller
 
     public function update(Request $request, Property $property): RedirectResponse
     {
+
         $validated = $this->filterEmptyUnitTypes($this->validatePayload($request, $property));
 
         DB::transaction(function () use ($request, $validated, $property): void {
-            $property->update($this->buildPropertyPayload($request, $validated, $property));
+            $payload = $this->buildPropertyPayload($request, $validated, $property);
+
+            if ($request->filled('unit_types_sync_empty')) {
+                $payload = array_merge($payload, $this->metricsFromUnitTypeRows([]));
+            } elseif (array_key_exists('unit_types', $validated)) {
+                $payload = array_merge($payload, $this->metricsFromUnitTypeRows($validated['unit_types']));
+            }
+
+            $property->update($payload);
             $this->syncSlides($property, $request);
+
             if ($request->filled('unit_types_sync_empty')) {
                 $this->syncUnitTypes($property, []);
             } elseif (array_key_exists('unit_types', $validated)) {
@@ -207,9 +224,6 @@ class PropertyController extends Controller
             'thumbnail_media_path' => ['nullable', 'string'],
             'location_id' => ['required', 'integer', Rule::exists('locations', 'id')->where('type', LocationType::Area->value)],
             'property_type_id' => ['required', 'integer', 'exists:property_types,id'],
-            'price' => ['nullable', 'numeric', 'min:0'],
-            'min_area' => ['nullable', 'numeric', 'min:0'],
-            'max_area' => ['nullable', 'numeric', 'min:0'],
             'is_sold_out' => ['nullable', 'boolean'],
             'is_recommended' => ['nullable', 'boolean'],
             'is_citizenship_eligible' => ['nullable', 'boolean'],
@@ -313,9 +327,6 @@ class PropertyController extends Controller
             ),
             'location_id' => (int) $validated['location_id'],
             'property_type_id' => (int) $validated['property_type_id'],
-            'price' => (float) ($validated['price'] ?? 0),
-            'min_area' => $validated['min_area'] ?? null,
-            'max_area' => $validated['max_area'] ?? null,
             'is_sold_out' => $request->boolean('is_sold_out'),
             'is_recommended' => $request->boolean('is_recommended'),
             'is_citizenship_eligible' => $request->boolean('is_citizenship_eligible'),
@@ -403,6 +414,15 @@ class PropertyController extends Controller
         }
 
         $property->unitTypes()->whereNotIn('id', $keepIds)->delete();
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $rows
+     * @return array{price: float, min_area: ?float, max_area: ?float}
+     */
+    private function metricsFromUnitTypeRows(array $rows): array
+    {
+        return PropertyMetricsFromUnitTypes::fromRows($rows);
     }
 
     private function nullableDecimal(mixed $value): ?float

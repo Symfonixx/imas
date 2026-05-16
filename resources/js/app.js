@@ -1,10 +1,11 @@
 import 'toastr';
 
 import {createApp, h} from 'vue';
-import {createInertiaApp} from '@inertiajs/vue3';
+import {createInertiaApp, router} from '@inertiajs/vue3';
 import {resolvePageComponent} from 'laravel-vite-plugin/inertia-helpers';
 
 import PropertyCard from '../../Modules/Property/resources/assets/js/components/PropertyCard.vue';
+import gsapPlugin, {killAllGsap, refreshScrollTrigger} from './plugins/gsap';
 
 createInertiaApp({
     resolve: (name) => {
@@ -24,8 +25,17 @@ createInertiaApp({
     setup({el, App, props, plugin}) {
         createApp({render: () => h(App, props)})
             .use(plugin)
+            .use(gsapPlugin)
             .mixin({methods: {route}})
             .component('PropertyCard', PropertyCard)
             .mount(el);
     },
+});
+
+router.on('start', () => {
+    killAllGsap();
+});
+
+router.on('finish', () => {
+    refreshScrollTrigger();
 });

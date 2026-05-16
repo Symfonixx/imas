@@ -12,9 +12,12 @@ use Module;
 use Modules\Base\Models\Country;
 use Modules\Base\Models\Seo;
 use Modules\Base\Repositories\Settings\SettingsRepository;
+use Modules\Cms\Models\BlogCategory;
 
 class HandleInertiaRequests extends Middleware
 {
+    public const SHARED_BLOG_CATEGORIES_CACHE_KEY = 'inertia.shared.blog_categories';
+
     public function __construct(private readonly SettingsRepository $settingsRepository) {}
 
     /**
@@ -183,7 +186,50 @@ class HandleInertiaRequests extends Middleware
             ],
             'robots_txt' => (string) ($settings['robots_txt'] ?? ''),
             'countries' => $this->sharedCountriesList(),
+            'blog_categories' => $this->sharedBlogCategoriesList(),
         ];
+    }
+
+    /**
+     * Blog categories for front-office Vue (sidebar, navbar, filters).
+     * Cached with all name translations; localized per request.
+     *
+     * @return list<array{id: int, name: string, slug: string, add_to_navbar: bool}>
+     */
+    protected function sharedBlogCategoriesList(): array
+    {
+        $locale = app()->getLocale();
+
+        /** @var list<array{id: int, name: array<string, string>, slug: string, add_to_navbar: bool}> $cached */
+        $cached = Cache::rememberForever(self::SHARED_BLOG_CATEGORIES_CACHE_KEY, function (): array {
+            return BlogCategory::query()
+                ->orderBy('slug')
+                ->get(['id', 'name', 'slug', 'add_to_navbar'])
+                ->map(static function (BlogCategory $category): array {
+                    return [
+                        'id' => $category->id,
+                        'name' => $category->getTranslations('name'),
+                        'slug' => $category->slug,
+                        'add_to_navbar' => (bool) $category->add_to_navbar,
+                    ];
+                })
+                ->values()
+                ->all();
+        });
+
+        return array_map(static function (array $row) use ($locale): array {
+            $names = $row['name'];
+            $name = is_array($names)
+                ? (string) ($names[$locale] ?? reset($names) ?: '')
+                : (string) $names;
+
+            return [
+                'id' => $row['id'],
+                'name' => $name,
+                'slug' => $row['slug'],
+                'add_to_navbar' => $row['add_to_navbar'],
+            ];
+        }, $cached);
     }
 
     /**

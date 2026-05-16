@@ -46,27 +46,64 @@ function safeRoute(name, fallbackHref = "#") {
     return fallbackHref;
 }
 
-const navLinks = computed(() => [
-    { key: "navBar.Home", href: safeRoute("home", "/") },
-    { key: "navBar.Buy Real Estate", href: safeRoute("property.index") },
-    { key: "navBar.Blogs", href: safeRoute("blog.index") },
-    {
-        key: "navBar.Turkish Citizenship",
-        href: safeRoute("turkish-citizenship", "/turkish-citizenship"),
-    },
-    // { key: "navBar.about-us", href: "/about-us" },
-    {
-        key: "navBar.Pages",
-        children: [
-            { key: "Contact us", href: safeRoute("support.contact-us", "/contact-us") },
-            { key: "navBar.News & Laws", href: "/news-laws" },
-            { key: "navBar.Property Management", href: "/property-management" },
-            { key: "navBar.About Turkey", href: "/about-turkey" },
-            { key: "navBar.Services", href: "/services" },
-        ],
-    },
-    // { key: "About us", href: "/about-us" },
-]);
+function blogCategoryUrl(categoryId) {
+    try {
+        if (typeof route === "function" && route().has?.("blog.index")) {
+            return route("blog.index", { category_id: categoryId });
+        }
+    } catch {
+        // ignore
+    }
+    const base = safeRoute("blog.index", "/blog");
+    const sep = base.includes("?") ? "&" : "?";
+    return `${base}${sep}category_id=${categoryId}`;
+}
+
+const blogNavCategories = computed(
+    () => page.props.globals?.blog_categories ?? [],
+);
+
+const navLinks = computed(() => {
+    const blogCategoryChildren = blogNavCategories.value.map((c) => ({
+        key: `blog-category-${c.id}`,
+        label: c.name,
+        href: blogCategoryUrl(c.id),
+    }));
+
+    const blogsNav = {
+        key: "navBar.Blogs",
+        href: safeRoute("blog.index"),
+        ...(blogCategoryChildren.length > 0
+            ? { children: blogCategoryChildren }
+            : {}),
+    };
+
+    return [
+        { key: "navBar.Home", href: safeRoute("home", "/") },
+        { key: "navBar.Buy Real Estate", href: safeRoute("property.index") },
+        {
+            key: "navBar.Turkish Citizenship",
+            href: safeRoute("turkish-citizenship", "/turkish-citizenship"),
+        },
+        blogsNav,
+        {
+            key: "navBar.Pages",
+            children: [
+                {
+                    key: "Contact us",
+                    href: safeRoute("support.contact-us", "/contact-us"),
+                },
+                { key: "navBar.News & Laws", href: "/news-laws" },
+                {
+                    key: "navBar.Property Management",
+                    href: "/property-management",
+                },
+                { key: "navBar.About Turkey", href: "/about-turkey" },
+                { key: "navBar.Services", href: "/services" },
+            ],
+        },
+    ];
+});
 
 function syncDocumentTextDirection() {
     const locale = page.props.locale || "en";

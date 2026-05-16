@@ -2,10 +2,12 @@
 
 namespace Modules\Cms\Repositories\BlogCategory;
 
+use App\Http\Middleware\HandleInertiaRequests;
 use Config;
 use Exception;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Cache;
 use Log;
 use Modules\Cms\Models\BlogCategory;
 use Modules\Core\Support\AdminImageInput;
@@ -31,6 +33,7 @@ class BlogCategoryModelRepository implements BlogCategoryRepository
         return $this->execute(function () use ($data) {
             $categoryData = $this->prepareCategoryData($data);
             BlogCategory::create($categoryData);
+            $this->clearSharedBlogCategoriesCache();
             session()->flushMessage(true);
         });
     }
@@ -87,6 +90,7 @@ class BlogCategoryModelRepository implements BlogCategoryRepository
         return $this->execute(function () use ($data, $category, $updateTranslations) {
             $categoryData = $this->prepareCategoryData($data, $category, $updateTranslations);
             $category->update($categoryData);
+            $this->clearSharedBlogCategoriesCache();
             session()->flushMessage(true);
 
             return true;
@@ -98,10 +102,15 @@ class BlogCategoryModelRepository implements BlogCategoryRepository
         return $this->execute(function () use ($ids) {
             // If BlogCategory ever has images/files, delete them here (structure for extensibility)
             BlogCategory::destroy($ids);
-            // Optionally clear cache or handle related cleanup here
+            $this->clearSharedBlogCategoriesCache();
             session()->flushMessage(true);
 
             return true;
         });
+    }
+
+    private function clearSharedBlogCategoriesCache(): void
+    {
+        Cache::forget(HandleInertiaRequests::SHARED_BLOG_CATEGORIES_CACHE_KEY);
     }
 }

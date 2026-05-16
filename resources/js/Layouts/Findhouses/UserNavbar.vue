@@ -20,7 +20,7 @@
         >
             <div class="container container-header">
                 <div class="left-side">
-                    <div id="logo">
+                    <div id="logo" ref="logoRef">
                         <Link :href="route('home')">
                             <img
                                 :src="logoUrl"
@@ -46,19 +46,20 @@
                             'head-tr': transparentNavbar && !headerPinned,
                         }"
                     >
-                        <ul id="responsive">
+                        <ul id="responsive" ref="navListRef">
                             <li
                                 v-for="item in navLinks"
                                 :key="item.key"
+                                class="imas-nav-item"
                                 :class="{
                                     'has-submenu': item?.children?.length,
                                 }"
                             >
                                 <Link v-if="item.href" :href="item.href">
-                                    {{ trans(item.key) }}
+                                    {{ item.label ?? trans(item.key) }}
                                 </Link>
                                 <a v-else href="#" @click.prevent>
-                                    {{ trans(item.key) }}
+                                    {{ item.label ?? trans(item.key) }}
                                 </a>
 
                                 <ul v-if="item?.children?.length">
@@ -67,7 +68,9 @@
                                         :key="`${item.key}-${child.key}`"
                                     >
                                         <Link :href="child.href">
-                                            {{ trans(child.key) }}
+                                            {{
+                                                child.label ?? trans(child.key)
+                                            }}
                                         </Link>
                                     </li>
                                 </ul>
@@ -132,7 +135,7 @@
                                     >{{ trans("Register") }}</a
                                 >
                             </li>
-                            <li
+                            <!-- <li
                                 v-if="!auth"
                                 class="d-none d-xl-none d-block d-lg-block mt-5 pb-4 ml-5 border-bottom-0"
                             >
@@ -144,12 +147,12 @@
                                     {{ trans("Add Listing") }}
                                     <i class="fas fa-laptop-house ml-2"></i>
                                 </a>
-                            </li>
+                            </li> -->
                         </ul>
                     </nav>
                 </div>
 
-                <div
+                <!-- <div
                     v-if="auth"
                     class="right-side d-none d-none d-lg-none d-xl-flex"
                 >
@@ -159,12 +162,12 @@
                             <i class="fas fa-laptop-house ml-2"></i>
                         </Link>
                     </div>
-                </div>
+                </div> -->
 
                 <div
                     v-if="auth"
                     ref="userMenuWrapRef"
-                    class="header-user-menu user-menu add UserMenu"
+                    class="header-user-menu user-menu add UserMenu imas-header-action"
                     :class="{ active: userMenuOpen }"
                 >
                     <div
@@ -214,7 +217,7 @@
 
                 <div
                     v-else
-                    class="right-side d-none d-none d-lg-none d-xl-flex sign ml-0"
+                    class="right-side d-none d-none d-lg-none d-xl-flex sign ml-0 imas-header-action"
                 >
                     <div class="header-widget sign-in">
                         <a
@@ -227,7 +230,7 @@
                 </div>
 
                 <div
-                    class="header-user-menu user-menu add d-none d-lg-none d-xl-flex mx-2 p-0"
+                    class="header-user-menu user-menu add d-none d-lg-none d-xl-flex mx-2 p-0 imas-header-action"
                 >
                     <div
                         ref="langWrapRef"
@@ -306,6 +309,8 @@ import {
     watch,
 } from "vue";
 import { Link, router, usePage } from "@inertiajs/vue3";
+import { useGsap } from "@/composables/useGsap";
+import { prefersReducedMotion } from "@/plugins/gsap";
 import AuthModal from "./AuthModal.vue";
 
 const props = defineProps({
@@ -325,8 +330,7 @@ const authModalOpen = ref(false);
 const authStartTab = ref("login");
 
 function openAuthModal(tab = "login") {
-    authStartTab.value =
-        tab === "register" || tab === "reset" ? tab : "login";
+    authStartTab.value = tab === "register" || tab === "reset" ? tab : "login";
     authModalOpen.value = true;
     mmenuApi?.close?.();
 }
@@ -339,9 +343,7 @@ function onDelegatedOpenAuth(e) {
     }
     e.preventDefault();
     const tab = el.getAttribute("data-open-auth") || "login";
-    openAuthModal(
-        tab === "register" || tab === "reset" ? tab : "login",
-    );
+    openAuthModal(tab === "register" || tab === "reset" ? tab : "login");
 }
 
 const langMenuOpen = ref(false);
@@ -350,6 +352,10 @@ const userMenuOpen = ref(false);
 const userMenuWrapRef = ref(null);
 const headerContainerRef = ref(null);
 const headerBarRef = ref(null);
+const navListRef = ref(null);
+const logoRef = ref(null);
+
+const { gsap, context } = useGsap();
 /** Pinned bar uses the real Vue-managed `#header` (no jQuery clone). */
 const headerPinned = ref(false);
 /** Second phase: slide/visibility in (mirrors theme `#header.cloned` unsticky → sticky). */
@@ -395,6 +401,107 @@ const localeBadge = computed(() => {
 
 function trans(key) {
     return page.props.translations[key] || key;
+}
+
+function isDesktopNavViewport() {
+    return window.matchMedia("(min-width: 1025px)").matches;
+}
+
+function playNavbarEnterAnimation() {
+    if (prefersReducedMotion()) {
+        return;
+    }
+
+    const list = navListRef.value;
+    const logo = logoRef.value;
+    const header = headerContainerRef.value;
+    if (!list || !header) {
+        return;
+    }
+
+    const navItems = list.querySelectorAll(":scope > li.imas-nav-item");
+    const actions = header.querySelectorAll(".imas-header-action");
+    const isDesktop = isDesktopNavViewport();
+    const isRtl =
+        document.documentElement.getAttribute("dir") === "rtl" ||
+        document.documentElement.dir === "rtl";
+
+    context(() => {
+        const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
+
+        if (logo) {
+            tl.fromTo(
+                logo,
+                { opacity: 0, x: isRtl ? 16 : -16 },
+                { opacity: 1, x: 0, duration: 0.5 },
+                0,
+            );
+        }
+
+        if (isDesktop && navItems.length) {
+            tl.fromTo(
+                navItems,
+                { opacity: 0, y: -20 },
+                {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.45,
+                    stagger: 0.06,
+                },
+                logo ? 0.1 : 0,
+            );
+        }
+
+        if (isDesktop && actions.length) {
+            tl.fromTo(
+                actions,
+                { opacity: 0, x: isRtl ? -16 : 16 },
+                {
+                    opacity: 1,
+                    x: 0,
+                    duration: 0.45,
+                    stagger: 0.08,
+                },
+                logo ? 0.14 : 0.08,
+            );
+        }
+    }, headerContainerRef);
+}
+
+function playMobileNavEnterAnimation() {
+    if (prefersReducedMotion()) {
+        return;
+    }
+
+    const $ = window.jQuery;
+    if (!$) {
+        return;
+    }
+
+    const items = $(".mmenu-init").find("li.imas-nav-item").toArray();
+    if (!items.length) {
+        return;
+    }
+
+    const isRtl =
+        document.documentElement.getAttribute("dir") === "rtl" ||
+        document.documentElement.dir === "rtl";
+
+    gsap.fromTo(
+        items,
+        {
+            opacity: 0,
+            x: isRtl ? 20 : -20,
+        },
+        {
+            opacity: 1,
+            x: 0,
+            duration: 0.4,
+            stagger: 0.05,
+            ease: "power2.out",
+            overwrite: "auto",
+        },
+    );
 }
 
 /** ISO 3166-1 alpha-2 for flag-icons (`fi-xx`). Not every locale maps 1:1 to a flag — adjust as needed. */
@@ -540,6 +647,7 @@ function initMobileMenuMmenu() {
         setTimeout(() => {
             $icon.addClass("is-active");
             attachMmenuCloseButton($);
+            playMobileNavEnterAnimation();
         });
     });
 
@@ -577,14 +685,6 @@ function removeLegacyHeaderClones() {
     document
         .querySelectorAll("#navigation.style-2.cloned")
         .forEach((el) => el.remove());
-}
-
-function prefersReducedMotion() {
-    return (
-        typeof window !== "undefined" &&
-        window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ===
-            true
-    );
 }
 
 function updateScrollPinnedHeader() {
@@ -678,6 +778,7 @@ function reinitHeaderChromeForLocale() {
         teardownMobileMenuMmenu();
         initScrollPinnedHeader();
         initMobileMenuMmenu();
+        playNavbarEnterAnimation();
     });
 }
 
@@ -691,6 +792,14 @@ watch(
     () => reinitHeaderChromeForLocale(),
 );
 
+watch(
+    () => props.navLinks,
+    () => {
+        nextTick(() => playNavbarEnterAnimation());
+    },
+    { deep: true },
+);
+
 onMounted(() => {
     document.addEventListener("click", closeHeaderDropdownsOnOutsideClick);
     document.addEventListener("click", onDelegatedOpenAuth, true);
@@ -698,6 +807,7 @@ onMounted(() => {
     nextTick(() => {
         initScrollPinnedHeader();
         initMobileMenuMmenu();
+        playNavbarEnterAnimation();
     });
 
     const $ = window.jQuery;
@@ -819,9 +929,17 @@ onBeforeUnmount(() => {
         width: 870px !important;
     }
     .UserMenu {
-
-
-    margin: 0 50px !important;
+        margin: 0 50px !important;
+    }
 }
+
+/* GSAP sets initial state; keep items visible when motion is reduced */
+@media (prefers-reduced-motion: reduce) {
+    :deep(.imas-nav-item),
+    :deep(.imas-header-action),
+    :deep(#logo) {
+        opacity: 1 !important;
+        transform: none !important;
+    }
 }
 </style>

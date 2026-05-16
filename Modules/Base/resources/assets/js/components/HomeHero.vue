@@ -22,14 +22,38 @@
                     <div class="col-12">
                         <div class="hero-inner">
                             <div class="imas-hero-copy">
-                                <div class="welcome-text">
-                                    <h1 class="h1">
-                                        <template v-if="activeSlide?.link">
-                                            <a :href="activeSlide.link" class="imas-hero-title-link">{{ heroTitle }}</a>
-                                        </template>
-                                        <template v-else>{{ heroTitle }}</template>
+                                <div ref="heroCopyRef" class="welcome-text">
+                                    <h1 class="h1 imas-hero-title" :aria-label="heroTitle">
+                                        <component
+                                            :is="heroTitleTag"
+                                            v-bind="heroTitleAttrs"
+                                            class="imas-hero-title-link"
+                                        >
+                                            <span
+                                                v-if="titleParts.lead"
+                                                ref="titleLeadRef"
+                                                class="imas-hero-title-lead"
+                                            >{{ titleParts.lead }}</span>
+                                            <span
+                                                v-if="titleParts.lead"
+                                                class="imas-hero-title-gap"
+                                                aria-hidden="true"
+                                            >&nbsp;</span>
+                                            <span
+                                                ref="titleTypedRef"
+                                                class="imas-hero-title-typed"
+                                            >
+                                                {{ displayedTypedText }}<span
+                                                    v-if="showTypeCursor"
+                                                    class="imas-hero-type-cursor"
+                                                    aria-hidden="true"
+                                                >|</span>
+                                            </span>
+                                        </component>
                                     </h1>
-                                    <p class="mt-4">{{ heroSubtitle }}</p>
+                                    <p ref="heroSubtitleRef" class="mt-4 imas-hero-subtitle">
+                                        {{ heroSubtitle }}
+                                    </p>
                                 </div>
 
                                 <div v-if="slides.length > 1" class="imas-hero-dots" role="tablist" aria-label="Slides">
@@ -45,7 +69,7 @@
                                 </div>
                             </div>
 
-                            <div class="imas-hero-filter">
+                            <div ref="heroFilterRef" class="imas-hero-filter">
                                 <HomeHeroPropertySearch
                                     :action="propertyIndexUrl"
                                     :purpose="purpose"
@@ -62,7 +86,9 @@
 </template>
 
 <script setup>
-import {computed, onBeforeUnmount, onMounted, ref, watch} from 'vue';
+import {computed, nextTick, onBeforeUnmount, onMounted, ref, watch} from 'vue';
+import {useGsap} from '@/composables/useGsap';
+import {createGsapContext, prefersReducedMotion} from '@/plugins/gsap';
 import HomeHeroPropertySearch from './HomeHeroPropertySearch.vue';
 
 const props = defineProps({
@@ -77,7 +103,20 @@ const props = defineProps({
 const purpose = ref('sale');
 
 const activeSlideIndex = ref(0);
+const heroCopyRef = ref(null);
+const titleLeadRef = ref(null);
+const titleTypedRef = ref(null);
+const heroSubtitleRef = ref(null);
+const heroFilterRef = ref(null);
+const displayedTypedText = ref('');
+const showTypeCursor = ref(false);
+
+const {gsap, context} = useGsap();
 let slideTimer = null;
+let heroAnimToken = 0;
+/** @type {import('gsap').Context | null} */
+let heroSearchCtx = null;
+let searchEnterHasPlayed = false;
 
 const slides = computed(() => props.slides || []);
 
@@ -104,7 +143,181 @@ const heroSubtitle = computed(() =>
         : props.welcomeSubtitle
 );
 
+const heroTitleTag = computed(() => (activeSlide.value?.link ? 'a' : 'span'));
+
+const heroTitleAttrs = computed(() => {
+    const link = activeSlide.value?.link;
+    if (typeof link === 'string' && link.trim() !== '') {
+        return {href: link.trim()};
+    }
+
+    return {};
+});
+
+/**
+ * @param {string} title
+ * @returns {{ lead: string, typed: string }}
+ */
+function splitTitleForTypewriter(title) {
+    const words = String(title || '')
+        .trim()
+        .split(/\s+/u)
+        .filter(Boolean);
+
+    if (words.length === 0) {
+        return {lead: '', typed: ''};
+    }
+
+    if (words.length <= 2) {
+        return {lead: '', typed: words.join(' ')};
+    }
+
+    return {
+        lead: words.slice(0, -2).join(' '),
+        typed: words.slice(-2).join(' '),
+    };
+}
+
+const titleParts = computed(() => splitTitleForTypewriter(heroTitle.value));
+
 const propertyIndexUrl = computed(() => route('property.index'));
+
+function playHeroSearchEnterAnimation() {
+    if (searchEnterHasPlayed) {
+        return;
+    }
+
+    const filterEl = heroFilterRef.value;
+    if (!filterEl) {
+        return;
+    }
+
+    searchEnterHasPlayed = true;
+
+    if (prefersReducedMotion()) {
+        gsap.set(filterEl, {opacity: 1, scale: 1});
+        return;
+    }
+
+    heroSearchCtx = createGsapContext(() => {
+        gsap.fromTo(
+            filterEl,
+            {opacity: 0, scale: 0.5},
+            {opacity: 1, scale: 1, duration: 1.5, ease: 'power2.out'},
+        );
+    }, heroFilterRef);
+}
+
+function playHeroCopyAnimation() {
+    const token = ++heroAnimToken;
+    const {lead, typed} = titleParts.value;
+
+    if (prefersReducedMotion()) {
+        displayedTypedText.value = typed;
+        showTypeCursor.value = false;
+        return;
+    }
+
+    displayedTypedText.value = '';
+    showTypeCursor.value = false;
+
+    const leadEl = titleLeadRef.value;
+    const typedEl = titleTypedRef.value;
+    const subEl = heroSubtitleRef.value;
+
+    context(() => {
+        const tl = gsap.timeline({
+            defaults: {ease: 'power2.out'},
+            onComplete: () => {
+                if (token !== heroAnimToken) {
+                    return;
+                }
+                showTypeCursor.value = false;
+            },
+        });
+
+        if (subEl) {
+            gsap.set(subEl, {opacity: 0, y: -20});
+        }
+
+        if (leadEl && lead) {
+            gsap.set(leadEl, {opacity: 0, y: -20});
+            tl.fromTo(
+                leadEl,
+                {opacity: 0, y: -20},
+                {opacity: 1, y: 0, duration: 0.55},
+                0,
+            );
+        } else if (typedEl && !lead) {
+            gsap.set(typedEl, {opacity: 0, y: -20});
+        }
+
+        const typeStart = lead ? 0.32 : 0;
+        const chars = [...typed];
+
+        if (!lead && typedEl && chars.length) {
+            tl.fromTo(
+                typedEl,
+                {opacity: 0, y: -20},
+                {opacity: 1, y: 0, duration: 0.4},
+                typeStart,
+            );
+        }
+
+        if (chars.length) {
+            tl.call(
+                () => {
+                    if (token !== heroAnimToken) {
+                        return;
+                    }
+                    showTypeCursor.value = true;
+                },
+                null,
+                typeStart + (lead ? 0.08 : 0.2),
+            );
+
+            chars.forEach((char, index) => {
+                tl.call(
+                    () => {
+                        if (token !== heroAnimToken) {
+                            return;
+                        }
+                        displayedTypedText.value += char;
+                    },
+                    null,
+                    typeStart + (lead ? 0.12 : 0.28) + index * 0.045,
+                );
+            });
+        }
+
+        const afterType =
+            typeStart +
+            (lead ? 0.12 : 0.28) +
+            Math.max(chars.length, 1) * 0.045 +
+            0.08;
+
+        tl.call(
+            () => {
+                if (token !== heroAnimToken) {
+                    return;
+                }
+                showTypeCursor.value = false;
+            },
+            null,
+            afterType,
+        );
+
+        if (subEl) {
+            tl.fromTo(
+                subEl,
+                {opacity: 0, y: -20},
+                {opacity: 1, y: 0, duration: 0.5},
+                afterType + 0.06,
+            );
+        }
+
+    }, heroCopyRef);
+}
 
 function goToSlide(index) {
     activeSlideIndex.value = index;
@@ -116,7 +329,8 @@ function startSlideAutoplay() {
         return;
     }
     slideTimer = window.setInterval(() => {
-        activeSlideIndex.value = (activeSlideIndex.value + 1) % slides.value.length;
+        activeSlideIndex.value =
+            (activeSlideIndex.value + 1) % slides.value.length;
     }, 6500);
 }
 
@@ -130,14 +344,25 @@ function stopSlideAutoplay() {
 watch(slides, () => {
     activeSlideIndex.value = 0;
     startSlideAutoplay();
+    nextTick(() => playHeroCopyAnimation());
 }, {deep: true});
+
+watch(activeSlideIndex, () => {
+    nextTick(() => playHeroCopyAnimation());
+});
 
 onMounted(() => {
     startSlideAutoplay();
+    nextTick(() => {
+        playHeroSearchEnterAnimation();
+        playHeroCopyAnimation();
+    });
 });
 
 onBeforeUnmount(() => {
     stopSlideAutoplay();
+    heroSearchCtx?.revert?.();
+    heroSearchCtx = null;
 });
 </script>
 
@@ -218,6 +443,8 @@ onBeforeUnmount(() => {
     width: 100%;
     max-width: 100%;
     padding-top: 1rem;
+    transform-origin: center center;
+    will-change: transform, opacity;
 }
 
 .imas-hero-slider__layers {
@@ -264,6 +491,41 @@ onBeforeUnmount(() => {
 .imas-hero-title-link:hover {
     color: inherit;
     text-decoration: underline;
+}
+
+.imas-hero-title-link {
+    display: inline;
+}
+
+.imas-hero-title-typed {
+    display: inline;
+}
+
+.imas-hero-type-cursor {
+    display: inline-block;
+    margin-inline-start: 2px;
+    font-weight: 300;
+    animation: imas-hero-cursor-blink 0.75s step-end infinite;
+}
+
+@keyframes imas-hero-cursor-blink {
+    50% {
+        opacity: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .imas-hero-title-lead,
+    .imas-hero-title-typed,
+    .imas-hero-subtitle,
+    .imas-hero-filter {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+
+    .imas-hero-type-cursor {
+        display: none;
+    }
 }
 
 .imas-hero-dots {

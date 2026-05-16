@@ -257,7 +257,11 @@
         "add_favorite":"إضافة إلى المفضّلة",
         "remove_favorite":"إزالة من المفضّلة",
         "recommended":"موصى به",
-        "property_Listings":"قائمة العقارات"
+        "property_Listings":"قائمة العقارات",
+        "price_from":"من",
+        "unit_types_count_one":"نوع واحد",
+        "unit_types_count":":count أنواع",
+        "unit_types_aria":"أنواع وحدات العقار"
     },
     "listing_page":{
         "find_your_house":"ابحث عن منزلك",

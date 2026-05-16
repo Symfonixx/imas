@@ -9,6 +9,7 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Validator;
 use Modules\Property\Models\Property;
 use Modules\Property\Models\UserFavoriteProperty;
+use Modules\Property\Support\PropertyCardEagerLoads;
 use Modules\Property\Transformers\PropertyCardResource;
 use Modules\User\Enums\CmsStatus;
 use Modules\User\Models\User;
@@ -20,15 +21,10 @@ class FavoriteController extends Controller
         /** @var User $user */
         $user = $request->user();
 
-        $propertyCardWith = [
-            'location:id,name',
-            'propertyType:id,name,slug',
-        ];
-
         $paginator = $user
             ->favoriteProperties()
             ->where('properties.status', CmsStatus::PUBLISHED)
-            ->with($propertyCardWith)
+            ->with(PropertyCardEagerLoads::relations())
             ->paginate(8)
             ->withQueryString();
 

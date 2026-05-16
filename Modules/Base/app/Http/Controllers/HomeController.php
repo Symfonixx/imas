@@ -15,6 +15,7 @@ use Modules\Property\Enums\LocationType;
 use Modules\Property\Models\Location;
 use Modules\Property\Models\Property;
 use Modules\Property\Models\PropertyType;
+use Modules\Property\Support\PropertyCardEagerLoads;
 use Modules\Property\Support\PropertyListingCardSerializer;
 use Modules\User\Enums\CmsStatus;
 
@@ -59,17 +60,12 @@ class HomeController extends Controller
             ->values()
             ->all();
 
-        $propertyCardWith = [
-            'location:id,name',
-            'propertyType:id,name,slug',
-        ];
-
         $userId = auth()->id();
 
         $featuredProperties = Property::query()
             ->where('status', CmsStatus::PUBLISHED)
             ->where('is_featured', true)
-            ->with($propertyCardWith)
+            ->with(PropertyCardEagerLoads::relations())
             ->withFavoriteStateForUser($userId)
             ->latest('updated_at')
             ->limit(6)
@@ -81,7 +77,7 @@ class HomeController extends Controller
         $recommendedProperties = Property::query()
             ->where('status', CmsStatus::PUBLISHED)
             ->where('is_recommended', true)
-            ->with($propertyCardWith)
+            ->with(PropertyCardEagerLoads::relations())
             ->withFavoriteStateForUser($userId)
             ->latest('updated_at')
             ->limit(20)

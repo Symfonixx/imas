@@ -253,7 +253,11 @@
         "add_favorite":"Add to favorites",
         "remove_favorite":"Remove from favorites",
         "recommended":"Recommended",
-        "property_Listings":"Property listings"
+        "property_Listings":"Property listings",
+        "price_from":"From",
+        "unit_types_count_one":"1 type",
+        "unit_types_count":":count types",
+        "unit_types_aria":"Property unit types"
     },
     "listing_page":{
         "find_your_house":"Find your house",

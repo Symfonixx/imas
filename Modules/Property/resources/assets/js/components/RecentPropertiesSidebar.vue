@@ -15,7 +15,7 @@
                     </div>
                     <div class="info-img">
                         <a :href="p.url"><h6>{{ displayTitle(p) }}</h6></a>
-                        <p>{{ formatMoney(p.price) }}</p>
+                        <p>{{ formatMoney(propertyStartPrice(p)) }}</p>
                     </div>
                 </div>
             </div>
@@ -25,6 +25,7 @@
 
 <script setup>
 import { usePage } from "@inertiajs/vue3";
+import { propertyStartPrice } from "../utils/propertyPrice.js";
 
 defineProps({
     recentProperties: { type: Array, default: () => [] },

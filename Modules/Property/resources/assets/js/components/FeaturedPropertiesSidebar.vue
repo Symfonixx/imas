@@ -22,7 +22,7 @@
                         <a :href="p.url" class="listing-img-container">
                             <div class="listing-badges">
                                 <span class="featured">{{
-                                    formatMoney(p.price)
+                                    formatMoney(propertyStartPrice(p))
                                 }}</span>
                                 <span>{{
                                     trans("listing_page.for_sale")
@@ -64,6 +64,8 @@ import {
     watch,
 } from "vue";
 import { usePage } from "@inertiajs/vue3";
+import { propertyLocationLine } from "../utils/propertyLocation.js";
+import { propertyStartPrice } from "../utils/propertyPrice.js";
 
 const props = defineProps({
     featuredProperties: { type: Array, default: () => [] },
@@ -116,21 +118,7 @@ function displayTitle(p) {
 }
 
 function locationLine(p) {
-    const n = p.location?.name;
-    if (typeof n === "string" && n.trim() !== "") {
-        return n;
-    }
-    if (n && typeof n === "object") {
-        const loc = locale();
-        const raw =
-            n[loc] ??
-            n.en ??
-            Object.values(n).find((v) => typeof v === "string");
-        if (typeof raw === "string" && raw.trim() !== "") {
-            return raw;
-        }
-    }
-    return "";
+    return propertyLocationLine(p.location, locale());
 }
 
 function formatMoney(amount) {

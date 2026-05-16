@@ -16,7 +16,6 @@
                         >
                             {{ trans("properties.sold_out") }}
                         </div>
-                        <div class="homes-price">{{ priceLabel }}</div>
                         <img
                             :src="property.thumbnail_url"
                             :alt="displayTitle"
@@ -24,26 +23,32 @@
                         />
                     </a>
                 </div>
-                <div class="button-effect">
-                    <a :href="property.url" class="btn"
-                        ><i class="fa fa-link"></i
-                    ></a>
-                    <a
+                <div class="imas-card-actions">
+                    <div class="homes-price imas-start-price">
+                        <span class="imas-start-price__from">{{
+                            trans("properties.price_from")
+                        }}</span>
+                        <span class="imas-start-price__amount">{{
+                            priceAmount
+                        }}</span>
+                    </div>
+                    <div class="button-effect">
+                        <a
                         v-if="property.youtube_video_url"
                         :href="property.youtube_video_url"
                         class="btn popup-video popup-youtube"
                         target="_blank"
                         rel="noopener noreferrer"
                         ><i class="fas fa-video"></i
-                    ></a>
-                    <a
-                        :href="property.thumbnail_url"
-                        class="img-poppu btn"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        ><i class="fa fa-photo"></i
-                    ></a>
-                    <button
+                        ></a>
+                        <a
+                            :href="property.thumbnail_url"
+                            class="img-poppu btn"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            ><i class="fa fa-photo"></i
+                        ></a>
+                        <button
                         type="button"
                         class="btn imas-favorite-btn"
                         :class="{ 'is-favorited': localFavorited }"
@@ -57,12 +62,19 @@
                             aria-hidden="true"
                         ></i>
                     </button>
+                    </div>
                 </div>
             </div>
             <div class="homes-content">
                 <h3 class="imas-property-title">
                     <a :href="property.url">{{ displayTitle }}</a>
                 </h3>
+                <p
+                    v-if="overviewText"
+                    class="imas-property-overview mb-3"
+                >
+                    {{ overviewText }}
+                </p>
                 <p class="homes-address mb-3">
                     <a :href="property.url">
                         <i
@@ -72,25 +84,9 @@
                         <span>{{ addressLine }}</span>
                     </a>
                 </p>
-                <ul
-                    v-if="hasHomesList"
-                    class="homes-list imas-homes-attrs pb-3"
-                >
-                    <li
-                        v-for="(attr, idx) in homesAttributes"
-                        :key="`${attr.code}-${idx}`"
-                        class="the-icons imas-homes-attr"
-                    >
-                        <i
-                            :class="attributeIconClass(attr.code)"
-                            class="imas-homes-attr__icon"
-                            aria-hidden="true"
-                        ></i>
-                        <span class="imas-homes-attr__text" dir="auto">{{
-                            attr.display
-                        }}</span>
-                    </li>
-                </ul>
+                <PropertyCardUnitTypesBar
+                    :unit-types="property.unit_types ?? []"
+                />
             </div>
         </div>
     </div>
@@ -100,6 +96,12 @@
 import axios from "axios";
 import { computed, ref, watch } from "vue";
 import { router, usePage } from "@inertiajs/vue3";
+import {
+    localizedLocationName,
+    propertyLocationLine,
+} from "../utils/propertyLocation.js";
+import { propertyStartPrice } from "../utils/propertyPrice.js";
+import PropertyCardUnitTypesBar from "./PropertyCardUnitTypesBar.vue";
 
 const props = defineProps({
     property: {
@@ -146,10 +148,28 @@ const displayTitle = computed(() => {
 });
 
 const addressLine = computed(() => {
-    const loc = props.property.location?.name;
+    const line = propertyLocationLine(
+        props.property.location,
+        locale.value,
+    );
 
-    return typeof loc === "string" && loc.trim() !== "" ? loc : "—";
+    return line !== "" ? line : "—";
 });
+
+function stripHtml(value) {
+    if (typeof value !== "string") {
+        return "";
+    }
+
+    return value
+        .replace(/<[^>]*>/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
+const overviewText = computed(() =>
+    stripHtml(localizedLocationName(props.property.overview, locale.value)),
+);
 
 function formatMoney(amount) {
     const n = Number(amount);
@@ -164,32 +184,9 @@ function formatMoney(amount) {
     }).format(n);
 }
 
-const priceLabel = computed(() => formatMoney(props.property.price));
-
-const homesAttributes = computed(() =>
-    Array.isArray(props.property.highlights) ? props.property.highlights : [],
+const priceAmount = computed(() =>
+    formatMoney(propertyStartPrice(props.property)),
 );
-
-const hasHomesList = computed(() => homesAttributes.value.length > 0);
-
-const ATTRIBUTE_ICON_CLASS = {
-    built_in_area: "flaticon-square",
-    bedrooms: "flaticon-bed",
-    bedroom: "flaticon-bed",
-    bathrooms: "flaticon-bathtub",
-    bathroom: "flaticon-bathtub",
-    garage: "flaticon-car",
-    garages: "flaticon-car",
-    parking: "flaticon-car",
-};
-
-function attributeIconClass(code) {
-    if (!code || typeof code !== "string") {
-        return "flaticon-square";
-    }
-
-    return ATTRIBUTE_ICON_CLASS[code.toLowerCase()] || "flaticon-square";
-}
 
 async function onFavoriteClick(e) {
     e.preventDefault();
@@ -270,6 +267,89 @@ async function onFavoriteClick(e) {
     word-break: break-word;
 }
 
+.imas-property-overview {
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    line-height: 1.45;
+    font-size: 0.9rem;
+    color: var(--color-text-muted, #666);
+    text-align: start;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-word;
+}
+
+/* Price + action buttons share one bottom row (theme buttons are 31×31px). */
+.imas-property-card .imas-card-actions {
+    position: absolute;
+    inset-inline: 15px;
+    bottom: 0.7rem;
+    z-index: 33;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.imas-property-card .imas-card-actions > * {
+    pointer-events: auto;
+}
+
+.imas-property-card .imas-card-actions .button-effect {
+    position: static !important;
+    transform: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+}
+
+.imas-property-card .imas-card-actions .button-effect .btn {
+    margin: 0 !important;
+    flex-shrink: 0;
+}
+
+.imas-property-card .homes-price.imas-start-price {
+    position: static !important;
+    bottom: auto !important;
+    left: auto !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    height: 31px;
+    min-height: 31px;
+    max-height: 31px;
+    padding: 0 10px;
+    background: var(--brand-gold) !important;
+    border-radius: 5px;
+    color: #fff !important;
+    font-size: 12px !important;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.imas-start-price__from {
+    font-weight: 500;
+    opacity: 0.92;
+    text-transform: capitalize;
+}
+
+.imas-start-price__amount {
+    font-weight: 700;
+}
+
 .imas-sold-out-badge {
     background-color: #dc3545 !important;
     color: #fff !important;
@@ -295,57 +375,6 @@ async function onFavoriteClick(e) {
 
 .homes-address .imas-address-marker {
     margin-inline-end: 10px;
-}
-
-.portfolio .imas-property-card .homes-content ul.imas-homes-attrs,
-.imas-property-card .homes-content ul.imas-homes-attrs {
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: 0.75rem;
-    row-gap: 0.25rem;
-    padding-left: 0 !important;
-    padding-inline-start: 0 !important;
-    margin: 0;
-    list-style: none;
-}
-
-.portfolio
-    .imas-property-card
-    .homes-content
-    ul.imas-homes-attrs
-    li.imas-homes-attr,
-.imas-property-card .homes-content ul.imas-homes-attrs li.imas-homes-attr {
-    float: none !important;
-    width: 100% !important;
-    min-width: 0;
-    max-width: 100%;
-    line-height: 1.35 !important;
-    padding-top: 0.35rem !important;
-    padding-bottom: 0.35rem !important;
-    display: flex !important;
-    align-items: center;
-}
-
-.portfolio
-    .imas-property-card
-    .homes-content
-    ul.imas-homes-attrs
-    li
-    i.imas-homes-attr__icon,
-.imas-property-card
-    .homes-content
-    ul.imas-homes-attrs
-    li
-    i.imas-homes-attr__icon {
-    margin-right: 0 !important;
-    margin-left: 0 !important;
-    margin-inline-end: 0.35rem !important;
-    flex-shrink: 0;
-}
-
-.imas-property-card .homes-content ul.imas-homes-attrs .imas-homes-attr__text {
-    min-width: 0;
-    text-align: start;
 }
 
 .imas-favorite-btn:not(.is-favorited) i {

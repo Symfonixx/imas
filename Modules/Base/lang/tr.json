@@ -254,7 +254,11 @@
         "add_favorite":"Favorilere ekle",
         "remove_favorite":"Favorilerden çıkar",
         "recommended":"Önerilen",
-        "property_Listings":"Mülk listeleri"
+        "property_Listings":"Mülk listeleri",
+        "price_from":"Başlangıç",
+        "unit_types_count_one":"1 tip",
+        "unit_types_count":":count tip",
+        "unit_types_aria":"Mülk birim tipleri"
     },
     "listing_page":{
         "find_your_house":"Evinizi bulun",

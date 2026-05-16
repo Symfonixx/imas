@@ -14,20 +14,13 @@ use Modules\Property\Enums\LocationType;
 use Modules\Property\Models\Location;
 use Modules\Property\Models\Property;
 use Modules\Property\Models\PropertyType;
+use Modules\Property\Support\PropertyCardEagerLoads;
 use Modules\Property\Support\PropertyListingCardSerializer;
 use Modules\Property\Transformers\PropertyCardResource;
 use Modules\User\Enums\CmsStatus;
 
 class PropertyController extends Controller
 {
-    /**
-     * @var list<string>
-     */
-    private array $propertyCardWith = [
-        'location:id,name',
-        'propertyType:id,name,slug',
-    ];
-
     /**
      * JSON listing for GET /api/properties (optional auth).
      */
@@ -98,7 +91,7 @@ class PropertyController extends Controller
 
         $recentProperties = Property::query()
             ->where('status', CmsStatus::PUBLISHED)
-            ->with($this->propertyCardWith)
+            ->with(PropertyCardEagerLoads::relations())
             ->withFavoriteStateForUser($userId)
             ->latest('updated_at')
             ->limit(4)
@@ -110,7 +103,7 @@ class PropertyController extends Controller
         $featuredProperties = Property::query()
             ->where('status', CmsStatus::PUBLISHED)
             ->where('is_featured', true)
-            ->with($this->propertyCardWith)
+            ->with(PropertyCardEagerLoads::relations())
             ->withFavoriteStateForUser($userId)
             ->latest('updated_at')
             ->limit(4)
@@ -157,7 +150,7 @@ class PropertyController extends Controller
 
         $query = Property::query()
             ->where('status', CmsStatus::PUBLISHED)
-            ->with($this->propertyCardWith)
+            ->with(PropertyCardEagerLoads::relations())
             ->withFavoriteStateForUser($userId);
 
         if (! empty($validated['location_id'])) {

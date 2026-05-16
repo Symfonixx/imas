@@ -8,19 +8,12 @@ use Inertia\Response;
 use Modules\Base\Application\Settings\SettingsApplicationService;
 use Modules\Base\Models\Seo;
 use Modules\Property\Models\Property;
+use Modules\Property\Support\PropertyCardEagerLoads;
 use Modules\Property\Support\PropertyListingCardSerializer;
 use Modules\User\Enums\CmsStatus;
 
 class TurkishCitizenshipController extends Controller
 {
-    /**
-     * @var list<string>
-     */
-    private const PROPERTY_CARD_WITH = [
-        'location:id,name',
-        'propertyType:id,name,slug',
-    ];
-
     public function __construct(
         private readonly SettingsApplicationService $settingsService,
     ) {}
@@ -35,7 +28,7 @@ class TurkishCitizenshipController extends Controller
         $citizenshipProperties = Property::query()
             ->where('status', CmsStatus::PUBLISHED)
             ->where('is_citizenship_eligible', true)
-            ->with(self::PROPERTY_CARD_WITH)
+            ->with(PropertyCardEagerLoads::relations())
             ->withFavoriteStateForUser($userId)
             ->latest('updated_at')
             ->limit(16)

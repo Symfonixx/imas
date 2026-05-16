@@ -15,8 +15,7 @@
             :class="{
                 'head-tr': transparentNavbar && !headerPinned,
                 'imas-scroll-pinned': headerPinned,
-                'imas-scroll-pinned--in':
-                    headerPinned && headerPinnedVisible,
+                'imas-scroll-pinned--in': headerPinned && headerPinnedVisible,
             }"
         >
             <div class="container container-header">
@@ -43,7 +42,9 @@
                     <nav
                         id="navigation"
                         class="style-1"
-                        :class="{ 'head-tr': transparentNavbar && !headerPinned }"
+                        :class="{
+                            'head-tr': transparentNavbar && !headerPinned,
+                        }"
                     >
                         <ul id="responsive">
                             <li
@@ -113,29 +114,36 @@
                                 v-if="!auth"
                                 class="d-none d-xl-none d-block d-lg-block"
                             >
-                                <Link :href="route('login')">{{
-                                    trans("Login")
-                                }}</Link>
+                                <a
+                                    href="#"
+                                    class="imas-auth-nav-link"
+                                    data-open-auth="login"
+                                    >{{ trans("Login") }}</a
+                                >
                             </li>
                             <li
                                 v-if="!auth"
                                 class="d-none d-xl-none d-block d-lg-block"
                             >
-                                <Link :href="route('register')">{{
-                                    trans("Register")
-                                }}</Link>
+                                <a
+                                    href="#"
+                                    class="imas-auth-nav-link"
+                                    data-open-auth="register"
+                                    >{{ trans("Register") }}</a
+                                >
                             </li>
                             <li
                                 v-if="!auth"
                                 class="d-none d-xl-none d-block d-lg-block mt-5 pb-4 ml-5 border-bottom-0"
                             >
-                                <Link
-                                    :href="route('register')"
+                                <a
+                                    href="#"
                                     class="button border btn-lg btn-block text-center"
+                                    data-open-auth="register"
                                 >
                                     {{ trans("Add Listing") }}
                                     <i class="fas fa-laptop-house ml-2"></i>
-                                </Link>
+                                </a>
                             </li>
                         </ul>
                     </nav>
@@ -209,9 +217,12 @@
                     class="right-side d-none d-none d-lg-none d-xl-flex sign ml-0"
                 >
                     <div class="header-widget sign-in">
-                        <Link :href="route('login')" class="show-reg-form">{{
-                            trans("Sign In")
-                        }}</Link>
+                        <a
+                            href="#"
+                            class="show-reg-form modal-open"
+                            data-open-auth="login"
+                            >{{ trans("Sign In") }}</a
+                        >
                     </div>
                 </div>
 
@@ -281,6 +292,7 @@
             :style="{ height: `${scrollPinSpacerPx}px` }"
             aria-hidden="true"
         ></div>
+        <AuthModal v-model:open="authModalOpen" :start-tab="authStartTab" />
     </header>
 </template>
 
@@ -294,6 +306,7 @@ import {
     watch,
 } from "vue";
 import { Link, router, usePage } from "@inertiajs/vue3";
+import AuthModal from "./AuthModal.vue";
 
 const props = defineProps({
     navLinks: {
@@ -307,6 +320,29 @@ const props = defineProps({
 });
 
 const page = usePage();
+
+const authModalOpen = ref(false);
+const authStartTab = ref("login");
+
+function openAuthModal(tab = "login") {
+    authStartTab.value =
+        tab === "register" || tab === "reset" ? tab : "login";
+    authModalOpen.value = true;
+    mmenuApi?.close?.();
+}
+
+/** mmenu clones `#navigation` without Vue listeners; delegate auth open from document. */
+function onDelegatedOpenAuth(e) {
+    const el = e.target.closest("a[data-open-auth]");
+    if (!el) {
+        return;
+    }
+    e.preventDefault();
+    const tab = el.getAttribute("data-open-auth") || "login";
+    openAuthModal(
+        tab === "register" || tab === "reset" ? tab : "login",
+    );
+}
 
 const langMenuOpen = ref(false);
 const langWrapRef = ref(null);
@@ -657,6 +693,7 @@ watch(
 
 onMounted(() => {
     document.addEventListener("click", closeHeaderDropdownsOnOutsideClick);
+    document.addEventListener("click", onDelegatedOpenAuth, true);
 
     nextTick(() => {
         initScrollPinnedHeader();
@@ -675,6 +712,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
     document.removeEventListener("click", closeHeaderDropdownsOnOutsideClick);
+    document.removeEventListener("click", onDelegatedOpenAuth, true);
 
     teardownScrollPinnedHeader();
     teardownMobileMenuMmenu();
@@ -772,13 +810,18 @@ onBeforeUnmount(() => {
 .lang-switch-flag--trigger {
     font-size: 1em;
 }
-.UserMenu {
-    /* margin-inline-end: 50px !important;
-        */
 
-    margin: 0 50px !important;
-}
 /* html[dir="rtl"] .header-user-menu.user-menu.add{
     margin-left: 50px !important;
 } */
+@media (min-width: 1200px) {
+    .left-side {
+        width: 870px !important;
+    }
+    .UserMenu {
+
+
+    margin: 0 50px !important;
+}
+}
 </style>

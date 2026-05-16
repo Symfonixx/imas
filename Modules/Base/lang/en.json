@@ -6,6 +6,22 @@
         "LogOut":"Log out",
         "profile":"Profile"
     },
+    "auth_modal":{
+        "dialog_label":"Sign in or register",
+        "close":"Close",
+        "welcome_prefix":"Welcome to",
+        "social_heading":"Login",
+        "log_in_facebook":"Log in with Facebook",
+        "log_in_twitter":"Log in with Twitter",
+        "or":"Or",
+        "back_to_login":"Back to sign in",
+        "reset_hint":"Open the link from your reset email (it includes a token), or request a new link from “Forgot password” on the sign-in tab. If you opened this page from your email, your token may load automatically.",
+        "country_calling_code":"Country code",
+        "mobile_national_placeholder":"National number (no country code)",
+        "mobile_invalid_length":"Enter a valid mobile number (8–15 digits total, including country code).",
+        "country_code_search_placeholder":"Search by code or country…",
+        "country_code_search_empty":"No countries match your search."
+    },
     "Name": "Name",
     "Language": "Language",
     "Social media": "Social media",
@@ -233,6 +249,9 @@
         "popular_properties":"Popular properties",
         "featured":"Featured",
         "sold_out":"Sold out",
+        "favorite_error":"Could not update your favorites. Please try again.",
+        "add_favorite":"Add to favorites",
+        "remove_favorite":"Remove from favorites",
         "recommended":"Recommended",
         "property_Listings":"property::Listings"
     },

@@ -1,8 +1,5 @@
 <template>
-    <div
-        class="imas-property-card item user-select-none"
-        :class="columnClass"
-    >
+    <div class="imas-property-card item user-select-none" :class="columnClass">
         <div class="project-single">
             <div class="project-inner project-head">
                 <div class="homes">
@@ -46,6 +43,20 @@
                         rel="noopener noreferrer"
                         ><i class="fa fa-photo"></i
                     ></a>
+                    <button
+                        type="button"
+                        class="btn imas-favorite-btn"
+                        :class="{ 'is-favorited': localFavorited }"
+                        :aria-label="favoriteAriaLabel"
+                        :aria-pressed="localFavorited"
+                        @click="onFavoriteClick"
+                    >
+                        <i
+                            class="fa favorite-icon"
+                            :class="localFavorited ? 'fa-heart' : 'fa-heart-o'"
+                            aria-hidden="true"
+                        ></i>
+                    </button>
                 </div>
             </div>
             <div class="homes-content">
@@ -86,8 +97,9 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
-import { usePage } from "@inertiajs/vue3";
+import axios from "axios";
+import { computed, ref, watch } from "vue";
+import { router, usePage } from "@inertiajs/vue3";
 
 const props = defineProps({
     property: {
@@ -105,6 +117,23 @@ const page = usePage();
 const trans = (key) => page.props.translations[key] || key;
 
 const locale = computed(() => page.props.locale || "en");
+
+const isAuthenticated = computed(() => page.props.auth != null);
+
+const localFavorited = ref(Boolean(props.property.is_favorited));
+
+watch(
+    () => props.property.is_favorited,
+    (v) => {
+        localFavorited.value = Boolean(v);
+    },
+);
+
+const favoriteAriaLabel = computed(() =>
+    localFavorited.value
+        ? trans("properties.remove_favorite")
+        : trans("properties.add_favorite"),
+);
 
 const displayTitle = computed(() => {
     const t = props.property.title;
@@ -161,6 +190,48 @@ function attributeIconClass(code) {
 
     return ATTRIBUTE_ICON_CLASS[code.toLowerCase()] || "flaticon-square";
 }
+
+async function onFavoriteClick(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!isAuthenticated.value) {
+        router.visit(route("login"));
+        return;
+    }
+
+    const next = !localFavorited.value;
+    const prev = localFavorited.value;
+    localFavorited.value = next;
+
+    try {
+        const headers = {
+            "X-CSRF-TOKEN": page.props.csrf,
+            "X-Requested-With": "XMLHttpRequest",
+            Accept: "application/json",
+        };
+        if (next) {
+            await axios.post(
+                "/api/favorites",
+                { property_id: props.property.id },
+                { headers },
+            );
+        } else {
+            await axios.delete(`/api/favorites/${props.property.id}`, {
+                headers,
+            });
+        }
+    } catch (err) {
+        localFavorited.value = prev;
+        const msg =
+            (err.response?.data?.message &&
+                String(err.response.data.message)) ||
+            trans("properties.favorite_error");
+        if (typeof window !== "undefined" && window.toastr) {
+            window.toastr.error(msg);
+        }
+    }
+}
 </script>
 
 <style scoped lang="scss">
@@ -203,8 +274,6 @@ function attributeIconClass(code) {
     background-color: #dc3545 !important;
     color: #fff !important;
     border-color: #dc3545 !important;
-    /* Match `.portfolio .homes-tag.sale` (top-right in LTR). Physical sides + html[dir] mirror RTL reliably
-       because some ancestors use LTR, so `inset-inline-*` alone may not flip. */
     top: 0;
     margin-top: 15px;
     right: 15px;
@@ -224,15 +293,10 @@ function attributeIconClass(code) {
     text-align: start;
 }
 
-/* Space between map pin and address; margin-inline-end flips correctly in RTL. */
 .homes-address .imas-address-marker {
     margin-inline-end: 10px;
 }
 
-/*
- * Theme `.portfolio .homes-content .homes-list li` uses float:left + width:45%, which
- * breaks RTL columns. Replace with a 2-col grid + flex rows (logical margins).
- */
 .portfolio .imas-property-card .homes-content ul.imas-homes-attrs,
 .imas-property-card .homes-content ul.imas-homes-attrs {
     display: grid !important;
@@ -281,7 +345,14 @@ function attributeIconClass(code) {
 
 .imas-property-card .homes-content ul.imas-homes-attrs .imas-homes-attr__text {
     min-width: 0;
-    // flex: 1 1 auto;
     text-align: start;
+}
+
+.imas-favorite-btn:not(.is-favorited) i {
+    color: #fff !important;
+}
+
+.imas-favorite-btn.is-favorited i {
+    color: #d9a800;
 }
 </style>

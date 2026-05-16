@@ -4,7 +4,7 @@ import {createApp, h} from 'vue';
 import {createInertiaApp} from '@inertiajs/vue3';
 import {resolvePageComponent} from 'laravel-vite-plugin/inertia-helpers';
 
-import PropertyCard from '@/components/PropertyCard.vue';
+import PropertyCard from '../../Modules/Property/resources/assets/js/components/PropertyCard.vue';
 
 createInertiaApp({
     resolve: (name) => {

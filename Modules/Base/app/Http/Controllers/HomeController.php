@@ -15,7 +15,7 @@ use Modules\Property\Enums\LocationType;
 use Modules\Property\Models\Location;
 use Modules\Property\Models\Property;
 use Modules\Property\Models\PropertyType;
-use Modules\Property\Support\ListingCardHighlightBuilder;
+use Modules\Property\Support\PropertyListingCardSerializer;
 use Modules\User\Enums\CmsStatus;
 
 class HomeController extends Controller
@@ -64,14 +64,17 @@ class HomeController extends Controller
             'propertyType:id,name,slug',
         ];
 
+        $userId = auth()->id();
+
         $featuredProperties = Property::query()
             ->where('status', CmsStatus::PUBLISHED)
             ->where('is_featured', true)
             ->with($propertyCardWith)
+            ->withFavoriteStateForUser($userId)
             ->latest('updated_at')
             ->limit(6)
             ->get()
-            ->map(fn (Property $property) => $this->serializeHomeProperty($property))
+            ->map(fn (Property $property) => PropertyListingCardSerializer::toArray($property))
             ->values()
             ->all();
 
@@ -79,10 +82,11 @@ class HomeController extends Controller
             ->where('status', CmsStatus::PUBLISHED)
             ->where('is_recommended', true)
             ->with($propertyCardWith)
+            ->withFavoriteStateForUser($userId)
             ->latest('updated_at')
             ->limit(20)
             ->get()
-            ->map(fn (Property $property) => $this->serializeHomeProperty($property))
+            ->map(fn (Property $property) => PropertyListingCardSerializer::toArray($property))
             ->values()
             ->all();
 
@@ -158,41 +162,5 @@ class HomeController extends Controller
             'testimonials' => $testimonials,
             'articles' => $articles,
         ]);
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    protected function serializeHomeProperty(Property $property): array
-    {
-        return [
-            'id' => $property->id,
-            'project_code' => $property->project_code,
-            'title' => $property->title,
-            'project_name' => $property->project_name,
-            'overview' => $property->overview,
-            'price' => $property->price,
-            'min_area' => $property->min_area,
-            'max_area' => $property->max_area,
-            'thumbnail_url' => $property->thumbnail
-                ? asset('storage/'.$property->thumbnail)
-                : asset('images/blank.png'),
-            'location' => $property->location
-                ? ['id' => $property->location->id, 'name' => $property->location->name]
-                : null,
-            'property_type' => $property->propertyType
-                ? [
-                    'id' => $property->propertyType->id,
-                    'name' => $property->propertyType->name,
-                    'slug' => $property->propertyType->slug,
-                ]
-                : null,
-            'url' => route('property.show', $property->id),
-            'is_featured' => (bool) $property->is_featured,
-            'is_sold_out' => (bool) $property->is_sold_out,
-            'youtube_video_url' => $property->youtube_video_url,
-            'updated_at' => $property->updated_at?->toIso8601String(),
-            'highlights' => ListingCardHighlightBuilder::forProperty($property),
-        ];
     }
 }

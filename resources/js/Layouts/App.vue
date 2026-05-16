@@ -54,6 +54,7 @@ const navLinks = computed(() => [
         key: "navBar.Turkish Citizenship",
         href: safeRoute("turkish-citizenship", "/turkish-citizenship"),
     },
+    // { key: "navBar.about-us", href: "/about-us" },
     {
         key: "navBar.Pages",
         children: [

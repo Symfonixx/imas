@@ -2,6 +2,7 @@
 
 namespace Modules\Property\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -90,5 +91,25 @@ class Property extends Model
     public function unitTypes(): HasMany
     {
         return $this->hasMany(UnitType::class, 'property_id')->orderBy('id');
+    }
+
+    public function favorites(): HasMany
+    {
+        return $this->hasMany(UserFavoriteProperty::class, 'property_id');
+    }
+
+    /**
+     * @param  Builder<Property>  $query
+     * @return Builder<Property>
+     */
+    public function scopeWithFavoriteStateForUser(Builder $query, ?int $userId): Builder
+    {
+        if ($userId !== null) {
+            $query->withExists([
+                'favorites as is_favorited' => fn (Builder $favoriteQuery) => $favoriteQuery->where('user_id', $userId),
+            ]);
+        }
+
+        return $query;
     }
 }

@@ -6,6 +6,22 @@
         "LogOut":"Çıkış yap",
         "profile":"Profil"
     },
+    "auth_modal":{
+        "dialog_label":"Giriş veya kayıt",
+        "close":"Kapat",
+        "welcome_prefix":"Hoş geldiniz",
+        "social_heading":"Giriş",
+        "log_in_facebook":"Facebook ile giriş",
+        "log_in_twitter":"Twitter ile giriş",
+        "or":"Veya",
+        "back_to_login":" Girişe dön",
+        "reset_hint":"Şifre sıfırlama e-postanızdaki bağlantıyı kullanın. Bağlantı bir jeton içerir. Giriş sekmesindeki “Şifremi unuttum” ile yeni bir bağlantı isteyebilirsiniz. E-postadan bu sayfaya geldiyseniz, jeton otomatik yüklenebilir.",
+        "country_calling_code":"Ülke kodu",
+        "mobile_national_placeholder":"Yerel numara (ülke kodu olmadan)",
+        "mobile_invalid_length":"Geçerli bir cep numarası girin (ülke kodu dahil toplam 8–15 rakam).",
+        "country_code_search_placeholder":"Koda veya ülkeye göre ara…",
+        "country_code_search_empty":"Aramanızla eşleşen ülke yok."
+    },
     "Name": "Ad",
     "Language": "Dil",
     "Social media": "Sosyal medya",
@@ -234,6 +250,9 @@
         "popular_properties":"Popüler mülkler",
         "featured":"Öne çıkan",
         "sold_out":"Satıldı",
+        "favorite_error":"Favoriler güncellenemedi. Lütfen tekrar deneyin.",
+        "add_favorite":"Favorilere ekle",
+        "remove_favorite":"Favorilerden çıkar",
         "recommended":"Önerilen",
         "property_Listings":"Mülk listeleri"
     },

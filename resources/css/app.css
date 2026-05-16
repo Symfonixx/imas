@@ -72,8 +72,9 @@ html.mm-blocking .mm-menu.mm-offcanvas {
     z-index: 10001 !important;
 }
 
-html.mm-blocking #mm-blocker {
-    z-index: 10000 !important;
+html.hid-body,
+body.hid-body {
+    overflow: hidden !important;
 }
 
 /**

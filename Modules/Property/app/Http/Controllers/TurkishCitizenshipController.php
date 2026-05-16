@@ -30,10 +30,13 @@ class TurkishCitizenshipController extends Controller
         $settings = $this->settingsService->allKeyValue();
         $bannerPath = trim((string) ($settings->get('turkish_citizenship_banner') ?? ''));
 
+        $userId = auth()->id();
+
         $citizenshipProperties = Property::query()
             ->where('status', CmsStatus::PUBLISHED)
             ->where('is_citizenship_eligible', true)
             ->with(self::PROPERTY_CARD_WITH)
+            ->withFavoriteStateForUser($userId)
             ->latest('updated_at')
             ->limit(16)
             ->get()

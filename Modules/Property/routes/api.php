@@ -1,7 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\Property\Http\Controllers\PropertyController;
+use Modules\Property\Http\Controllers\FavoriteController;
+use Modules\Property\Http\Controllers\Property\PropertyController;
 
 /*
  *--------------------------------------------------------------------------
@@ -14,6 +15,10 @@ use Modules\Property\Http\Controllers\PropertyController;
  *
 */
 
-Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
-    Route::apiResource('property', PropertyController::class)->names('property');
+Route::get('/properties', [PropertyController::class, 'apiIndex'])->name('properties.index');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
+    Route::post('/favorites', [FavoriteController::class, 'store'])->name('favorites.store');
+    Route::delete('/favorites/{property}', [FavoriteController::class, 'destroy'])->name('favorites.destroy');
 });

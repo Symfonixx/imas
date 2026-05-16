@@ -3,10 +3,13 @@
 namespace App\Http\Middleware;
 
 use App;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Inertia\Middleware;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use Module;
+use Modules\Base\Models\Country;
 use Modules\Base\Models\Seo;
 use Modules\Base\Repositories\Settings\SettingsRepository;
 
@@ -51,20 +54,20 @@ class HandleInertiaRequests extends Middleware
             'csrf' => csrf_token(),
             'asset_path' => asset('/'),
             'theme_url' => asset('theme/findhouses'),
-            'storage_path' => asset('storage') . '/',
+            'storage_path' => asset('storage').'/',
             'locale' => App::currentLocale(),
             'text_direction' => App::getLocale() === 'ar' ? 'rtl' : 'ltr',
             'translations' => $this->getTranslations(),
-            'locale_switcher' => fn() => $this->getLocaleSwitcher(),
-            'settings' => fn() => $this->sharedSettingsFlat(),
-            'globals' => fn() => $this->sharedGlobals(),
-            'auth' => fn() => $this->sharedAuthPayload($request),
+            'locale_switcher' => fn () => $this->getLocaleSwitcher(),
+            'settings' => fn () => $this->sharedSettingsFlat(),
+            'globals' => fn () => $this->sharedGlobals(),
+            'auth' => fn () => $this->sharedAuthPayload($request),
         ]);
     }
 
     /**
      * Front-office auth: full {@see $user->name}, compact {@see authNavDisplayName()}
-     * for nav, public avatar URLs via {@see \App\Models\User::getAvatarAttribute()}.
+     * for nav, public avatar URLs via {@see User::getAvatarAttribute()}.
      *
      * @return array<string, mixed>|null
      */
@@ -179,7 +182,35 @@ class HandleInertiaRequests extends Middleware
                 'meta_keywords' => (string) ($seo['about_us_meta_keywords'] ?? ''),
             ],
             'robots_txt' => (string) ($settings['robots_txt'] ?? ''),
+            'countries' => $this->sharedCountriesList(),
         ];
+    }
+
+    /**
+     * Countries for front-office Vue (dropdowns, phone prefixes, etc.).
+     * Separate cache key from {@see Controller::withCountries()} (Eloquent collection for Blade).
+     *
+     * @return list<array{id: int, name: string, iso_code_2: string, iso_code_3: string, phone_code: string|null, flag: string}>
+     */
+    protected function sharedCountriesList(): array
+    {
+        return Cache::rememberForever('inertia.shared.countries', function (): array {
+            return Country::query()
+                ->orderBy('name')
+                ->get()
+                ->map(static function (Country $country): array {
+                    return [
+                        'id' => $country->id,
+                        'name' => $country->name,
+                        'iso_code_2' => $country->iso_code_2,
+                        'iso_code_3' => $country->iso_code_3,
+                        'phone_code' => $country->phone_code,
+                        'flag' => $country->flag,
+                    ];
+                })
+                ->values()
+                ->all();
+        });
     }
 
     protected function storagePublicUrl(mixed $path, string $default = 'default.jpg'): string
@@ -187,14 +218,14 @@ class HandleInertiaRequests extends Middleware
         $path = is_string($path) ? trim($path) : '';
 
         if ($path === '') {
-            return asset('storage/' . $default);
+            return asset('storage/'.$default);
         }
 
         if (preg_match('#^https?://#i', $path)) {
             return $path;
         }
 
-        return asset('storage/' . ltrim($path, '/'));
+        return asset('storage/'.ltrim($path, '/'));
     }
 
     public function getTranslations(): array
@@ -208,7 +239,7 @@ class HandleInertiaRequests extends Middleware
         // Iterate through each module to process the language file
         foreach ($modules as $module) {
             $modulePath = $module->getPath(); // Path to the module
-            $langFilePath = $modulePath . "/lang/$locale.json";
+            $langFilePath = $modulePath."/lang/$locale.json";
 
             if (file_exists($langFilePath)) {
                 // Decode the JSON file and merge with translations
@@ -236,7 +267,7 @@ class HandleInertiaRequests extends Middleware
 
         foreach ($input as $key => $value) {
             $segment = (string) $key;
-            $path = $prefix === '' ? $segment : $prefix . '.' . $segment;
+            $path = $prefix === '' ? $segment : $prefix.'.'.$segment;
 
             if (is_array($value) && $this->isAssocTranslationArray($value)) {
                 $result = array_merge($result, $this->flattenTranslationsForInertia($value, $path));

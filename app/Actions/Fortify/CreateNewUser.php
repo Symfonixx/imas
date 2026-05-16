@@ -29,7 +29,12 @@ class CreateNewUser implements CreatesNewUsers
                 Rule::unique(User::class),
             ],
             'password' => $this->passwordRules(),
-            'mobile' => ['required', 'regex:/^[0-9]{10,15}$/'],
+            'mobile' => [
+                'required',
+                'string',
+                'regex:/^[0-9]{8,15}$/',
+                Rule::unique(User::class, 'mobile'),
+            ],
         ])->validate();
 
         return User::create([

@@ -42,6 +42,7 @@ final class PropertyListingCardSerializer
             'youtube_video_url' => $property->youtube_video_url,
             'updated_at' => $property->updated_at?->toIso8601String(),
             'highlights' => ListingCardHighlightBuilder::forProperty($property),
+            'is_favorited' => (bool) ($property->getAttribute('is_favorited') ?? false),
         ];
     }
 }

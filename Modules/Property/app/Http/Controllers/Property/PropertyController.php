@@ -5,16 +5,18 @@ namespace Modules\Property\Http\Controllers\Property;
 use App\Http\Controllers\Controller;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 use Inertia\Response;
+use Modules\Base\lang;
 use Modules\Property\Enums\LocationType;
 use Modules\Property\Models\Location;
 use Modules\Property\Models\Property;
 use Modules\Property\Models\PropertyType;
 use Modules\Property\Support\PropertyListingCardSerializer;
+use Modules\Property\Transformers\PropertyCardResource;
 use Modules\User\Enums\CmsStatus;
-use Symfony\Component\HttpFoundation\JsonResponse;
 
 class PropertyController extends Controller
 {
@@ -27,35 +29,32 @@ class PropertyController extends Controller
     ];
 
     /**
+     * JSON listing for GET /api/properties (optional auth).
+     */
+    public function apiIndex(Request $request): AnonymousResourceCollection
+    {
+        $validated = $this->listingQueryRules($request);
+        $perPage = min(max((int) ($validated['per_page'] ?? 8), 1), 50);
+        $userId = $request->user()?->id;
+
+        $query = $this->buildFilteredPublishedListingQuery($validated, $userId);
+
+        $propertiesPaginator = $query->paginate($perPage)->withQueryString();
+
+        return PropertyCardResource::collection($propertiesPaginator);
+    }
+
+    /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): Response|JsonResponse
+    public function index(Request $request): Response
     {
-        $validated = Validator::make($request->query(), [
-            'sort' => ['sometimes', 'string', 'in:price_asc,price_desc'],
-            'location_id' => ['sometimes', 'nullable', 'integer', 'exists:locations,id'],
-            'property_type_id' => ['sometimes', 'nullable', 'integer', 'exists:property_types,id'],
-            'q' => ['sometimes', 'nullable', 'string', 'max:255'],
-        ])->validated();
-
+        $validated = $this->listingQueryRules($request);
         $sort = $validated['sort'] ?? 'price_asc';
         $keyword = isset($validated['q']) ? trim((string) $validated['q']) : '';
+        $userId = $request->user()?->id;
 
-        $query = Property::query()
-            ->where('status', CmsStatus::PUBLISHED)
-            ->with($this->propertyCardWith);
-
-        if (! empty($validated['location_id'])) {
-            $query->where('location_id', (int) $validated['location_id']);
-        }
-
-        if (! empty($validated['property_type_id'])) {
-            $query->where('property_type_id', (int) $validated['property_type_id']);
-        }
-
-        if ($keyword !== '') {
-            $this->applyTitleKeywordFilter($query, $keyword);
-        }
+        $query = $this->buildFilteredPublishedListingQuery($validated, $userId);
 
         if ($sort === 'price_desc') {
             $query->orderByDesc('price');
@@ -100,6 +99,7 @@ class PropertyController extends Controller
         $recentProperties = Property::query()
             ->where('status', CmsStatus::PUBLISHED)
             ->with($this->propertyCardWith)
+            ->withFavoriteStateForUser($userId)
             ->latest('updated_at')
             ->limit(4)
             ->get()
@@ -111,16 +111,13 @@ class PropertyController extends Controller
             ->where('status', CmsStatus::PUBLISHED)
             ->where('is_featured', true)
             ->with($this->propertyCardWith)
+            ->withFavoriteStateForUser($userId)
             ->latest('updated_at')
             ->limit(4)
             ->get()
             ->map(fn (Property $property) => PropertyListingCardSerializer::toArray($property))
             ->values()
             ->all();
-
-        if ($request->is('api/*')) {
-            return response()->json($properties);
-        }
 
         $pageTitle = $this->listingPageTitle();
 
@@ -137,7 +134,49 @@ class PropertyController extends Controller
     }
 
     /**
-     * Page title from {@see \Modules\Base\lang} JSON (`properties.property_Listings`),
+     * @return array<string, mixed>
+     */
+    private function listingQueryRules(Request $request): array
+    {
+        return Validator::make($request->query(), [
+            'sort' => ['sometimes', 'string', 'in:price_asc,price_desc'],
+            'location_id' => ['sometimes', 'nullable', 'integer', 'exists:locations,id'],
+            'property_type_id' => ['sometimes', 'nullable', 'integer', 'exists:property_types,id'],
+            'q' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'per_page' => ['sometimes', 'integer', 'min:1', 'max:50'],
+        ])->validated();
+    }
+
+    /**
+     * @param  array<string, mixed>  $validated
+     * @return Builder<Property>
+     */
+    private function buildFilteredPublishedListingQuery(array $validated, ?int $userId): Builder
+    {
+        $keyword = isset($validated['q']) ? trim((string) $validated['q']) : '';
+
+        $query = Property::query()
+            ->where('status', CmsStatus::PUBLISHED)
+            ->with($this->propertyCardWith)
+            ->withFavoriteStateForUser($userId);
+
+        if (! empty($validated['location_id'])) {
+            $query->where('location_id', (int) $validated['location_id']);
+        }
+
+        if (! empty($validated['property_type_id'])) {
+            $query->where('property_type_id', (int) $validated['property_type_id']);
+        }
+
+        if ($keyword !== '') {
+            $this->applyTitleKeywordFilter($query, $keyword);
+        }
+
+        return $query;
+    }
+
+    /**
+     * Page title from {@see lang} JSON (`properties.property_Listings`),
      * same strings as Inertia `translations` (e.g. tr: "Mülk listeleri").
      * English JSON may store a Laravel key (`property::Listings`) which is resolved here.
      */

@@ -117,7 +117,6 @@ const resultsLabel = computed(() => {
     const n = props.properties?.total ?? 0;
     return tpl.replace(":count", String(n));
 });
-console.log(props.properties);
 
 function buildQuery(overrides = {}) {
     const q = {

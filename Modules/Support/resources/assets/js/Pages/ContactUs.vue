@@ -9,7 +9,7 @@
             />
             <section class="contact-us">
                 <div class="container">
-                    <div v-if="mapEmbedHtml" class="property-location mb-5">
+                    <!-- <div v-if="mapEmbedHtml" class="property-location mb-5">
                         <h3>{{ trans("contact_us.our_location") }}</h3>
                         <div class="divider-fade"></div>
                         <div
@@ -23,7 +23,7 @@
                         <p class="text-muted mb-0">
                             {{ trans("contact_us.map_not_configured") }}
                         </p>
-                    </div>
+                    </div> -->
 
                     <div class="row">
                         <div class="col-lg-8 col-md-12">

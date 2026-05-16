@@ -5,6 +5,7 @@ namespace Modules\Cms\Providers;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
+use Modules\Cms\Http\Controllers\PageController;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -48,6 +49,26 @@ class RouteServiceProvider extends ServiceProvider
             'middleware' => ['localeSessionRedirect', 'localizationRedirect', 'localeViewPath'],
         ], static function () use ($name) {
             Route::middleware('web')->group(module_path($name, '/routes/web.php'));
+        });
+
+        $this->registerPageCatchAllRoute();
+    }
+
+    /**
+     * Register after all modules so static paths (e.g. contact-us) are not captured.
+     */
+    private function registerPageCatchAllRoute(): void
+    {
+        $this->app->booted(function (): void {
+            Route::group([
+                'prefix' => LaravelLocalization::setLocale(),
+                'middleware' => ['localeSessionRedirect', 'localizationRedirect', 'localeViewPath'],
+            ], function (): void {
+                Route::middleware('web')
+                    ->get('/{slug}', [PageController::class, 'show'])
+                    ->where('slug', '[A-Za-z0-9\-]+')
+                    ->name('page.show');
+            });
         });
     }
 

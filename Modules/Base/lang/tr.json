@@ -256,6 +256,22 @@
         "recommended":"Önerilen",
         "property_Listings":"Mülk listeleri"
     },
+    "listing_page":{
+        "find_your_house":"Evinizi bulun",
+        "enter_keyword":"Anahtar kelime girin…",
+        "location":"Konum",
+        "all_locations":"Tüm konumlar",
+        "property_type":"Mülk tipi",
+        "all_types":"Tüm tipler",
+        "search":"Ara",
+        "sort_by":"Sırala",
+        "price_low_high":"Fiyat (düşükten yükseğe)",
+        "price_high_low":"Fiyat (yüksekten düşüğe)",
+        "results_count":":count arama sonucu",
+        "feature_properties":"Öne çıkan mülkler",
+        "for_sale":"Satılık",
+        "recent_properties":"Son mülkler"
+    },
     "services":{
         "title":"Neden biz?",
         "description":"Her adımda tam hizmet sağlıyoruz."
@@ -291,7 +307,16 @@
         "News & Laws":"Haberler ve yasalar",
         "Property Management":"Gayrimenkul yönetimi",
         "About Turkey":"Türkiye hakkında",
-        "Services":"Hizmetler"
+        "Services":"Hizmetler",
+        "navigation":"Navigasyon",
+        "explore":"Keşfet",
+        "newsLetters":"Haber bültenleri",
+        "signup_for_newsletters":"En son güncellemeleri ve teklifleri almak için bültenimize kayıt olun.",
+        "subscribe":"Abone ol",
+        "enter_your_email":"E-posta adresinizi girin",
+        "useful_links":"Kullanışlı bağlantılar",
+        "All Rights Reserved.":"Tüm hakları saklıdır."
+        
     },
     "contact_us":{
         "title":"Bize ulaşın",

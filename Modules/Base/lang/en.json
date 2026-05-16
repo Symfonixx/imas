@@ -253,7 +253,23 @@
         "add_favorite":"Add to favorites",
         "remove_favorite":"Remove from favorites",
         "recommended":"Recommended",
-        "property_Listings":"property::Listings"
+        "property_Listings":"Property listings"
+    },
+    "listing_page":{
+        "find_your_house":"Find your house",
+        "enter_keyword":"Enter keyword…",
+        "location":"Location",
+        "all_locations":"All locations",
+        "property_type":"Property type",
+        "all_types":"All types",
+        "search":"Search",
+        "sort_by":"Sort by",
+        "price_low_high":"Price (low to high)",
+        "price_high_low":"Price (high to low)",
+        "results_count":":count search results",
+        "feature_properties":"Featured properties",
+        "for_sale":"For sale",
+        "recent_properties":"Recent properties"
     },
     "services":{
         "title":"Why choose us?",
@@ -290,7 +306,15 @@
         "News & Laws":"News & laws",
         "Property Management":"Property management",
         "About Turkey":"About Turkey",
-        "Services":"Services"
+        "Services":"Services",
+        "navigation":"Navigation",
+        "explore":"Explore",
+        "newsLetters":"News letters",
+        "signup_for_newsletters":"Sign Up for Our Newsletter to get Latest Updates and Offers.",
+        "subscribe":"Subscribe",
+        "enter_your_email":"Enter your email",
+        "useful_links":"Useful links",
+        "All Rights Reserved.":"All Rights Reserved."
     },
     "contact_us":{
         "title":"Contact us",

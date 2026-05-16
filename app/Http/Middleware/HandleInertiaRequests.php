@@ -13,10 +13,13 @@ use Modules\Base\Models\Country;
 use Modules\Base\Models\Seo;
 use Modules\Base\Repositories\Settings\SettingsRepository;
 use Modules\Cms\Models\BlogCategory;
+use Modules\Cms\Models\Page;
 
 class HandleInertiaRequests extends Middleware
 {
     public const SHARED_BLOG_CATEGORIES_CACHE_KEY = 'inertia.shared.blog_categories';
+
+    public const SHARED_PAGES_CACHE_KEY = 'inertia.shared.pages';
 
     public function __construct(private readonly SettingsRepository $settingsRepository) {}
 
@@ -53,7 +56,7 @@ class HandleInertiaRequests extends Middleware
             'flash' => fn () => [
                 'contact_sent' => (bool) $request->session()->get('contact_sent'),
             ],
-            'appName' => config('app.name'),
+            'appName' => fn () => $this->sharedAppName(),
             'csrf' => csrf_token(),
             'asset_path' => asset('/'),
             'theme_url' => asset('theme/findhouses'),
@@ -66,6 +69,20 @@ class HandleInertiaRequests extends Middleware
             'globals' => fn () => $this->sharedGlobals(),
             'auth' => fn () => $this->sharedAuthPayload($request),
         ]);
+    }
+
+    /**
+     * Site display name from admin SEO (Main → Website name), else {@see config()} app.name.
+     */
+    protected function sharedAppName(): string
+    {
+        $name = trim((string) (Seo::get('website_name') ?: ''));
+
+        if ($name !== '') {
+            return $name;
+        }
+
+        return (string) config('app.name');
     }
 
     /**
@@ -187,6 +204,7 @@ class HandleInertiaRequests extends Middleware
             'robots_txt' => (string) ($settings['robots_txt'] ?? ''),
             'countries' => $this->sharedCountriesList(),
             'blog_categories' => $this->sharedBlogCategoriesList(),
+            'pages' => $this->sharedPagesLists(),
         ];
     }
 
@@ -233,6 +251,106 @@ class HandleInertiaRequests extends Middleware
     }
 
     /**
+     * CMS pages for front-office Vue, split by placement flags (a page may appear in multiple lists).
+     * Cached with all translations; localized per request. Only Published pages are included.
+     *
+     * @return array{
+     *     navbar: list<array<string, mixed>>,
+     *     footer: list<array<string, mixed>>,
+     *     top_bar: list<array<string, mixed>>,
+     *     bottom_bar: list<array<string, mixed>>
+     * }
+     */
+    protected function sharedPagesLists(): array
+    {
+        $locale = app()->getLocale();
+
+        /** @var list<array<string, mixed>> $cached */
+        $cached = Cache::rememberForever(self::SHARED_PAGES_CACHE_KEY, function (): array {
+            return Page::query()
+                ->published()
+                ->orderBy('slug')
+                ->get([
+                    'id',
+                    'title',
+                    'slug',
+                    'content',
+                    'image',
+                    'meta_image',
+                    'meta_title',
+                    'meta_description',
+                    'meta_keywords',
+                    'add_to_nav',
+                    'add_to_footer',
+                    'add_to_top_bar',
+                    'add_to_bottom_bar',
+                    'featured',
+                    'visits',
+                ])
+                ->map(static function (Page $page): array {
+                    return [
+                        'id' => $page->id,
+                        'slug' => $page->slug,
+                        'title' => $page->getTranslations('title'),
+                        'content' => $page->getTranslations('content'),
+                        'meta_title' => $page->getTranslations('meta_title'),
+                        'meta_description' => $page->getTranslations('meta_description'),
+                        'meta_keywords' => $page->getTranslations('meta_keywords'),
+                        'image' => (string) ($page->image ?? ''),
+                        'meta_image' => (string) ($page->meta_image ?? ''),
+                        'add_to_nav' => (bool) $page->add_to_nav,
+                        'add_to_footer' => (bool) $page->add_to_footer,
+                        'add_to_top_bar' => (bool) $page->add_to_top_bar,
+                        'add_to_bottom_bar' => (bool) $page->add_to_bottom_bar,
+                        'featured' => (bool) $page->featured,
+                        'visits' => (int) $page->visits,
+                    ];
+                })
+                ->values()
+                ->all();
+        });
+
+        $localized = array_map(function (array $row) use ($locale): array {
+            return [
+                'id' => $row['id'],
+                'slug' => $row['slug'],
+                'title' => $this->localizedTranslation($row['title'], $locale),
+                'content' => $this->localizedTranslation($row['content'], $locale),
+                'meta_title' => $this->localizedTranslation($row['meta_title'], $locale),
+                'meta_description' => $this->localizedTranslation($row['meta_description'], $locale),
+                'meta_keywords' => $this->localizedTranslation($row['meta_keywords'], $locale),
+                'image' => $this->pageMediaPublicUrl($row['image'] ?? null),
+                'meta_image' => $this->pageMediaPublicUrl($row['meta_image'] ?? null),
+                'add_to_nav' => $row['add_to_nav'],
+                'add_to_footer' => $row['add_to_footer'],
+                'add_to_top_bar' => $row['add_to_top_bar'],
+                'add_to_bottom_bar' => $row['add_to_bottom_bar'],
+                'featured' => $row['featured'],
+                'visits' => $row['visits'],
+            ];
+        }, $cached);
+
+        return [
+            'navbar' => array_values(array_filter($localized, static fn (array $page): bool => $page['add_to_nav'])),
+            'footer' => array_values(array_filter($localized, static fn (array $page): bool => $page['add_to_footer'])),
+            'top_bar' => array_values(array_filter($localized, static fn (array $page): bool => $page['add_to_top_bar'])),
+            'bottom_bar' => array_values(array_filter($localized, static fn (array $page): bool => $page['add_to_bottom_bar'])),
+        ];
+    }
+
+    /**
+     * @param  array<string, string>|string|null  $value
+     */
+    protected function localizedTranslation(mixed $value, string $locale): string
+    {
+        if (is_array($value)) {
+            return (string) ($value[$locale] ?? reset($value) ?: '');
+        }
+
+        return (string) ($value ?? '');
+    }
+
+    /**
      * Countries for front-office Vue (dropdowns, phone prefixes, etc.).
      * Separate cache key from {@see Controller::withCountries()} (Eloquent collection for Blade).
      *
@@ -257,6 +375,17 @@ class HandleInertiaRequests extends Middleware
                 ->values()
                 ->all();
         });
+    }
+
+    protected function pageMediaPublicUrl(mixed $path): string
+    {
+        $path = is_string($path) ? trim($path) : '';
+
+        if ($path === '') {
+            return asset('images/blank.png');
+        }
+
+        return $this->storagePublicUrl($path);
     }
 
     protected function storagePublicUrl(mixed $path, string $default = 'default.jpg'): string

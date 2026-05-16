@@ -18,6 +18,21 @@
                     <i class="fa fa-envelope" aria-hidden="true"></i>
                     <span>{{ emailDisplay }}</span>
                 </a>
+                <template v-if="topBarPages.length && hasContactInfo">
+                    <span
+                        class="imas-top-bar__separator"
+                        aria-hidden="true"
+                        >|</span
+                    >
+                </template>
+                <Link
+                    v-for="p in topBarPages"
+                    :key="p.id"
+                    class="imas-top-bar__link imas-top-bar__page-link"
+                    :href="cmsPageUrl(p.slug)"
+                >
+                    {{ p.title }}
+                </Link>
             </div>
             <ul
                 v-if="topSocialLinks.length"
@@ -41,11 +56,16 @@
 
 <script setup>
 import { computed } from "vue";
-import { usePage } from "@inertiajs/vue3";
+import { Link, usePage } from "@inertiajs/vue3";
+import { cmsPageUrl } from "@/utils/cmsPageUrl.js";
 
 const page = usePage();
 
 const settings = computed(() => page.props.settings || {});
+
+const topBarPages = computed(
+    () => page.props.globals?.pages?.top_bar ?? [],
+);
 
 const fallbackPhone = "+456 875 369 208";
 const fallbackEmail = "support@example.com";
@@ -59,6 +79,10 @@ const emailDisplay = computed(
     () =>
         String(settings.value.contact_email || settings.value.email || "").trim() ||
         fallbackEmail,
+);
+
+const hasContactInfo = computed(
+    () => Boolean(phoneDisplay.value || emailDisplay.value),
 );
 
 const phoneHref = computed(() => {
@@ -145,6 +169,16 @@ function trans(key) {
 .imas-top-bar__link i {
     font-size: 0.85rem;
     opacity: 0.9;
+}
+
+.imas-top-bar__separator {
+    color: rgba(255, 255, 255, 0.45);
+    user-select: none;
+    line-height: 1;
+}
+
+.imas-top-bar__page-link {
+    font-weight: 500;
 }
 
 .imas-top-bar__socials {

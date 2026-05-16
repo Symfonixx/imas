@@ -5,12 +5,12 @@
                 <div class="row">
                     <div class="col-lg-3 col-md-6">
                         <div class="netabout">
-                            <Link :href="route('home')" class="logo">
+                            <div class="logo">
                                 <img :src="logoUrl" alt="logo" class="footer_logo">
-                            </Link>
-                            <p>{{ tagline }}</p>
+                            </div>
+                            <p class="text-start">{{ tagline }}</p>
                         </div>
-                        <div class="contactus">
+                        <div class="contactus text-start">
                             <ul>
                                 <li>
                                     <div class="info">
@@ -34,58 +34,49 @@
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-6">
-                        <div class="navigation">
-                            <h3>{{ trans('Navigation') }}</h3>
-                            <div class="nav-footer">
+                        <div class="navigation text-start">
+                            <h3>{{ trans('navBar.navigation') }}</h3>
+                            <div class="nav-footer text-start">
                                 <ul>
                                     <li v-for="item in mainNavLinks" :key="item.key">
                                         <Link :href="item.href">{{ trans(item.key) }}</Link>
                                     </li>
                                 </ul>
                                 <ul class="nav-pages">
-                                    <li class="font-weight-bold">{{ trans('Pages') }}</li>
                                     <li v-for="item in pagesNavLinks" :key="item.key">
-                                        <Link :href="item.href">{{ trans(item.key) }}</Link>
+                                        <Link :href="item.href">{{
+                                            item.label ?? trans(item.key)
+                                        }}</Link>
                                     </li>
                                 </ul>
-                                <ul class="nav-right">
-                                    <li v-if="!auth"><Link :href="route('login')">{{ trans('Login') }}</Link></li>
-                                    <li v-if="!auth"><Link :href="route('register')">{{ trans('Register') }}</Link></li>
-                                    <!-- <li v-if="auth?.type === 'admin'" class="no-mgb">
-                                        <a :href="route('admin.dashboard.index')">{{ trans('Dashboard') }}</a>
-                                    </li> -->
-                                </ul>
                             </div>
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-6">
-                        <div class="widget">
-                            <h3>{{ trans('Explore') }}</h3>
-                            <div class="twitter-widget contuct">
-                                <div class="twitter-area">
-                                    <div class="single-item">
-                                        <div class="icon-holder">
-                                            <i class="fa fa-building" aria-hidden="true"></i>
-                                        </div>
-                                        <div class="text">
-                                            <h5>{{ trans('New listings weekly') }}</h5>
-                                            <h4>{{ trans('Stay tuned for featured properties.') }}</h4>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="navigation text-start">
+                            <h3>{{ trans('navBar.useful_links') }}</h3>
+                            <ul class="w-50">
+                                <li
+                                    v-for="item in footerPagesLinks"
+                                    :key="item.key"
+                                >
+                                    <Link :href="item.href">{{
+                                        item.label
+                                    }}</Link>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-6">
-                        <div class="newsletters">
-                            <h3>{{ trans('Newsletters') }}</h3>
-                            <p>{{ trans('Sign Up for Our Newsletter to get Latest Updates and Offers.') }}</p>
+                        <div class="newsletters text-start">
+                            <h3>{{ trans('navBar.newsLetters') }}</h3>
+                            <p>{{ trans('navBar.signup_for_newsletters') }}</p>
                         </div>
                         <form class="bloq-email mailchimp form-inline" @submit.prevent>
                             <label for="subscribeEmail" class="error"></label>
                             <div class="email">
-                                <input id="subscribeEmail" type="email" name="EMAIL" placeholder="Enter Your Email">
-                                <input type="submit" value="Subscribe">
+                                <input id="subscribeEmail" type="email" name="EMAIL" :placeholder="trans('navBar.enter_your_email')">
+                                <input type="submit" :value="trans('navBar.subscribe')">
                                 <p class="subscription-success"></p>
                             </div>
                         </form>
@@ -94,9 +85,15 @@
             </div>
         </div>
         <div class="second-footer rec-pro">
-            <div class="container-fluid sd-f">
-                <p>{{ year }} © {{ appName }} — {{ trans('All Rights Reserved.') }}</p>
-                <ul class="netsocials">
+            <div class="container-fluid sd-f imas-second-footer__inner">
+                <p class="imas-second-footer__copy">
+                    {{ year }} © {{ appName }} —
+                    {{ trans("navBar.All Rights Reserved.   ") }}
+                </p>
+                <ul
+                    v-if="footerSocialLinks.length"
+                    class="netsocials imas-second-footer__socials"
+                >
                     <li v-for="item in footerSocialLinks" :key="item.key">
                         <a
                             :href="item.href"
@@ -106,6 +103,15 @@
                         ><i :class="item.icon" aria-hidden="true"></i></a>
                     </li>
                 </ul>
+                <p class="imas-second-footer__developer">
+                    <span>{{ developedByPrefix }}</span>
+                    <a
+                        href="https://symfonix.io/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="imas-second-footer__developer-link"
+                    >Symfonix</a>
+                </p>
             </div>
         </div>
     </footer>
@@ -116,6 +122,7 @@
 <script setup>
 import {computed} from 'vue';
 import {Link, usePage} from '@inertiajs/vue3';
+import { cmsPageUrl } from '@/utils/cmsPageUrl.js';
 
 const props = defineProps({
     navLinks: {
@@ -138,6 +145,11 @@ const logoUrl = computed(() => {
 
 const year = new Date().getFullYear();
 
+const developedByPrefix = computed(() => {
+    const full = trans("Developed By Symfonix");
+    return full.replace(/\s*Symfonix\s*$/i, "").trim() || "Developed by";
+});
+
 const tagline = computed(() => settings.value.tagline || page.props.appName);
 const fallbackAddress = '95 South Park Avenue, USA';
 const fallbackPhone = '+456 875 369 208';
@@ -150,6 +162,14 @@ const pagesNavLinks = computed(() => {
     const pages = (props.navLinks || []).find((l) => l?.children?.length);
     return pages?.children || [];
 });
+
+const footerPagesLinks = computed(() =>
+    (page.props.globals?.pages?.footer ?? []).map((p) => ({
+        key: `footer-page-${p.id}`,
+        label: p.title,
+        href: cmsPageUrl(p.slug),
+    })),
+);
 
 const footerSocialLinks = computed(() => {
     const s = settings.value;
@@ -177,14 +197,87 @@ function trans(key) {
 </script>
 
 
-<style scoped>
+<style scoped lang="scss">
 .logo {
-    height: 60px;
-    width: 60px;
-    object-fit: contain;
-    /* transform: translate3d(0, 0, 0); */
+    height: 130px !important;
+    width: 130px !important;
+    img{
+        object-fit: contain;
+        height: 100% !important;
+        width: 100% !important;
+
+    }
 }
-.first-footer .top-footer{
-    /* background-color: var(--brand-navy-light) !important; */
+.nav-footer{
+    gap: .7rem !important  ;
+}
+.contactus li i {
+    margin-inline-end: 0.5rem !important;
+}
+
+.imas-second-footer__inner {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 1rem 1.5rem;
+}
+
+.imas-second-footer__copy {
+    margin: 0;
+    grid-column: 1;
+    justify-self: start;
+    text-align: start;
+}
+
+.imas-second-footer__socials {
+    grid-column: 2;
+    justify-content: center;
+    justify-self: center;
+    margin: 0 auto;
+    padding: 0;
+    width: auto;
+}
+
+.imas-second-footer__developer {
+    margin: 0;
+    grid-column: 3;
+    justify-self: end;
+    text-align: end;
+    color: rgba(255, 255, 255, 0.88);
+    font-weight: 400;
+}
+
+.imas-second-footer__developer-link {
+    color: #fff;
+    font-weight: 600;
+    text-decoration: none;
+    margin-inline-start: 0.35rem;
+    transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+.imas-second-footer__developer-link:hover {
+    color: var(--brand-gold, #d9a800);
+    text-decoration: none;
+    opacity: 0.95;
+    // border-radius: 10px !important;
+}
+
+@media screen and (max-width: 767px) {
+    .imas-second-footer__inner {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .imas-second-footer__copy,
+    .imas-second-footer__socials,
+    .imas-second-footer__developer {
+        grid-column: 1;
+        justify-self: center;
+        text-align: center;
+    }
+}
+.imas-second-footer__socials li a i{
+    margin: 0 !important;
+    margin-inline-end: .7rem !important;
 }
 </style>

@@ -19,5 +19,5 @@ Route::get('/blog/{slug}', [BlogController::class, 'show'])
     ->where('slug', '[A-Za-z0-9\-]+')
     ->name('blog.show');
 
-
-//Route::get('/property', [PropertyPropertyController::class, 'index'])->name('property.index');
+// CMS page catch-all is registered in RouteServiceProvider::booted() so it
+// does not shadow module routes such as support.contact-us.

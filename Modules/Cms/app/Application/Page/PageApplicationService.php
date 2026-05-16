@@ -2,6 +2,7 @@
 
 namespace Modules\Cms\Application\Page;
 
+use App\Http\Middleware\HandleInertiaRequests;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Modules\Cms\Application\Page\Commands\UpsertPageCommand;
 use Modules\Cms\Application\Shared\Queries\ContentListQuery;
@@ -70,6 +71,6 @@ class PageApplicationService
 
     private function clearCache(): void
     {
-        cache()->forget('pages');
+        cache()->forget(HandleInertiaRequests::SHARED_PAGES_CACHE_KEY);
     }
 }

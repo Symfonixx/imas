@@ -50,7 +50,7 @@
                             <li
                                 v-for="item in navLinks"
                                 :key="item.key"
-                                class="imas-nav-item"
+                                class="imas-nav-item text-start"
                                 :class="{
                                     'has-submenu': item?.children?.length,
                                 }"
@@ -938,6 +938,7 @@ onBeforeUnmount(() => {
     :deep(.imas-nav-item),
     :deep(.imas-header-action),
     :deep(#logo) {
+    /* text-align: start !important; */
         opacity: 1 !important;
         transform: none !important;
     }

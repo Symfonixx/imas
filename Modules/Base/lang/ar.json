@@ -259,6 +259,22 @@
         "recommended":"موصى به",
         "property_Listings":"قائمة العقارات"
     },
+    "listing_page":{
+        "find_your_house":"ابحث عن منزلك",
+        "enter_keyword":"أدخل كلمة البحث…",
+        "location":"الموقع",
+        "all_locations":"كل المواقع",
+        "property_type":"نوع العقار",
+        "all_types":"كل الأنواع",
+        "search":"بحث",
+        "sort_by":"ترتيب حسب",
+        "price_low_high":"السعر (من الأقل إلى الأعلى)",
+        "price_high_low":"السعر (من الأعلى إلى الأقل)",
+        "results_count":":count نتائج بحث",
+        "feature_properties":"عقارات مميزة",
+        "for_sale":"للبيع",
+        "recent_properties":"أحدث العقارات"
+    },
     "services":{
         "title":"لماذا نحن؟",
         "description":"نقدم خدمة كاملة في كل خطوة."
@@ -294,7 +310,15 @@
         "News & Laws":"الأخبار والقوانين",
         "Property Management":"إدارة العقارات",
         "About Turkey":"عن تركيا",
-        "Services":"الخدمات"
+        "Services":"الخدمات",
+        "navigation":"التنقل",
+        "explore":"استكشاف",
+        "newsLetters":"النشرات الإخبارية",
+        "signup_for_newsletters":"اشترك في نشرتنا الإخبارية للحصول على آخر التحديثات والعروض.",
+        "subscribe":"اشترك",
+        "enter_your_email":"أدخل بريدك الإلكتروني",
+        "useful_links":"روابط مفيدة",
+        "All Rights Reserved.":"جميع الحقوق محفوظة."
     },
     "contact_us":{
         "title":"اتصل بنا",

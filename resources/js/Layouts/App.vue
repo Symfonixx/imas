@@ -17,6 +17,7 @@ import { usePage } from "@inertiajs/vue3";
 import UserNavbar from "@/Layouts/Findhouses/UserNavbar.vue";
 import UserTopBar from "@/Layouts/Findhouses/UserTopBar.vue";
 import UserFooter from "@/Layouts/Findhouses/UserFooter.vue";
+import { cmsPageUrl } from "@/utils/cmsPageUrl.js";
 
 const page = usePage();
 
@@ -63,6 +64,8 @@ const blogNavCategories = computed(
     () => page.props.globals?.blog_categories ?? [],
 );
 
+const navbarPages = computed(() => page.props.globals?.pages?.navbar ?? []);
+
 const navLinks = computed(() => {
     const blogCategoryChildren = blogNavCategories.value.map((c) => ({
         key: `blog-category-${c.id}`,
@@ -78,7 +81,13 @@ const navLinks = computed(() => {
             : {}),
     };
 
-    return [
+    const pageNavChildren = navbarPages.value.map((p) => ({
+        key: `page-${p.id}`,
+        label: p.title,
+        href: cmsPageUrl(p.slug),
+    }));
+
+    const links = [
         { key: "navBar.Home", href: safeRoute("home", "/") },
         { key: "navBar.Buy Real Estate", href: safeRoute("property.index") },
         {
@@ -86,23 +95,20 @@ const navLinks = computed(() => {
             href: safeRoute("turkish-citizenship", "/turkish-citizenship"),
         },
         blogsNav,
-        {
-            key: "navBar.Pages",
-            children: [
-                {
-                    key: "Contact us",
-                    href: safeRoute("support.contact-us", "/contact-us"),
-                },
-                { key: "navBar.News & Laws", href: "/news-laws" },
-                {
-                    key: "navBar.Property Management",
-                    href: "/property-management",
-                },
-                { key: "navBar.About Turkey", href: "/about-turkey" },
-                { key: "navBar.Services", href: "/services" },
-            ],
-        },
     ];
+
+    if (pageNavChildren.length > 0) {
+        links.push({
+            key: "navBar.Pages",
+            children: pageNavChildren,
+        });
+    }
+    links.push({
+        key: "navBar.Contact us",
+        href: safeRoute("support.contact-us", "/contact-us"),
+    });
+
+    return links;
 });
 
 function syncDocumentTextDirection() {

@@ -16,6 +16,7 @@ use Modules\Property\Models\Property;
 use Modules\Property\Models\PropertyType;
 use Modules\Property\Support\PropertyCardEagerLoads;
 use Modules\Property\Support\PropertyListingCardSerializer;
+use Modules\Property\Support\PropertySearchBounds;
 use Modules\Property\Transformers\PropertyCardResource;
 use Modules\User\Enums\CmsStatus;
 
@@ -65,6 +66,11 @@ class PropertyController extends Controller
             'q' => $keyword !== '' ? $keyword : null,
             'location_id' => $validated['location_id'] ?? null,
             'property_type_id' => $validated['property_type_id'] ?? null,
+            'min_price' => isset($validated['min_price']) ? (float) $validated['min_price'] : null,
+            'max_price' => isset($validated['max_price']) ? (float) $validated['max_price'] : null,
+            'min_area' => isset($validated['min_area']) ? (float) $validated['min_area'] : null,
+            'max_area' => isset($validated['max_area']) ? (float) $validated['max_area'] : null,
+            'project_unit_type_id' => $validated['project_unit_type_id'] ?? [],
         ];
 
         $propertyTypes = PropertyType::query()
@@ -137,6 +143,12 @@ class PropertyController extends Controller
             'property_type_id' => ['sometimes', 'nullable', 'integer', 'exists:property_types,id'],
             'q' => ['sometimes', 'nullable', 'string', 'max:255'],
             'per_page' => ['sometimes', 'integer', 'min:1', 'max:50'],
+            'min_price' => ['sometimes', 'nullable', 'numeric', 'min:0'],
+            'max_price' => ['sometimes', 'nullable', 'numeric', 'min:0'],
+            'min_area' => ['sometimes', 'nullable', 'numeric', 'min:0'],
+            'max_area' => ['sometimes', 'nullable', 'numeric', 'min:0'],
+            'project_unit_type_id' => ['sometimes', 'nullable', 'array'],
+            'project_unit_type_id.*' => ['integer', 'exists:project_unit_types,id'],
         ])->validated();
     }
 
@@ -165,7 +177,75 @@ class PropertyController extends Controller
             $this->applyTitleKeywordFilter($query, $keyword);
         }
 
+        if (isset($validated['min_price']) || isset($validated['max_price'])) {
+            $this->applyPriceRangeFilter(
+                $query,
+                (float) ($validated['min_price'] ?? 0),
+                (float) ($validated['max_price'] ?? PropertySearchBounds::cachedRaw()['price']['max']),
+            );
+        }
+
+        if (isset($validated['min_area']) || isset($validated['max_area'])) {
+            $this->applyAreaRangeFilter(
+                $query,
+                (float) ($validated['min_area'] ?? 0),
+                (float) ($validated['max_area'] ?? PropertySearchBounds::cachedRaw()['area']['max']),
+            );
+        }
+
+        if (! empty($validated['project_unit_type_id'])) {
+            $catalogIds = array_map('intval', (array) $validated['project_unit_type_id']);
+            $query->whereHas('unitTypes', static fn (Builder $ut) => $ut->whereIn('catalog_id', $catalogIds));
+        }
+
         return $query;
+    }
+
+    /**
+     * @param  Builder<Property>  $query
+     */
+    private function applyPriceRangeFilter(Builder $query, float $min, float $max): void
+    {
+        if ($max < $min) {
+            [$min, $max] = [$max, $min];
+        }
+
+        $query->where(function (Builder $outer) use ($min, $max) {
+            $outer->whereBetween('price', [$min, $max])
+                ->orWhereHas('unitTypes', static fn (Builder $ut) => $ut->whereBetween('price', [$min, $max]));
+        });
+    }
+
+    /**
+     * @param  Builder<Property>  $query
+     */
+    private function applyAreaRangeFilter(Builder $query, float $min, float $max): void
+    {
+        if ($max < $min) {
+            [$min, $max] = [$max, $min];
+        }
+
+        $query->where(function (Builder $outer) use ($min, $max) {
+            $outer->where(function (Builder $property) use ($min, $max) {
+                $property->whereNotNull('min_area')
+                    ->whereNotNull('max_area')
+                    ->where('min_area', '<=', $max)
+                    ->where('max_area', '>=', $min);
+            })->orWhereHas('unitTypes', static function (Builder $ut) use ($min, $max) {
+                $ut->where(function (Builder $row) use ($min, $max) {
+                    $row->where(function (Builder $withMax) use ($min, $max) {
+                        $withMax->whereNotNull('min_area')
+                            ->whereNotNull('max_area')
+                            ->where('min_area', '<=', $max)
+                            ->where('max_area', '>=', $min);
+                    })->orWhere(function (Builder $minOnly) use ($min, $max) {
+                        $minOnly->whereNotNull('min_area')
+                            ->whereNull('max_area')
+                            ->whereBetween('min_area', [$min, $max]);
+                    });
+                });
+            });
+        });
     }
 
     /**

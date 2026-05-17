@@ -14,6 +14,7 @@ use Modules\Base\Models\Seo;
 use Modules\Base\Repositories\Settings\SettingsRepository;
 use Modules\Cms\Models\BlogCategory;
 use Modules\Cms\Models\Page;
+use Modules\Property\Support\PropertySearchBounds;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -67,6 +68,7 @@ class HandleInertiaRequests extends Middleware
             'locale_switcher' => fn () => $this->getLocaleSwitcher(),
             'settings' => fn () => $this->sharedSettingsFlat(),
             'globals' => fn () => $this->sharedGlobals(),
+            'property_search' => fn () => $this->sharedPropertySearchBounds(),
             'auth' => fn () => $this->sharedAuthPayload($request),
         ]);
     }
@@ -206,6 +208,16 @@ class HandleInertiaRequests extends Middleware
             'blog_categories' => $this->sharedBlogCategoriesList(),
             'pages' => $this->sharedPagesLists(),
         ];
+    }
+
+    /**
+     * Price/area slider bounds and project unit type catalog for hero + listing filters.
+     *
+     * @return array<string, mixed>
+     */
+    protected function sharedPropertySearchBounds(): array
+    {
+        return PropertySearchBounds::forLocale(app()->getLocale());
     }
 
     /**

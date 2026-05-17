@@ -292,6 +292,22 @@ function submit() {
     if (propertyTypeId.value !== "") {
         params.property_type_id = propertyTypeId.value;
     }
+    const f = props.filters ?? {};
+    if (f.min_price != null && f.min_price !== "") {
+        params.min_price = f.min_price;
+    }
+    if (f.max_price != null && f.max_price !== "") {
+        params.max_price = f.max_price;
+    }
+    if (f.min_area != null && f.min_area !== "") {
+        params.min_area = f.min_area;
+    }
+    if (f.max_area != null && f.max_area !== "") {
+        params.max_area = f.max_area;
+    }
+    if (Array.isArray(f.project_unit_type_id) && f.project_unit_type_id.length) {
+        params.project_unit_type_id = f.project_unit_type_id;
+    }
     router.get(route("property.index"), params, {
         preserveState: true,
         preserveScroll: false,

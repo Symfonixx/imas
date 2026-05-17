@@ -4,10 +4,17 @@ namespace Modules\Property\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\Property\Support\PropertySearchBounds;
 
 class UnitType extends Model
 {
     protected $table = 'unit_types';
+
+    protected static function booted(): void
+    {
+        static::saved(static fn () => PropertySearchBounds::forgetCache());
+        static::deleted(static fn () => PropertySearchBounds::forgetCache());
+    }
 
     /**
      * @var list<string>

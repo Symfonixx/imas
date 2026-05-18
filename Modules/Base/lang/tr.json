@@ -327,6 +327,16 @@
         "no_posts":"Yazı bulunamadı.",
         "all_categories":"Tüm kategoriler"
     },
+    "turkishCitizenship":{
+        "overview_title_primary":"Türk Vatandaşlığı",
+        "overview_title_accent":"Yatırım Yoluyla Program",
+        "discover_more":"Daha Fazlasını Keşfet"
+    },
+    "aboutUs":{
+        "overview_title_primary":"Hakkımızda",
+        "overview_title_accent":"",
+        "explore_more":"Daha Fazlasını Keşfet"
+    },
     "navBar":{
         "Home":"Ana sayfa",
         "Buy Real Estate":"Gayrimenkul satın al",

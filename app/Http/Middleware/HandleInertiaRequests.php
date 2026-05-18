@@ -193,6 +193,7 @@ class HandleInertiaRequests extends Middleware
                 'black_logo' => $this->storagePublicUrl($settings['black_logo'] ?? null),
                 'meta_img' => $this->storagePublicUrl($settings['meta_img'] ?? null),
                 'about_us_banner' => $this->storagePublicUrl($settings['about_us_banner'] ?? null),
+                'turkish_citizenship_banner' => $this->storagePublicUrl($settings['turkish_citizenship_banner'] ?? null),
             ],
             'seo' => $seo,
             'about' => [
@@ -202,6 +203,15 @@ class HandleInertiaRequests extends Middleware
                 'meta_title' => (string) ($seo['about_us_meta_title'] ?? ''),
                 'meta_description' => (string) ($seo['about_us_meta_description'] ?? ''),
                 'meta_keywords' => (string) ($seo['about_us_meta_keywords'] ?? ''),
+            ],
+            'turkish_citizenship' => [
+                'summary' => (string) ($seo['turkish_citizenship'] ?? ''),
+                'banner_url' => $this->storagePublicUrl($settings['turkish_citizenship_banner'] ?? null),
+                'content' => (string) ($seo['turkish_citizenship_content'] ?? ''),
+                'youtube_embed' => (string) ($seo['turkish_citizenship_youtube_embed'] ?? ''),
+                'meta_title' => (string) ($seo['turkish_citizenship_meta_title'] ?? ''),
+                'meta_description' => (string) ($seo['turkish_citizenship_meta_description'] ?? ''),
+                'meta_keywords' => (string) ($seo['turkish_citizenship_meta_keywords'] ?? ''),
             ],
             'robots_txt' => (string) ($settings['robots_txt'] ?? ''),
             'countries' => $this->sharedCountriesList(),

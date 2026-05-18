@@ -85,7 +85,12 @@
             "
         />
 
-        
+        <TurkishCitizenshipOverview />
+
+        <HomeAboutus />
+
+        <HomeTestimonials :testimonials="testimonials" />
+        <HomeArticlesSection :articles="articles" />
         <HomeServices :services="corporateServices" />
         <PopularPropertiesSection
             :properties="recommendedProperties"
@@ -94,8 +99,6 @@
                 trans('properties.we_provide_full_service_at_every_step')
             "
         />
-        <HomeTestimonials :testimonials="testimonials" />
-        <HomeArticlesSection :articles="articles" />
     </AppLayout>
 </template>
 
@@ -104,6 +107,8 @@ import { computed } from "vue";
 import { Head, usePage } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/App.vue";
 import FeaturedPropertiesSection from "../components/FeaturedPropertiesSection.vue";
+import TurkishCitizenshipOverview from "../components/TurkishCitizenshipOverview.vue";
+import HomeAboutus from "../components/HomeAboutus.vue";
 import PopularPropertiesSection from "../components/PopularPropertiesSection.vue";
 import HomeServices from "../components/HomeServices.vue";
 import HomeTestimonials from "../components/HomeTestimonials.vue";

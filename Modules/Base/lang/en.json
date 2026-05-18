@@ -326,6 +326,16 @@
         "no_posts":"No posts found.",
         "all_categories":"All categories"
     },
+    "turkishCitizenship":{
+        "overview_title_primary":"Turkish Citizenship",
+        "overview_title_accent":"by Investment Programme",
+        "discover_more":"Discover More"
+    },
+    "aboutUs":{
+        "overview_title_primary":"About",
+        "overview_title_accent":"Us",
+        "explore_more":"Explore More"
+    },
     "navBar":{
         "Home":"Home",
         "Buy Real Estate":"Buy real estate",

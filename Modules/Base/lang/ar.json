@@ -330,6 +330,16 @@
         "no_posts":"لا توجد مقالات.",
         "all_categories":"كل التصنيفات"
     },
+    "turkishCitizenship":{
+        "overview_title_primary":"الجنسية التركية",
+        "overview_title_accent":"عبر برنامج الاستثمار",
+        "discover_more":"اكتشف المزيد"
+    },
+    "aboutUs":{
+        "overview_title_primary":"من",
+        "overview_title_accent":"نحن",
+        "explore_more":"اكتشف المزيد"
+    },
     "navBar":{
         "Home":"الرئيسية",
         "Buy Real Estate":"شراء العقارات",

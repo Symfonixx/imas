@@ -145,6 +145,9 @@ const page = usePage();
 const globals = computed(() => page.props.globals ?? {});
 const seo = computed(() => globals.value.seo ?? {});
 const media = computed(() => globals.value.media ?? {});
+const turkishCitizenshipGlobals = computed(
+    () => globals.value.turkish_citizenship ?? {},
+);
 
 const contentHtml = computed(() => props.turkishCitizenship.content ?? "");
 const youtubeEmbed = computed(
@@ -208,7 +211,10 @@ const ogTitle = computed(() => {
 const ogDescription = computed(() => metaDescription.value);
 
 const ogImage = computed(() => {
-    const banner = props.turkishCitizenship.banner_url;
+    const banner =
+        props.turkishCitizenship.banner_url ||
+        turkishCitizenshipGlobals.value.banner_url ||
+        media.value.turkish_citizenship_banner;
     if (typeof banner === "string" && banner.trim() !== "") {
         return banner.trim();
     }
@@ -236,7 +242,10 @@ const twitterCard = computed(() =>
 );
 
 const bannerUrl = computed(() => {
-    const url = props.turkishCitizenship.banner_url;
+    const url =
+        props.turkishCitizenship.banner_url ||
+        turkishCitizenshipGlobals.value.banner_url ||
+        media.value.turkish_citizenship_banner;
     if (typeof url !== "string" || url.trim() === "") {
         return "";
     }

@@ -5,6 +5,7 @@ import {createInertiaApp, router} from '@inertiajs/vue3';
 import {resolvePageComponent} from 'laravel-vite-plugin/inertia-helpers';
 
 import PropertyCard from '../../Modules/Property/resources/assets/js/components/PropertyCard.vue';
+import VideoLightbox from './components/Global/VideoLightbox.vue';
 import gsapPlugin, {killAllGsap, refreshScrollTrigger} from './plugins/gsap';
 
 createInertiaApp({
@@ -28,6 +29,7 @@ createInertiaApp({
             .use(gsapPlugin)
             .mixin({methods: {route}})
             .component('PropertyCard', PropertyCard)
+            .component('VideoLightbox', VideoLightbox)
             .mount(el);
     },
 });

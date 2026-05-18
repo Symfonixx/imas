@@ -1,0 +1,126 @@
+<template>
+    <div v-if="unitTypes.length > 0" class="imas-unit-types-table mb-30">
+        <h5 class="imas-section-title mb-4">{{ title }}</h5>
+        <div class="table-responsive">
+            <table class="table imas-unit-types-table__grid mb-0">
+                <thead>
+                    <tr>
+                        <th scope="col">{{ colRooms }}</th>
+                        <th scope="col">{{ colArea }}</th>
+                        <th scope="col">{{ colPrice }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr
+                        v-for="row in unitTypes"
+                        :key="row.id"
+                    >
+                        <td>{{ row.name || "—" }}</td>
+                        <td>{{ formatArea(row) }}</td>
+                        <td>{{ formatPrice(row.price) }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</template>
+
+<script setup>
+import { usePage } from "@inertiajs/vue3";
+
+defineProps({
+    unitTypes: { type: Array, default: () => [] },
+    title: { type: String, required: true },
+    colRooms: { type: String, required: true },
+    colArea: { type: String, required: true },
+    colPrice: { type: String, required: true },
+});
+
+const page = usePage();
+
+function locale() {
+    return page.props.locale || "en";
+}
+
+function formatArea(row) {
+    const min = row?.min_area;
+    const max = row?.max_area;
+    const minN = Number(min);
+    const maxN = Number(max);
+
+    if (Number.isFinite(minN) && Number.isFinite(maxN) && minN !== maxN) {
+        return `${formatNumber(minN)} – ${formatNumber(maxN)} m²`;
+    }
+    if (Number.isFinite(minN)) {
+        return `${formatNumber(minN)} m²`;
+    }
+    if (Number.isFinite(maxN)) {
+        return `${formatNumber(maxN)} m²`;
+    }
+
+    return "—";
+}
+
+function formatNumber(value) {
+    return new Intl.NumberFormat(locale(), {
+        maximumFractionDigits: 0,
+    }).format(value);
+}
+
+function formatPrice(amount) {
+    const n = Number(amount);
+    if (!Number.isFinite(n)) {
+        return "—";
+    }
+
+    return new Intl.NumberFormat(locale(), {
+        style: "currency",
+        currency: "USD",
+        maximumFractionDigits: 0,
+    }).format(n);
+}
+</script>
+
+<style scoped lang="scss">
+.imas-unit-types-table__grid {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    text-align: center;
+}
+
+.imas-unit-types-table__grid thead th {
+    background: color-mix(in srgb, var(--brand-navy) 8%, #fff);
+    color: var(--brand-navy);
+    font-weight: 700;
+    font-size: 0.95rem;
+    padding: 0.85rem 0.75rem;
+    border: 0;
+    vertical-align: middle;
+}
+
+.imas-unit-types-table__grid tbody td {
+    padding: 0.85rem 0.75rem;
+    color: var(--color-text);
+    font-size: 0.95rem;
+    border: 0;
+    vertical-align: middle;
+}
+
+.imas-unit-types-table__grid tbody tr:nth-child(odd) td {
+    background: #fff;
+}
+
+.imas-unit-types-table__grid tbody tr:nth-child(even) td {
+    background: color-mix(in srgb, var(--brand-navy) 4%, #fff);
+}
+
+html[dir="rtl"] .imas-unit-types-table__grid {
+    direction: rtl;
+}
+
+html[dir="rtl"] .imas-unit-types-table__grid thead th,
+html[dir="rtl"] .imas-unit-types-table__grid tbody td {
+    text-align: center;
+}
+</style>

@@ -283,6 +283,28 @@
         "for_sale":"للبيع",
         "recent_properties":"أحدث العقارات"
     },
+    "property_show":{
+        "gallery":"المعرض",
+        "description":"نظرة عامة",
+        "details":"تفاصيل العقار",
+        "why_to_buy":"لماذا تشتري",
+        "facilities":"المرافق",
+        "property_video":"فيديو العقار",
+        "location":"الموقع",
+        "contact_info":"معلومات الاتصال",
+        "request_inquiry":"طلب استفسار",
+        "similar_properties":"عقارات مشابهة",
+        "unit_types_title":"الوحدات",
+        "col_rooms":"عدد الغرف وغرف المعيشة",
+        "col_area":"المساحات تبدأ من",
+        "col_price":"الأسعار تبدأ من",
+        "for_sale":"للبيع",
+        "sold_out":"مباع",
+        "inquiry_subject":"استفسار عن :title",
+        "map_unavailable":"خريطة الموقع غير متوفرة لهذا العقار.",
+        "play_video":"تشغيل فيديو العقار",
+        "video_unavailable":"الفيديو غير متوفر."
+    },
     "services":{
         "title":"لماذا نحن؟",
         "description":"نقدم خدمة كاملة في كل خطوة."

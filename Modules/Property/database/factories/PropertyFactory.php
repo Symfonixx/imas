@@ -40,7 +40,7 @@ class PropertyFactory extends Factory
                 'tr' => fake()->paragraph(),
             ],
             'location_id' => $this->randomAreaLocationId(),
-            'property_type_id' => PropertyType::query()->inRandomOrder()->value('id'),
+            'property_type_id' => $this->resolvePropertyTypeId(),
             'price' => fake()->randomFloat(2, 120000, 4_500_000),
             'min_area' => $minArea,
             'max_area' => $maxArea,
@@ -76,6 +76,30 @@ class PropertyFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'status' => CmsStatus::PUBLISHED,
         ]);
+    }
+
+    public function forPropertyType(PropertyType|int $propertyType): static
+    {
+        $id = $propertyType instanceof PropertyType
+            ? $propertyType->id
+            : $propertyType;
+
+        return $this->state(fn (array $attributes) => [
+            'property_type_id' => $id,
+        ]);
+    }
+
+    private function resolvePropertyTypeId(): int
+    {
+        $id = PropertyType::query()->inRandomOrder()->value('id');
+
+        if ($id !== null) {
+            return (int) $id;
+        }
+
+        throw new \RuntimeException(
+            'Cannot seed properties: no rows in `property_types`. Seed property types first (e.g. PropertyTypeSeeder).'
+        );
     }
 
     private function randomAreaLocationId(): int

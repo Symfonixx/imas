@@ -279,6 +279,28 @@
         "for_sale":"For sale",
         "recent_properties":"Recent properties"
     },
+    "property_show":{
+        "gallery":"Gallery",
+        "description":"Overview",
+        "details":"Property details",
+        "why_to_buy":"Why to buy",
+        "facilities":"Facilities",
+        "property_video":"Property video",
+        "location":"Location",
+        "contact_info":"Contact info",
+        "request_inquiry":"Request inquiry",
+        "similar_properties":"Similar properties",
+        "unit_types_title":"Properties",
+        "col_rooms":"Number of rooms & living rooms",
+        "col_area":"Spaces start at",
+        "col_price":"Prices start at",
+        "for_sale":"For sale",
+        "sold_out":"Sold out",
+        "inquiry_subject":"Inquiry about :title",
+        "map_unavailable":"Location map is not available for this property.",
+        "play_video":"Play property video",
+        "video_unavailable":"Video is not available."
+    },
     "services":{
         "title":"Why choose us?",
         "description":"We provide full service at every step."

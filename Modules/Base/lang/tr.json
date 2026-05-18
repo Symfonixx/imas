@@ -280,6 +280,28 @@
         "for_sale":"Satılık",
         "recent_properties":"Son mülkler"
     },
+    "property_show":{
+        "gallery":"Galeri",
+        "description":"Genel bakış",
+        "details":"Mülk detayları",
+        "why_to_buy":"Neden almalısınız",
+        "facilities":"Olanaklar",
+        "property_video":"Mülk videosu",
+        "location":"Konum",
+        "contact_info":"İletişim bilgileri",
+        "request_inquiry":"Bilgi talebi",
+        "similar_properties":"Benzer mülkler",
+        "unit_types_title":"Mülkler",
+        "col_rooms":"Oda ve salon sayısı",
+        "col_area":"Alan başlangıcı",
+        "col_price":"Fiyat başlangıcı",
+        "for_sale":"Satılık",
+        "sold_out":"Satıldı",
+        "inquiry_subject":":title hakkında bilgi",
+        "map_unavailable":"Bu mülk için konum haritası mevcut değil.",
+        "play_video":"Mülk videosunu oynat",
+        "video_unavailable":"Video mevcut değil."
+    },
     "services":{
         "title":"Neden biz?",
         "description":"Her adımda tam hizmet sağlıyoruz."

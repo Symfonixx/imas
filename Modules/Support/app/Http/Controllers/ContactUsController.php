@@ -37,7 +37,7 @@ class ContactUsController extends Controller
         ]);
 
         return redirect()
-            ->route('support.contact-us')
+            ->back()
             ->with('contact_sent', true);
     }
 }

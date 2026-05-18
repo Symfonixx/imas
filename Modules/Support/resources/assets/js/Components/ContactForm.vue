@@ -1,6 +1,8 @@
 <template>
     <div>
-        <h3 class="mb-4 text-start">{{ trans("contact_us.title") }}</h3>
+        <h3 v-if="!hideTitle" class="mb-4 text-start">
+            {{ trans("contact_us.title") }}
+        </h3>
 
         <div
             v-if="showSuccessFlash"
@@ -13,6 +15,7 @@
         <form
             ref="contactFormEl"
             class="contact-form imas-contact-form"
+            :class="{ 'imas-contact-form--sidebar': variant === 'sidebar' }"
             @submit.prevent="submit"
         >
             <div class="form-group">
@@ -120,10 +123,19 @@
            <div class="d-flex justify-content-start">
             <button
                 type="submit"
-                class="btn btn-primary btn-lg "
+                class="btn btn-primary"
+                :class="
+                    variant === 'sidebar'
+                        ? 'multiple-send-message w-100'
+                        : 'btn-lg'
+                "
                 :disabled="form.processing"
             >
-                {{ trans("contact_us.submit") }}
+                {{
+                    variant === "sidebar"
+                        ? trans("property_show.request_inquiry")
+                        : trans("contact_us.submit")
+                }}
             </button>
            </div>
         </form>
@@ -131,13 +143,25 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { useForm, usePage } from "@inertiajs/vue3";
 
 const props = defineProps({
     contactStoreUrl: {
         type: String,
         required: true,
+    },
+    hideTitle: {
+        type: Boolean,
+        default: false,
+    },
+    variant: {
+        type: String,
+        default: "page",
+    },
+    defaultSubject: {
+        type: String,
+        default: "",
     },
 });
 
@@ -152,9 +176,19 @@ const form = useForm({
     last_name: "",
     email: "",
     mobile: "",
-    subject: "",
+    subject: props.defaultSubject ?? "",
     message: "",
 });
+
+watch(
+    () => props.defaultSubject,
+    (value) => {
+        if (typeof value === "string" && value.trim() !== "" && !form.subject) {
+            form.subject = value;
+        }
+    },
+    { immediate: true },
+);
 
 function trans(key) {
     return page.props.translations[key] || key;
@@ -173,7 +207,9 @@ function submit() {
     form.post(url, {
         preserveScroll: true,
         onSuccess: () => {
+            const subject = props.defaultSubject ?? "";
             form.reset();
+            form.subject = subject;
             form.clearErrors();
         },
     });
@@ -197,5 +233,36 @@ function submit() {
 .imas-contact-form :deep(.form-control.is-invalid:focus) {
     border-color: #dc3545 !important;
     box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.imas-contact-form--sidebar :deep(.form-group) {
+    margin-bottom: 0;
+}
+
+.imas-contact-form--sidebar :deep(.form-control),
+.imas-contact-form--sidebar :deep(.textarea-custom) {
+    width: 100%;
+    margin-bottom: 12px;
+    border: 1px solid #e5e5e5;
+    border-radius: 4px;
+    padding: 10px 12px;
+    font-size: 14px;
+}
+
+.imas-contact-form--sidebar :deep(textarea.form-control) {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.imas-contact-form--sidebar .multiple-send-message {
+    background: var(--brand-gold) !important;
+    border-color: var(--brand-gold) !important;
+    color: var(--brand-navy) !important;
+    font-weight: 600;
+}
+
+.imas-contact-form--sidebar .multiple-send-message:hover:not(:disabled) {
+    background: var(--brand-gold-hover) !important;
+    border-color: var(--brand-gold-hover) !important;
 }
 </style>

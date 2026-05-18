@@ -107,7 +107,7 @@
                             <div class="row">
                                 <div
                                     v-if="unitTypesColumnA.length"
-                                    class="col-lg-3 col-md-6 col-sm-12 py-1 pr-30"
+                                    class="col-lg-3 col-md-6 col-sm-12 py-1 imas-hero-unit-col"
                                 >
                                     <div
                                         class="checkboxes one-in-row margin-bottom-10 ch-1"
@@ -132,7 +132,7 @@
 
                                 <div
                                     v-if="unitTypesColumnB.length"
-                                    class="col-lg-3 col-md-6 col-sm-12 py-1 pr-30"
+                                    class="col-lg-3 col-md-6 col-sm-12 py-1 imas-hero-unit-col"
                                 >
                                     <div
                                         class="checkboxes one-in-row margin-bottom-10 ch-2"
@@ -353,6 +353,10 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+.imas-hero-unit-col {
+    padding-inline-end: 30px;
+}
+
 .imas-hero-property-search :deep(.single-select),
 .imas-hero-property-search :deep(.nice-select) {
     text-align: start;
@@ -364,5 +368,34 @@ onBeforeUnmount(() => {
 
 .imas-hero-property-search :deep(.explore__form-checkbox-list.full-filter) {
     width: 100%;
+}
+
+.imas-hero-property-search :deep(.checkboxes.one-in-row label) {
+    width: 100%;
+    text-align: start;
+}
+
+.hp-6 .dropdown-filter span::after {
+    margin-left: 0;
+    margin-inline-start: 15px;
+}
+</style>
+
+<style>
+/**
+ * Theme hp-6 checkboxes position the faux box with physical `left` + `padding-left`.
+ * In RTL that leaves labels on the right and boxes on the far left of each row.
+ */
+html[dir="rtl"] body.hp-6 .imas-hero-property-search .checkboxes.one-in-row label {
+    padding-left: 0;
+    padding-right: 28px;
+    margin-right: 0;
+}
+
+html[dir="rtl"] body.hp-6 .imas-hero-property-search .checkboxes.one-in-row label::before {
+    left: auto;
+    right: 0;
+    margin-right: 0;
+    margin-left: 0;
 }
 </style>

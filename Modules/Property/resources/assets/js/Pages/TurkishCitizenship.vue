@@ -106,7 +106,6 @@
                             </p>
                         </div>
                     </div>
-                  
                 </div>
             </section>
 
@@ -114,6 +113,11 @@
                 v-if="citizenshipProperties.length > 0"
                 :properties="citizenshipProperties"
                 :hide-title="true"
+                :custom-title="
+                    trans('suitable_properties_for') +
+                    ' ' +
+                    trans('Turkish Citizenship')
+                "
             />
         </div>
     </AppLayout>
@@ -285,7 +289,6 @@ function trans(key) {
 
 .imas-tc-video :deep(iframe),
 .imas-tc-video :deep(embed) {
-
     /* position: absolute !important; */
     top: 0 !important;
     left: 0 !important;

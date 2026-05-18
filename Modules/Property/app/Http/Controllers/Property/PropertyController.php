@@ -15,6 +15,8 @@ use Modules\Property\Models\Location;
 use Modules\Property\Models\Property;
 use Modules\Property\Models\PropertyType;
 use Modules\Property\Support\PropertyCardEagerLoads;
+use Modules\Property\Support\PropertyDetailEagerLoads;
+use Modules\Property\Support\PropertyDetailSerializer;
 use Modules\Property\Support\PropertyListingCardSerializer;
 use Modules\Property\Support\PropertySearchBounds;
 use Modules\Property\Transformers\PropertyCardResource;
@@ -130,6 +132,98 @@ class PropertyController extends Controller
             'recentProperties' => $recentProperties,
             'featuredProperties' => $featuredProperties,
         ]);
+    }
+
+    /**
+     * Display the specified published property.
+     */
+    public function show(Request $request, Property $property): Response
+    {
+        abort_unless($property->status === CmsStatus::PUBLISHED, 404);
+
+        $userId = $request->user()?->id;
+
+        $property = Property::query()
+            ->whereKey($property->id)
+            ->where('status', CmsStatus::PUBLISHED)
+            ->with(PropertyDetailEagerLoads::relations())
+            ->withFavoriteStateForUser($userId)
+            ->firstOrFail();
+
+        return Inertia::render('Property::show', [
+            'property' => PropertyDetailSerializer::toArray($property),
+            'recentProperties' => $this->recentProperties($userId, $property->id),
+            'featuredProperties' => $this->featuredProperties($userId, $property->id),
+            'similarProperties' => $this->similarProperties($property, $userId),
+            'contactStoreUrl' => route('support.contact-us.store'),
+        ]);
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private function recentProperties(?int $userId, ?int $exceptPropertyId = null): array
+    {
+        return $this->listingCardCollection(
+            Property::query()
+                ->where('status', CmsStatus::PUBLISHED)
+                ->when($exceptPropertyId !== null, fn (Builder $query) => $query->whereKeyNot($exceptPropertyId))
+                ->with(PropertyCardEagerLoads::relations())
+                ->withFavoriteStateForUser($userId)
+                ->latest('updated_at')
+                ->limit(4),
+        );
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private function featuredProperties(?int $userId, ?int $exceptPropertyId = null): array
+    {
+        return $this->listingCardCollection(
+            Property::query()
+                ->where('status', CmsStatus::PUBLISHED)
+                ->where('is_featured', true)
+                ->when($exceptPropertyId !== null, fn (Builder $query) => $query->whereKeyNot($exceptPropertyId))
+                ->with(PropertyCardEagerLoads::relations())
+                ->withFavoriteStateForUser($userId)
+                ->latest('updated_at')
+                ->limit(4),
+        );
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private function similarProperties(Property $property, ?int $userId): array
+    {
+        if ($property->property_type_id === null) {
+            return [];
+        }
+
+        return $this->listingCardCollection(
+            Property::query()
+                ->where('status', CmsStatus::PUBLISHED)
+                ->where('property_type_id', $property->property_type_id)
+                ->whereKeyNot($property->id)
+                ->with(PropertyCardEagerLoads::relations())
+                ->withFavoriteStateForUser($userId)
+                ->latest('updated_at')
+                ->limit(12),
+        );
+    }
+
+    /**
+     * @param  Builder<Property>  $query
+     * @return list<array<string, mixed>>
+     */
+    private function listingCardCollection(Builder $query): array
+    {
+        return $query
+            ->get()
+            ->map(fn (Property $row) => PropertyListingCardSerializer::toArray($row))
+            ->values()
+            ->all();
     }
 
     /**

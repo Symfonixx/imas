@@ -67,7 +67,7 @@
             </div>
             <div class="homes-content">
                 <h3 class="imas-property-title">
-                    <a :href="property.url">{{ displayTitle }}</a>
+                    <Link :href="showUrl">{{ displayTitle }}</Link>
                 </h3>
                 <p
                     v-if="overviewText"
@@ -95,7 +95,7 @@
 <script setup>
 import axios from "axios";
 import { computed, ref, watch } from "vue";
-import { router, usePage } from "@inertiajs/vue3";
+import { Link, router, usePage } from "@inertiajs/vue3";
 import {
     localizedLocationName,
     propertyLocationLine,
@@ -145,6 +145,22 @@ const displayTitle = computed(() => {
         : props.property.project_name ||
               props.property.project_code ||
               "Property";
+});
+
+const showUrl = computed(() => {
+    if (typeof props.property.url === "string" && props.property.url.trim() !== "") {
+        return props.property.url;
+    }
+
+    try {
+        if (typeof route === "function" && route().has?.("property.show")) {
+            return route("property.show", props.property.id);
+        }
+    } catch {
+        /* ignore */
+    }
+
+    return `/property/${props.property.id}`;
 });
 
 const addressLine = computed(() => {

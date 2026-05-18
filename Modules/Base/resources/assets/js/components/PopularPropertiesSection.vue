@@ -14,11 +14,7 @@
                 <CustomHeading
                     class="pl-3"
                     v-if="hideTitle"
-                    :title="
-                        trans('suitable_properties_for') +
-                        ' ' +
-                        trans('Turkish Citizenship')
-                    "
+                    :title="customTitle"
                     :text-color="headingTextColor"
                 />
                 <div class="imas-popular-rail">
@@ -113,6 +109,10 @@ const props = defineProps({
     hideTitle: {
         type: Boolean,
         default: false,
+    },
+    customTitle: {
+        type: String,
+        default: "",
     },
     headingTextColor: {
         type: String,
@@ -315,9 +315,10 @@ function onViewportClickCapture(e) {
     dragDistance = 0;
 }
 
-onMounted(() => {
+onMounted(async () => {
     syncVisibleCount();
-    syncActiveFromScroll();
+    await nextTick();
+    onResize();
     window.addEventListener("resize", onResize);
 });
 
@@ -448,6 +449,16 @@ onBeforeUnmount(() => {
 /* Keep dot order LTR so index 0 matches the leading page in both directions. */
 html[dir="rtl"] ul.imas-popular-dots {
     direction: ltr;
+}
+
+/* Inner property detail used to nest this block under `.single-proper.blog.details` (clips rail). */
+.inner-pages .featured.portfolio.rec-pro.disc {
+    overflow: visible;
+}
+
+.inner-pages .featured.portfolio.rec-pro.disc .portfolio.col-xl-12,
+.inner-pages .featured.portfolio.rec-pro.disc .imas-popular-rail {
+    overflow: visible;
 }
 
 .sec-title {

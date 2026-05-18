@@ -16,9 +16,10 @@ use Modules\Property\Http\Controllers\TurkishCitizenshipController;
 |
 */
 
-Route::resource('property', PropertyController::class)->names('property');
+Route::resource('property', PropertyController::class)->except(['index', 'show'])->names('property');
 
 Route::get('/property', [PropertyPropertyController::class, 'index'])->name('property.index');
+Route::get('/property/{property}', [PropertyPropertyController::class, 'show'])->name('property.show');
 
 Route::get('/turkish-citizenship', TurkishCitizenshipController::class)
     ->name('turkish-citizenship');

@@ -1,7 +1,53 @@
 <template>
     <div class="widget-boxed mt-33 mt-5 imas-property-show-contact">
-        <div class="widget-boxed-header">
-            <h4 class="text-start">{{ trans("property_show.contact_info") }}</h4>
+        <div class="widget-boxed-header imas-contact-sidebar-header">
+            <h4 class="text-start mb-0">
+                {{ trans("property_show.contact_info") }}
+            </h4>
+            <div ref="shareMenuRef" class="imas-contact-share">
+                <button
+                    type="button"
+                    class="imas-contact-share__toggle"
+                    :aria-label="trans('property_show.share_page')"
+                    :aria-expanded="shareOpen ? 'true' : 'false'"
+                    aria-haspopup="true"
+                    @click.stop="toggleShareMenu"
+                >
+                    <i class="fa fa-share-alt" aria-hidden="true"></i>
+                </button>
+                <div
+                    v-show="shareOpen"
+                    class="imas-contact-share__menu"
+                    role="menu"
+                >
+                    <a
+                        v-for="item in shareLinks"
+                        :key="item.key"
+                        :href="item.href"
+                        class="imas-contact-share__item"
+                        role="menuitem"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        @click="onShareLinkClick"
+                    >
+                        <i :class="item.icon" aria-hidden="true"></i>
+                        <span>{{ item.label }}</span>
+                    </a>
+                    <button
+                        type="button"
+                        class="imas-contact-share__item imas-contact-share__item--button"
+                        role="menuitem"
+                        @click="copyPageLink"
+                    >
+                        <i class="fa fa-link" aria-hidden="true"></i>
+                        <span>{{
+                            linkCopied
+                                ? trans("property_show.link_copied")
+                                : trans("property_show.copy_link")
+                        }}</span>
+                    </button>
+                </div>
+            </div>
         </div>
         <div class="widget-boxed-body">
             <div class="sidebar-widget author-widget2">
@@ -78,7 +124,7 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { usePage } from "@inertiajs/vue3";
 import ContactForm from "../../../../../Support/resources/assets/js/Components/ContactForm.vue";
 
@@ -88,6 +134,11 @@ defineProps({
 });
 
 const page = usePage();
+
+const shareMenuRef = ref(null);
+const shareOpen = ref(false);
+const linkCopied = ref(false);
+const shareUrl = ref("");
 
 const isRtl = computed(() => {
     const dir = page.props.text_direction;
@@ -152,9 +203,201 @@ const contactItems = computed(() => {
 function trans(key) {
     return page.props.translations[key] || key;
 }
+
+const shareLinks = computed(() => {
+    const url = shareUrl.value;
+    if (!url) {
+        return [];
+    }
+    const encoded = encodeURIComponent(url);
+    const title = encodeURIComponent(
+        typeof document !== "undefined" ? document.title : "",
+    );
+
+    return [
+        {
+            key: "facebook",
+            label: "Facebook",
+            icon: "fa fa-facebook",
+            href: `https://www.facebook.com/sharer/sharer.php?u=${encoded}`,
+        },
+        {
+            key: "twitter",
+            label: "X (Twitter)",
+            icon: "fa fa-twitter",
+            href: `https://twitter.com/intent/tweet?url=${encoded}&text=${title}`,
+        },
+        {
+            key: "linkedin",
+            label: "LinkedIn",
+            icon: "fa fa-linkedin",
+            href: `https://www.linkedin.com/sharing/share-offsite/?url=${encoded}`,
+        },
+        {
+            key: "whatsapp",
+            label: "WhatsApp",
+            icon: "fa fa-whatsapp",
+            href: `https://wa.me/?text=${encoded}`,
+        },
+        {
+            key: "email",
+            label: trans("property_show.share_email"),
+            icon: "fa fa-envelope",
+            href: `mailto:?subject=${title}&body=${encoded}`,
+        },
+    ];
+});
+
+function toggleShareMenu() {
+    shareOpen.value = !shareOpen.value;
+    if (!shareOpen.value) {
+        linkCopied.value = false;
+    }
+}
+
+function closeShareMenu() {
+    shareOpen.value = false;
+    linkCopied.value = false;
+}
+
+function onShareLinkClick() {
+    closeShareMenu();
+}
+
+async function copyPageLink() {
+    const url = shareUrl.value;
+    if (!url) {
+        return;
+    }
+
+    try {
+        if (navigator.clipboard?.writeText) {
+            await navigator.clipboard.writeText(url);
+        } else {
+            const input = document.createElement("textarea");
+            input.value = url;
+            input.setAttribute("readonly", "");
+            input.style.position = "absolute";
+            input.style.left = "-9999px";
+            document.body.appendChild(input);
+            input.select();
+            document.execCommand("copy");
+            document.body.removeChild(input);
+        }
+        linkCopied.value = true;
+        window.setTimeout(() => {
+            linkCopied.value = false;
+        }, 2000);
+    } catch {
+        /* ignore */
+    }
+}
+
+function onDocumentClick(event) {
+    const root = shareMenuRef.value;
+    if (!root || !(event.target instanceof Node)) {
+        return;
+    }
+    if (!root.contains(event.target)) {
+        closeShareMenu();
+    }
+}
+
+onMounted(() => {
+    if (typeof window !== "undefined") {
+        shareUrl.value = window.location.href;
+    }
+    document.addEventListener("click", onDocumentClick);
+});
+
+onBeforeUnmount(() => {
+    document.removeEventListener("click", onDocumentClick);
+});
 </script>
 
 <style scoped>
+.imas-contact-sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.imas-contact-share {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.imas-contact-share__toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    border: 1px solid rgba(26, 42, 74, 0.12);
+    border-radius: 50%;
+    background: #fff;
+    color: var(--brand-navy);
+    cursor: pointer;
+    transition:
+        color 0.2s ease,
+        border-color 0.2s ease,
+        background-color 0.2s ease;
+}
+
+.imas-contact-share__toggle:hover,
+.imas-contact-share__toggle:focus-visible {
+    color: var(--brand-gold);
+    border-color: var(--brand-gold);
+    background: rgba(217, 168, 0, 0.08);
+}
+
+.imas-contact-share__menu {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    inset-inline-end: 0;
+    z-index: 20;
+    min-width: 11.5rem;
+    padding: 0.35rem 0;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 8px 24px rgba(26, 42, 74, 0.16);
+    border: 1px solid rgba(26, 42, 74, 0.08);
+}
+
+.imas-contact-share__item {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    width: 100%;
+    padding: 0.5rem 0.875rem;
+    border: 0;
+    background: transparent;
+    color: #444;
+    font-size: 0.875rem;
+    text-align: start;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.imas-contact-share__item--button {
+    font-family: inherit;
+}
+
+.imas-contact-share__item:hover,
+.imas-contact-share__item:focus-visible {
+    background: rgba(217, 168, 0, 0.1);
+    color: var(--brand-navy);
+}
+
+.imas-contact-share__item i {
+    width: 1rem;
+    text-align: center;
+    color: var(--brand-gold);
+}
+
 .imas-property-show-contact .imas-contact-list {
     list-style: none;
     padding: 0;

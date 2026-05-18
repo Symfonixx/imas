@@ -47,6 +47,7 @@ class TurkishCitizenshipController extends Controller
                 'meta_keywords' => $this->seoString('turkish_citizenship_meta_keywords'),
             ],
             'citizenshipProperties' => $citizenshipProperties,
+            'contactStoreUrl' => route('support.contact-us.store'),
         ]);
     }
 

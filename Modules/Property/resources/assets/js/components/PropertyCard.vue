@@ -33,21 +33,22 @@
                         }}</span>
                     </div>
                     <div class="button-effect">
-                        <a
-                        v-if="property.youtube_video_url"
-                        :href="property.youtube_video_url"
-                        class="btn popup-video popup-youtube"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        ><i class="fas fa-video"></i
-                        ></a>
-                        <a
+                        <button
+                            v-if="property.youtube_video_url"
+                            type="button"
+                            class="btn imas-card-video-btn"
+                            :aria-label="playVideoLabel"
+                            @click="openVideoLightbox"
+                        >
+                            <i class="fas fa-video" aria-hidden="true"></i>
+                        </button>
+                        <!-- <a
                             :href="property.thumbnail_url"
                             class="img-poppu btn"
                             target="_blank"
                             rel="noopener noreferrer"
                             ><i class="fa fa-photo"></i
-                        ></a>
+                        ></a> -->
                         <button
                         type="button"
                         class="btn imas-favorite-btn"
@@ -89,6 +90,14 @@
                 />
             </div>
         </div>
+
+        <VideoLightbox
+            v-if="property.youtube_video_url"
+            v-model="videoLightboxOpen"
+            :video-url="property.youtube_video_url"
+            :aria-label="videoLightboxAria"
+            :invalid-message="videoInvalidMessage"
+        />
     </div>
 </template>
 
@@ -96,6 +105,7 @@
 import axios from "axios";
 import { computed, ref, watch } from "vue";
 import { Link, router, usePage } from "@inertiajs/vue3";
+import VideoLightbox from "@/components/Global/VideoLightbox.vue";
 import {
     localizedLocationName,
     propertyLocationLine,
@@ -123,6 +133,7 @@ const locale = computed(() => page.props.locale || "en");
 const isAuthenticated = computed(() => page.props.auth != null);
 
 const localFavorited = ref(Boolean(props.property.is_favorited));
+const videoLightboxOpen = ref(false);
 
 watch(
     () => props.property.is_favorited,
@@ -203,6 +214,22 @@ function formatMoney(amount) {
 const priceAmount = computed(() =>
     formatMoney(propertyStartPrice(props.property)),
 );
+
+const playVideoLabel = computed(() => trans("property_show.play_video"));
+
+const videoInvalidMessage = computed(() =>
+    trans("property_show.video_unavailable"),
+);
+
+const videoLightboxAria = computed(
+    () => `${playVideoLabel.value} – ${displayTitle.value}`,
+);
+
+function openVideoLightbox(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    videoLightboxOpen.value = true;
+}
 
 async function onFavoriteClick(e) {
     e.preventDefault();
@@ -399,5 +426,10 @@ async function onFavoriteClick(e) {
 
 .imas-favorite-btn.is-favorited i {
     color: #d9a800;
+}
+
+.imas-card-video-btn {
+    margin: 0 !important;
+    flex-shrink: 0;
 }
 </style>

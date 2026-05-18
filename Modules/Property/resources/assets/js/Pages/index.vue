@@ -71,6 +71,7 @@
     <AppLayout>
        <div class="inner-pages listing homepage-4 agents hd-white">
         <section
+            ref="pageRef"
             class="properties-right featured portfolio blog pt-5 "
         >
             <div class="container">
@@ -128,9 +129,10 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { Head, Link, usePage } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/App.vue";
+import { useScrollReveal } from "@/composables/useScrollReveal";
 import PropertyListingToolbar from "../components/PropertyListingToolbar.vue";
 import PropertyGridSection from "../components/PropertyGridSection.vue";
 import PropertyListingPagination from "../components/PropertyListingPagination.vue";
@@ -206,6 +208,10 @@ const twitterCard = computed(() =>
 function trans(key) {
     return page.props.translations[key] || key;
 }
+
+const pageRef = ref(null);
+
+useScrollReveal(pageRef, { variant: "propertyListings" });
 </script>
 
 

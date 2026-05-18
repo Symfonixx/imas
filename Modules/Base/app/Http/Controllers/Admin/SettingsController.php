@@ -3,8 +3,8 @@
 namespace Modules\Base\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Modules\Base\Application\Settings\SettingsApplicationService;
+use Modules\Base\Http\Requests\StoreSettingsRequest;
 
 class SettingsController extends Controller
 {
@@ -21,7 +21,7 @@ class SettingsController extends Controller
         return view('base::admin.settings.index', compact('settings'));
     }
 
-    public function store(Request $request)
+    public function store(StoreSettingsRequest $request)
     {
         $mediaPaths = (array) $request->input('imgs_media', []);
         $removed = (array) $request->input('imgs_remove', []);

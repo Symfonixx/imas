@@ -1,5 +1,9 @@
 <template>
-    <section v-if="properties.length > 0" class="featured portfolio bg-white-2">
+    <section
+        v-if="properties.length > 0"
+        ref="sectionRef"
+        class="featured portfolio bg-white-2"
+    >
         <div class="container">
             <div class="sec-title">
                 <h2>{{ title }}</h2>
@@ -21,9 +25,10 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { usePage } from "@inertiajs/vue3";
 import ReadMore from "@/components/buttons/ReadMore.vue";
+import { useScrollReveal } from "@/composables/useScrollReveal";
 
 const page = usePage();
 
@@ -43,7 +48,7 @@ const viewMoreHref = computed(() => {
     return "/property";
 });
 
-defineProps({
+const props = defineProps({
     properties: {
         type: Array,
         default: () => [],
@@ -56,5 +61,13 @@ defineProps({
         type: String,
         default: "We provide full service at every step.",
     },
+});
+
+const sectionRef = ref(null);
+
+useScrollReveal(sectionRef, {
+    preset: "home",
+    variant: "cards",
+    when: computed(() => props.properties.length > 0),
 });
 </script>

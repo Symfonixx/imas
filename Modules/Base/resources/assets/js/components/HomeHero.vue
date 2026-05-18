@@ -203,7 +203,7 @@ function playHeroSearchEnterAnimation() {
         gsap.fromTo(
             filterEl,
             {opacity: 0, scale: 0.5},
-            {opacity: 1, scale: 1, duration: 1.5, ease: 'power2.out'},
+            {opacity: 1, scale: 1, duration: 2.75, ease: 'power2.out'},
         );
     }, heroFilterRef);
 }
@@ -245,21 +245,22 @@ function playHeroCopyAnimation() {
             tl.fromTo(
                 leadEl,
                 {opacity: 0, y: -20},
-                {opacity: 1, y: 0, duration: 0.55},
+                {opacity: 1, y: 0, duration: 1.15},
                 0,
             );
         } else if (typedEl && !lead) {
             gsap.set(typedEl, {opacity: 0, y: -20});
         }
 
-        const typeStart = lead ? 0.32 : 0;
+        const typeStart = lead ? 0.65 : 0;
+        const charDelay = 0.095;
         const chars = [...typed];
 
         if (!lead && typedEl && chars.length) {
             tl.fromTo(
                 typedEl,
                 {opacity: 0, y: -20},
-                {opacity: 1, y: 0, duration: 0.4},
+                {opacity: 1, y: 0, duration: 0.85},
                 typeStart,
             );
         }
@@ -273,7 +274,7 @@ function playHeroCopyAnimation() {
                     showTypeCursor.value = true;
                 },
                 null,
-                typeStart + (lead ? 0.08 : 0.2),
+                typeStart + (lead ? 0.16 : 0.42),
             );
 
             chars.forEach((char, index) => {
@@ -285,16 +286,16 @@ function playHeroCopyAnimation() {
                         displayedTypedText.value += char;
                     },
                     null,
-                    typeStart + (lead ? 0.12 : 0.28) + index * 0.045,
+                    typeStart + (lead ? 0.24 : 0.52) + index * charDelay,
                 );
             });
         }
 
         const afterType =
             typeStart +
-            (lead ? 0.12 : 0.28) +
-            Math.max(chars.length, 1) * 0.045 +
-            0.08;
+            (lead ? 0.24 : 0.52) +
+            Math.max(chars.length, 1) * charDelay +
+            0.2;
 
         tl.call(
             () => {
@@ -311,8 +312,8 @@ function playHeroCopyAnimation() {
             tl.fromTo(
                 subEl,
                 {opacity: 0, y: -20},
-                {opacity: 1, y: 0, duration: 0.5},
-                afterType + 0.06,
+                {opacity: 1, y: 0, duration: 1.1},
+                afterType + 0.18,
             );
         }
 

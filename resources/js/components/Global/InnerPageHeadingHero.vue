@@ -1,5 +1,8 @@
 <template>
-    <section class="headings">
+    <section
+        class="headings imas-inner-page-heading-hero"
+        :style="sectionStyle"
+    >
         <div class="text-heading text-center">
             <div class="container">
                 <h1>{{ pageTitle }}</h1>
@@ -16,13 +19,14 @@
 </template>
 
 <script setup>
+import { computed } from "vue";
 import { Link } from "@inertiajs/vue3";
 
 /**
  * @typedef {{ title: string, href?: string | null }} InnerPageHeadingCrumb
  */
 
-defineProps({
+const props = defineProps({
     /** Main heading (Find Houses theme uses this as the large title). */
     pageTitle: {
         type: String,
@@ -37,13 +41,39 @@ defineProps({
         type: Array,
         default: () => [],
     },
+    /** Optional hero background image URL (theme default used when empty). */
+    bannerImageUrl: {
+        type: String,
+        default: "",
+    },
+});
+
+const sectionStyle = computed(() => {
+    const url =
+        typeof props.bannerImageUrl === "string"
+            ? props.bannerImageUrl.trim()
+            : "";
+    if (!url || /\/default\.jpg(?:\?.*)?$/i.test(url)) {
+        return undefined;
+    }
+
+    return {
+        backgroundImage: `linear-gradient(rgba(18, 27, 34, 0.6), rgba(18, 27, 34, 0.6)), url("${url}")`,
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "center center",
+        backgroundSize: "cover",
+        backgroundAttachment: "fixed",
+    };
 });
 </script>
 
 <style scoped lang="scss">
+section.imas-inner-page-heading-hero.headings {
+    height: 25vh;
+    background-attachment: fixed;
 
-// .inner-pages .headings {
-//     background-image: none !important;
-//     background-color: var(--brand-navy-light) !important;
-// }
+    @media (min-width: 992px) {
+        height: 45vh;
+    }
+}
 </style>

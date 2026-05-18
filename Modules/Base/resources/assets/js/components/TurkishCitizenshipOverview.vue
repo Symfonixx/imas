@@ -1,6 +1,7 @@
 <template>
     <section
         v-if="isVisible"
+        ref="sectionRef"
         class="imas-tc-overview"
         :aria-label="sectionTitle"
     >
@@ -11,22 +12,29 @@
         />
         <div class="imas-tc-overview__overlay" aria-hidden="true" />
         <div class="container imas-tc-overview__inner">
-            <div class="imas-tc-overview__panel">
-                <h2 class="imas-tc-overview__title">
-                    <span class="imas-tc-overview__title-primary">{{
-                        titlePrimary
-                    }}</span>
-                    <span class="imas-tc-overview__title-accent">{{
-                        titleAccent
-                    }}</span>
-                </h2>
-                <hr class="imas-tc-overview__divider" />
+            <div ref="panelRef" class="imas-tc-overview__panel">
+                <TurkishCitizenshipSplitTitle
+                    :primary="titlePrimary"
+                    :accent="titleAccent"
+                    align="center"
+                />
                 <p
                     v-if="summaryText"
                     class="imas-tc-overview__text"
                     :title="summaryText"
                 >
-                    {{ summaryText }}
+                    <span class="imas-tc-overview__text-flow">
+                        <span
+                            v-for="(word, index) in summaryWords"
+                            :key="`${word}-${index}`"
+                            class="imas-tc-overview__word"
+                        >{{ word }}&nbsp;</span
+                        ><span
+                            v-if="summaryWords.length"
+                            class="imas-tc-overview__cursor"
+                            aria-hidden="true"
+                        >|</span>
+                    </span>
                 </p>
                 <a :href="citizenshipHref" class="imas-tc-overview__cta">
                     <span>{{ discoverLabel }}</span>
@@ -37,8 +45,10 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, nextTick, ref, watch } from "vue";
 import { usePage } from "@inertiajs/vue3";
+import { useGsap } from "@/composables/useGsap";
+import TurkishCitizenshipSplitTitle from "./TurkishCitizenshipSplitTitle.vue";
 
 const page = usePage();
 
@@ -70,6 +80,13 @@ const summaryText = computed(() => {
         return "";
     }
     return raw.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+});
+
+const summaryWords = computed(() => {
+    if (!summaryText.value) {
+        return [];
+    }
+    return summaryText.value.split(/\s+/).filter(Boolean);
 });
 
 const bannerUrl = computed(() => {
@@ -140,6 +157,146 @@ const citizenshipHref = computed(() => {
     }
     return "/turkish-citizenship";
 });
+
+const sectionRef = ref(null);
+const panelRef = ref(null);
+
+const { gsap, context, prefersReducedMotion, refreshScrollTrigger } = useGsap();
+
+let hasAnimated = false;
+
+function setupPanelAnimation() {
+    const section = sectionRef.value;
+    const panel = panelRef.value;
+
+    if (!section || !panel || hasAnimated || !isVisible.value) {
+        return;
+    }
+
+    if (prefersReducedMotion()) {
+        hasAnimated = true;
+        return;
+    }
+
+    context(() => {
+        const primary = panel.querySelector(".imas-tc-split-title__primary");
+        const accent = panel.querySelector(".imas-tc-split-title__accent");
+        const divider = panel.querySelector(".imas-tc-split-title__divider");
+        const words = panel.querySelectorAll(".imas-tc-overview__word");
+        const cursor = panel.querySelector(".imas-tc-overview__cursor");
+        const cta = panel.querySelector(".imas-tc-overview__cta");
+
+        gsap.set(panel, { opacity: 0, y: 36 });
+        if (primary) {
+            gsap.set(primary, { opacity: 0, y: 28 });
+        }
+        if (accent) {
+            gsap.set(accent, { opacity: 0, y: 28 });
+        }
+        if (divider) {
+            gsap.set(divider, {
+                opacity: 0,
+                scaleX: 0,
+                transformOrigin: "center center",
+            });
+        }
+        if (words.length) {
+            gsap.set(words, { opacity: 0 });
+        }
+        if (cursor) {
+            gsap.set(cursor, { opacity: 0 });
+        }
+        if (cta) {
+            gsap.set(cta, { opacity: 0, y: 18 });
+        }
+
+        const tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: section,
+                start: "top 88%",
+                once: true,
+                toggleActions: "play none none none",
+            },
+            defaults: { ease: "power2.out" },
+        });
+
+        tl.to(panel, { opacity: 1, y: 0, duration: 0.65 }, 0);
+
+        if (primary) {
+            tl.to(primary, { opacity: 1, y: 0, duration: 0.85 }, 0.08);
+        }
+        if (accent) {
+            tl.to(accent, { opacity: 1, y: 0, duration: 0.85 }, 0.2);
+        }
+
+        if (divider) {
+            tl.to(
+                divider,
+                { opacity: 1, scaleX: 1, duration: 0.5 },
+                0.32,
+            );
+        }
+
+        const typingEnd =
+            words.length > 0
+                ? 0.1 + Math.max(0, words.length - 1) * 0.065 + 0.12
+                : 0.45;
+
+        if (words.length) {
+            tl.to(
+                words,
+                {
+                    opacity: 1,
+                    duration: 0.12,
+                    stagger: { each: 0.065, from: "start" },
+                },
+                0.1,
+            );
+        }
+
+        if (cta) {
+            tl.to(
+                cta,
+                { opacity: 1, y: 0, duration: 0.1 },
+                typingEnd + 0.1,
+            );
+        }
+
+        if (cursor) {
+            tl.to(cursor, { opacity: 1, duration: 0.12 }, typingEnd);
+            tl.to(
+                cursor,
+                {
+                    opacity: 0,
+                    duration: 0.35,
+                    repeat: 2,
+                    yoyo: true,
+                    ease: "steps(1)",
+                },
+                typingEnd + 0.12,
+            );
+        }
+    }, sectionRef);
+
+    hasAnimated = true;
+    refreshScrollTrigger();
+}
+
+function schedulePanelAnimation() {
+    nextTick(() => {
+        nextTick(setupPanelAnimation);
+    });
+}
+
+watch(
+    isVisible,
+    (visible) => {
+        if (visible) {
+            schedulePanelAnimation();
+        }
+    },
+    { immediate: true },
+);
 </script>
 
 <style scoped>
@@ -180,12 +337,14 @@ const citizenshipHref = computed(() => {
     display: flex;
     justify-content: center;
     width: 100%;
+    min-width: 0;
 }
 /* border-radius: 10px; */
 
 .imas-tc-overview__panel {
     border-radius: 10px;
     width: 100%;
+    min-width: 0;
     max-width: 640px;
     background: #fff;
     padding: 2.5rem 2.25rem 2.35rem;
@@ -193,43 +352,45 @@ const citizenshipHref = computed(() => {
     text-align: center;
 }
 
-.imas-tc-overview__title {
-    margin: 0;
-    font-size: clamp(1.35rem, 2.2vw, 1.75rem);
-    font-weight: 700;
-    line-height: 1.4;
+.imas-tc-overview__panel :deep(.imas-tc-split-title) {
+    margin-bottom: 0;
 }
 
-.imas-tc-overview__title-primary {
-    display: block;
-    color: var(--brand-navy);
-}
-
-.imas-tc-overview__title-accent {
-    display: block;
-    color: var(--brand-gold);
-}
-
-.imas-tc-overview__divider {
-    margin: 1rem auto 1.15rem;
-    border: 0;
-    height: 3px;
-    width: 72px;
-    background: var(--brand-gold);
+.imas-tc-overview__panel :deep(.imas-tc-split-title__divider) {
+    margin-bottom: 1.15rem;
 }
 
 .imas-tc-overview__text {
     margin: 0 auto 1.75rem;
+    width: 100%;
     max-width: 560px;
     font-size: 0.98rem;
     line-height: 1.75;
     color: var(--color-text-secondary);
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 4;
-    line-clamp: 4;
+    max-height: calc(1.75em * 4);
     overflow: hidden;
-    text-overflow: ellipsis;
+}
+
+/* Constrains inline word spans so they wrap inside flex-centered panel */
+.imas-tc-overview__text-flow {
+    display: inline-block;
+    width: 100%;
+    max-width: 100%;
+    text-align: center;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+.imas-tc-overview__word {
+    display: inline;
+}
+
+.imas-tc-overview__cursor {
+    display: inline;
+    margin-left: 1px;
+    color: var(--brand-gold);
+    font-weight: 600;
+    vertical-align: baseline;
 }
 
 .imas-tc-overview__cta {

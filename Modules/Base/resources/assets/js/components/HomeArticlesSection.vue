@@ -1,5 +1,9 @@
 <template>
-    <section v-if="articles.length" class="blog-section bg-white-2">
+    <section
+        v-if="articles.length"
+        ref="sectionRef"
+        class="blog-section bg-white-2"
+    >
         <div class="container">
             <div class="sec-title">
                 <h2>{{ trans("articles.title") }}</h2>
@@ -31,14 +35,25 @@
 
 <script setup>
 
+import { computed, ref } from "vue";
 import { usePage } from "@inertiajs/vue3";
 import ArticleCard from "@/components/articles/ArticleCard.vue";
 import ReadMore from "@/components/buttons/ReadMore.vue";
-defineProps({
+import { useScrollReveal } from "@/composables/useScrollReveal";
+
+const props = defineProps({
     articles: {
         type: Array,
         default: () => [],
     },
+});
+
+const sectionRef = ref(null);
+
+useScrollReveal(sectionRef, {
+    preset: "home",
+    variant: "cards",
+    when: computed(() => props.articles.length > 0),
 });
 
 const page = usePage();

@@ -292,6 +292,10 @@
         "property_video":"فيديو العقار",
         "location":"الموقع",
         "contact_info":"معلومات الاتصال",
+        "share_page":"مشاركة هذه الصفحة",
+        "copy_link":"نسخ الرابط",
+        "link_copied":"تم نسخ الرابط",
+        "share_email":"البريد الإلكتروني",
         "request_inquiry":"طلب استفسار",
         "similar_properties":"عقارات مشابهة",
         "unit_types_title":"الوحدات",
@@ -376,5 +380,8 @@
         "send_failed":"حدث خطأ. يرجى المحاولة مرة أخرى.",
         "map_not_configured":"لم يتم إعداد الخريطة بعد.",
         "follow_us":"تابعنا"
+    },
+    "floating_whatsapp":{
+        "aria_label":"تواصل معنا عبر واتساب"
     }
 }

@@ -28,6 +28,13 @@
     --color-action-primary-hover: var(--brand-gold-hover);
     --color-on-action-primary: var(--brand-navy);
     --color-action-secondary: var(--brand-navy);
+
+    /* Stacking (low → high): mmenu ~10001, header 99999, top bar 100000, video lightbox 100100 */
+    --z-header: 99999;
+    --z-top-bar: 100000;
+    --z-video-lightbox: 100100;
+    --z-floating-whatsapp: 100090;
+    --z-header-search: 100105;
     --color-action-secondary-hover: var(--brand-navy-hover);
     --color-on-action-secondary: #ffffff;
 

@@ -69,190 +69,234 @@
     </Head>
 
     <AppLayout>
-        <div class="inner-pages blog">
-          <section class="single-proper blog details imas-property-show">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-8 col-md-12 blog-pots">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <section class="headings-2 pt-0">
-                                    <div class="pro-wrapper imas-property-title-row">
-                                        <div class="detail-wrapper-body">
-                                            <div
-                                                class="listing-title-bar text-start"
-                                            >
-                                                <h3>{{ displayTitle }}</h3>
-                                                <div
-                                                    v-if="addressLine"
-                                                    class="mt-0"
-                                                >
-                                                    <a
-                                                        href="#listing-location"
-                                                        class="listing-address"
-                                                    >
-                                                        <i
-                                                            class="fa fa-map-marker imas-address-marker"
-                                                            aria-hidden="true"
-                                                        ></i>
-                                                        <span>{{
-                                                            addressLine
-                                                        }}</span>
-                                                    </a>
-                                                </div>
-                                                <div
-                                                    v-if="propertyTypeLabel"
-                                                    class="imas-property-type-badge mt-2"
-                                                >
-                                                    {{ propertyTypeLabel }}
-                                                </div>
-                                            </div>
-                                        </div>
+        <div ref="pageRef" class="inner-pages blog">
+            <section class="single-proper blog details imas-property-show">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-8 col-md-12 blog-pots">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <section
+                                        data-imas-reveal
+                                        class="headings-2 pt-0"
+                                    >
                                         <div
-                                            class="single detail-wrapper ms-lg-auto"
+                                            class="pro-wrapper imas-property-title-row"
                                         >
                                             <div class="detail-wrapper-body">
                                                 <div
-                                                    class="listing-title-bar text-start text-lg-end"
+                                                    class="listing-title-bar text-start"
                                                 >
-                                                    <h4
-                                                        class="imas-price-heading"
+                                                    <h3>{{ displayTitle }}</h3>
+                                                    <div
+                                                        v-if="addressLine"
+                                                        class="mt-0"
                                                     >
-                                                        {{ priceLabel }}
-                                                    </h4>
+                                                        <a
+                                                            href="#listing-location"
+                                                            class="listing-address"
+                                                        >
+                                                            <i
+                                                                class="fa fa-map-marker imas-address-marker"
+                                                                aria-hidden="true"
+                                                            ></i>
+                                                            <span>{{
+                                                                addressLine
+                                                            }}</span>
+                                                        </a>
+                                                    </div>
+                                                    <div
+                                                        v-if="propertyTypeLabel"
+                                                        class="imas-property-type-badge mt-2"
+                                                    >
+                                                        {{ propertyTypeLabel }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div
+                                                class="single detail-wrapper ms-lg-auto"
+                                            >
+                                                <div
+                                                    class="detail-wrapper-body"
+                                                >
+                                                    <div
+                                                        class="listing-title-bar text-start text-lg-end"
+                                                    >
+                                                        <h4
+                                                            class="imas-price-heading"
+                                                        >
+                                                            {{ priceLabel }}
+                                                        </h4>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
+                                    </section>
+
+                                    <div data-imas-reveal>
+                                        <PropertyShowGallery
+                                            :property-id="property.id"
+                                            :slides="property.slides"
+                                            :thumbnail-url="
+                                                property.thumbnail_url
+                                            "
+                                            :alt="displayTitle"
+                                            :title="
+                                                trans('property_show.gallery')
+                                            "
+                                        />
                                     </div>
-                                </section>
 
-                                <PropertyShowGallery
-                                    :property-id="property.id"
-                                    :slides="property.slides"
-                                    :thumbnail-url="property.thumbnail_url"
-                                    :alt="displayTitle"
-                                    :title="trans('property_show.gallery')"
-                                />
-
-                                <div
-                                    v-if="overviewHtml"
-                                    class="blog-info details mb-30 text-start"
-                                >
-                                    <h5 class="imas-section-title mb-4">
-                                        {{ trans("property_show.description") }}
-                                    </h5>
                                     <div
-                                        class="imas-rich-content"
-                                        v-html="overviewHtml"
-                                    />
-                                </div>
+                                        v-if="overviewHtml"
+                                        data-imas-reveal
+                                        class="blog-info details mb-30 text-start"
+                                    >
+                                        <h5 class="imas-section-title mb-4">
+                                            {{
+                                                trans(
+                                                    "property_show.description",
+                                                )
+                                            }}
+                                        </h5>
+                                        <div
+                                            class="imas-rich-content"
+                                            v-html="overviewHtml"
+                                        />
+                                    </div>
 
-                             
-                                <PropertyShowUnitTypesTable
-                                    :unit-types="property.unit_types"
-                                    :title="
-                                        trans('property_show.unit_types_title')
-                                    "
-                                    :col-rooms="
-                                        trans('property_show.col_rooms')
-                                    "
-                                    :col-area="trans('property_show.col_area')"
-                                    :col-price="
-                                        trans('property_show.col_price')
-                                    "
-                                />
-
-                           
-
-                                <div
-                                    v-if="facilitiesHtml"
-                                    class="blog-info details mb-30 text-start"
-                                >
-                                    <h5 class="imas-section-title mb-4">
-                                        {{ trans("property_show.facilities") }}
-                                    </h5>
                                     <div
-                                        class="imas-rich-content"
-                                        v-html="facilitiesHtml"
-                                    />
+                                        v-if="property.unit_types?.length"
+                                        data-imas-reveal
+                                    >
+                                        <PropertyShowUnitTypesTable
+                                            :unit-types="property.unit_types"
+                                            :title="
+                                                trans(
+                                                    'property_show.unit_types_title',
+                                                )
+                                            "
+                                            :col-rooms="
+                                                trans('property_show.col_rooms')
+                                            "
+                                            :col-area="
+                                                trans('property_show.col_area')
+                                            "
+                                            :col-price="
+                                                trans('property_show.col_price')
+                                            "
+                                        />
+                                    </div>
+
+                                    <div
+                                        v-if="facilitiesHtml"
+                                        data-imas-reveal
+                                        class="blog-info details mb-30 text-start"
+                                    >
+                                        <h5 class="imas-section-title mb-4">
+                                            {{
+                                                trans(
+                                                    "property_show.facilities",
+                                                )
+                                            }}
+                                        </h5>
+                                        <div
+                                            class="imas-rich-content"
+                                            v-html="facilitiesHtml"
+                                        />
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div
-                                    v-if="contentHtml"
-                                    class="blog-info details mb-30 text-start"
-                                >
-                                    <h5 class="imas-section-title mb-4">
-                                        {{ trans("property_show.details") }}
-                                    </h5>
-                                    <div
-                                        class="imas-rich-content"
-                                        v-html="contentHtml"
-                                    />
-                                </div>
-
-                        <PropertyShowVideo
-                            v-if="property.youtube_video_url"
-                            :video-url="property.youtube_video_url"
-                            :poster-url="property.thumbnail_url"
-                            :poster-alt="displayTitle"
-                            :title="trans('property_show.property_video')"
-                        />
                             <div
-                                    v-if="whyToBuyHtml"
-                                    class="blog-info details mb-30 text-start"
-                                >
-                                    <h5 class="imas-section-title mb-4">
-                                        {{ trans("property_show.why_to_buy") }}
-                                    </h5>
-                                    <div
-                                        class="imas-rich-content"
-                                        v-html="whyToBuyHtml"
-                                    />
-                                </div>
+                                v-if="contentHtml"
+                                data-imas-reveal
+                                class="blog-info details mb-30 text-start"
+                            >
+                                <h5 class="imas-section-title mb-4">
+                                    {{ trans("property_show.details") }}
+                                </h5>
+                                <div
+                                    class="imas-rich-content"
+                                    v-html="contentHtml"
+                                />
+                            </div>
 
-                        <div id="listing-location">
-                            <PropertyShowMap
-                                :lat="property.lat"
-                                :lng="property.lng"
-                                :title="trans('property_show.location')"
-                                :unavailable-text="
-                                    trans('property_show.map_unavailable')
-                                "
-                            />
+                            <div
+                                v-if="property.youtube_video_url"
+                                data-imas-reveal
+                            >
+                                <PropertyShowVideo
+                                    :video-url="property.youtube_video_url"
+                                    :poster-url="property.thumbnail_url"
+                                    :poster-alt="displayTitle"
+                                    :title="
+                                        trans('property_show.property_video')
+                                    "
+                                />
+                            </div>
+                            <div
+                                v-if="whyToBuyHtml"
+                                data-imas-reveal
+                                class="blog-info details mb-30 text-start"
+                            >
+                                <h5 class="imas-section-title mb-4">
+                                    {{ trans("property_show.why_to_buy") }}
+                                </h5>
+                                <div
+                                    class="imas-rich-content"
+                                    v-html="whyToBuyHtml"
+                                />
+                            </div>
+
+                            <div id="listing-location" data-imas-reveal>
+                                <PropertyShowMap
+                                    :lat="property.lat"
+                                    :lng="property.lng"
+                                    :title="trans('property_show.location')"
+                                    :unavailable-text="
+                                        trans('property_show.map_unavailable')
+                                    "
+                                />
+                            </div>
                         </div>
+
+                        <aside class="col-lg-4 col-md-12 car">
+                            <div data-imas-reveal="aside">
+                                <PropertyShowContactSidebar
+                                    :contact-store-url="contactStoreUrl"
+                                    :default-subject="inquirySubject"
+                                />
+                            </div>
+                            <div data-imas-reveal="aside">
+                                <RecentPropertiesSidebar
+                                    :recent-properties="recentProperties"
+                                />
+                            </div>
+                            <div data-imas-reveal="aside">
+                                <FeaturedPropertiesSidebar
+                                    :featured-properties="featuredProperties"
+                                />
+                            </div>
+                        </aside>
                     </div>
-
-                    <aside class="col-lg-4 col-md-12 car">
-                        <PropertyShowContactSidebar
-                            :contact-store-url="contactStoreUrl"
-                            :default-subject="inquirySubject"
-                        />
-                        <RecentPropertiesSidebar
-                            :recent-properties="recentProperties"
-                        />
-                        <FeaturedPropertiesSidebar
-                            :featured-properties="featuredProperties"
-                        />
-                    </aside>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <PopularPropertiesSection
-            v-if="similarProperties.length > 0"
-            :properties="similarProperties"
-            :hide-title="true"
-            :custom-title="trans('property_show.similar_properties')"
-        />
+            <PopularPropertiesSection
+                v-if="similarProperties.length > 0"
+                :properties="similarProperties"
+                :hide-title="true"
+                :custom-title="trans('property_show.similar_properties')"
+            />
         </div>
     </AppLayout>
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { Head, usePage } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/App.vue";
+import { useScrollReveal } from "@/composables/useScrollReveal";
 import PopularPropertiesSection from "../../../../../Base/resources/assets/js/components/PopularPropertiesSection.vue";
 import PropertyShowGallery from "../components/PropertyShowGallery.vue";
 import PropertyShowVideo from "../components/PropertyShowVideo.vue";
@@ -395,6 +439,10 @@ const ogUrl = computed(() => canonicalUrl.value);
 const twitterCard = computed(() =>
     ogImage.value ? "summary_large_image" : "summary",
 );
+
+const pageRef = ref(null);
+
+useScrollReveal(pageRef, { variant: "sections" });
 </script>
 
 <style scoped lang="scss">
@@ -465,13 +513,19 @@ const twitterCard = computed(() =>
     align-items: flex-start;
 }
 
-html[dir="rtl"] .imas-property-show .imas-property-title-row .single.detail-wrapper {
+html[dir="rtl"]
+    .imas-property-show
+    .imas-property-title-row
+    .single.detail-wrapper {
     margin-left: 0 !important;
     margin-inline-start: auto;
     flex-shrink: 0;
 }
 
-html[dir="rtl"] .imas-property-show .imas-property-title-row .imas-price-heading {
+html[dir="rtl"]
+    .imas-property-show
+    .imas-property-title-row
+    .imas-price-heading {
     text-align: left;
 }
 </style>
@@ -511,7 +565,7 @@ html[dir="rtl"] .imas-property-show .carousel-control.right {
 html[dir="rtl"] .imas-property-show .imas-property-gallery .carousel-inner {
     direction: ltr;
 }
-h5:after{
-    margin-bottom:0 !important;
+h5:after {
+    margin-bottom: 0 !important;
 }
 </style>

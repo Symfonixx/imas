@@ -6,7 +6,7 @@ gsap.registerPlugin(ScrollTrigger);
 /** Shared defaults for IMas front-office animations. */
 gsap.defaults({
     ease: "power2.out",
-    duration: 0.6,
+    duration: 1,
 });
 
 /**

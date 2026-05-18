@@ -2,10 +2,11 @@
     <Head :title="documentTitle" />
 
     <AppLayout>
-        <div class="inner-pages">
+        <div ref="pageRef" class="inner-pages imas-contact-page">
             <InnerPageHeadingHero
                 :page-title="trans('contact_us.title')"
                 :items="blogHeadingItems"
+                :banner-image-url="contactUsBannerUrl"
             />
             <section class="contact-us">
                 <div class="container">
@@ -40,10 +41,11 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { Head, usePage } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/App.vue";
 import InnerPageHeadingHero from "@/components/global/InnerPageHeadingHero.vue";
+import { useScrollReveal } from "@/composables/useScrollReveal";
 import ContactForm from "../Components/ContactForm.vue";
 import ContactDetails from "../Components/ContactDetails.vue";
 
@@ -55,9 +57,25 @@ defineProps({
 });
 
 const page = usePage();
+const pageRef = ref(null);
+
+useScrollReveal(pageRef, { variant: "propertyListings" });
 
 const globals = computed(() => page.props.globals ?? {});
 const contact = computed(() => globals.value.contact ?? {});
+const media = computed(() => globals.value.media ?? {});
+
+const contactUsBannerUrl = computed(() => {
+    const url = media.value.contact_us_banner;
+    if (typeof url !== "string" || url.trim() === "") {
+        return "";
+    }
+    const trimmed = url.trim();
+    if (/\/default\.jpg(?:\?.*)?$/i.test(trimmed)) {
+        return "";
+    }
+    return trimmed;
+});
 
 const mapEmbedHtml = computed(() => {
     const raw = contact.value.map;

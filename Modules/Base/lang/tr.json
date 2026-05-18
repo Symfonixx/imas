@@ -289,6 +289,10 @@
         "property_video":"Mülk videosu",
         "location":"Konum",
         "contact_info":"İletişim bilgileri",
+        "share_page":"Bu sayfayı paylaş",
+        "copy_link":"Bağlantıyı kopyala",
+        "link_copied":"Bağlantı kopyalandı",
+        "share_email":"E-posta",
         "request_inquiry":"Bilgi talebi",
         "similar_properties":"Benzer mülkler",
         "unit_types_title":"Mülkler",
@@ -374,5 +378,8 @@
         "send_failed":"Bir sorun oluştu. Lütfen tekrar deneyin.",
         "map_not_configured":"Harita henüz yapılandırılmadı.",
         "follow_us":"Bizi takip edin"
+    },
+    "floating_whatsapp":{
+        "aria_label":"WhatsApp üzerinden bize ulaşın"
     }
 }

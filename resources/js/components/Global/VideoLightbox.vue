@@ -120,7 +120,7 @@ onBeforeUnmount(() => {
 .imas-video-lightbox {
     position: fixed;
     inset: 0;
-    z-index: 10050;
+    z-index: var(--z-video-lightbox, 100100);
     display: flex;
     align-items: center;
     justify-content: center;

@@ -8,6 +8,7 @@
         <div class="clearfix"></div>
         <slot />
         <UserFooter :nav-links="navLinks" />
+        <FloatingWhatsAppButton />
     </div>
 </template>
 
@@ -17,6 +18,7 @@ import { usePage } from "@inertiajs/vue3";
 import UserNavbar from "@/Layouts/Findhouses/UserNavbar.vue";
 import UserTopBar from "@/Layouts/Findhouses/UserTopBar.vue";
 import UserFooter from "@/Layouts/Findhouses/UserFooter.vue";
+import FloatingWhatsAppButton from "@/components/Global/FloatingWhatsAppButton.vue";
 import { cmsPageUrl } from "@/utils/cmsPageUrl.js";
 
 const page = usePage();

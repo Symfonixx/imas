@@ -69,10 +69,11 @@
     </Head>
 
     <AppLayout>
-        <div class="inner-pages">
+        <div class="inner-pages" ref="pageRef">
             <InnerPageHeadingHero
                 :page-title="trans('blogs.blog_details')"
                 :items="blogHeadingItems"
+                :banner-image-url="blogShowBannerUrl"
             />
             <!-- START SECTION BLOG -->
             <section class="blog blog-section bg-white">
@@ -80,7 +81,7 @@
                     <div class="row">
                         <div class="col-lg-9 col-md-12 blog-pots">
                             <div class="row">
-                                <div class="col-md-12 col-xs-12">
+                                <div class="col-md-12 col-xs-12 imas-blog-show-article-col">
                                     <div class="news-item details no-mb2">
                                         <a :href="blog.url" class="news-img-link">
                                             <div class="news-item-img">
@@ -91,27 +92,39 @@
                                                 />
                                             </div>
                                         </a>
-                                        <div class="news-item-text details pb-0 text-start">
-                                            <h3>{{ blog.title }}</h3>
-                                            <div class="dates">
-                                                <span
-                                                    v-if="blog.date"
-                                                    class="date"
-                                                    >{{ blog.date }} &nbsp;/</span
+                                        <div
+                                            ref="articleTextRef"
+                                            class="news-item-text details pb-0 text-start imas-blog-show-article-text"
+                                        >
+                                            <div class="imas-blog-show-article-text__header">
+                                                <h3>{{ blog.title }}</h3>
+                                                <div class="dates">
+                                                    <span
+                                                        v-if="blog.date"
+                                                        class="date"
+                                                        >{{ blog.date }}
+                                                        &nbsp;/</span
+                                                    >
+                                                    <ul class="action-list px-2">
+                                                        <li
+                                                            class="action-item pl-2"
+                                                        >
+                                                            <i
+                                                                class="fa fa-eye mx-1"
+                                                            ></i>
+                                                            <span>{{
+                                                                blog.visits
+                                                            }}</span>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <p
+                                                    v-if="blog.category"
+                                                    class="text-muted small mb-2"
                                                 >
-                                                <ul class="action-list px-2">
-                                                    <li class="action-item pl-2">
-                                                        <i class="fa fa-eye mx-1"></i>
-                                                        <span>{{ blog.visits }}</span>
-                                                    </li>
-                                                </ul>
+                                                    {{ blog.category.name }}
+                                                </p>
                                             </div>
-                                            <p
-                                                v-if="blog.category"
-                                                class="text-muted small mb-2"
-                                            >
-                                                {{ blog.category.name }}
-                                            </p>
                                             <div
                                                 class="news-item-descr big-news details visib mb-0 imas-blog-show-body"
                                                 v-html="blog.content"
@@ -137,11 +150,12 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { Head, usePage } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/App.vue";
 import BlogListingSidebar from "../Components/BlogListingSidebar.vue";
 import InnerPageHeadingHero from "@/components/global/InnerPageHeadingHero.vue";
+import { useScrollReveal } from "@/composables/useScrollReveal";
 
 const props = defineProps({
     title: { type: String, required: true },
@@ -152,6 +166,26 @@ const props = defineProps({
 });
 
 const page = usePage();
+const pageRef = ref(null);
+const articleTextRef = ref(null);
+
+useScrollReveal(pageRef, { variant: "propertyListings" });
+useScrollReveal(articleTextRef, { variant: "blogShowArticle" });
+
+const globals = computed(() => page.props.globals ?? {});
+const media = computed(() => globals.value.media ?? {});
+
+const blogShowBannerUrl = computed(() => {
+    const url = media.value.blog_show_banner;
+    if (typeof url !== "string" || url.trim() === "") {
+        return "";
+    }
+    const trimmed = url.trim();
+    if (/\/default\.jpg(?:\?.*)?$/i.test(trimmed)) {
+        return "";
+    }
+    return trimmed;
+});
 
 function trans(key) {
     return page.props.translations[key] || key;

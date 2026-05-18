@@ -1,6 +1,7 @@
 <template>
     <section
         v-if="isVisible"
+        ref="sectionRef"
         class="imas-about-overview"
         :aria-label="sectionTitle"
     >
@@ -32,9 +33,10 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { usePage } from "@inertiajs/vue3";
 import { cmsPageUrl } from "@/utils/cmsPageUrl.js";
+import { useScrollReveal } from "@/composables/useScrollReveal";
 
 const page = usePage();
 
@@ -94,6 +96,14 @@ const aboutHref = computed(() => {
         /* ignore */
     }
     return cmsPageUrl("about-us");
+});
+
+const sectionRef = ref(null);
+
+useScrollReveal(sectionRef, {
+    preset: "home",
+    variant: "panel",
+    when: isVisible,
 });
 </script>
 

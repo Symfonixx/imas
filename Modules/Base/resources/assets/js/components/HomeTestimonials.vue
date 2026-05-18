@@ -1,6 +1,7 @@
 <template>
     <section
         v-if="testimonials.length"
+        ref="sectionRef"
         class="home-testimonials testimonials bg-white-2 rec-pro"
     >
         <div class="container-fluid">
@@ -41,8 +42,10 @@
 </template>
 
 <script setup>
-import { onBeforeUnmount, onMounted, ref, nextTick, watch } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref, nextTick, watch } from "vue";
 import { usePage } from "@inertiajs/vue3";
+import { useScrollReveal } from "@/composables/useScrollReveal";
+import { refreshScrollTrigger } from "@/plugins/gsap";
 const page = usePage();
 function trans(key) {
     return page.props.translations[key] || key;
@@ -56,6 +59,13 @@ const props = defineProps({
 });
 
 const testimonialsCarousel = ref(null);
+const sectionRef = ref(null);
+
+useScrollReveal(sectionRef, {
+    preset: "home",
+    variant: "carousel",
+    when: computed(() => props.testimonials.length > 0),
+});
 
 function subtitleLine(item) {
     const position = String(item.position ?? "").trim();
@@ -114,7 +124,10 @@ async function refreshOwl() {
 
 onMounted(() => {
     nextTick(() => {
-        nextTick(() => initOwl());
+        nextTick(() => {
+            initOwl();
+            refreshScrollTrigger();
+        });
     });
 });
 

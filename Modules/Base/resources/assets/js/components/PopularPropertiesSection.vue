@@ -1,6 +1,7 @@
 <template>
     <section
         v-if="properties.length > 0"
+        ref="sectionRef"
         class="featured portfolio rec-pro disc"
     >
         <div class="container-fluid">
@@ -82,6 +83,7 @@ import {
 } from "vue";
 import { usePage } from "@inertiajs/vue3";
 import CustomHeading from "@/components/Global/CustomHeading.vue";
+import { useScrollReveal } from "@/composables/useScrollReveal";
 
 const page = usePage();
 
@@ -119,6 +121,14 @@ const props = defineProps({
         default: "#43475A",
         // default: "#333333",
     },
+});
+
+const sectionRef = ref(null);
+
+useScrollReveal(sectionRef, {
+    preset: "home",
+    variant: "carousel",
+    when: computed(() => props.properties.length > 0),
 });
 
 const viewportRef = ref(null);

@@ -69,42 +69,55 @@
     </Head>
 
     <AppLayout>
-        <div class="inner-pages blog">
-            <!-- Banner: image only -->
-            <div v-if="bannerUrl" class="imas-tc-banner mb-4">
-                <img
-                    :src="bannerUrl"
-                    :alt="sectionLabel"
-                    class="imas-tc-banner__img"
-                />
-            </div>
+        <div ref="pageRef" class="inner-pages">
+            <InnerPageHeadingHero
+                :page-title="pageHeadingTitle"
+                :items="headingItems"
+                :banner-image-url="heroBannerUrl"
+            />
 
             <!--  content section  -->
-            <section class="blog blog-section bg-white pt-3 pb-5">
+            <section class="blog blog-section bg-white pt-3 pb-5 imas-tc-page">
                 <div class="container">
-                    <div class="row justify-content-center">
-                        <div class="col-lg-10 col-md-12">
-                            <div
-                                v-if="youtubeEmbed"
-                                class="imas-tc-video ratio ratio-16x9 mb-4 w-100"
-                                v-html="youtubeEmbed"
+                    <div class="row">
+                        <div class="col-lg-8 col-md-12">
+                            <TurkishCitizenshipSplitTitle
+                                :primary="titlePrimary"
+                                :accent="titleAccent"
+                                align="start"
+                                reveal
                             />
-                            <div
-                                v-if="contentHtml"
-                                class="blog-pots imas-tc-content"
-                                v-html="contentHtml"
-                            />
-                            <p
-                                v-if="!contentHtml && !youtubeEmbed"
-                                class="text-muted"
-                            >
-                                {{
-                                    trans(
-                                        "Turkish citizenship page has no published content yet.",
-                                    )
-                                }}
-                            </p>
+                            <div class="blog-pots imas-tc-page-content">
+                                <div
+                                    v-if="contentHtml"
+                                    class="imas-tc-content"
+                                    v-html="contentHtml"
+                                />
+                                <div
+                                    v-if="youtubeEmbed"
+                                    class="imas-tc-video ratio ratio-16x9 mb-4 mt-4 w-100"
+                                    v-html="youtubeEmbed"
+                                />
+                                <p
+                                    v-if="!contentHtml && !youtubeEmbed"
+                                    class="text-muted"
+                                >
+                                    {{
+                                        trans(
+                                            "Turkish citizenship page has no published content yet.",
+                                        )
+                                    }}
+                                </p>
+                            </div>
                         </div>
+                        <aside class="col-lg-4 col-md-12 car">
+                            <div class="imas-tc-aside-sticky">
+                                <PropertyShowContactSidebar
+                                    :contact-store-url="contactStoreUrl"
+                                    :default-subject="inquirySubject"
+                                />
+                            </div>
+                        </aside>
                     </div>
                 </div>
             </section>
@@ -124,10 +137,14 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { Head, usePage } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/App.vue";
+import { useScrollReveal } from "@/composables/useScrollReveal";
+import InnerPageHeadingHero from "@/components/global/InnerPageHeadingHero.vue";
+import PropertyShowContactSidebar from "../components/PropertyShowContactSidebar.vue";
 import PopularPropertiesSection from "../../../../../Base/resources/assets/js/components/PopularPropertiesSection.vue";
+import TurkishCitizenshipSplitTitle from "../../../../../Base/resources/assets/js/components/TurkishCitizenshipSplitTitle.vue";
 
 const props = defineProps({
     turkishCitizenship: {
@@ -138,9 +155,16 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
+    contactStoreUrl: {
+        type: String,
+        required: true,
+    },
 });
 
 const page = usePage();
+const pageRef = ref(null);
+
+useScrollReveal(pageRef, { variant: "propertyListings" });
 
 const globals = computed(() => page.props.globals ?? {});
 const seo = computed(() => globals.value.seo ?? {});
@@ -170,6 +194,69 @@ function pickSeoString(fromProps, ...globalKeys) {
 }
 
 const sectionLabel = computed(() => trans("navBar.Turkish Citizenship"));
+
+function pickTranslation(key, fallback) {
+    const value = trans(key);
+    if (value && value !== key) {
+        return value;
+    }
+    return fallback;
+}
+
+const titlePrimary = computed(() =>
+    pickTranslation(
+        "turkishCitizenship.overview_title_primary",
+        "Turkish Citizenship",
+    ),
+);
+
+const titleAccent = computed(() =>
+    pickTranslation(
+        "turkishCitizenship.overview_title_accent",
+        "by Investment Programme",
+    ),
+);
+
+const pageHeadingTitle = computed(() => {
+    const t = pickSeoString(
+        props.turkishCitizenship.meta_title,
+        "turkish_citizenship_meta_title",
+    );
+    return t !== "" ? t : sectionLabel.value;
+});
+
+const inquirySubject = computed(() => pageHeadingTitle.value);
+
+const headingItems = computed(() => {
+    const rows = [];
+    try {
+        if (typeof route === "function" && route().has?.("home")) {
+            rows.push({
+                title: trans("navBar.Home"),
+                href: route("home"),
+            });
+        }
+    } catch {
+        /* Ziggy may be unavailable */
+    }
+    rows.push({
+        title: sectionLabel.value,
+        href: null,
+    });
+    return rows;
+});
+
+const heroBannerUrl = computed(() => {
+    const url = bannerUrl.value;
+    if (typeof url !== "string" || url.trim() === "") {
+        return "";
+    }
+    const trimmed = url.trim();
+    if (/\/default\.jpg(?:\?.*)?$/i.test(trimmed)) {
+        return "";
+    }
+    return trimmed;
+});
 
 const documentTitle = computed(() => {
     const t = pickSeoString(
@@ -257,25 +344,26 @@ function trans(key) {
 }
 </script>
 
-<style scoped>
-.imas-tc-banner {
-    width: 100%;
-    /* border-radius: 12px; */
-    overflow: hidden;
-    line-height: 0;
+<style scoped lang="scss">
+.imas-tc-page .row {
+    align-items: flex-start;
 }
 
-.imas-tc-banner__img {
-    display: block;
-    width: 100%;
-    aspect-ratio: 2.2 / 1;
-    min-height: 280px;
-
-    max-height: 470px;
-    object-fit: cover;
-    object-position: center;
+.imas-tc-aside-sticky {
+    position: sticky;
+    top: 6.5rem;
+    z-index: 2;
 }
 
+@media (max-width: 991.98px) {
+    .imas-tc-aside-sticky {
+        position: static;
+        margin-top: 2rem;
+    }
+}
+.imas-tc-content{
+    text-align: start;
+}
 .imas-tc-content :deep(img) {
     max-width: 100%;
     height: auto;

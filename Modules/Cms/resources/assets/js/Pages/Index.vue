@@ -69,17 +69,14 @@
     </Head>
 
     <AppLayout>
-        <div class="inner-pages imas-blog-section-anchor" ref="blogSectionRef">
-            <InnerPageHeadingHero
-                :page-title="title"
-                :items="blogHeadingItems"
-            />
-            <!-- END SECTION HEADINGS -->
+        <div class="inner-pages imas-blog-section-anchor" ref="pageRef">
+        
+
             <!-- START SECTION BLOG -->
             <section class="blog blog-section">
                 <div class="container">
                     <div class="row">
-                        <div class="col-lg-9 col-md-12 col-xs-12">
+                        <div class="col-lg-9 col-md-12 col-xs-12 blog-pots">
                             <template
                                 v-for="(row, rowIdx) in blogRows"
                                 :key="'row-' + rowIdx"
@@ -126,7 +123,7 @@
                     <nav
                         v-if="paginationLinks.length > 0"
                         aria-label="..."
-                        class="pt-5"
+                        class="pt-5 agents imas-blog-pagination"
                     >
                         <ul class="pagination">
                             <li
@@ -167,6 +164,7 @@ import AppLayout from "@/Layouts/App.vue";
 import ArticleCard from "@/components/articles/ArticleCard.vue";
 import BlogListingSidebar from "../Components/BlogListingSidebar.vue";
 import InnerPageHeadingHero from "@/components/global/InnerPageHeadingHero.vue";
+import { useScrollReveal } from "@/composables/useScrollReveal";
 
 const props = defineProps({
     title: { type: String, required: true },
@@ -177,13 +175,16 @@ const props = defineProps({
 });
 
 const page = usePage();
-const blogSectionRef = ref(null);
+const pageRef = ref(null);
 const globals = computed(() => page.props.globals ?? {});
 const seo = computed(() => globals.value.seo ?? {});
 const media = computed(() => globals.value.media ?? {});
 function scrollToBlogTop() {
-    blogSectionRef.value?.scrollIntoView({ behavior: "smooth", block: "start" });
+    pageRef.value?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
+
+useScrollReveal(pageRef, { variant: "propertyListings" });
+
 onMounted(() => {
     scrollToBlogTop();
 });

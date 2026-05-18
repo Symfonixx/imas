@@ -1,6 +1,10 @@
 <template>
     <div class="container">
-        <section v-if="services.length" class="how-it-works bg-white rec-pro">
+        <section
+            v-if="services.length"
+            ref="sectionRef"
+            class="how-it-works bg-white rec-pro"
+        >
             <div class="container-fluid">
                 <div class="sec-title">
                     <h2 v-html="sectionTitleHtml"></h2>
@@ -39,8 +43,9 @@
 
 <script setup>
 // Do not use data-aos here: app.blade.php loads AOS CSS but not aos.js, so [data-aos] stays hidden.
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { usePage } from "@inertiajs/vue3";
+import { useScrollReveal } from "@/composables/useScrollReveal";
 
 const page = usePage();
 
@@ -48,8 +53,16 @@ function trans(key) {
     return page.props.translations[key] || key;
 }
 
-defineProps({
+const props = defineProps({
     services: { type: Array, default: () => [] },
+});
+
+const sectionRef = ref(null);
+
+useScrollReveal(sectionRef, {
+    preset: "home",
+    variant: "cards",
+    when: computed(() => props.services.length > 0),
 });
 
 const sectionTitleHtml = computed(() => {

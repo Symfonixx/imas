@@ -288,6 +288,10 @@
         "property_video":"Property video",
         "location":"Location",
         "contact_info":"Contact info",
+        "share_page":"Share this page",
+        "copy_link":"Copy link",
+        "link_copied":"Link copied",
+        "share_email":"Email",
         "request_inquiry":"Request inquiry",
         "similar_properties":"Similar properties",
         "unit_types_title":"Properties",
@@ -372,5 +376,8 @@
         "send_failed":"Something went wrong. Please try again.",
         "map_not_configured":"Map is not configured yet.",
         "follow_us":"Follow us"
+    },
+    "floating_whatsapp":{
+        "aria_label":"Contact us on WhatsApp"
     }
 }

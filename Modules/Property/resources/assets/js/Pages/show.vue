@@ -77,7 +77,7 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <section class="headings-2 pt-0">
-                                    <div class="pro-wrapper">
+                                    <div class="pro-wrapper imas-property-title-row">
                                         <div class="detail-wrapper-body">
                                             <div
                                                 class="listing-title-bar text-start"
@@ -459,18 +459,20 @@ const twitterCard = computed(() =>
     font-size: 24px;
 }
 
-html[dir="rtl"] .imas-property-show .detail-wrapper.ms-lg-auto {
-    margin-inline-start: 0 !important;
+.imas-property-show .imas-property-title-row {
+    width: 100%;
+    justify-content: space-between;
+    align-items: flex-start;
 }
 
-html[dir="rtl"] .imas-property-show .text-lg-end {
-    text-align: start !important;
+html[dir="rtl"] .imas-property-show .imas-property-title-row .single.detail-wrapper {
+    margin-left: 0 !important;
+    margin-inline-start: auto;
+    flex-shrink: 0;
 }
 
-@media (min-width: 992px) {
-    html[dir="rtl"] .imas-property-show .text-lg-end {
-        text-align: end !important;
-    }
+html[dir="rtl"] .imas-property-show .imas-property-title-row .imas-price-heading {
+    text-align: left;
 }
 </style>
 

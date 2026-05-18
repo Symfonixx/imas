@@ -131,6 +131,19 @@ let dragPointerId = null;
 let lastClientX = 0;
 let dragDistance = 0;
 
+/** Allow Inertia links / buttons inside slides; only drag on empty rail area. */
+function isInteractiveTarget(target) {
+    if (!(target instanceof Element)) {
+        return false;
+    }
+
+    return Boolean(
+        target.closest(
+            "a, button, input, textarea, select, label, [role='button']",
+        ),
+    );
+}
+
 function syncVisibleCount() {
     if (typeof window === "undefined") {
         return;
@@ -247,6 +260,9 @@ function onPointerDown(e) {
     if (e.pointerType === "mouse" && e.button !== 0) {
         return;
     }
+    if (isInteractiveTarget(e.target)) {
+        return;
+    }
     const vp = viewportRef.value;
     if (!vp || !(e.target instanceof Node) || !vp.contains(e.target)) {
         return;
@@ -308,6 +324,10 @@ function onPointerLeave(e) {
 }
 
 function onViewportClickCapture(e) {
+    if (isInteractiveTarget(e.target)) {
+        dragDistance = 0;
+        return;
+    }
     if (dragDistance > 8) {
         e.preventDefault();
         e.stopPropagation();

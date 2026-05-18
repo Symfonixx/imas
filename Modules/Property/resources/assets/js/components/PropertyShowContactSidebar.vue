@@ -5,29 +5,53 @@
         </div>
         <div class="widget-boxed-body">
             <div class="sidebar-widget author-widget2">
-                <ul v-if="hasContactRows" class="author__contact text-start">
-                    <li v-if="contact.address">
-                        <span class="la la-map-marker"
-                            ><i class="fa fa-map-marker" aria-hidden="true"></i
-                        ></span>
-                        {{ contact.address }}
-                    </li>
-                    <li v-if="contact.phone">
-                        <span class="la la-phone"
-                            ><i class="fa fa-phone" aria-hidden="true"></i
-                        ></span>
-                        <a v-if="phoneTel" :href="'tel:' + phoneTel">{{
-                            contact.phone
-                        }}</a>
-                        <template v-else>{{ contact.phone }}</template>
-                    </li>
-                    <li v-if="contact.email">
-                        <span class="la la-envelope-o"
-                            ><i class="fa fa-envelope" aria-hidden="true"></i
-                        ></span>
-                        <a :href="'mailto:' + contact.email">{{
-                            contact.email
-                        }}</a>
+                <ul v-if="contactItems.length" class="author__contact imas-contact-list">
+                    <li
+                        v-for="item in contactItems"
+                        :key="item.key"
+                        class="imas-contact-list__item"
+                        :class="{ 'imas-contact-list__item--rtl': isRtl }"
+                    >
+                        <template v-if="isRtl">
+                            <span class="imas-contact-list__label">
+                                <a
+                                    v-if="item.href"
+                                    class="imas-contact-list__link"
+                                    :href="item.href"
+                                    >{{ item.text }}</a
+                                >
+                                <template v-else>{{ item.text }}</template>
+                            </span>
+                            <span
+                                class="imas-contact-list__icon la"
+                                :class="item.iconClass"
+                            >
+                                <i
+                                    :class="['fa', item.icon]"
+                                    aria-hidden="true"
+                                ></i>
+                            </span>
+                        </template>
+                        <template v-else>
+                            <span
+                                class="imas-contact-list__icon la"
+                                :class="item.iconClass"
+                            >
+                                <i
+                                    :class="['fa', item.icon]"
+                                    aria-hidden="true"
+                                ></i>
+                            </span>
+                            <span class="imas-contact-list__label">
+                                <a
+                                    v-if="item.href"
+                                    class="imas-contact-list__link"
+                                    :href="item.href"
+                                    >{{ item.text }}</a
+                                >
+                                <template v-else>{{ item.text }}</template>
+                            </span>
+                        </template>
                     </li>
                 </ul>
                 <div
@@ -65,6 +89,14 @@ defineProps({
 
 const page = usePage();
 
+const isRtl = computed(() => {
+    const dir = page.props.text_direction;
+    if (dir === "rtl" || dir === "ltr") {
+        return dir === "rtl";
+    }
+    return (page.props.locale || "en") === "ar";
+});
+
 const showSuccessFlash = computed(() =>
     Boolean((page.props.flash ?? {}).contact_sent),
 );
@@ -80,12 +112,42 @@ const phoneTel = computed(() => {
     return p.replace(/[^\d+]/g, "");
 });
 
-const hasContactRows = computed(
-    () =>
-        Boolean(contact.value.address) ||
-        Boolean(contact.value.phone) ||
-        Boolean(contact.value.email),
-);
+const contactItems = computed(() => {
+    const c = contact.value;
+    const items = [];
+
+    if (c.address) {
+        items.push({
+            key: "address",
+            icon: "fa-map-marker",
+            iconClass: "la-map-marker",
+            text: c.address,
+            href: null,
+        });
+    }
+
+    if (c.phone) {
+        items.push({
+            key: "phone",
+            icon: "fa-phone",
+            iconClass: "la-phone",
+            text: c.phone,
+            href: phoneTel.value ? `tel:${phoneTel.value}` : null,
+        });
+    }
+
+    if (c.email) {
+        items.push({
+            key: "email",
+            icon: "fa-envelope",
+            iconClass: "la-envelope-o",
+            text: c.email,
+            href: `mailto:${c.email}`,
+        });
+    }
+
+    return items;
+});
 
 function trans(key) {
     return page.props.translations[key] || key;
@@ -93,22 +155,54 @@ function trans(key) {
 </script>
 
 <style scoped>
-.imas-property-show-contact .author__contact {
+.imas-property-show-contact .imas-contact-list {
     list-style: none;
     padding: 0;
     margin: 0 0 1.25rem;
 }
 
-.imas-property-show-contact .author__contact li {
-    display: flex;
+.imas-property-show-contact .imas-contact-list__item {
+    display: flex !important;
+    flex-direction: row;
     align-items: flex-start;
-    gap: 0.5rem;
+    gap: 0.625rem;
     margin-bottom: 0.75rem;
+    color: #666;
+}
+
+.imas-property-show-contact .imas-contact-list__item--rtl {
+    flex-direction: row;
+    justify-content: flex-end;
+    direction: ltr;
+}
+
+.imas-property-show-contact .imas-contact-list__label {
+    flex: 1;
+    min-width: 0;
     text-align: start;
 }
 
-html[dir="rtl"] .imas-property-show-contact .author__contact li {
-    flex-direction: row-reverse;
+.imas-property-show-contact .imas-contact-list__item--rtl .imas-contact-list__label {
+    flex: 0 1 auto;
     text-align: end;
+}
+
+.imas-property-show-contact .imas-contact-list__icon {
+    flex-shrink: 0;
+}
+
+.imas-property-show-contact .imas-contact-list__link {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.imas-property-show-contact .imas-contact-list__link:hover {
+    color: var(--brand-gold);
+}
+
+.imas-property-show-contact :deep(.imas-contact-list__icon i) {
+    margin-right: 0 !important;
+    margin-left: 0 !important;
 }
 </style>

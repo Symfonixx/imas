@@ -328,4 +328,10 @@ function goNext() {
 .fa-angle-right:before,.fa-angle-left:before{
 color:#fff;    
 }
+.blog .blog-pots .fa {
+    margin: 6px 35% !important;
+}
+html[dir="rtl"] .blog .blog-pots .fa {
+    transform: rotate(180deg);
+}
 </style>

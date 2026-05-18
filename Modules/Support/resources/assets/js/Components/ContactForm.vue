@@ -257,12 +257,15 @@ function submit() {
 .imas-contact-form--sidebar .multiple-send-message {
     background: var(--brand-gold) !important;
     border-color: var(--brand-gold) !important;
-    color: var(--brand-navy) !important;
+    color: #fff !important;
     font-weight: 600;
 }
 
-.imas-contact-form--sidebar .multiple-send-message:hover:not(:disabled) {
+.imas-contact-form--sidebar .multiple-send-message:hover:not(:disabled),
+.imas-contact-form--sidebar .multiple-send-message:focus:not(:disabled),
+.imas-contact-form--sidebar .multiple-send-message:active:not(:disabled) {
     background: var(--brand-gold-hover) !important;
     border-color: var(--brand-gold-hover) !important;
+    color: #fff !important;
 }
 </style>

@@ -118,8 +118,7 @@ const props = defineProps({
     },
     headingTextColor: {
         type: String,
-        default: "#43475A",
-        // default: "#333333",
+        default: "#eef2f8",
     },
 });
 
@@ -492,18 +491,21 @@ html[dir="rtl"] ul.imas-popular-dots {
 }
 
 .sec-title {
-    color: #111 !important;
+    color: var(--text) !important;
 }
 
 .sec-title h2 {
-    color: #111 !important;
+    color: var(--brand-gold) !important;
 }
 
 .sec-title h2 span {
-    color: #111 !important;
+    color: var(--text) !important;
 }
 
 .sec-title p {
-    color: #111 !important;
+    color: var(--text-dim) !important;
+}
+.featured.portfolio.rec-pro.disc{
+    background: var(--bg) !important;
 }
 </style>

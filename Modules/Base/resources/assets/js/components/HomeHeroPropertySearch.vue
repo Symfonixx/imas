@@ -30,7 +30,7 @@
             <div class="tab-pane fade show active">
                 <div class="rld-main-search">
                     <div class="row">
-                        <div class="rld-single-input">
+                        <!-- <div class="rld-single-input">
                             <input
                                 v-model="searchKeyword"
                                 type="search"
@@ -38,6 +38,33 @@
                                 autocomplete="off"
                                 class="pt-0 pb-0"
                                 :placeholder="trans('Enter Keyword...')"
+                            />
+                        </div> -->
+
+                        <div
+                            v-if="projectUnitTypes.length"
+                            class="rld-single-select"
+                        >
+                            <select
+                                v-model="searchUnitTypeId"
+                                class="select single-select wide"
+                            >
+                                <option value="">
+                                    {{ trans("Unit Types") }}
+                                </option>
+                                <option
+                                    v-for="ut in projectUnitTypes"
+                                    :key="ut.id"
+                                    :value="String(ut.id)"
+                                >
+                                    {{ ut.name }}
+                                </option>
+                            </select>
+                            <input
+                                v-if="searchUnitTypeId"
+                                type="hidden"
+                                name="project_unit_type_id[]"
+                                :value="searchUnitTypeId"
                             />
                         </div>
 
@@ -94,73 +121,23 @@
                         <div class="col-xl-2 col-lg-2 col-md-4 pl-0">
                             <button
                                 type="submit"
-                                class="btn btn-yellow btn-block !text-white"
+                                class="btn btn-yellow btn-block "
                             >
                                 {{ trans("Search Now") }}
                             </button>
                         </div>
 
                         <div
-                            class="explore__form-checkbox-list full-filter"
+                            class="explore__form-checkbox-list full-filter imas-hero-advanced-panel"
                             :class="{ 'filter-block': advancedOpen }"
                         >
                             <div class="row">
-                                <div
-                                    v-if="unitTypesColumnA.length"
-                                    class="col-lg-3 col-md-6 col-sm-12 py-1 imas-hero-unit-col"
-                                >
-                                    <div
-                                        class="checkboxes one-in-row margin-bottom-10 ch-1"
-                                    >
-                                        <template
-                                            v-for="ut in unitTypesColumnA"
-                                            :key="ut.id"
-                                        >
-                                            <input
-                                                :id="`imas-hero-ut-${ut.id}`"
-                                                v-model="selectedUnitTypeIds"
-                                                type="checkbox"
-                                                name="project_unit_type_id[]"
-                                                :value="String(ut.id)"
-                                            />
-                                            <label :for="`imas-hero-ut-${ut.id}`">{{
-                                                ut.name
-                                            }}</label>
-                                        </template>
-                                    </div>
-                                </div>
-
-                                <div
-                                    v-if="unitTypesColumnB.length"
-                                    class="col-lg-3 col-md-6 col-sm-12 py-1 imas-hero-unit-col"
-                                >
-                                    <div
-                                        class="checkboxes one-in-row margin-bottom-10 ch-2"
-                                    >
-                                        <template
-                                            v-for="ut in unitTypesColumnB"
-                                            :key="ut.id"
-                                        >
-                                            <input
-                                                :id="`imas-hero-ut-${ut.id}`"
-                                                v-model="selectedUnitTypeIds"
-                                                type="checkbox"
-                                                name="project_unit_type_id[]"
-                                                :value="String(ut.id)"
-                                            />
-                                            <label :for="`imas-hero-ut-${ut.id}`">{{
-                                                ut.name
-                                            }}</label>
-                                        </template>
-                                    </div>
-                                </div>
-
-                                <div
-                                    class="col-lg-5 col-md-12 col-sm-12 py-1 pr-30 mr-5 sld"
-                                >
+                                <div class="col-12 py-1 pr-30  sld">
                                     <div class="main-search-field-2">
                                         <div class="range-slider">
-                                            <label>{{ trans("Area Size") }}</label>
+                                            <label>{{
+                                                trans("Area Size")
+                                            }}</label>
                                             <div
                                                 id="imas-hero-area-range"
                                                 :data-min="areaBounds.min"
@@ -171,12 +148,16 @@
                                         </div>
                                         <br />
                                         <div class="range-slider">
-                                            <label>{{ trans("Price Range") }}</label>
+                                            <label>{{
+                                                trans("Price Range")
+                                            }}</label>
                                             <div
                                                 id="imas-hero-price-range"
                                                 :data-min="priceBounds.min"
                                                 :data-max="priceBounds.max"
-                                                :data-unit="priceBounds.currency"
+                                                :data-unit="
+                                                    priceBounds.currency
+                                                "
                                             ></div>
                                             <div class="clearfix"></div>
                                         </div>
@@ -219,16 +200,14 @@ const page = usePage();
 const searchKeyword = ref("");
 const searchPropertyTypeId = ref("");
 const searchLocationId = ref("");
+const searchUnitTypeId = ref("");
 const advancedOpen = ref(false);
-const selectedUnitTypeIds = ref([]);
 const rangesDirty = ref(false);
 const slidersReady = ref(false);
 
 const propertySearch = computed(
     () =>
-        page.props.property_search ??
-        page.props.globals?.property_search ??
-        {},
+        page.props.property_search ?? page.props.globals?.property_search ?? {},
 );
 
 const priceBounds = computed(() => {
@@ -253,28 +232,10 @@ const projectUnitTypes = computed(
     () => propertySearch.value.project_unit_types ?? [],
 );
 
-const unitTypesColumnA = computed(() => {
-    const list = projectUnitTypes.value;
-    const mid = Math.ceil(list.length / 2);
-    return list.slice(0, mid);
-});
-
-const unitTypesColumnB = computed(() => {
-    const list = projectUnitTypes.value;
-    const mid = Math.ceil(list.length / 2);
-    return list.slice(mid);
-});
-
 const priceRange = ref([0, 1]);
 const areaRange = ref([0, 1]);
 
-const includeAdvancedParams = computed(() => {
-    if (selectedUnitTypeIds.value.length > 0) {
-        return true;
-    }
-
-    return rangesDirty.value;
-});
+const includeAdvancedParams = computed(() => rangesDirty.value);
 
 function trans(key) {
     return page.props.translations[key] || key;
@@ -352,11 +313,7 @@ onBeforeUnmount(() => {
 });
 </script>
 
-<style scoped>
-.imas-hero-unit-col {
-    padding-inline-end: 30px;
-}
-
+<style lang="scss" scoped>
 .imas-hero-property-search :deep(.single-select),
 .imas-hero-property-search :deep(.nice-select) {
     text-align: start;
@@ -366,36 +323,132 @@ onBeforeUnmount(() => {
     text-align: start;
 }
 
-.imas-hero-property-search :deep(.explore__form-checkbox-list.full-filter) {
+/* Advanced filters panel (area / price sliders) — not the Advanced Search button */
+.imas-hero-property-search :deep(.imas-hero-advanced-panel.full-filter) {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
     width: 100%;
+    max-width: 32rem;
+    margin-inline: auto;
+    border-radius: 8px !important;
+    border: 1px solid var(--border) !important;
+    background: var(--surface) !important;
+    padding: 1.25rem 1.5rem !important;
 }
 
-.imas-hero-property-search :deep(.checkboxes.one-in-row label) {
-    width: 100%;
-    text-align: start;
+.imas-hero-property-search :deep(.imas-hero-advanced-panel.filter-block) {
+    margin-top: 0.75rem !important;
+}
+
+.imas-hero-property-search :deep(.imas-hero-advanced-panel .main-search-field-2) {
+    margin-top: 0;
+}
+
+.imas-hero-property-search :deep(.imas-hero-advanced-panel .range-slider label) {
+    color: var(--text) !important;
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+}
+
+.imas-hero-property-search :deep(.imas-hero-advanced-panel input.first-slider-value),
+.imas-hero-property-search :deep(.imas-hero-advanced-panel input.second-slider-value) {
+    background: transparent !important;
+    background-color: transparent !important;
+    color: var(--text) !important;
+    border: 0 !important;
+    box-shadow: none !important;
 }
 
 .hp-6 .dropdown-filter span::after {
     margin-left: 0;
     margin-inline-start: 15px;
 }
+
+/* Small screens: full-width fields, tighter height, more horizontal padding */
+@media (max-width: 991.98px) {
+
+    .homepage-9.hp-6
+        .imas-hero-property-search
+        .imas-hero-advanced-panel.full-filter.filter-block {
+        margin-top: -6.25rem !important;
+    }
+
+    .imas-hero-property-search :deep(.imas-hero-advanced-panel.full-filter) {
+        max-width: 100%;
+    }
+    .hp-6 .dropdown-filter span {
+        line-height: 25px !important;
+    }
+    .imas-hero-property-search :deep(.rld-main-search) {
+        /* height: fit-content !important; */
+        min-height: 0 !important;
+        padding-top: 1.25rem !important;
+        padding-bottom: 1.25rem !important;
+        padding-inline: 1.5rem !important;
+    }
+
+    .imas-hero-property-search :deep(.rld-main-search .row) {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        justify-content: flex-start !important;
+        width: 100%;
+        gap: 0.75rem;
+        margin-inline: 0;
+    }
+
+    .imas-hero-property-search :deep(.rld-single-select),
+    .imas-hero-property-search :deep(.rld-single-select.ml-22),
+    .imas-hero-property-search :deep(.dropdown-filter),
+    .imas-hero-property-search
+        :deep(.rld-main-search > .row > [class*="col-"]) {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-inline: 0 !important;
+        padding-inline: 0 !important;
+    }
+
+    .imas-hero-property-search :deep(.rld-single-select .single-select),
+    .imas-hero-property-search :deep(.rld-single-select .nice-select),
+    .imas-hero-property-search :deep(.dropdown-filter span),
+    .imas-hero-property-search :deep(.btn.btn-yellow) {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-inline: 0 !important;
+        color: var(--text) !important;
+    }
+
+    .imas-hero-property-search :deep(.dropdown-filter span) {
+        display: block;
+        box-sizing: border-box;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .imas-hero-property-search :deep(.rld-main-search) {
+        padding-inline: 1.75rem !important;
+    }
+}
+
+.imas-hero-property-search :deep(#imas-hero-area-range .first-slider-value),.imas-hero-property-search :deep(#imas-hero-area-range .second-slider-value),.imas-hero-property-search :deep(#imas-hero-price-range .first-slider-value),.imas-hero-property-search :deep(#imas-hero-price-range .second-slider-value){
+    background: transparent !important;
+}
+
+.hp-6 .dropdown-filter span {
+        color: var(--text) !important;
+        border-color: var(--border) !important;
+        background: var(--surface-2) !important;
+    }
 </style>
 
 <style>
-/**
- * Theme hp-6 checkboxes position the faux box with physical `left` + `padding-left`.
- * In RTL that leaves labels on the right and boxes on the far left of each row.
- */
-html[dir="rtl"] body.hp-6 .imas-hero-property-search .checkboxes.one-in-row label {
-    padding-left: 0;
-    padding-right: 28px;
-    margin-right: 0;
+@media (min-width: 992px) {
+    .imas-hero-property-search .rld-main-search .row {
+        justify-content: center !important;
+    }
 }
 
-html[dir="rtl"] body.hp-6 .imas-hero-property-search .checkboxes.one-in-row label::before {
-    left: auto;
-    right: 0;
-    margin-right: 0;
-    margin-left: 0;
+.rld-main-search .rld-single-select .single-select {
+    box-shadow: none !important;
 }
 </style>

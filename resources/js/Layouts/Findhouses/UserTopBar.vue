@@ -1,7 +1,7 @@
 <template>
-    <div class="imas-top-bar" role="region" :aria-label="trans('Contacts')">
-        <div class="container container-header imas-top-bar__inner">
-            <div class="imas-top-bar__contacts">
+    <div class="imas-top-bar topbar" role="region" :aria-label="trans('Contacts')">
+        <div class="container imas-nav__container imas-top-bar__inner">
+            <div class="imas-top-bar__contacts contact">
                 <a
                     v-if="phoneDisplay"
                     class="imas-top-bar__link"
@@ -36,7 +36,7 @@
             </div>
             <ul
                 v-if="topSocialLinks.length"
-                class="imas-top-bar__socials"
+                class="imas-top-bar__socials socials"
                 :aria-label="trans('Social media')"
             >
                 <li v-for="item in topSocialLinks" :key="item.key">
@@ -124,13 +124,13 @@ function trans(key) {
 
 <style scoped>
 .imas-top-bar {
-    background: #303441;
-    border-bottom: 1px solid rgba(245, 255, 255, 0.1);
-    color: #fff;
+    background: var(--footer-bg, #06101f);
+    border-bottom: 1px solid var(--divider, rgba(255, 255, 255, 0.06));
+    color: var(--text-dim, #9aa6bd);
     font-size: 0.875rem;
     font-weight: 400;
     position: relative;
-    z-index: 100000;
+    z-index: var(--z-top-bar, 100000);
     width: 100%;
 }
 
@@ -140,20 +140,23 @@ function trans(key) {
     align-items: center;
     justify-content: space-between;
     gap: 0.5rem 1rem;
-    min-height: 2.5rem;
-    padding-top: 0.35rem;
-    padding-bottom: 0.35rem;
+    min-height: 38px;
 }
 
 .imas-top-bar__contacts {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.75rem 1.25rem;
+    gap: 0 18px;
+}
+
+.imas-top-bar__contacts > .imas-top-bar__link + .imas-top-bar__link,
+.imas-top-bar__contacts > span + .imas-top-bar__link {
+    margin-inline-start: 0;
 }
 
 .imas-top-bar__link {
-    color: rgba(255, 255, 255, 0.88);
+    color: var(--text-dim, #9aa6bd);
     text-decoration: none;
     display: inline-flex;
     align-items: center;
@@ -162,7 +165,7 @@ function trans(key) {
 }
 
 .imas-top-bar__link:hover {
-    color: #fff;
+    color: var(--brand-gold, #d9a800);
     text-decoration: none;
 }
 
@@ -188,24 +191,24 @@ function trans(key) {
     list-style: none;
     margin: 0;
     padding: 0;
-    gap: 0.25rem 0.5rem;
+    gap: 0;
+}
+
+.imas-top-bar__socials li + li {
+    margin-inline-start: 12px;
 }
 
 .imas-top-bar__socials a {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 2rem;
-    height: 2rem;
-    color: #fff;
+    color: var(--text-dim, #9aa6bd);
     text-decoration: none;
-    border-radius: 4px;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    transition: color 0.2s ease;
 }
 
 .imas-top-bar__socials a:hover {
-    color: #fff;
-    background: rgba(255, 255, 255, 0.12);
+    color: var(--brand-gold, #d9a800);
 }
 
 .imas-top-bar__socials i {

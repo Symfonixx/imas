@@ -106,7 +106,7 @@ export function useScrollReveal(sectionRef, options = {}) {
             });
             const title = root.querySelector(".sec-title");
             const items = root.querySelectorAll(
-                ".portfolio-items > *, .service-1 .serv, .news-wrap .row > [class*='col-'], .imas-popular-slide",
+                ".portfolio-items > *, .imas-featured-slide, .imas-articles-slide, .service-1 .serv, .news-wrap .row > [class*='col-'], .imas-popular-slide",
             );
             const footer = root.querySelector(".bg-all");
 

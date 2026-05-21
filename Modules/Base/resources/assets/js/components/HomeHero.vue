@@ -23,37 +23,57 @@
                         <div class="hero-inner">
                             <div class="imas-hero-copy">
                                 <div ref="heroCopyRef" class="welcome-text">
-                                    <h1 class="h1 imas-hero-title" :aria-label="heroTitle">
-                                        <component
-                                            :is="heroTitleTag"
-                                            v-bind="heroTitleAttrs"
-                                            class="imas-hero-title-link"
-                                        >
-                                            <span
-                                                v-if="titleParts.lead"
-                                                ref="titleLeadRef"
-                                                class="imas-hero-title-lead"
-                                            >{{ titleParts.lead }}</span>
-                                            <span
-                                                v-if="titleParts.lead"
-                                                class="imas-hero-title-gap"
-                                                aria-hidden="true"
-                                            >&nbsp;</span>
-                                            <span
-                                                ref="titleTypedRef"
-                                                class="imas-hero-title-typed"
+                                    <template v-if="useStaticHeroCopy">
+                                        <h1 class="h1 imas-hero-title imas-hero-title--static">
+                                            {{ heroTitle }}
+                                        </h1>
+                                        <p ref="heroSubtitleRef" class="mt-4 imas-hero-subtitle">
+                                            {{ heroSubtitle }}
+                                        </p>
+                                    </template>
+                                    <template v-else>
+                                        <h1 class="h1 imas-hero-title" :aria-label="heroTitle">
+                                            <component
+                                                :is="heroTitleTag"
+                                                v-bind="heroTitleAttrs"
+                                                class="imas-hero-title-link"
                                             >
-                                                {{ displayedTypedText }}<span
-                                                    v-if="showTypeCursor"
-                                                    class="imas-hero-type-cursor"
+                                                <span
+                                                    v-if="titleParts.lead"
+                                                    ref="titleLeadRef"
+                                                    class="imas-hero-title-lead"
+                                                >{{ titleParts.lead }}</span>
+                                                <span
+                                                    v-if="titleParts.lead"
+                                                    class="imas-hero-title-gap"
                                                     aria-hidden="true"
-                                                >|</span>
-                                            </span>
-                                        </component>
-                                    </h1>
-                                    <p ref="heroSubtitleRef" class="mt-4 imas-hero-subtitle">
-                                        {{ heroSubtitle }}
-                                    </p>
+                                                >&nbsp;</span>
+                                                <span
+                                                    ref="titleTypedRef"
+                                                    class="imas-hero-title-typed"
+                                                >
+                                                    {{ displayedTypedText }}<span
+                                                        v-if="showTypeCursor"
+                                                        class="imas-hero-type-cursor"
+                                                        aria-hidden="true"
+                                                    >|</span>
+                                                </span>
+                                            </component>
+                                        </h1>
+                                        <p ref="heroSubtitleRef" class="mt-4 imas-hero-subtitle">
+                                            {{ heroSubtitle }}
+                                        </p>
+                                    </template>
+                                    <a
+                                        v-if="activeSlideLink"
+                                        ref="heroActionRef"
+                                        :href="activeSlideLink"
+                                        class="imas-hero-action"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        {{ actionLabel }}
+                                    </a>
                                 </div>
 
                                 <div v-if="slides.length > 1" class="imas-hero-dots" role="tablist" aria-label="Slides">
@@ -87,6 +107,7 @@
 
 <script setup>
 import {computed, nextTick, onBeforeUnmount, onMounted, ref, watch} from 'vue';
+import {usePage} from '@inertiajs/vue3';
 import {useGsap} from '@/composables/useGsap';
 import {createGsapContext, prefersReducedMotion} from '@/plugins/gsap';
 import HomeHeroPropertySearch from './HomeHeroPropertySearch.vue';
@@ -107,9 +128,17 @@ const heroCopyRef = ref(null);
 const titleLeadRef = ref(null);
 const titleTypedRef = ref(null);
 const heroSubtitleRef = ref(null);
+const heroActionRef = ref(null);
 const heroFilterRef = ref(null);
 const displayedTypedText = ref('');
 const showTypeCursor = ref(false);
+const MOBILE_HERO_MQ = '(max-width: 767.98px)';
+
+const useStaticHeroCopy = ref(
+    typeof window !== 'undefined' && window.matchMedia(MOBILE_HERO_MQ).matches,
+);
+
+let mobileHeroMq = null;
 
 const {gsap, context} = useGsap();
 let slideTimer = null;
@@ -118,9 +147,37 @@ let heroAnimToken = 0;
 let heroSearchCtx = null;
 let searchEnterHasPlayed = false;
 
+const page = usePage();
+
+function trans(key) {
+    return page.props.translations[key] || key;
+}
+
+function pickTranslation(key, fallback) {
+    const value = trans(key);
+    if (value && value !== key) {
+        return value;
+    }
+
+    return fallback;
+}
+
 const slides = computed(() => props.slides || []);
 
 const activeSlide = computed(() => slides.value[activeSlideIndex.value] ?? null);
+
+const activeSlideLink = computed(() => {
+    const link = activeSlide.value?.link;
+    if (typeof link === 'string' && link.trim() !== '') {
+        return link.trim();
+    }
+
+    return '';
+});
+
+const actionLabel = computed(() =>
+    pickTranslation('turkishCitizenship.discover_more', 'Discover More'),
+);
 
 function pickSlideText(value, fallback) {
     if (typeof value !== 'string') {
@@ -143,16 +200,9 @@ const heroSubtitle = computed(() =>
         : props.welcomeSubtitle
 );
 
-const heroTitleTag = computed(() => (activeSlide.value?.link ? 'a' : 'span'));
+const heroTitleTag = computed(() => 'span');
 
-const heroTitleAttrs = computed(() => {
-    const link = activeSlide.value?.link;
-    if (typeof link === 'string' && link.trim() !== '') {
-        return {href: link.trim()};
-    }
-
-    return {};
-});
+const heroTitleAttrs = computed(() => ({}));
 
 /**
  * @param {string} title
@@ -181,6 +231,59 @@ function splitTitleForTypewriter(title) {
 const titleParts = computed(() => splitTitleForTypewriter(heroTitle.value));
 
 const propertyIndexUrl = computed(() => route('property.index'));
+
+function updateStaticHeroCopy() {
+    useStaticHeroCopy.value = window.matchMedia(MOBILE_HERO_MQ).matches;
+}
+
+function killHeroCopyTweens() {
+    const root = heroCopyRef.value;
+    if (!root) {
+        return;
+    }
+
+    gsap.killTweensOf(root);
+    gsap.killTweensOf(root.querySelectorAll('*'));
+}
+
+function setHeroCopyVisible() {
+    const root = heroCopyRef.value;
+    if (!root) {
+        return;
+    }
+
+    const targets = [
+        root.querySelector('.imas-hero-title'),
+        root.querySelector('.imas-hero-subtitle'),
+        ...root.querySelectorAll(
+            '.imas-hero-title-lead, .imas-hero-title-typed, .imas-hero-title-link, .imas-hero-action',
+        ),
+        titleLeadRef.value,
+        titleTypedRef.value,
+        heroSubtitleRef.value,
+        heroActionRef.value,
+    ].filter(Boolean);
+
+    gsap.killTweensOf(targets);
+
+    if (targets.length) {
+        gsap.set(targets, {opacity: 1, y: 0, clearProps: 'opacity,transform'});
+    }
+}
+
+function onMobileHeroMqChange() {
+    updateStaticHeroCopy();
+    nextTick(() => {
+        killHeroCopyTweens();
+        setHeroCopyVisible();
+        if (useStaticHeroCopy.value) {
+            displayedTypedText.value = titleParts.value.typed;
+            showTypeCursor.value = false;
+        } else {
+            playHeroCopyAnimation();
+        }
+    });
+}
 
 function playHeroSearchEnterAnimation() {
     if (searchEnterHasPlayed) {
@@ -212,9 +315,11 @@ function playHeroCopyAnimation() {
     const token = ++heroAnimToken;
     const {lead, typed} = titleParts.value;
 
-    if (prefersReducedMotion()) {
+    if (prefersReducedMotion() || useStaticHeroCopy.value) {
         displayedTypedText.value = typed;
         showTypeCursor.value = false;
+        killHeroCopyTweens();
+        setHeroCopyVisible();
         return;
     }
 
@@ -224,6 +329,7 @@ function playHeroCopyAnimation() {
     const leadEl = titleLeadRef.value;
     const typedEl = titleTypedRef.value;
     const subEl = heroSubtitleRef.value;
+    const actionEl = heroActionRef.value;
 
     context(() => {
         const tl = gsap.timeline({
@@ -233,11 +339,16 @@ function playHeroCopyAnimation() {
                     return;
                 }
                 showTypeCursor.value = false;
+                setHeroCopyVisible();
             },
         });
 
         if (subEl) {
             gsap.set(subEl, {opacity: 0, y: -20});
+        }
+
+        if (actionEl) {
+            gsap.set(actionEl, {opacity: 0, y: 12});
         }
 
         if (leadEl && lead) {
@@ -308,12 +419,21 @@ function playHeroCopyAnimation() {
             afterType,
         );
 
+        if (actionEl) {
+            tl.fromTo(
+                actionEl,
+                {opacity: 0, y: 12},
+                {opacity: 1, y: 0, duration: 0.85},
+                afterType + 0.08,
+            );
+        }
+
         if (subEl) {
             tl.fromTo(
                 subEl,
                 {opacity: 0, y: -20},
                 {opacity: 1, y: 0, duration: 1.1},
-                afterType + 0.18,
+                afterType + (actionEl ? 0.28 : 0.18),
             );
         }
 
@@ -353,6 +473,10 @@ watch(activeSlideIndex, () => {
 });
 
 onMounted(() => {
+    updateStaticHeroCopy();
+    mobileHeroMq = window.matchMedia(MOBILE_HERO_MQ);
+    mobileHeroMq.addEventListener('change', onMobileHeroMqChange);
+
     startSlideAutoplay();
     nextTick(() => {
         playHeroSearchEnterAnimation();
@@ -361,6 +485,9 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+    mobileHeroMq?.removeEventListener('change', onMobileHeroMqChange);
+    mobileHeroMq = null;
+    killHeroCopyTweens();
     stopSlideAutoplay();
     heroSearchCtx?.revert?.();
     heroSearchCtx = null;
@@ -470,7 +597,10 @@ onBeforeUnmount(() => {
 .imas-hero-slider__scrim {
     position: absolute;
     inset: 0;
-    background: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.55));
+    background: linear-gradient(
+        rgba(10, 21, 38, 0.7),
+        rgba(10, 21, 38, 0.85)
+    );
     pointer-events: none;
 }
 
@@ -482,6 +612,12 @@ onBeforeUnmount(() => {
 .welcome-text {
     position: relative;
     z-index: 1;
+    width: 100%;
+}
+
+.imas-hero-title--static {
+    display: block;
+    margin: 0;
 }
 
 .imas-hero-title-link {
@@ -489,13 +625,35 @@ onBeforeUnmount(() => {
     text-decoration: none;
 }
 
-.imas-hero-title-link:hover {
-    color: inherit;
-    text-decoration: underline;
-}
-
 .imas-hero-title-link {
     display: inline;
+}
+
+.imas-hero-action {
+    display: inline-block;
+    margin-top: 0rem;
+    margin-bottom: 22px !important;
+    padding: 0.65rem 1.75rem;
+    border: 2px solid var(--brand-gold, #d9a800);
+    border-radius: 6px;
+    background: transparent;
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.2;
+    text-decoration: none;
+    transition:
+        background-color 0.25s ease,
+        color 0.25s ease,
+        border-color 0.25s ease;
+}
+
+.imas-hero-action:hover,
+.imas-hero-action:focus-visible {
+    background: var(--brand-gold, #d9a800);
+    border-color: var(--brand-gold, #d9a800);
+    color: #fff;
+    text-decoration: none;
 }
 
 .imas-hero-title-typed {
@@ -516,8 +674,10 @@ onBeforeUnmount(() => {
 }
 
 @media (prefers-reduced-motion: reduce) {
+    .imas-hero-title--static,
     .imas-hero-title-lead,
     .imas-hero-title-typed,
+    .imas-hero-action,
     .imas-hero-subtitle,
     .imas-hero-filter {
         opacity: 1 !important;
@@ -537,16 +697,110 @@ onBeforeUnmount(() => {
 }
 
 .imas-hero-dot {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
-    border: 2px solid rgba(255, 255, 255, 0.75);
-    background: transparent;
+    border: none;
+    background: rgba(255, 255, 255, 0.4);
     padding: 0;
     cursor: pointer;
+    transition: width 0.2s ease, background 0.2s ease;
 }
 
 .imas-hero-dot--active {
-    background: rgba(255, 255, 255, 0.95);
+    width: 24px;
+    border-radius: 6px;
+    background: var(--brand-gold, #d9a800);
+}
+
+/* Small screens: static title/subtitle; override GSAP inline opacity on typewriter spans. */
+@media (max-width: 767.98px) {
+    .imas-hero-slider .imas-hero-copy {
+        flex: 0 0 auto;
+        flex-shrink: 0;
+        min-height: auto;
+        width: 100%;
+        justify-content: flex-start;
+        align-items: center;
+        padding-top: 0;
+        padding-bottom: 0.5rem;
+        overflow: visible;
+    }
+
+    .imas-hero-slider .welcome-text {
+        display: block;
+        flex-shrink: 0;
+    }
+
+    .imas-hero-slider .welcome-text h1,
+    .imas-hero-slider .imas-hero-title,
+    .imas-hero-slider .imas-hero-title--static,
+    .imas-hero-slider .imas-hero-title-lead,
+    .imas-hero-slider .imas-hero-title-typed,
+    .imas-hero-slider .imas-hero-title-link,
+    .imas-hero-slider .imas-hero-subtitle,
+    .imas-hero-slider .welcome-text p {
+        color: #fff !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        display: block;
+    }
+
+    .imas-hero-slider .imas-hero-title-link,
+    .imas-hero-slider .imas-hero-title-typed {
+        display: inline;
+    }
+
+    .imas-hero-slider .welcome-text h1,
+    .imas-hero-slider .imas-hero-title--static {
+        font-size: 1.65rem;
+        line-height: 1.3;
+    }
+
+    .imas-hero-slider .imas-hero-subtitle,
+    .imas-hero-slider .welcome-text p {
+        font-size: 0.95rem;
+        line-height: 1.5;
+        max-width: 100%;
+        margin-top: 0.75rem !important;
+        margin-bottom: 0 !important;
+        padding-bottom: 0;
+    }
+
+    .imas-hero-slider .imas-hero-action {
+        margin-top: 1.25rem !important;
+        margin-bottom: 1rem !important;
+    }
+
+    .imas-hero-slider .imas-hero-dots {
+        margin-top: 0.75rem;
+    }
+
+    .imas-hero-slider .hero-inner {
+        justify-content: flex-start;
+        gap: 0.75rem;
+        padding-top: 88px !important;
+        padding-bottom: 20px !important;
+    }
+
+    .imas-hero-slider .imas-hero-filter {
+        padding-top: 0.5rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .imas-hero-slider .welcome-text h1,
+    .imas-hero-slider .imas-hero-title--static {
+        font-size: 1.45rem;
+    }
+
+    .imas-hero-slider .hero-inner {
+        padding-top: 80px !important;
+    }
+
+    .imas-hero-slider .imas-hero-action {
+        margin-top: 1.125rem !important;
+    }
 }
 </style>

@@ -1,18 +1,28 @@
 <template>
-    <div class="imas-property-card item user-select-none" :class="columnClass">
-        <div class="project-single">
-            <div class="project-inner project-head">
+    <div
+        class="imas-property-card imas-card imas-card--property imas-card--media-overlay item user-select-none"
+        :class="columnClass"
+    >
+        <div class="project-single imas-card__surface">
+            <div class="project-inner project-head imas-card__media">
                 <div class="homes">
                     <a :href="property.url" class="homes-img">
                         <div
-                            v-if="property.is_featured"
-                            class="homes-tag button alt featured"
+                            v-if="propertyTypeLabel || property.is_featured"
+                            class="homes-tag button alt imas-badge--type"
                         >
-                            {{ trans("properties.featured") }}
+                            <i
+                                v-if="property.is_featured"
+                                class="fa fa-star imas-featured-star"
+                                :aria-label="trans('properties.featured')"
+                            ></i>
+                            <span v-if="propertyTypeLabel">{{
+                                propertyTypeLabel
+                            }}</span>
                         </div>
                         <div
                             v-if="property.is_sold_out"
-                            class="homes-tag button alt imas-sold-out-badge"
+                            class="homes-tag button alt imas-sold-out-badge imas-badge--danger"
                         >
                             {{ trans("properties.sold_out") }}
                         </div>
@@ -24,7 +34,7 @@
                     </a>
                 </div>
                 <div class="imas-card-actions">
-                    <div class="homes-price imas-start-price">
+                    <div class="homes-price imas-start-price imas-chip">
                         <span class="imas-start-price__from">{{
                             trans("properties.price_from")
                         }}</span>
@@ -42,41 +52,36 @@
                         >
                             <i class="fas fa-video" aria-hidden="true"></i>
                         </button>
-                        <!-- <a
-                            :href="property.thumbnail_url"
-                            class="img-poppu btn"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            ><i class="fa fa-photo"></i
-                        ></a> -->
                         <button
-                        type="button"
-                        class="btn imas-favorite-btn"
-                        :class="{ 'is-favorited': localFavorited }"
-                        :aria-label="favoriteAriaLabel"
-                        :aria-pressed="localFavorited"
-                        @click="onFavoriteClick"
-                    >
-                        <i
-                            class="fa favorite-icon"
-                            :class="localFavorited ? 'fa-heart' : 'fa-heart-o'"
-                            aria-hidden="true"
-                        ></i>
-                    </button>
+                            type="button"
+                            class="btn imas-favorite-btn"
+                            :class="{ 'is-favorited': localFavorited }"
+                            :aria-label="favoriteAriaLabel"
+                            :aria-pressed="localFavorited"
+                            @click="onFavoriteClick"
+                        >
+                            <i
+                                class="fa favorite-icon"
+                                :class="
+                                    localFavorited ? 'fa-heart' : 'fa-heart-o'
+                                "
+                                aria-hidden="true"
+                            ></i>
+                        </button>
                     </div>
                 </div>
             </div>
-            <div class="homes-content">
-                <h3 class="imas-property-title">
+            <div class="homes-content imas-card__body">
+                <h3 class="imas-property-title imas-card__title">
                     <Link :href="showUrl">{{ displayTitle }}</Link>
                 </h3>
                 <p
                     v-if="overviewText"
-                    class="imas-property-overview mb-3"
+                    class="imas-property-overview imas-card__excerpt text-card-excerpt mb-3"
                 >
                     {{ overviewText }}
                 </p>
-                <p class="homes-address mb-3">
+                <p class="homes-address imas-card__meta text-base mb-3">
                     <a :href="property.url">
                         <i
                             class="fa fa-map-marker imas-address-marker"
@@ -106,6 +111,7 @@ import axios from "axios";
 import { computed, ref, watch } from "vue";
 import { Link, router, usePage } from "@inertiajs/vue3";
 import VideoLightbox from "@/components/Global/VideoLightbox.vue";
+import { localizedField } from "../utils/propertyLocalized.js";
 import {
     localizedLocationName,
     propertyLocationLine,
@@ -147,6 +153,15 @@ const favoriteAriaLabel = computed(() =>
         ? trans("properties.remove_favorite")
         : trans("properties.add_favorite"),
 );
+
+const propertyTypeLabel = computed(() => {
+    const type = props.property.property_type;
+    if (!type) {
+        return "";
+    }
+
+    return localizedField(type.name, locale.value);
+});
 
 const displayTitle = computed(() => {
     const t = props.property.title;
@@ -275,32 +290,25 @@ async function onFavoriteClick(e) {
 </script>
 
 <style scoped lang="scss">
-/* Uniform image frame; thumbnails use cover (no stretch). Badges stay above (z-index). */
-.imas-property-card .homes-img {
-    aspect-ratio: 4 / 3;
+/* Property-specific layout; shell/colors from global .imas-card in app.css */
+
+.imas-property-card .imas-card-actions .homes-price.imas-start-price {
+    position: static !important;
+    bottom: auto !important;
+    left: auto !important;
+    flex-shrink: 0;
 }
 
-.imas-property-card .homes-img img.img-responsive {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    max-height: none;
-    object-fit: cover;
-    object-position: center;
-    z-index: 0;
+.imas-start-price__from {
+    opacity: 0.92;
+    text-transform: capitalize;
 }
 
-/* Reserve two lines so short titles align; long titles clamp with ellipsis. */
-.imas-property-title {
-    margin-top: 0;
-    margin-bottom: 0.5rem;
-    min-height: calc(1.35em * 2);
-    line-height: 1.35;
-    text-align: start;
+.imas-property-card .imas-property-title {
+    min-height: calc(1.4em * 2);
 }
 
-.imas-property-title a {
+.imas-property-card .imas-property-title a {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
@@ -310,13 +318,7 @@ async function onFavoriteClick(e) {
     word-break: break-word;
 }
 
-.imas-property-overview {
-    margin-top: 0;
-    margin-bottom: 0.75rem;
-    line-height: 1.45;
-    font-size: 0.9rem;
-    color: var(--color-text-muted, #666);
-    text-align: start;
+.imas-property-card .imas-property-overview {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3;
@@ -326,110 +328,19 @@ async function onFavoriteClick(e) {
     word-break: break-word;
 }
 
-/* Price + action buttons share one bottom row (theme buttons are 31×31px). */
-.imas-property-card .imas-card-actions {
-    position: absolute;
-    inset-inline: 15px;
-    bottom: 0.7rem;
-    z-index: 33;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    pointer-events: none;
-}
-
-.imas-property-card .imas-card-actions > * {
-    pointer-events: auto;
-}
-
-.imas-property-card .imas-card-actions .button-effect {
-    position: static !important;
-    transform: none !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 10px;
-    margin: 0 !important;
-    padding: 0 !important;
-    background: transparent !important;
-    border-radius: 0 !important;
-}
-
-.imas-property-card .imas-card-actions .button-effect .btn {
-    margin: 0 !important;
-    flex-shrink: 0;
-}
-
-.imas-property-card .homes-price.imas-start-price {
-    position: static !important;
-    bottom: auto !important;
-    left: auto !important;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    height: 31px;
-    min-height: 31px;
-    max-height: 31px;
-    padding: 0 10px;
-    background: var(--brand-gold) !important;
-    border-radius: 5px;
-    color: #fff !important;
-    font-size: 12px !important;
-    font-weight: 600;
-    line-height: 1;
-    white-space: nowrap;
-    flex-shrink: 0;
-}
-
-.imas-start-price__from {
-    font-weight: 500;
-    opacity: 0.92;
-    text-transform: capitalize;
-}
-
-.imas-start-price__amount {
-    font-weight: 700;
-}
-
-.imas-sold-out-badge {
-    background-color: #dc3545 !important;
-    color: #fff !important;
-    border-color: #dc3545 !important;
+.imas-property-card .imas-sold-out-badge {
     top: 0;
     margin-top: 15px;
     right: 15px;
     left: auto;
 }
 
-:global(html[dir="rtl"]) .imas-sold-out-badge {
+:global(html[dir="rtl"]) .imas-property-card .imas-sold-out-badge {
     right: auto !important;
     left: 15px !important;
 }
 
-.homes-img .imas-sold-out-badge:hover {
-    color: #fff !important;
-}
-
-.homes-address {
-    text-align: start;
-}
-
-.homes-address .imas-address-marker {
+.imas-property-card .homes-address .imas-address-marker {
     margin-inline-end: 10px;
-}
-
-.imas-favorite-btn:not(.is-favorited) i {
-    color: #fff !important;
-}
-
-.imas-favorite-btn.is-favorited i {
-    color: #d9a800;
-}
-
-.imas-card-video-btn {
-    margin: 0 !important;
-    flex-shrink: 0;
 }
 </style>

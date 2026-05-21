@@ -146,7 +146,7 @@ onMounted(() => {
 
 .imas-tc-split-title__primary {
     display: block;
-    color: var(--brand-navy);
+    color: var(--text);
 }
 
 .imas-tc-split-title__accent {

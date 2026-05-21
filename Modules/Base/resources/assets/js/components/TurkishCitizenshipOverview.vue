@@ -24,12 +24,13 @@
                     :title="summaryText"
                 >
                     <span class="imas-tc-overview__text-flow">
+                            <span
+                                v-for="(word, index) in summaryWords"
+                                :key="`${word}-${index}`"
+                                class="imas-tc-overview__word"
+                            >{{ word }}&nbsp;</span
+                        >
                         <span
-                            v-for="(word, index) in summaryWords"
-                            :key="`${word}-${index}`"
-                            class="imas-tc-overview__word"
-                        >{{ word }}&nbsp;</span
-                        ><span
                             v-if="summaryWords.length"
                             class="imas-tc-overview__cursor"
                             aria-hidden="true"
@@ -346,9 +347,10 @@ watch(
     width: 100%;
     min-width: 0;
     max-width: 640px;
-    background: #fff;
+    background: var(--surface);
     padding: 2.5rem 2.25rem 2.35rem;
-    box-shadow: 0 16px 48px rgba(26, 42, 74, 0.22);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border);
     text-align: center;
 }
 
@@ -364,7 +366,7 @@ watch(
     margin: 0 auto 1.75rem;
     width: 100%;
     max-width: 560px;
-    font-size: 0.98rem;
+    font-size: 16px;
     line-height: 1.75;
     color: var(--color-text-secondary);
     max-height: calc(1.75em * 4);
@@ -401,8 +403,8 @@ watch(
     border: none;
     border-radius: 8px;
     background: var(--brand-gold);
-    color: #fff;
-    font-size: 0.95rem;
+    color: var(--text);
+    font-size: 16px;
     font-weight: 600;
     text-decoration: none;
     box-shadow: 0 4px 14px rgba(217, 168, 0, 0.35);
@@ -420,7 +422,7 @@ watch(
 .imas-tc-overview__cta:hover,
 .imas-tc-overview__cta:focus-visible {
     background: var(--brand-gold-hover);
-    color: #fff;
+    color: var(--text-on-gold);
     transform: translateY(-3px);
     box-shadow: 0 10px 24px rgba(217, 168, 0, 0.45);
 }

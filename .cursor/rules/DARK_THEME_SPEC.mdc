@@ -1,0 +1,431 @@
+---
+alwaysApply: false
+---
+## 2. Brand Color Tokens (CSS Variables)
+
+Add the following tokens to the **root stylesheet** (e.g. `:root` in `globals.css`, `styles.css`, or your design tokens file). These are the **single source of truth** — do not hardcode hex values anywhere else in the codebase.
+
+```css
+:root {
+  /* ---------- Brand ---------- */
+  --brand-gold: #d9a800;
+  --brand-gold-hover: #eecb3a;
+  --brand-navy: #1a2a4a;
+  --brand-navy-light: color-mix(in srgb, var(--brand-navy) 90%, transparent);
+  --brand-navy-hover: #0a1526;
+
+  /* ---------- Surfaces (dark theme) ---------- */
+  --bg: #0a1526;              /* page background */
+  --surface: #101d36;          /* cards, panels */
+  --surface-2: #16264a;        /* inputs, nested surfaces */
+  --surface-3: #1a2a4a;        /* hover state for surfaces */
+  --overlay: rgba(10, 21, 38, 0.85); /* modal backdrop */
+
+  /* ---------- Borders & Dividers ---------- */
+  --border: rgba(217, 168, 0, 0.18);          /* default border (gold tint) */
+  --border-strong: rgba(217, 168, 0, 0.35);   /* focused/active border */
+  --divider: rgba(255, 255, 255, 0.06);       /* subtle dividers */
+
+  /* ---------- Typography colors ---------- */
+  --text: #eef2f8;             /* primary text */
+  --text-dim: #9aa6bd;         /* secondary text, captions, meta */
+  --text-muted: #6b7896;       /* placeholder, disabled */
+  --text-on-gold: #1a1100;     /* text on gold buttons/badges */
+
+  /* ---------- Semantic / Status ---------- */
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger:  #e23b3b;
+  --info:    #3b82f6;
+
+  /* ---------- Effects ---------- */
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 18px 40px rgba(0, 0, 0, 0.5);
+  --ring: 0 0 0 3px rgba(217, 168, 0, 0.35);  /* focus ring */
+}
+```
+
+### Color usage map
+
+| Element | Token |
+|---|---|
+| Page background | `--bg` |
+| Cards / panels | `--surface` |
+| Input fields, selects, textarea | `--surface-2` |
+| Hover on cards/list rows | `--surface-3` |
+| Modal backdrop | `--overlay` |
+| Primary button / CTA | `--brand-gold` → text `--text-on-gold` |
+| Primary button hover | `--brand-gold-hover` |
+| Secondary button (outline) | border `--brand-gold`, text `--brand-gold`, hover bg `--brand-gold` |
+| Top bar (above nav) | `--brand-navy-hover` |
+| Nav bar | `--brand-navy-hover` with border-bottom `--border` |
+| Footer | `#06101f` (slightly darker than `--bg`) |
+| Links | `--text` default, hover `--brand-gold` |
+| Active nav item | `--brand-gold` |
+| Headings | `--text` |
+| Body text | `--text` |
+| Meta / dates / captions | `--text-dim` |
+| Placeholder text | `--text-muted` |
+| Price tags / accent chips | bg `rgba(217,168,0,0.10)`, text `--brand-gold` |
+| Badges (Featured) | bg `--brand-gold`, text `--text-on-gold` |
+| Badges (Sold) | bg `--danger`, text `#fff` |
+| Focus outline | `--ring` |
+
+---
+
+## 3. Typography
+
+### Global font
+
+**Font family:** `"Avenir LT Std 55 Roman"`
+**Default body size:** `10pt` (≈ `13.3px`)
+**Default line-height:** `1.55`
+**Default weight:** `400` (Roman)
+
+### `@font-face` declaration
+
+Place font files under `/public/fonts/` (or your equivalent assets path) and register:
+
+```css
+@font-face {
+  font-family: "Avenir LT Std";
+  src: url("/fonts/AvenirLTStd-Roman.woff2") format("woff2"),
+       url("/fonts/AvenirLTStd-Roman.woff")  format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Avenir LT Std";
+  src: url("/fonts/AvenirLTStd-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Avenir LT Std";
+  src: url("/fonts/AvenirLTStd-Heavy.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+```
+
+### Global font stack
+
+```css
+:root {
+  --font-sans: "Avenir LT Std 55 Roman", "Avenir LT Std", "Avenir Next",
+               "Helvetica Neue", Arial, system-ui, sans-serif;
+  --font-base-size: 10pt;        /* per brand spec */
+  --line-height-base: 1.55;
+}
+
+html, body {
+  font-family: var(--font-sans);
+  font-size: var(--font-base-size);
+  line-height: var(--line-height-base);
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+```
+
+### Type scale
+
+| Token | Use | Size | Weight | Line-height |
+|---|---|---|---|---|
+| `--text-xs`  | meta, badges       | 11px | 500 | 1.4 |
+| `--text-sm`  | secondary body     | 12px | 400 | 1.5 |
+| `--text-base`| body (default)     | 10pt (~13px) | 400 | 1.55 |
+| `--text-md`  | card titles        | 15px | 600 | 1.4 |
+| `--text-lg`  | section heading sm | 18px | 600 | 1.35 |
+| `--text-xl`  | page subhead       | 22px | 600 | 1.3 |
+| `--text-2xl` | section heading    | 30px | 700 | 1.25 |
+| `--text-3xl` | hero secondary     | 36px | 700 | 1.2 |
+| `--text-4xl` | hero title         | 44px | 700 | 1.15 |
+| `--text-card-excerpt` | card overview / blog excerpt | 14px | 400 | 1.55 |
+| `--text-card-chip` | property type badge + price chip on card image | 14px | 700 | 1.2 |
+
+Apply via utility classes or directly to headings:
+```css
+h1 { font-size: var(--text-4xl); font-weight: 700; }
+h2 { font-size: var(--text-2xl); font-weight: 700; }
+h3 { font-size: var(--text-md);  font-weight: 600; }
+small, .meta { font-size: var(--text-xs); color: var(--text-dim); }
+```
+
+### 3.1 Typography utility prototypes (global)
+
+**Canonical CSS:** `resources/css/app.css` (block comment `Typography utilities`). Use these classes in Vue/Blade instead of hardcoded `font-size` in scoped styles.
+
+| Utility class | Token | Typical use |
+|---|---|---|
+| `.text-xs` | `--text-xs` | Badges, dates, meta row |
+| `.text-sm` | `--text-sm` | Captions, address line, chips |
+| `.text-base` | `--text-base` | Default body copy |
+| `.text-md` | `--text-md` | Card titles, list headings |
+| `.text-lg` | `--text-lg` | Small section titles |
+| `.text-xl` | `--text-xl` | Page subheads |
+| `.text-2xl` | `--text-2xl` | Section headings |
+| `.text-3xl` | `--text-3xl` | Hero secondary line |
+| `.text-4xl` | `--text-4xl` | Hero primary title |
+| `.text-card-excerpt` | `--text-card-excerpt` | Property overview, blog excerpt |
+| `.text-dim` | `--text-dim` | Secondary text color |
+| `.text-muted` | `--text-muted` | Placeholder / disabled color |
+| `.text-gold` | `--brand-gold` | Accent inline text |
+| `.font-medium` | `500` | Labels |
+| `.font-semibold` | `600` | Card titles, CTAs |
+| `.font-bold` | `700` | Page/section headings |
+
+**Example (property card overview):**
+```html
+<p class="imas-card__excerpt text-card-excerpt">…</p>
+```
+
+**Don'ts:** Do not add new one-off pixel sizes in components; extend `:root` + a utility here if a new tier is needed.
+
+---
+
+## 4. Component-Level Requirements
+
+### 4.1 Buttons
+- **Primary (gold)**: `background: var(--brand-gold)`, `color: var(--text-on-gold)`, hover `--brand-gold-hover`. Radius `6px`. Padding `12px 22px`. Weight `600`.
+- **Outline (gold)**: transparent bg, `1px solid var(--brand-gold)`, text `--brand-gold`. Hover fills with gold.
+- **Ghost**: transparent bg, text `--text`. Hover bg `--surface-2`.
+- All buttons get focus ring `box-shadow: var(--ring)`.
+
+### 4.2 Inputs / Selects / Textareas
+- Background `--surface-2`
+- Border `1px solid var(--border)`
+- Text color `--text`, placeholder `--text-muted`
+- Focus: border `--brand-gold`, `box-shadow: var(--ring)`
+- Radius `6px`, padding `12px 14px`
+
+### 4.3 Cards (summary)
+
+All grid/list “teaser” cards share one system. **Canonical implementation:** `resources/css/app.css` (block comment `Global IMas cards`). **Reference components:** `PropertyCard.vue`, `ArticleCard.vue`.
+
+| Token / class | Role |
+|---|---|
+| `--card-radius` | Outer shell radius (`10px`) |
+| `--card-body-padding` | Body padding (`1rem 1.15rem 1.1rem`) |
+| `--card-media-ratio` | Default image ratio (`4 / 3`; articles use fixed height) |
+| `--chip-bg` | Price/meta chips (`var(--color-accent-soft)`) |
+| `.imas-card` | Root wrapper on the card column item |
+| `.imas-card__surface` | Painted shell (`background`, `border`, `shadow`) — e.g. `.project-single`, `.news-item` |
+| `.imas-card__media` | Image block + optional bottom gradient |
+| `.imas-card__body` | Title, excerpt, meta, footer CTA |
+| `.imas-card--media-overlay` | Navy gradient on media bottom (price/actions readable) |
+| `.imas-card--property` / `.imas-card--article` | Variant hooks for layout-only overrides |
+
+**Shell:** `--surface` bg, **no border** (`border: none`), `--card-radius`, `--shadow-sm`. **Hover** (respect `prefers-reduced-motion`): `translateY(-4px)`, `--shadow-lg`, `--border-strong`. **Media:** `--surface-2`; images `object-fit: cover`.
+
+**Card body (fixes Find Houses white panel):** Find Houses sets `.recently .homes-content` / `.portfolio .homes-content` to `background: #fff !important`. IMas cards **must** override with `background: var(--surface) !important` on `.imas-card .homes-content` / `.imas-card__body` (see `app.css`). Same `--surface` as `.imas-card__surface` so the body is not a white strip.
+
+**Body text:** title `--text-md` / `--font-body` / weight `600` / `--text` / `text-transform: none` (undo theme uppercase); excerpt `--text-card-excerpt` (14px) + `--text-dim`; meta `--text-sm` + `--text-dim`. **Links:** `--text` → hover `--brand-gold`. **Focus** on round media icon buttons: `--ring` only (no extra border).
+
+### 4.15 Global card design (property, blog, teasers)
+
+Use this markup pattern on any new card (testimonials, team, etc.) — keep Find Houses structural classes where the theme requires them, and add IMas BEM hooks:
+
+```html
+<!-- Property-style (image overlay + chip + icon actions) -->
+<div class="imas-card imas-card--property imas-card--media-overlay …">
+  <div class="project-single imas-card__surface">
+    <div class="project-head imas-card__media">
+      <a class="homes-img">… badges … img …</a>
+      <div class="imas-card-actions">
+        <div class="imas-chip">…</div>
+        <div class="button-effect">
+          <button class="btn">…</button>
+        </div>
+      </div>
+    </div>
+    <div class="homes-content imas-card__body">
+      <h3 class="imas-card__title">…</h3>
+      <p class="imas-card__excerpt text-card-excerpt">…</p>
+      <p class="imas-card__meta">…</p>
+    </div>
+  </div>
+</div>
+
+<!-- Blog / article teaser -->
+<div class="news-item imas-card imas-card--article …">
+  <a class="imas-card__media">…<div class="imas-card__img">…</div></a>
+  <div class="news-item-text imas-card__body">
+    <h3 class="imas-card__title">…</h3>
+    <div class="imas-card__excerpt">…</div>
+    <a class="imas-card__cta">Read more…</a>
+  </div>
+</div>
+```
+
+**Badges (on media)**
+
+| Type | Classes | Styles |
+|---|---|---|
+| Property type (top-left) | `.imas-badge--type` | `property_type.name`, `--text-card-chip` + weight `700` (same size/weight as price amount). Star: `--text`, vertically centered. |
+| Sold / negative | `.imas-badge--danger`, `.imas-sold-out-badge` | bg `--danger`, text `--text`, RTL mirror top-inline-end |
+
+**Chips (price, “from $X”)**
+
+- Class `.imas-chip` (property: `.homes-price.imas-start-price`)
+- bg `--chip-bg`, text `--brand-gold`, `--text-card-chip`, amount weight `700`, “from” weight `500` (same font-size as type badge)
+
+**Icon actions (video, favorite)**
+
+- **Keep Find Houses shape:** `31×31` circle, `border-radius: 100%`, **no extra border** (do not wrap with gold/outline rings).
+- **Recolor only:** btn bg `--surface-2`, icon `--text`; hover btn `--brand-gold`, icon `--text-on-gold`; favorited heart icon `--brand-gold` (hover icon `--text-on-gold` on gold btn).
+- Standard theme classes: `.button-effect .btn` inside `.imas-card-actions`; always visible on property cards (override theme slide-in).
+
+**Article-specific**
+
+- `.imas-card--article .imas-card__img` height `220px` (overrides aspect ratio)
+- Date/meta: `--brand-gold`, `--text-xs`
+- CTA link: `.imas-card__cta`, `--brand-gold`, `--text-sm`, weight `600`
+
+**Do not** duplicate shell colors in Vue `scoped` styles — only layout clamps, RTL badge position, or variant-specific structure.
+
+### 4.4 Navbar / Top bar
+- Top bar background `--brand-navy-hover`, text `--text-dim`, icons `--text-dim` → hover `--brand-gold`.
+- Main nav background `--brand-navy-hover`, links `--text`, active/hover `--brand-gold`.
+- Logo mark: gold border + gold text, transparent bg.
+
+### 4.5 Footer
+- Background `#06101f`
+- Headings color `#fff` with a 30px gold underline (`::after` 2px gold bar).
+- Links `--text-dim`, hover `--brand-gold`.
+- Newsletter input background `#0d1a30`, subscribe button `--brand-gold` with `--text-on-gold`.
+
+### 4.6 Tables
+- Header row bg `--surface-2`, text `--text`.
+- Row hover bg `--surface-3`.
+- Borders `--divider`.
+
+### 4.7 Modals / Dialogs
+- Backdrop `var(--overlay)`.
+- Panel bg `--surface`, border `--border`, radius `10px`, shadow `--shadow-lg`.
+
+### 4.8 Tooltips / Popovers
+- Background `--surface-3`, text `--text`, border `--border`, shadow `--shadow-md`.
+
+### 4.9 Toasts / Alerts
+- Default: bg `--surface`, border `--border`.
+- Success: left-border `--success`.
+- Warning: left-border `--warning`.
+- Danger: left-border `--danger`.
+- Info: left-border `--info`.
+
+### 4.10 Forms
+- Labels `--text-dim`, font-weight `500`.
+- Helper text `--text-muted`, `--text-xs`.
+- Error text `--danger`.
+
+### 4.11 Badges & Chips
+- Featured / status (positive): bg `--brand-gold`, text `--text-on-gold`, uppercase, `font-size: 11px`, `letter-spacing: 0.5px`, padding `5px 10px`, radius `4px`.
+- Sold / negative: bg `--danger`, text `#fff`.
+- Price chip: bg `rgba(217,168,0,0.10)`, text `--brand-gold`.
+
+### 4.12 Pagination
+- Default: border `--border`, text `--text-dim`.
+- Active / hover: bg `--brand-gold`, text `--text-on-gold`, border `--brand-gold`.
+
+### 4.13 Scrollbars
+```css
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: 6px; }
+::-webkit-scrollbar-thumb:hover { background: var(--brand-gold); }
+```
+
+### 4.14 Text selection
+```css
+::selection { background: var(--brand-gold); color: var(--text-on-gold); }
+```
+
+---
+
+## 5. Page-Specific Prototype Reference
+
+Two reference HTML prototypes have been built and should be used as the visual source of truth:
+
+| Page | Reference file |
+|---|---|
+| Home / Landing | `imas-dark/index.html` |
+| Blog listing | `imas-dark/blog.html` |
+| Shared styles | `imas-dark/styles.css` |
+| Shared JS | `imas-dark/script.js` |
+
+### 5.1 Home page sections (top → bottom)
+1. **Top contact bar** — phone, email (left); social icons (right). Bg `--brand-navy-hover`.
+2. **Main nav** — logo, links (Home, Buy Real Estate, Turkish Citizenship, Blogs, Pages, Contact Us), language switcher, Sign In.
+3. **Hero** — full-bleed cityscape image with `linear-gradient(rgba(10,21,38,.7), rgba(10,21,38,.85))` overlay. Centered headline + subhead. Slider dots below (active dot = gold pill).
+4. **Search bar** — overlaps hero by `-40px`, 5 columns: keyword input, property type select, location select, advanced search select, gold "Search Now" button.
+5. **Featured Properties** — 3-column grid (2 rows), property cards with image, Featured badge, price chip, title, location.
+6. **Why Choose Us** — 3-column feature blocks with circular gold-tinted icon, title, description. Section bg `#06101f`.
+7. **Discover Popular Properties** — 4-column grid of property cards.
+8. **Client Testimonials** — 3-column quote cards with avatar, name, role, decorative gold quotation mark. Carousel arrows below.
+9. **Articles & Tips** — 3-column blog teaser cards with image, title, excerpt, gold "Read more →".
+10. **Footer** — 4 columns: brand+contact, Navigation, Useful links, Newsletter. Copyright row at bottom with socials.
+
+### 5.2 Blog listing page
+1. Same top bar + nav.
+2. **Page header** — full-width banner with dark overlay over image, "BLOG" title, breadcrumb (Home / Blogs) with gold "Blogs".
+3. **Two-column layout**:
+   - **Main (left)** — 2-column grid of blog post cards (image, title, date + view count in gold/dim, excerpt, "Read more..." gold link).
+   - **Sidebar (right, 320px)** — three widgets:
+     - **Search** widget (input + gold submit button)
+     - **Categories** list with gold "›" markers and dashed dividers
+     - **Recent posts** list (thumbnail + title + date)
+4. **Pagination** — Previous, 1 (active gold), 2, Next.
+5. Same footer.
+
+### 5.3 Responsive breakpoints
+- `≥ 901px`: full layout as designed.
+- `≤ 900px`: 3-col and 4-col grids collapse to 2 columns. Blog sidebar drops below main content. Nav links hide (replace with hamburger).
+- `≤ 560px`: all grids collapse to 1 column. Hero title shrinks to 30px.
+
+---
+
+## 6. Implementation Checklist (for Cursor)
+
+- [ ] Add brand color tokens to root stylesheet.
+- [ ] Add typography tokens, **§3.1 utility prototypes**, and `@font-face` declarations for Avenir LT Std.
+- [ ] Override Find Houses `.homes-content { background: #fff }` on all `.imas-card` bodies.
+- [ ] Set global `font-family`, `font-size: 10pt`, `line-height: 1.55`, `background: var(--bg)`, `color: var(--text)` on `html, body`.
+- [ ] Replace **every** hardcoded color in components with a token.
+- [ ] Update buttons, inputs, cards (§4.3 / §4.15), navbar, footer, modals, tooltips, toasts, tables, badges, pagination per Section 4.
+- [ ] New grid cards: add `.imas-card` hooks per §4.15; avoid one-off hex in SFCs.
+- [ ] Add focus-visible ring `box-shadow: var(--ring)` to all interactive elements.
+- [ ] Style scrollbars and `::selection` per Section 4.13–4.14.
+- [ ] Verify hero / banner overlays use navy-tinted gradient (not pure black).
+- [ ] Verify all images that previously appeared on white backgrounds still read well on `--surface` (add subtle border if needed).
+- [ ] Verify SVG icons inherit `currentColor` and pick up the new text color automatically.
+- [ ] Test WCAG AA contrast for body text, button labels, badges, links, placeholders.
+- [ ] Test responsive behavior at 1440, 1024, 768, 480, 360 widths.
+- [ ] Confirm no element is left with the old light background (`#fff`, `#f5f5f5`, etc.) — search the codebase for stray hex values.
+
+---
+
+## 7. Don'ts
+
+- **Don't** hardcode hex colors in components — always reference tokens.
+- **Don't** use pure black (`#000`) for backgrounds — use `--bg` (`#0a1526`).
+- **Don't** use pure white (`#fff`) for body text — use `--text` (`#eef2f8`).
+- **Don't** introduce additional accent colors outside the gold/navy palette.
+- **Don't** change layout, spacing, or component structure — this is a **theme + typography** change only.
+- **Don't** remove existing functionality or routes.
+
+---
+
+## 8. Deliverable
+
+A single PR that:
+1. Adds the dark theme tokens + Avenir font.
+2. Migrates every component to use tokens.
+3. Passes lint, build, and visual review against the two reference prototypes (`imas-dark/index.html`, `imas-dark/blog.html`).

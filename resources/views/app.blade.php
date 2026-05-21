@@ -14,7 +14,9 @@
 
     {{-- Find Houses theme styles (order matches theme/findhouses/index.html) --}}
     <link rel="stylesheet" href="{{ $fh }}/css/jquery-ui.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,300i,400,400i%7CMontserrat:600,800">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Nunito:wght@300;400;500;600;700&display=swap">
     <link rel="stylesheet" href="{{ $fh }}/font/flaticon.css">
     <link rel="stylesheet" href="{{ $fh }}/css/fontawesome-all.min.css">
     <link rel="stylesheet" href="{{ $fh }}/css/fontawesome-5-all.min.css">
@@ -37,7 +39,7 @@
     @routes
     @inertiaHead
 </head>
-<body class="homepage-9 hp-6 homepage-1 mh ">
+<body class="imas-theme-dark homepage-9 hp-6 homepage-1 mh">
 @inertia
 {{-- Minimal scripts for theme header / mobile nav (Bootstrap 4 + jQuery, aligned with Find Houses) --}}
 <script src="{{ $fh }}/js/jquery-3.5.1.min.js"></script>

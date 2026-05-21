@@ -1,5 +1,5 @@
 <template>
-    <div id="wrapper">
+    <div id="wrapper" class="imas-theme-dark">
         <UserTopBar />
         <UserNavbar
             :nav-links="navLinks"

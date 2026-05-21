@@ -1,4 +1,5 @@
 <template>
+   <section class="home-services">
     <div class="container">
         <section
             v-if="services.length"
@@ -39,6 +40,7 @@
             </div>
         </section>
     </div>
+   </section>
 </template>
 
 <script setup>
@@ -94,5 +96,12 @@ const sectionTitleHtml = computed(() => {
     object-fit: contain;
     border-radius: 4px;
     margin-bottom: 0.75rem;
+}
+.home-services{
+
+    background: var(--section-alt-bg) !important;
+}
+.service-text-p{
+    font-size: 16px;
 }
 </style>

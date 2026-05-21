@@ -133,7 +133,7 @@ useScrollReveal(sectionRef, {
 }
 
 .imas-about-overview__title-primary {
-    color: var(--brand-navy);
+    color: var(--text);
 }
 
 .imas-about-overview__title-accent {
@@ -155,7 +155,7 @@ useScrollReveal(sectionRef, {
 .imas-about-overview__text {
     margin: 0 auto 1.75rem;
     max-width: 640px;
-    font-size: 0.98rem;
+    font-size: 16px;
     line-height: 1.75;
     color: var(--color-text-secondary);
     display: -webkit-box;
@@ -174,8 +174,8 @@ useScrollReveal(sectionRef, {
     border: none;
     border-radius: 8px;
     background: var(--brand-gold);
-    color: #fff;
-    font-size: 0.95rem;
+    color: var(--text);
+    font-size: 16px;
     font-weight: 600;
     text-decoration: none;
     box-shadow: 0 4px 14px rgba(217, 168, 0, 0.35);
@@ -193,7 +193,7 @@ useScrollReveal(sectionRef, {
 .imas-about-overview__cta:hover,
 .imas-about-overview__cta:focus-visible {
     background: var(--brand-gold-hover);
-    color: #fff;
+    color: var(--text-on-gold);
     transform: translateY(-3px);
     box-shadow: 0 10px 24px rgba(217, 168, 0, 0.45);
 }

@@ -1,10 +1,13 @@
 <template>
     <div
-        class="news-item imas-article-card w-100 h-100"
+        class="news-item imas-article-card imas-card imas-card--article w-100 h-100"
         :class="[{ 'no-mb': isLast }, themeRootClass]"
     >
-        <a :href="article.url" class="news-img-link imas-article-card__img-link">
-            <div class="news-item-img imas-article-card__img">
+        <a
+            :href="article.url"
+            class="news-img-link imas-article-card__img-link imas-card__media"
+        >
+            <div class="news-item-img imas-article-card__img imas-card__img">
                 <img
                     class="img-responsive"
                     :src="article.image"
@@ -12,9 +15,9 @@
                 />
             </div>
         </a>
-        <div class="news-item-text">
+        <div class="news-item-text imas-card__body">
             <a :href="article.url">
-                <h3 >{{ article.title }}</h3>
+                <h3 class="imas-card__title">{{ article.title }}</h3>
             </a>
             <div class="dates">
                 <span v-if="article.date" class="date"
@@ -27,11 +30,11 @@
                     </li>
                 </ul>
             </div>
-            <div class="news-item-descr big-news">
+            <div class="news-item-descr big-news imas-card__excerpt text-card-excerpt">
                 <p>{{ article.excerpt }}</p>
             </div>
             <div class="news-item-bottom">
-                <a :href="article.url" class="news-link">{{
+                <a :href="article.url" class="news-link imas-card__cta">{{
                     readMoreLabel
                 }}</a>
             </div>
@@ -61,7 +64,7 @@ defineProps({
 </script>
 
 <style scoped lang="scss">
-/* Equal-height row: parent col is `d-flex`; card fills height and stacks image + body. */
+/* Equal-height row: parent col is `d-flex`; shell/colors from global .imas-card in app.css */
 .imas-article-card {
     display: flex;
     flex-direction: column;
@@ -72,44 +75,19 @@ defineProps({
     flex-shrink: 0;
 }
 
-.imas-article-card__img {
-    height: 220px;
-    overflow: hidden;
-    background: #eee;
-}
-
-.imas-article-card__img img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-    display: block;
-}
-
 .imas-article-card .news-item-text {
-    // flex: 1 1 auto;
     display: flex;
-    text-align: start;
     flex-direction: column;
     min-height: 0;
 }
 
-.imas-article-card .news-item-bottom {
-    margin-top: auto;
-}
-
-.action-item  i{
-    color: var( --color-action-primary) !important;
+.action-item i {
+    color: var(--brand-gold) !important;
     font-size: 1rem;
-    margin-right: 0.5rem;
-}
-html[dir="rtl"] .action-item i{
-    margin-right: 0;
-    margin-left: 0.5rem;
+    margin-inline-end: 0.5rem;
 }
 
-.action-list{
+.action-list {
     padding-inline-start: 5px !important;
-
 }
 </style>

@@ -145,13 +145,7 @@ onBeforeUnmount(() => {
 
 <style scoped lang="scss">
 .quote {
-    // font-size: 1.2rem;
-    // font-weight: 400;
     text-align: start;
-    // margin: 0.3rem auto 0;
-    // max-width: 500px;
-}
-section {
-    background-color: white !important;
+    font-size: 16px;
 }
 </style>

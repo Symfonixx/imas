@@ -1,7 +1,7 @@
 <template>
     <div
         v-if="unitTypes.length > 0"
-        class="imas-unit-types-bar pb-3"
+        class="imas-unit-types-bar text-base pb-3"
         :aria-label="trans('properties.unit_types_aria')"
     >
         <div class="imas-unit-types-bar__left">
@@ -116,8 +116,8 @@ onBeforeUnmount(() => clearRotateTimer());
     gap: 0.75rem;
     min-height: 1.5em;
     line-height: 1.4;
-    font-size: 1rem;
-    color: var(--color-text-muted, #666);
+    font-size: var(--text-base);
+    color: var(--text-dim);
     direction: inherit;
 }
 
@@ -152,8 +152,8 @@ onBeforeUnmount(() => clearRotateTimer());
     gap: 0.35rem;
     width: 100%;
     max-width: 100%;
-    color: var(--color-text, #1a2a4a);
-    font-size: 1rem;
+    color: var(--text);
+    font-size: var(--text-base);
     font-weight: 600;
     line-height: 1.4;
 }
@@ -192,8 +192,8 @@ html[dir="rtl"] .imas-unit-types-flip__sep {
     flex-shrink: 0;
     gap: 0.4rem;
     white-space: nowrap;
-    color: var(--color-text, #1a2a4a);
-    font-size: 1rem;
+    color: var(--text);
+    font-size: var(--text-base);
     font-weight: 600;
 }
 

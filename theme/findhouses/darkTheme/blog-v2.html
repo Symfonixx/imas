@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Blog — Premium Real Estate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brand-gold:#C8973A;
+  --brand-gold-soft:#e9c787;
+  --ink:#1a1d24;
+  --ink-soft:#4a5260;
+  --muted:#7a8294;
+  --line:#ececec;
+  --bg:#f5f6f8;
+  --card:#ffffff;
+  --dark:#2c3038;
+  --darker:#1f232a;
+  --shadow-sm:0 1px 2px rgba(20,24,32,.04);
+  --shadow-lg:0 18px 40px -18px rgba(20,24,32,.25);
+  --ease:cubic-bezier(.2,.7,.2,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none;transition:color .2s ease}
+img{display:block;max-width:100%}
+
+/* ---------- TOP BAR ---------- */
+.topbar{background:var(--darker);color:#cfd3da;font-size:12.5px;padding:9px 0}
+.topbar .wrap{max-width:1280px;margin:0 auto;padding:0 24px;display:flex;justify-content:space-between;align-items:center;gap:24px}
+.topbar .left{display:flex;gap:18px;align-items:center}
+.topbar .left span{opacity:.85}
+.topbar .left .sep{opacity:.4}
+.topbar .right{display:flex;gap:14px}
+.topbar .right a{opacity:.7;transition:opacity .2s ease,color .2s ease}
+.topbar .right a:hover{opacity:1;color:var(--brand-gold)}
+
+/* ---------- NAVBAR ---------- */
+.nav{position:sticky;top:0;z-index:50;background:#fff;transition:padding .3s var(--ease), background .3s var(--ease), box-shadow .3s var(--ease), backdrop-filter .3s var(--ease)}
+.nav .wrap{max-width:1280px;margin:0 auto;padding:18px 24px;display:flex;align-items:center;gap:32px;transition:padding .3s var(--ease)}
+.nav.shrunk{background:rgba(255,255,255,.78);backdrop-filter:saturate(180%) blur(14px);-webkit-backdrop-filter:saturate(180%) blur(14px);box-shadow:0 6px 24px -12px rgba(0,0,0,.15)}
+.nav.shrunk .wrap{padding:10px 24px}
+.logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,#ffe2bf,#f4b266);display:grid;place-items:center;font-size:22px;box-shadow:var(--shadow-sm)}
+.nav ul{display:flex;list-style:none;gap:28px;margin-left:8px}
+.nav ul a{position:relative;font-size:14.5px;font-weight:500;padding:6px 0;color:var(--ink-soft)}
+.nav ul a::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:2px;background:var(--brand-gold);transform:scaleX(0);transform-origin:right center;transition:transform .35s var(--ease)}
+.nav ul a:hover{color:var(--ink)}
+.nav ul a:hover::after{transform:scaleX(1);transform-origin:left center}
+.nav .spacer{flex:1}
+.nav .right{display:flex;align-items:center;gap:18px;font-size:14px;color:var(--ink-soft)}
+.avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#bcd9b8,#7aa977);border:2px solid #fff;box-shadow:0 0 0 1px var(--line)}
+
+/* ---------- HERO ---------- */
+.hero{position:relative;height:300px;overflow:hidden;color:#fff;display:grid;place-items:center}
+.hero .bg{position:absolute;inset:-10% 0 -10% 0;background:
+  radial-gradient(1200px 400px at 50% 120%, rgba(200,151,58,.25), transparent 60%),
+  linear-gradient(135deg,#3a4049 0%,#262a31 60%,#1c1f25 100%);
+  will-change:transform;transition:transform .1s linear}
+.hero::after{content:"";position:absolute;inset:0;background:
+  radial-gradient(circle at 20% 30%, rgba(255,255,255,.05), transparent 40%),
+  radial-gradient(circle at 80% 70%, rgba(200,151,58,.08), transparent 40%)}
+.hero .inner{position:relative;text-align:center;z-index:2}
+.hero h1{font-size:46px;font-weight:800;letter-spacing:.18em;display:inline-flex}
+.hero h1 span{opacity:0;transform:translateY(14px);animation:letterIn .55s var(--ease) forwards}
+.crumbs{margin-top:10px;font-size:14px;color:#d5d8de;display:flex;justify-content:center;gap:8px;align-items:center}
+.crumbs .sep{opacity:.5}
+.crumbs .active{position:relative;color:var(--brand-gold);font-weight:600}
+.crumbs .active::after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:2px;border-radius:2px;background:linear-gradient(90deg,transparent,var(--brand-gold),transparent);background-size:200% 100%;animation:slideUnderline 2.4s linear infinite}
+@keyframes letterIn{to{opacity:1;transform:none}}
+@keyframes slideUnderline{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ---------- LAYOUT ---------- */
+.page{max-width:1280px;margin:48px auto 64px;padding:0 24px;display:grid;grid-template-columns:1fr 320px;gap:40px}
+@media (max-width:980px){.page{grid-template-columns:1fr}}
+
+/* ---------- CARDS ---------- */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+@media (max-width:680px){.grid{grid-template-columns:1fr}}
+.card{position:relative;background:var(--card);border-radius:14px;overflow:hidden;box-shadow:var(--shadow-sm);transition:transform .3s ease, box-shadow .3s ease;opacity:0;transform:translateY(24px)}
+.card.in{opacity:1;transform:none;transition:transform .3s ease, box-shadow .3s ease, opacity .7s var(--ease)}
+.card:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg)}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--brand-gold);transform:scaleY(0);transform-origin:top center;transition:transform .45s var(--ease);z-index:3}
+.card:hover::before{transform:scaleY(1)}
+.thumb{position:relative;height:200px;overflow:hidden;background:#e9ebef}
+.thumb img{width:100%;height:100%;object-fit:cover;transition:transform .55s ease}
+.card:hover .thumb img{transform:scale(1.06)}
+.body{padding:22px 22px 24px;position:relative}
+.body h3{font-size:17.5px;font-weight:700;color:var(--ink);line-height:1.35}
+.meta{margin:10px 0 12px;font-size:12.5px;color:var(--muted);display:flex;gap:14px;align-items:center}
+.meta .views{display:inline-flex;align-items:center;gap:4px}
+.meta .dot{opacity:.4}
+.excerpt{color:var(--ink-soft);font-size:14px;line-height:1.65}
+.readmore-wrap{height:34px;margin-top:14px;position:relative;overflow:hidden}
+.readmore-text{position:absolute;inset:0;display:flex;align-items:center;color:var(--brand-gold);font-weight:600;font-size:13.5px;transition:opacity .3s ease, transform .3s ease}
+.readmore-text::after{content:" →";transition:transform .3s ease}
+.pill{position:absolute;left:0;bottom:0;display:inline-flex;align-items:center;gap:8px;padding:9px 18px;border-radius:999px;background:var(--brand-gold);color:#fff;font-weight:600;font-size:13px;letter-spacing:.02em;box-shadow:0 8px 20px -8px rgba(200,151,58,.7);opacity:0;transform:translateY(14px);transition:opacity .35s var(--ease), transform .35s var(--ease), background .2s ease}
+.pill:hover{background:#b3832d}
+.card:hover .readmore-text{opacity:0;transform:translateY(-8px)}
+.card:hover .pill{opacity:1;transform:translateY(0)}
+
+/* ---------- SIDEBAR ---------- */
+.sidebar{display:flex;flex-direction:column;gap:24px;opacity:0;transform:translateX(40px);animation:slideInRight .8s var(--ease) .3s forwards}
+@keyframes slideInRight{to{opacity:1;transform:none}}
+.box{background:#fff;border-radius:14px;padding:22px;box-shadow:var(--shadow-sm)}
+.box h4{font-size:15px;font-weight:700;color:var(--ink);position:relative;padding-bottom:10px;margin-bottom:14px}
+.box h4::after{content:"";position:absolute;left:0;bottom:0;width:34px;height:2px;background:var(--brand-gold);border-radius:2px}
+.search{display:flex;gap:0;border:1px solid var(--line);border-radius:8px;overflow:hidden;transition:box-shadow .2s ease,border-color .2s ease}
+.search:focus-within{border-color:var(--brand-gold);box-shadow:0 0 0 4px rgba(200,151,58,.15)}
+.search input{flex:1;border:0;padding:10px 12px;font:inherit;font-size:13.5px;outline:none;color:var(--ink)}
+.search button{background:var(--brand-gold);border:0;color:#fff;padding:0 14px;cursor:pointer;font-size:14px;transition:background .2s ease}
+.search button:hover{background:#b3832d}
+
+.cat-list{list-style:none;display:flex;flex-direction:column;gap:2px}
+.cat-list li a{position:relative;display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:8px;font-size:13.5px;color:var(--ink-soft);overflow:hidden;transition:background .2s ease,color .2s ease,padding .25s var(--ease)}
+.cat-list li a::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--brand-gold);transform:translateX(-100%);transition:transform .3s var(--ease)}
+.cat-list li a::after{content:"‹";color:var(--brand-gold);font-size:14px;font-weight:700}
+.cat-list li a:hover{background:#fbf5ea;color:var(--ink);padding-left:18px}
+.cat-list li a:hover::before{transform:translateX(0)}
+
+.recent{display:flex;flex-direction:column;gap:14px}
+.recent .item{display:flex;gap:12px;align-items:center;cursor:pointer}
+.recent .item img{width:56px;height:56px;border-radius:8px;object-fit:cover;transition:transform .3s ease, box-shadow .3s ease}
+.recent .item:hover img{transform:scale(1.04);box-shadow:0 8px 18px -10px rgba(0,0,0,.3)}
+.recent .item .t{font-size:13px;font-weight:600;color:var(--ink);line-height:1.35}
+.recent .item .d{font-size:11.5px;color:var(--muted);margin-top:3px}
+
+/* ---------- PAGINATION ---------- */
+.pagination{display:flex;justify-content:flex-start;gap:6px;margin-top:36px;padding:6px;background:#fff;border-radius:10px;width:max-content;box-shadow:var(--shadow-sm)}
+.pagination button{position:relative;overflow:hidden;border:0;background:transparent;padding:8px 14px;font:inherit;font-size:13.5px;color:var(--ink-soft);border-radius:6px;cursor:pointer;transition:background .2s ease,color .2s ease}
+.pagination button:hover{background:#faf3e3;color:var(--ink)}
+.pagination button.active{background:var(--brand-gold);color:#fff;font-weight:600}
+.ripple{position:absolute;border-radius:50%;background:rgba(200,151,58,.35);transform:scale(0);animation:ripple .6s linear;pointer-events:none}
+.pagination button.active .ripple{background:rgba(255,255,255,.5)}
+@keyframes ripple{to{transform:scale(4);opacity:0}}
+
+/* ---------- FOOTER ---------- */
+footer{background:var(--darker);color:#cfd3da;margin-top:60px;padding:56px 0 0}
+footer .wrap{max-width:1280px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:1.3fr 1fr 1fr 1.4fr;gap:40px}
+@media (max-width:880px){footer .wrap{grid-template-columns:1fr 1fr}}
+.f-col{opacity:0;transform:translateY(20px);animation:fadeUp .7s var(--ease) forwards}
+.f-col:nth-child(1){animation-delay:.05s}
+.f-col:nth-child(2){animation-delay:.2s}
+.f-col:nth-child(3){animation-delay:.35s}
+.f-col:nth-child(4){animation-delay:.5s}
+@keyframes fadeUp{to{opacity:1;transform:none}}
+.f-col h5{color:#fff;font-size:15px;font-weight:700;position:relative;padding-bottom:10px;margin-bottom:18px}
+.f-col h5::after{content:"";position:absolute;left:0;bottom:0;width:30px;height:2px;background:var(--brand-gold);border-radius:2px}
+.f-col p,.f-col li{font-size:13.5px;line-height:1.85;color:#aab0ba}
+.f-col .links{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:6px 16px}
+.f-col .links a{transition:color .2s ease,padding .2s ease}
+.f-col .links a:hover{color:var(--brand-gold);padding-left:4px}
+.brand-line{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.brand-line .logo{width:54px;height:54px}
+.contact-line{display:flex;gap:10px;align-items:center;margin-top:10px;font-size:13.5px;color:#aab0ba}
+.contact-line .ic{color:var(--brand-gold)}
+.newsletter{display:flex;margin-top:14px;border-radius:8px;overflow:hidden;background:#2a2e36;border:1px solid transparent;transition:border-color .25s ease, box-shadow .25s ease}
+.newsletter:focus-within{border-color:var(--brand-gold);box-shadow:0 0 0 4px rgba(200,151,58,.18)}
+.newsletter input{flex:1;background:transparent;border:0;padding:12px 14px;color:#fff;font:inherit;font-size:13.5px;outline:none}
+.newsletter input::placeholder{color:#7a818c}
+.newsletter button{background:var(--brand-gold);border:0;color:#fff;padding:0 22px;font-weight:600;cursor:pointer;letter-spacing:.04em;font-size:13px;transition:background .2s ease}
+.newsletter button:hover{background:#b3832d}
+.copyright{margin-top:48px;border-top:1px solid #2a2e36;padding:18px 24px;display:flex;justify-content:space-between;max-width:1280px;margin-left:auto;margin-right:auto;font-size:12.5px;color:#7a818c}
+.copyright .socials{display:flex;gap:14px}
+.copyright a:hover{color:var(--brand-gold)}
+
+/* ---------- REDUCED MOTION ---------- */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .card{opacity:1;transform:none}
+  .sidebar,.f-col{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="wrap">
+    <div class="left">
+      <span>📞 905363107689</span><span class="sep">|</span>
+      <span>✉ ahmedsanad@example.com</span><span class="sep">|</span>
+      <span>Terms of Use</span>
+    </div>
+    <div class="right">
+      <a>f</a><a>𝕏</a><a>◌</a><a>▶</a>
+    </div>
+  </div>
+</div>
+
+<!-- NAVBAR -->
+<nav class="nav" id="nav">
+  <div class="wrap">
+    <div class="logo">🏠</div>
+    <ul>
+      <li><a style="color:var(--brand-gold)">Home</a></li>
+      <li><a>Buy Real Estate</a></li>
+      <li><a>Turkish Citizenship</a></li>
+      <li><a>Blogs ▾</a></li>
+      <li><a>Pages ▾</a></li>
+      <li><a>Contact Us</a></li>
+    </ul>
+    <div class="spacer"></div>
+    <div class="right">
+      <span>🇬🇧 ENG ▾</span>
+      <div class="avatar"></div>
+      <span>Hi AS ▾</span>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="bg" id="heroBg"></div>
+  <div class="inner">
+    <h1 id="heroTitle"></h1>
+    <div class="crumbs"><a>Home</a><span class="sep">/</span><a class="active">Blogs</a></div>
+  </div>
+</header>
+
+<!-- PAGE -->
+<main class="page">
+  <section>
+    <div class="grid" id="grid">
+      <!-- cards injected -->
+    </div>
+
+    <div class="pagination" id="pager">
+      <button>Previous</button>
+      <button class="active">1</button>
+      <button>2</button>
+      <button>Next</button>
+    </div>
+  </section>
+
+  <aside class="sidebar">
+    <div class="box">
+      <h4>Search</h4>
+      <form class="search" onsubmit="event.preventDefault()">
+        <input placeholder="Search articles..."/>
+        <button>🔍</button>
+      </form>
+    </div>
+
+    <div class="box">
+      <h4>Categories</h4>
+      <ul class="cat-list">
+        <li><a>All categories</a></li>
+        <li><a>Buying &amp; Selling</a></li>
+        <li><a>Investment Tips</a></li>
+        <li><a>Lifestyle &amp; Neighborhoods</a></li>
+        <li><a>Market Insights</a></li>
+      </ul>
+    </div>
+
+    <div class="box">
+      <h4>Recent posts</h4>
+      <div class="recent">
+        <div class="item"><img src="https://images.unsplash.com/photo-1494526585095-c41746248156?w=200&q=70" alt=""/><div><div class="t">How to Read a Housing Report</div><div class="d">10 May 2026</div></div></div>
+        <div class="item"><img src="https://images.unsplash.com/photo-1460317442991-0ec209397118?w=200&q=70" alt=""/><div><div class="t">Price Trends Our Buyers...</div><div class="d">10 May 2026</div></div></div>
+        <div class="item"><img src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=200&q=70" alt=""/><div><div class="t">Offer Checklist for First-Time...</div><div class="d">10 May 2026</div></div></div>
+        <div class="item"><img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=200&q=70" alt=""/><div><div class="t">Staging Secrets That Close...</div><div class="d">10 May 2026</div></div></div>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="f-col">
+      <div class="brand-line"><div class="logo">🏠</div></div>
+      <p>Premium properties across Turkey and beyond.</p>
+      <div class="contact-line"><span class="ic">📍</span> Bagdat Avenue No: 120, Kadıköy, Istanbul</div>
+      <div class="contact-line"><span class="ic">📞</span> 905363107689</div>
+      <div class="contact-line"><span class="ic">✉</span> ahmedsanad@example.com</div>
+    </div>
+    <div class="f-col">
+      <h5>Navigation</h5>
+      <ul class="links">
+        <li><a>Home</a></li><li><a>Buying &amp; Selling</a></li>
+        <li><a>Buy real estate</a></li><li><a>Investment Tips</a></li>
+        <li><a>Turkish citizenship</a></li><li><a>Lifestyle</a></li>
+        <li><a>Blogs</a></li><li><a>Market Insights</a></li>
+        <li><a>Contact us</a></li>
+      </ul>
+    </div>
+    <div class="f-col">
+      <h5>Useful links</h5>
+      <ul class="links" style="grid-template-columns:1fr"><li><a>Terms of Use</a></li></ul>
+    </div>
+    <div class="f-col">
+      <h5>News letters</h5>
+      <p>Sign Up for Our Newsletter to get Latest Updates and Offers.</p>
+      <form class="newsletter" onsubmit="event.preventDefault()">
+        <input placeholder="Enter your email"/>
+        <button>SUBSCRIBE</button>
+      </form>
+    </div>
+  </div>
+  <div class="copyright">
+    <span>2026 © Imas | title — navBar. All Rights Reserved.</span>
+    <div class="socials"><a>f</a><a>𝕏</a><a>◌</a><a>▶</a></div>
+    <span>Developed by Symfonix</span>
+  </div>
+</footer>
+
+<script>
+/* ---- Hero letter-by-letter ---- */
+(function(){
+  const el=document.getElementById('heroTitle');
+  const word='BLOG';
+  word.split('').forEach((c,i)=>{
+    const s=document.createElement('span');
+    s.textContent=c==' '?'\u00A0':c;
+    s.style.animationDelay=(120+i*90)+'ms';
+    s.style.marginRight='6px';
+    el.appendChild(s);
+  });
+})();
+
+/* ---- Parallax hero ---- */
+const heroBg=document.getElementById('heroBg');
+window.addEventListener('scroll',()=>{
+  const y=window.scrollY;
+  if(y<700) heroBg.style.transform=`translateY(${y*0.35}px)`;
+  // sticky nav
+  document.getElementById('nav').classList.toggle('shrunk',y>40);
+},{passive:true});
+
+/* ---- Cards data ---- */
+const posts=[
+  {img:'https://images.unsplash.com/photo-1494526585095-c41746248156?w=900&q=75',t:'How to Read a Housing Market Report',v:120,e:'Quia sed nisi quia nihil ab aut occaecati. Nisi enim distinctio rerum repudiandae aut. Et omnis odio minima doloribus est iste. Fugiat aliquam et p...'},
+  {img:'https://images.unsplash.com/photo-1460317442991-0ec209397118?w=900&q=75',t:'Price Trends Our Buyers Saw This Quarter',v:240,e:'Est atque officiis optio asperiores. Velit id repellat suscipit excepturi aut mollitia quae sed. Aperiam autem aperiam rem sit voluptatibus. Aut beata...'},
+  {img:'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=900&q=75',t:'Offer Checklist for First-Time Home Buyers',v:360,e:'Omnis qui quia pariatur culpa repellat omnis possimus. Ipsum quaerat totam consequatur. Vitae culpa sint consectetur illum repellat mollitia incidunt...'},
+  {img:'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=900&q=75',t:'Staging Secrets That Actually Close Deals',v:480,e:'Qui et enim necessitatibus velit qui et deleniti temporibus. Corporis eum distinctio voluptates. Omnis non quibusdam nulla. Quis blanditiis placeat at...'},
+  {img:'https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=900&q=75',t:'Rent or Buy When Relocating for Work?',v:600,e:'Ut adipisci nisi omnis aut suscipit veniam. Odio porro dignissimos sunt. Ipsum illum consectetur culpa qui ex quis et. Fugiat voluptatem fugiat...'},
+  {img:'https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=900&q=75',t:'Cap Rate Basics for Residential Rentals',v:720,e:'Temporibus aut necessitatibus optio. Velit est minus quaerat sit. Consequatur debitis enim vel consequatur id. Qui aut aut animi perspiciatis fuga bea...'},
+  {img:'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=900&q=75',t:'Portfolio Diversification Ideas Beyond Apartments',v:840,e:'Nisi voluptatem et fugit quisquam asperiores ut suscipit. Enim veniam id in asperiores aut et voluptas autem. Sint ullam aperiam dolore iure aut non...'},
+  {img:'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=900&q=75',t:'What Makes a Neighborhood Family-Friendly?',v:960,e:'Culpa autem nesciunt consequatur commodi. Laudantium dolor sed eius consequatur quia libero eveniet enim. Voluptate rerum et cum. Laborum quis dolore...'}
+];
+const grid=document.getElementById('grid');
+posts.forEach((p,i)=>{
+  const c=document.createElement('article');
+  c.className='card';
+  c.style.transitionDelay=(i*100)+'ms';
+  c.innerHTML=`
+    <div class="thumb"><img src="${p.img}" alt=""/></div>
+    <div class="body">
+      <h3>${p.t}</h3>
+      <div class="meta"><span>10 May 2026</span><span class="dot">/</span><span class="views">👁 ${p.v}</span></div>
+      <p class="excerpt">${p.e}</p>
+      <div class="readmore-wrap">
+        <span class="readmore-text">Read more</span>
+        <a class="pill" href="#">Read article →</a>
+      </div>
+    </div>`;
+  grid.appendChild(c);
+});
+
+/* ---- Intersection Observer staggered entrance ---- */
+const io=new IntersectionObserver((ents)=>{
+  ents.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }});
+},{threshold:.12});
+document.querySelectorAll('.card').forEach(c=>io.observe(c));
+
+/* ---- Pagination ripple ---- */
+document.querySelectorAll('.pagination button').forEach(btn=>{
+  btn.addEventListener('click',function(e){
+    document.querySelectorAll('.pagination button').forEach(b=>b.classList.remove('active'));
+    if(!isNaN(parseInt(this.textContent))) this.classList.add('active');
+    const r=document.createElement('span');
+    r.className='ripple';
+    const rect=this.getBoundingClientRect();
+    const size=Math.max(rect.width,rect.height);
+    r.style.width=r.style.height=size+'px';
+    r.style.left=(e.clientX-rect.left-size/2)+'px';
+    r.style.top=(e.clientY-rect.top-size/2)+'px';
+    this.appendChild(r);
+    setTimeout(()=>r.remove(),600);
+  });
+});
+</script>
+</body>
+</html>

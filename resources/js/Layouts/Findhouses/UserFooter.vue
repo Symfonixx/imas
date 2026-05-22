@@ -672,9 +672,9 @@ onBeforeUnmount(() => {
     text-decoration: none;
 }
 
-@media screen and (max-width: 880px) {
+@media screen and (max-width: 991px) {
     .imas-footer-grid {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr;
     }
 }
 

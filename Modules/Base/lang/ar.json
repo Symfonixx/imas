@@ -253,6 +253,8 @@
     "Short page summary for search snippets.": "ملخص قصير للصفحة يظهر في مقتطفات البحث.",
     "Use 3-8 focused keywords separated by commas.": "استخدم من 3 إلى 8 كلمات مفتاحية مركزة ومفصولة بفواصل.",
     "properties":{
+        "proprty_details":"تفاصيل العقار",
+        "start_price":"السعر الأدنى",
         "featured_properties":"العقارات المميزة",
         "we_provide_full_service_at_every_step":"نقدم خدمة كاملة في كل خطوة.",
         "title":"اكتشف العقارات الاكثر شعبية",
@@ -394,5 +396,10 @@
         "direct_call":"اتصال مباشر",
         "aria_open":"فتح قائمة التواصل",
         "aria_close":"إغلاق قائمة التواصل"
+    },
+    "about_us":{
+        "title":"من نحن",
+        "no_content":"لا يوجد محتوى منشور لصفحة من نحن بعد.",
+        "latest_properties":"أحدث العقارات"
     }
 }

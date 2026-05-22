@@ -69,38 +69,24 @@
     </Head>
 
     <AppLayout>
-        <div class="inner-pages">
+        <div class="imas-blog-v2">
             <InnerPageHeadingHero
                 :page-title="page.title"
                 :items="headingItems"
+                :banner-image-url="heroBannerUrl"
             />
-            <section class="blog blog-section bg-white imas-cms-page-show">
-                <div class="container">
-                    <div class="row justify-content-center">
-                        <div class="col-lg-10 col-md-12">
-                            <article class="news-item details no-mb2">
-                                <div
-                                    v-if="showHeroImage"
-                                    class="news-item-img imas-cms-page-show__hero mb-4"
-                                >
-                                    <img
-                                        class="img-responsive w-100"
-                                        :src="page.image"
-                                        :alt="page.title"
-                                    />
-                                </div>
-                                <div class="news-item-text details pb-0 text-start">
-                                    <h2 class="h3 mb-3">{{ page.title }}</h2>
-                                    <div
-                                        class="news-item-descr big-news details visib mb-0 imas-cms-page-show__body"
-                                        v-html="page.content"
-                                    />
-                                </div>
-                            </article>
-                        </div>
+
+            <main class="imas-cms-page-show__page container">
+                <article class="imas-blog-show imas-cms-page-show">
+                   
+                    <div class="imas-blog-show__content">
+                        <div
+                            class="imas-blog-show-body imas-cms-page-show__body text-base text-start"
+                            v-html="page.content"
+                        />
                     </div>
-                </div>
-            </section>
+                </article>
+            </main>
         </div>
     </AppLayout>
 </template>
@@ -110,6 +96,7 @@ import { computed } from "vue";
 import { Head, usePage } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/App.vue";
 import InnerPageHeadingHero from "@/components/global/InnerPageHeadingHero.vue";
+import { localizedRoute } from "@/utils/localizedRoute.js";
 
 const props = defineProps({
     title: { type: String, required: true },
@@ -117,6 +104,7 @@ const props = defineProps({
 });
 
 const inertiaPage = usePage();
+const activeLocale = computed(() => inertiaPage.props.locale || "en");
 
 function trans(key) {
     return inertiaPage.props.translations?.[key] || key;
@@ -127,8 +115,16 @@ const showHeroImage = computed(() => {
     return (
         typeof src === "string" &&
         src.trim() !== "" &&
-        !src.includes("blank.png")
+        !src.includes("blank.png") &&
+        !/\/default\.jpg(?:\?.*)?$/i.test(src.trim())
     );
+});
+
+const heroBannerUrl = computed(() => {
+    if (!showHeroImage.value) {
+        return "";
+    }
+    return props.page.image.trim();
 });
 
 function plainText(value) {
@@ -144,7 +140,7 @@ const headingItems = computed(() => {
         if (typeof route === "function" && route().has?.("home")) {
             rows.push({
                 title: trans("navBar.Home"),
-                href: route("home"),
+                href: localizedRoute("home", {}, activeLocale.value, "/"),
             });
         }
     } catch {
@@ -207,24 +203,3 @@ const twitterCard = computed(() =>
     ogImage.value ? "summary_large_image" : "summary",
 );
 </script>
-
-<style scoped lang="scss">
-.imas-cms-page-show__hero img {
-    border-radius: 4px;
-    object-fit: cover;
-    max-height: 420px;
-}
-
-.imas-cms-page-show__body :deep(p) {
-    margin-bottom: 1rem;
-}
-
-.imas-cms-page-show__body :deep(img) {
-    max-width: 100%;
-    height: auto;
-}
-
-.imas-cms-page-show .news-item {
-    border: none !important;
-}
-</style>

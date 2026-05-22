@@ -194,7 +194,7 @@ function goNext() {
     width: 100%;
     height: 500px;
     max-height: min(500px, 70vh);
-    background: color-mix(in srgb, var(--brand-navy) 4%, #f5f6f8);
+    background: var(--surface-2);
     border: 1px solid color-mix(in srgb, var(--brand-navy) 10%, #e8eaed);
     border-radius: 4px;
     display: flex;
@@ -290,7 +290,7 @@ function goNext() {
     justify-content: center;
     width: 127px;
     height: 90px;
-    background: color-mix(in srgb, var(--brand-navy) 4%, #f5f6f8);
+    background: var(--surface-2);
     overflow: hidden;
     border-radius: 2px;
 }
@@ -333,5 +333,8 @@ color:#fff;
 }
 html[dir="rtl"] .blog .blog-pots .fa {
     transform: rotate(180deg);
+}
+ h5:after{
+    margin-bottom: 0 !important;
 }
 </style>

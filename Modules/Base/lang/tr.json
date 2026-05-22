@@ -249,6 +249,8 @@
     "Short page summary for search snippets.": "Arama özetlerinde görünen kısa sayfa özeti.",
     "Use 3-8 focused keywords separated by commas.": "Virgülle ayrılmış 3–8 odaklı anahtar kelime kullanın.",
     "properties":{
+        "proprty_details":"Mülk detayları",
+        "start_price":"Başlangıç fiyatı",
         "featured_properties":"Öne çıkan mülkler",
         "we_provide_full_service_at_every_step":"Her adımda tam hizmet sağlıyoruz.",
         "title":"Popüler mülkleri keşfedin",
@@ -392,5 +394,10 @@
         "direct_call":"Doğrudan arama",
         "aria_open":"İletişim menüsünü aç",
         "aria_close":"İletişim menüsünü kapat"
+    },
+    "about_us":{
+        "title":"Hakkımızda",
+        "no_content":"Hakkımızda sayfasında henüz yayınlanmış içerik yok.",
+        "latest_properties":"En son eklenen mülkler"
     }
 }

@@ -104,6 +104,10 @@ const navLinks = computed(() => {
         });
     }
     links.push({
+        key: "about_us.title",
+        href: safeRoute("about-us", "/about-us"),
+    });
+    links.push({
         key: "navBar.Contact us",
         href: safeRoute("support.contact-us", "/contact-us"),
     });

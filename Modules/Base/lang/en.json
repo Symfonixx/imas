@@ -248,6 +248,8 @@
     "About page title shown in search results.": "About page title shown in search results.",
     "Short page summary for search snippets.": "Short page summary for search snippets.",
     "properties":{
+        "proprty_details":"Property details",
+        "start_price":"Start price",
         "featured_properties":"Featured properties",
         "we_provide_full_service_at_every_step":"We provide full service at every step.",
         "title":"Discover popular properties",
@@ -390,5 +392,10 @@
         "direct_call":"Direct call",
         "aria_open":"Open contact menu",
         "aria_close":"Close contact menu"
+    },
+    "about_us":{
+        "title":"About us",
+        "no_content":"About us page has no published content yet.",
+        "latest_properties":"Latest properties"
     }
 }

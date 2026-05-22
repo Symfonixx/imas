@@ -1,8 +1,8 @@
 <template>
     <div
-        class="property wprt-image-video w50 pro imas-property-video mb-30"
+        class="property wprt-image-video w50 pro imas-property-video imas-property-show-panel mb-30"
     >
-        <h5 class="imas-section-title">
+        <h5 class="imas-section-title mb-4">
             {{ title }}
         </h5>
 
@@ -74,14 +74,20 @@ const invalidMessageText = computed(
     text-align: start;
 }
 
+.imas-property-video .imas-section-title {
+    font-size: var(--text-md);
+    font-weight: 700;
+    color: var(--text);
+}
+
 .imas-property-video__stage {
     position: relative;
     width: 100%;
     height: 360px;
     max-height: min(360px, 55vh);
-    background: color-mix(in srgb, var(--brand-navy) 4%, #f5f6f8);
-    border: 1px solid color-mix(in srgb, var(--brand-navy) 10%, #e8eaed);
-    border-radius: 4px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--card-radius);
     overflow: hidden;
     display: flex;
     align-items: center;
@@ -117,26 +123,34 @@ const invalidMessageText = computed(
     width: 70px;
     height: 70px;
     border-radius: 50%;
-    background: #fff;
-    color: var(--brand-gold, #d9a800);
+    background: var(--brand-gold);
+    color: var(--text-on-gold);
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 18px rgba(26, 42, 74, 0.2);
-    transition: transform 0.2s ease, background 0.2s ease;
+    box-shadow: var(--shadow-md);
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 .imas-property-video__play-btn i {
     font-size: 28px;
     margin-inline-start: 4px;
     line-height: 1;
-    color: var(--brand-gold, #d9a800) !important;
+    color: var(--text-on-gold) !important;
 }
 
 .imas-property-video__play:hover .imas-property-video__play-btn,
 .imas-property-video__play:focus-visible .imas-property-video__play-btn {
     transform: scale(1.05);
-    background: #fff;
+    background: var(--brand-gold-hover);
+    box-shadow: var(--shadow-lg);
+}
+
+.imas-property-video__play:focus-visible .imas-property-video__play-btn {
+    box-shadow: var(--ring), var(--shadow-md);
 }
 
 .imas-property-video__ripple {
@@ -154,7 +168,7 @@ const invalidMessageText = computed(
     width: 70px;
     height: 70px;
     border-radius: 50%;
-    border: 2px solid rgba(255, 255, 255, 0.45);
+    border: 2px solid color-mix(in srgb, var(--brand-gold) 55%, transparent);
     animation: imas-video-ripple 2.4s ease-out infinite;
 }
 
@@ -197,7 +211,32 @@ const invalidMessageText = computed(
         height: 58px;
     }
 }
-.imas-property-video h5:after{
-margin-bottom:0 !important;
+</style>
+
+<style lang="scss">
+/* Override Find Houses white card on .wprt-image-video.w50.pro */
+.imas-property-show-page .imas-property-video.imas-property-show-panel {
+    padding: 1.5rem !important;
+    background: var(--surface) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: var(--card-radius);
+    box-shadow: var(--shadow-sm) !important;
+}
+
+.imas-property-show-page .imas-property-video.imas-property-show-panel h5.imas-section-title {
+    color: var(--text) !important;
+    text-transform: none !important;
+}
+
+.imas-property-show-page
+    .imas-property-video.imas-property-show-panel
+    h5.imas-section-title::after {
+    display: block !important;
+    content: "" !important;
+    width: 3.5rem !important;
+    height: 2px !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    background: var(--brand-gold) !important;
 }
 </style>

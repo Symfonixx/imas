@@ -30,10 +30,11 @@
                             class="imas-articles-slide d-flex"
                             :dir="slideTextDir"
                         >
-                            <ArticleCard
+                            <BlogV2ArticleCard
                                 :article="article"
-                                :is-last="index === articles.length - 1"
+                                :stagger-index="index"
                                 :read-more-label="trans('articles.read_more')"
+                                :read-article-label="readArticleCta"
                             />
                         </div>
                     </div>
@@ -80,7 +81,7 @@ import {
     watch,
 } from "vue";
 import { usePage } from "@inertiajs/vue3";
-import ArticleCard from "@/components/articles/ArticleCard.vue";
+import BlogV2ArticleCard from "../../../../../Cms/resources/assets/js/Components/BlogV2ArticleCard.vue";
 import ReadMore from "@/components/buttons/ReadMore.vue";
 import { useScrollReveal } from "@/composables/useScrollReveal";
 
@@ -104,6 +105,11 @@ const page = usePage();
 function trans(key) {
     return page.props.translations[key] || key;
 }
+
+const readArticleCta = computed(() => {
+    const base = trans("articles.read_more").replace(/\.\.\.$|…$/u, "").trim();
+    return `${base} ›`;
+});
 
 /** RTL/LTR for card content; scroll rail stays `dir="ltr"` so scrollLeft is reliable. */
 const slideTextDir = computed(() =>
@@ -485,10 +491,23 @@ onBeforeUnmount(() => {
     background-color: var(--brand-gold, #d9a800) !important;
 }
 
-.imas-articles-slide :deep(.imas-article-card) {
+.imas-articles-slide :deep(.imas-blog-v2-card) {
     width: 100% !important;
     max-width: 100% !important;
     flex: 1 1 auto;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.imas-articles-slide :deep(.imas-blog-v2-card__body) {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.imas-articles-slide :deep(.imas-blog-v2-card__cta-wrap) {
+    margin-top: auto;
 }
 </style>
 

@@ -90,10 +90,10 @@ function formatPrice(amount) {
 }
 
 .imas-unit-types-table__grid thead th {
-    background: color-mix(in srgb, var(--brand-navy) 8%, #fff);
-    color: var(--brand-navy);
+    background: var(--surface-2);
+    color: var(--text);
     font-weight: 700;
-    font-size: 0.95rem;
+    font-size: var(--text-sm);
     padding: 0.85rem 0.75rem;
     border: 0;
     vertical-align: middle;
@@ -101,18 +101,22 @@ function formatPrice(amount) {
 
 .imas-unit-types-table__grid tbody td {
     padding: 0.85rem 0.75rem;
-    color: var(--color-text);
-    font-size: 0.95rem;
+    color: var(--text);
+    font-size: var(--text-md);
     border: 0;
     vertical-align: middle;
 }
 
 .imas-unit-types-table__grid tbody tr:nth-child(odd) td {
-    background: #fff;
+    background: var(--surface);
 }
 
 .imas-unit-types-table__grid tbody tr:nth-child(even) td {
-    background: color-mix(in srgb, var(--brand-navy) 4%, #fff);
+    background: var(--surface-2);
+}
+
+.imas-unit-types-table__grid tbody tr:hover td {
+    background: var(--surface-3);
 }
 
 html[dir="rtl"] .imas-unit-types-table__grid {

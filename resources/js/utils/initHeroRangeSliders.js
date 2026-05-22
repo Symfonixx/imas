@@ -25,60 +25,76 @@ export function loadJqueryUi(themeUrl) {
     return jqueryUiPromise;
 }
 
-function initAreaSlider($el, { min, max, unit, values, onChange }) {
-    if (!$el.length) {
+function removeValueInputs($slider) {
+    $slider.find(".first-slider-value, .second-slider-value").remove();
+}
+
+function mountValueInputs($slider) {
+    const markup =
+        "<input type='text' class='first-slider-value' disabled/><input type='text' class='second-slider-value' disabled/>";
+    $slider.append(markup);
+    return {
+        $first: $slider.children(".first-slider-value"),
+        $second: $slider.children(".second-slider-value"),
+    };
+}
+
+function initAreaSlider(
+    $slider,
+    { min, max, unit, values, onChange },
+) {
+    if (!$slider.length) {
         return;
     }
 
-    if ($el.hasClass("ui-slider")) {
-        $el.slider("destroy");
+    if ($slider.hasClass("ui-slider")) {
+        $slider.slider("destroy");
     }
 
-    $el.empty();
-    $el.append(
-        "<input type='text' class='first-slider-value' disabled/><input type='text' class='second-slider-value' disabled/>",
-    );
+    $slider.empty();
+    removeValueInputs($slider);
+
+    const { $first, $second } = mountValueInputs($slider);
 
     const dataMin = Number(min);
     const dataMax = Number(max);
     const dataUnit = unit || "";
 
-    $el.slider({
+    $slider.slider({
         range: true,
         min: dataMin,
         max: dataMax,
         step: 10,
         values: values ?? [dataMin, dataMax],
         slide(_event, ui) {
-            $el.children(".first-slider-value").val(
-                `${ui.values[0]} ${dataUnit}`,
-            );
-            $el.children(".second-slider-value").val(
-                `${ui.values[1]} ${dataUnit}`,
-            );
+            $first.val(`${ui.values[0]} ${dataUnit}`);
+            $second.val(`${ui.values[1]} ${dataUnit}`);
             onChange?.(ui.values[0], ui.values[1]);
         },
     });
 
-    const current = $el.slider("values");
-    $el.children(".first-slider-value").val(`${current[0]} ${dataUnit}`);
-    $el.children(".second-slider-value").val(`${current[1]} ${dataUnit}`);
+    const current = $slider.slider("values");
+    $first.val(`${current[0]} ${dataUnit}`);
+    $second.val(`${current[1]} ${dataUnit}`);
     onChange?.(current[0], current[1]);
 }
 
-function initPriceSlider($el, { min, max, unit, values, onChange }) {
-    if (!$el.length) {
+function initPriceSlider(
+    $slider,
+    { min, max, unit, values, onChange },
+) {
+    if (!$slider.length) {
         return;
     }
 
-    if ($el.hasClass("ui-slider")) {
-        $el.slider("destroy");
+    if ($slider.hasClass("ui-slider")) {
+        $slider.slider("destroy");
     }
 
-    $el.empty();
-    $el.append(
-        "<input type='text' class='first-slider-value' disabled/><input type='text' class='second-slider-value' disabled/>",
-    );
+    $slider.empty();
+    removeValueInputs($slider);
+
+    const { $first, $second } = mountValueInputs($slider);
 
     const dataMin = Number(min);
     const dataMax = Number(max);
@@ -90,26 +106,27 @@ function initPriceSlider($el, { min, max, unit, values, onChange }) {
             .toString()
             .replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
 
-    $el.slider({
+    $slider.slider({
         range: true,
         min: dataMin,
         max: dataMax,
         values: values ?? [dataMin, dataMax],
         slide(_event, ui) {
-            $el.children(".first-slider-value").val(format(ui.values[0]));
-            $el.children(".second-slider-value").val(format(ui.values[1]));
+            $first.val(format(ui.values[0]));
+            $second.val(format(ui.values[1]));
             onChange?.(ui.values[0], ui.values[1]);
         },
     });
 
-    const current = $el.slider("values");
-    $el.children(".first-slider-value").val(format(current[0]));
-    $el.children(".second-slider-value").val(format(current[1]));
+    const current = $slider.slider("values");
+    $first.val(format(current[0]));
+    $second.val(format(current[1]));
     onChange?.(current[0], current[1]);
 }
 
 /**
  * Initialize theme-style area + price range sliders (Find Houses range.js behaviour).
+ * Value inputs are appended inside each slider element (same as home hero).
  */
 export function initHeroRangeSliders({
     areaSelector = "#imas-hero-area-range",
@@ -157,10 +174,14 @@ export function destroyHeroRangeSliders({
     }
 
     [areaSelector, priceSelector].forEach((selector) => {
-        const $el = $(selector);
-        if ($el.length && $el.hasClass("ui-slider")) {
-            $el.slider("destroy");
-            $el.empty();
+        const $slider = $(selector);
+        if (!$slider.length) {
+            return;
         }
+        if ($slider.hasClass("ui-slider")) {
+            $slider.slider("destroy");
+        }
+        $slider.empty();
+        removeValueInputs($slider);
     });
 }

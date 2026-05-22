@@ -30,6 +30,7 @@ class StoreSettingsRequest extends FormRequest
             'imgs.meta_img' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:4096', 'dimensions:min_width=600,min_height=600'],
             'imgs.contact_us_banner' => $pageBannerRules,
             'imgs.blog_show_banner' => $pageBannerRules,
+            'imgs.property_show_banner' => $pageBannerRules,
             'data.phone' => ['nullable', 'string', 'max:50'],
             'data.email' => ['nullable', 'string', 'email', 'max:255'],
             'data.address' => ['nullable', 'string', 'max:500'],
@@ -53,6 +54,8 @@ class StoreSettingsRequest extends FormRequest
             'imgs.contact_us_banner.max' => __('The contact us banner may not be greater than 4 MB.'),
             'imgs.blog_show_banner.dimensions' => __('The blog details banner must be at least 1920×600 pixels.'),
             'imgs.blog_show_banner.max' => __('The blog details banner may not be greater than 4 MB.'),
+            'imgs.property_show_banner.dimensions' => __('The property listings banner must be at least 1920×600 pixels.'),
+            'imgs.property_show_banner.max' => __('The property listings banner may not be greater than 4 MB.'),
         ];
     }
 }

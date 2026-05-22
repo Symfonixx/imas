@@ -201,6 +201,7 @@ class HandleInertiaRequests extends Middleware
                 'turkish_citizenship_banner' => $this->storagePublicUrl($settings['turkish_citizenship_banner'] ?? null),
                 'contact_us_banner' => $this->storagePublicUrl($settings['contact_us_banner'] ?? null),
                 'blog_show_banner' => $this->storagePublicUrl($settings['blog_show_banner'] ?? null),
+                'property_show_banner' => $this->storagePublicUrl($settings['property_show_banner'] ?? null),
             ],
             'seo' => $seo,
             'about' => [

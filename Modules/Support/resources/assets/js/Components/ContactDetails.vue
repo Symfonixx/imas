@@ -1,7 +1,9 @@
 <template>
-    <div class="call-info">
-        <h3 class="text-start">{{ trans("contact_us.contact_details") }}</h3>
-        <p class="mb-5 text-start">
+    <div class="call-info imas-contact-page__details">
+        <h3 class="imas-contact-page__heading text-xl font-semibold text-start">
+            {{ trans("contact_us.contact_details") }}
+        </h3>
+        <p class="imas-contact-page__intro text-card-excerpt text-dim mb-5 text-start">
             {{
                 trans(
                     "contact_us.Please_find_below_contact_details_and_contact_us_today",
@@ -37,7 +39,9 @@
         </ul>
 
         <template v-if="socialLinks.length">
-            <h4 class="mt-4 mb-3 text-white text-start">
+            <h4
+                class="imas-contact-page__social-title text-lg font-semibold mt-4 mb-3 text-start"
+            >
                 {{ trans("contact_us.follow_us") }}
             </h4>
             <ul class="netsocials d-flex flex-wrap ">
@@ -59,6 +63,7 @@
 <script setup>
 import { computed } from "vue";
 import { usePage } from "@inertiajs/vue3";
+import { resolveWhatsAppContactHref } from "@/utils/whatsappUrl.js";
 
 const page = usePage();
 
@@ -89,7 +94,17 @@ const socialLinks = computed(() => {
             if (!raw) {
                 return null;
             }
-            return { ...d, href: raw };
+            const href =
+                d.key === "whatsapp"
+                    ? resolveWhatsAppContactHref({
+                          whatsapp: raw,
+                          phone: contact.value.phone,
+                      })
+                    : raw;
+            if (!href) {
+                return null;
+            }
+            return { ...d, href };
         })
         .filter(Boolean);
 });
@@ -100,35 +115,11 @@ function trans(key) {
 </script>
 
 <style scoped>
-.imas-contact-phone .in-p,
-.imas-contact-phone .in-p a,
-.imas-contact-email .in-p,
-.imas-contact-email .in-p a {
-    color: #ffffff !important;
+.netsocials {
+    gap: 25px;
 }
 
-.imas-contact-phone .in-p a:hover,
-.imas-contact-phone .in-p a:focus,
-.imas-contact-email .in-p a:hover,
-.imas-contact-email .in-p a:focus {
-    color: #ffffff !important;
-    opacity: 0.9;
-}
-.netsocials{
-    gap:25px
-}
-
-.call-info .netsocials a,
-.call-info .netsocials a i {
-    color: var(--brand-gold, #d9a800) !important;
-    font-size: 27px;
-}
-
-.call-info .netsocials a:hover i,
-.call-info .netsocials a:focus i {
-    color: var(--brand-gold-hover, #eecb3a) !important;
-}
-html[dir="rtl"] .m-end{
+html[dir="rtl"] .m-end {
     margin-inline-end: 1.5rem !important;
 }
 </style>

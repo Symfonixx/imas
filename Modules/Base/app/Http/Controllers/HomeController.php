@@ -126,6 +126,7 @@ class HomeController extends Controller
 
         $articles = Blog::query()
             ->featured()
+            ->with(['category:id,name,slug'])
             ->latest('created_at')
             ->limit(3)
             ->get()
@@ -141,6 +142,13 @@ class HomeController extends Controller
                     'url' => LaravelLocalization::localizeUrl('/blog/'.$blog->slug),
                     'visits' => (int) $blog->visits,
                     'date' => $blog->created_at?->locale(app()->getLocale())->translatedFormat('d M Y') ?? '',
+                    'category' => $blog->category
+                        ? [
+                            'id' => $blog->category->id,
+                            'name' => $blog->category->name,
+                            'slug' => $blog->category->slug,
+                        ]
+                        : null,
                 ];
             })
             ->values()

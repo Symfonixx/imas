@@ -210,6 +210,14 @@
                     mediaInputName="imgs_media[blog_show_banner]"/>
                 <div class="form-text">{{ __('Minimum 1920×600 px, max 4 MB (JPEG, PNG, WebP).') }}</div>
             </div>
+            <div class="col-xl-3 mb-5">
+                <div class="fs-6 fw-bold mt-2 mb-5">{{ __('Property Listings Page Banner') }}</div>
+                <x-admin.image-input
+                    name="imgs[property_show_banner]"
+                    :preview="asset('storage/' . $settings->get('property_show_banner', 'default.jpg'))"
+                    mediaInputName="imgs_media[property_show_banner]"/>
+                <div class="form-text">{{ __('Minimum 1920×600 px, max 4 MB (JPEG, PNG, WebP).') }}</div>
+            </div>
         </div>
 
     </x-admin.create-card>

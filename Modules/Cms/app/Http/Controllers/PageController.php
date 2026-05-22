@@ -13,6 +13,7 @@ class PageController extends Controller
 {
     /** Slugs owned by other front-office routes; must not be CMS pages. */
     private const RESERVED_SLUGS = [
+        'about-us',
         'contact-us',
         'blog',
         'property',

@@ -69,82 +69,80 @@
     </Head>
 
     <AppLayout>
-        <div class="inner-pages" ref="pageRef">
+        <div class="imas-blog-v2 imas-blog-section-anchor">
             <InnerPageHeadingHero
                 :page-title="trans('blogs.blog_details')"
                 :items="blogHeadingItems"
                 :banner-image-url="blogShowBannerUrl"
             />
-            <!-- START SECTION BLOG -->
-            <section class="blog blog-section bg-white">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-9 col-md-12 blog-pots">
-                            <div class="row">
-                                <div class="col-md-12 col-xs-12 imas-blog-show-article-col">
-                                    <div class="news-item details no-mb2">
-                                        <a :href="blog.url" class="news-img-link">
-                                            <div class="news-item-img">
-                                                <img
-                                                    class="img-responsive"
-                                                    :src="blog.image"
-                                                    :alt="blog.title"
-                                                />
-                                            </div>
-                                        </a>
-                                        <div
-                                            ref="articleTextRef"
-                                            class="news-item-text details pb-0 text-start imas-blog-show-article-text"
-                                        >
-                                            <div class="imas-blog-show-article-text__header">
-                                                <h3>{{ blog.title }}</h3>
-                                                <div class="dates">
-                                                    <span
-                                                        v-if="blog.date"
-                                                        class="date"
-                                                        >{{ blog.date }}
-                                                        &nbsp;/</span
-                                                    >
-                                                    <ul class="action-list px-2">
-                                                        <li
-                                                            class="action-item pl-2"
-                                                        >
-                                                            <i
-                                                                class="fa fa-eye mx-1"
-                                                            ></i>
-                                                            <span>{{
-                                                                blog.visits
-                                                            }}</span>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                                <p
-                                                    v-if="blog.category"
-                                                    class="text-muted small mb-2"
-                                                >
-                                                    {{ blog.category.name }}
-                                                </p>
-                                            </div>
-                                            <div
-                                                class="news-item-descr big-news details visib mb-0 imas-blog-show-body"
-                                                v-html="blog.content"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+
+            <main class="imas-blog-v2__page container">
+                <section class="imas-blog-v2__main">
+                    <article ref="articleTextRef" class="imas-blog-show">
+                        <div v-if="blog.image" class="imas-blog-show__media">
+                            <img
+                                :src="blog.image"
+                                :alt="blog.title"
+                                loading="eager"
+                            />
                         </div>
-                        <BlogListingSidebar
-                            :search-action="blogIndexUrl"
-                            :filters="filters"
-                            :categories="categories"
-                            :recent-blogs="recentBlogs"
-                            :category-url="categoryIndexUrl"
-                        />
-                    </div>
-                </div>
-            </section>
-            <!-- END SECTION BLOG -->
+                        <div class="imas-blog-show__content">
+                            <header
+                                class="imas-blog-show-article-text__header"
+                            >
+                                <h1
+                                    class="imas-blog-show__title text-2xl font-bold text-start"
+                                >
+                                    {{ blog.title }}
+                                </h1>
+                                <div
+                                    class="imas-blog-show__meta text-md text-dim"
+                                >
+                                    <span
+                                        v-if="blog.date"
+                                        class="imas-blog-show__date"
+                                        >{{ blog.date }}</span
+                                    >
+                                    <span
+                                        v-if="blog.date && blog.visits != null"
+                                        class="imas-blog-show__meta-sep"
+                                        aria-hidden="true"
+                                        >/</span
+                                    >
+                                    <span
+                                        v-if="blog.visits != null"
+                                        class="imas-blog-show__views"
+                                    >
+                                        <i
+                                            class="fa fa-eye"
+                                            aria-hidden="true"
+                                        ></i>
+                                        {{ blog.visits }}
+                                    </span>
+                                </div>
+                                <span
+                                    v-if="blog.category"
+                                    class="imas-blog-show__category-label mb-4"
+                                >
+                                    {{ blog.category.name }}
+                                </span>
+                            </header>
+                            <div
+                                class="imas-blog-show-body text-base text-start"
+                                v-html="blog.content"
+                            />
+                        </div>
+                    </article>
+                </section>
+
+                <BlogListingSidebar
+                    :search-action="blogIndexUrl"
+                    :filters="filters"
+                    :categories="categories"
+                    :recent-blogs="recentBlogs"
+                    :category-url="categoryIndexUrl"
+                />
+            </main>
         </div>
     </AppLayout>
 </template>
@@ -156,6 +154,8 @@ import AppLayout from "@/Layouts/App.vue";
 import BlogListingSidebar from "../Components/BlogListingSidebar.vue";
 import InnerPageHeadingHero from "@/components/global/InnerPageHeadingHero.vue";
 import { useScrollReveal } from "@/composables/useScrollReveal";
+import { blogIndexLocalizedUrl } from "../utils/blogLocalizedRoute.js";
+import { localizedRoute } from "@/utils/localizedRoute.js";
 
 const props = defineProps({
     title: { type: String, required: true },
@@ -166,10 +166,9 @@ const props = defineProps({
 });
 
 const page = usePage();
-const pageRef = ref(null);
+const activeLocale = computed(() => page.props.locale || "en");
 const articleTextRef = ref(null);
 
-useScrollReveal(pageRef, { variant: "propertyListings" });
 useScrollReveal(articleTextRef, { variant: "blogShowArticle" });
 
 const globals = computed(() => page.props.globals ?? {});
@@ -205,13 +204,13 @@ const blogHeadingItems = computed(() => {
         if (typeof route === "function" && route().has?.("home")) {
             rows.push({
                 title: trans("navBar.Home"),
-                href: route("home"),
+                href: localizedRoute("home", {}, activeLocale.value, "/"),
             });
         }
         if (typeof route === "function" && route().has?.("blog.index")) {
             rows.push({
                 title: trans("navBar.Blogs"),
-                href: route("blog.index"),
+                href: blogIndexLocalizedUrl(activeLocale.value),
             });
         }
     } catch {
@@ -224,16 +223,9 @@ const blogHeadingItems = computed(() => {
     return rows;
 });
 
-const blogIndexUrl = computed(() => {
-    try {
-        if (typeof route === "function" && route().has?.("blog.index")) {
-            return route("blog.index");
-        }
-    } catch {
-        /* ignore */
-    }
-    return "";
-});
+const blogIndexUrl = computed(() =>
+    blogIndexLocalizedUrl(activeLocale.value),
+);
 
 function categoryIndexUrl(categoryId) {
     const params = {};
@@ -243,7 +235,7 @@ function categoryIndexUrl(categoryId) {
     if (categoryId != null) {
         params.category_id = categoryId;
     }
-    return route("blog.index", params);
+    return blogIndexLocalizedUrl(activeLocale.value, params);
 }
 
 const meta = computed(() => props.blog.meta ?? {});
@@ -295,18 +287,3 @@ const twitterCard = computed(() =>
     ogImage.value ? "summary_large_image" : "summary",
 );
 </script>
-
-<style scoped lang="scss">
-/* Theme body copy is HTML from CMS; keep typography readable inside Find Houses card */
-.imas-blog-show-body :deep(p) {
-    margin-bottom: 1rem;
-}
-
-.imas-blog-show-body :deep(img) {
-    max-width: 100%;
-    height: auto;
-}
-.blog-section .news-item {
-    border: none !important;
-}
-</style>

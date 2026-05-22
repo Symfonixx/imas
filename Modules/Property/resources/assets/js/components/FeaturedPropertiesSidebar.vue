@@ -1,54 +1,100 @@
 <template>
     <div
         v-if="featuredProperties.length > 0"
-        class="widget-boxed mt-5 imas-featured-properties-widget"
+        class="imas-blog-v2-sidebar__box imas-featured-properties-sidebar"
     >
-        <div
-            class="widget-boxed-header mb-5 d-flex justify-content-between align-items-center"
-        >
-            <h4>{{ trans("listing_page.feature_properties") }}</h4>
+        <div class="imas-featured-properties-sidebar__header">
+            <h4
+                class="imas-blog-v2-sidebar__heading imas-featured-properties-sidebar__heading text-start"
+            >
+                {{ trans("listing_page.feature_properties") }}
+            </h4>
+            <div
+                v-show="showCarouselArrows"
+                ref="navRef"
+                class="imas-featured-properties-sidebar__nav"
+            >
+                <button
+                    ref="prevArrowRef"
+                    type="button"
+                    class="imas-featured-properties-sidebar__arrow imas-featured-properties-sidebar__arrow--prev"
+                    :aria-label="trans('Previous')"
+                ></button>
+                <button
+                    ref="nextArrowRef"
+                    type="button"
+                    class="imas-featured-properties-sidebar__arrow imas-featured-properties-sidebar__arrow--next"
+                    :aria-label="trans('Next')"
+                ></button>
+            </div>
         </div>
-        <div class="widget-boxed-body">
+
+        <div class="imas-featured-properties-sidebar__body">
             <div
                 ref="slickRootRef"
-                class="slick-lancers imas-featured-properties-slick"
+                class="imas-featured-properties-sidebar__carousel"
             >
-                <div
+                <article
                     v-for="p in featuredProperties"
                     :key="p.id"
-                    class="agents-grid mr-0"
+                    class="imas-featured-properties-sidebar__slide"
                 >
-                    <div class="listing-item compact">
-                        <a :href="p.url" class="listing-img-container">
-                            <div class="listing-badges">
-                                <span class="featured">{{
-                                    formatMoney(propertyStartPrice(p))
-                                }}</span>
-                                <span>{{
-                                    trans("listing_page.for_sale")
-                                }}</span>
-                            </div>
-                            <div class="listing-img-content">
-                                <span class="listing-compact-title">
-                                    {{ displayTitle(p) }}
-                                    <i v-if="locationLine(p)">{{
-                                        locationLine(p)
-                                    }}</i>
+                    <a
+                        :href="p.url"
+                        class="imas-featured-properties-sidebar__card"
+                    >
+                        <div class="imas-featured-properties-sidebar__media">
+                            <img
+                                :src="p.thumbnail_url"
+                                :alt="displayTitle(p)"
+                                loading="lazy"
+                            />
+                            <div
+                                class="imas-featured-properties-sidebar__badges"
+                            >
+                                <span
+                                    class="imas-featured-properties-sidebar__badge imas-featured-properties-sidebar__badge--price"
+                                >
+                                    {{ formatMoney(propertyStartPrice(p)) }}
                                 </span>
-                                <ul class="listing-hidden-content">
+                               
+                            </div>
+                            <div
+                                class="imas-featured-properties-sidebar__overlay"
+                            >
+                                <h5
+                                    class="imas-featured-properties-sidebar__title"
+                                >
+                                    {{ displayTitle(p) }}
+                                </h5>
+                                <p
+                                    v-if="locationLine(p)"
+                                    class="imas-featured-properties-sidebar__location text-dim"
+                                >
+                                    {{ locationLine(p) }}
+                                </p>
+                                <ul
+                                    v-if="statRows(p).length > 0"
+                                    class="imas-featured-properties-sidebar__stats"
+                                >
                                     <li
                                         v-for="(row, idx) in statRows(p)"
                                         :key="idx"
                                     >
-                                        {{ row.label }}
-                                        <span>{{ row.value }}</span>
+                                        <span
+                                            class="imas-featured-properties-sidebar__stat-label"
+                                            >{{ row.label }}</span
+                                        >
+                                        <span
+                                            class="imas-featured-properties-sidebar__stat-value"
+                                            >{{ row.value }}</span
+                                        >
                                     </li>
                                 </ul>
                             </div>
-                            <img :src="p.thumbnail_url" alt="" />
-                        </a>
-                    </div>
-                </div>
+                        </div>
+                    </a>
+                </article>
             </div>
         </div>
     </div>
@@ -74,6 +120,13 @@ const props = defineProps({
 const page = usePage();
 
 const slickRootRef = ref(null);
+const navRef = ref(null);
+const prevArrowRef = ref(null);
+const nextArrowRef = ref(null);
+
+const showCarouselArrows = computed(
+    () => props.featuredProperties.length > 1,
+);
 
 const slickIsRtl = computed(
     () => String(page.props.text_direction || "") === "rtl",
@@ -183,22 +236,33 @@ function destroySlick() {
     }
 }
 
-/** Sidebar carousel: matches `theme/findhouses/js/slick4.js` base (1 slide, arrows, no dots). */
 function initSlick() {
     const el = slickRootRef.value;
     const jq = window.jQuery || window.$;
+    const prev = prevArrowRef.value;
+    const next = nextArrowRef.value;
+    const nav = navRef.value;
     if (!el || !jq?.fn?.slick || props.featuredProperties.length === 0) {
         return;
     }
-    jq(el).slick({
+
+    const options = {
         rtl: slickIsRtl.value,
         infinite: false,
         slidesToShow: 1,
         slidesToScroll: 1,
         dots: false,
-        arrows: true,
+        arrows: showCarouselArrows.value,
         adaptiveHeight: true,
-    });
+    };
+
+    if (showCarouselArrows.value && prev && next && nav) {
+        options.prevArrow = jq(prev);
+        options.nextArrow = jq(next);
+        options.appendArrows = jq(nav);
+    }
+
+    jq(el).slick(options);
 }
 
 async function setupSlick() {
@@ -232,50 +296,3 @@ watch(
     { deep: true },
 );
 </script>
-
-<style scoped>
-.listing-hidden-content {
-    text-align: start;
-}
-</style>
-
-<style lang="scss">
-/*
- * RTL: theme fixes .featured at width:90px and .listing-badges { overflow:hidden },
- * which clips long formatted prices. Scoped to this widget only.
- */
-html[dir="rtl"] .imas-featured-properties-widget .listing-item.compact .listing-badges {
-    overflow: visible;
-}
-
-html[dir="rtl"]
-    .imas-featured-properties-widget
-    .listing-item.compact
-    .listing-badges
-    .featured {
-    float: none;
-    width: auto !important;
-    max-width: calc(100% - 6.5rem);
-    min-width: min-content;
-    box-sizing: border-box;
-    position: absolute;
-    top: 17px;
-    left: 15px;
-    right: auto;
-    margin: 0;
-    text-align: start;
-    white-space: nowrap;
-    direction: ltr;
-    unicode-bidi: isolate;
-}
-
-html[dir="rtl"]
-    .imas-featured-properties-widget
-    .listing-item.compact
-    .listing-badges
-    > span:not(.featured) {
-    float: none;
-    left: auto;
-    right: 15px;
-}
-</style>

@@ -1,10 +1,10 @@
 <template>
     <nav
-        v-if="displayLinks.length > 0"
+        v-if="links.length > 0"
         class="imas-blog-v2-pagination"
-        aria-label="Property listings pagination"
+        aria-label="Blog pagination"
     >
-        <template v-for="(link, idx) in displayLinks" :key="idx">
+        <template v-for="(link, idx) in links" :key="idx">
             <Link
                 v-if="link.url"
                 :href="link.url"
@@ -27,37 +27,13 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
-import { Link, usePage } from "@inertiajs/vue3";
+import { Link } from "@inertiajs/vue3";
 
-const props = defineProps({
-    properties: { type: Object, required: true },
+defineProps({
+    links: { type: Array, default: () => [] },
 });
 
 const emit = defineEmits(["navigate"]);
-
-const page = usePage();
-
-function trans(key) {
-    return page.props.translations[key] ?? key;
-}
-
-const displayLinks = computed(() => {
-    const raw = props.properties?.links ?? [];
-    const n = raw.length;
-    if (n < 2) {
-        return raw.map((link) => ({ ...link, displayLabel: link.label }));
-    }
-    return raw.map((link, idx) => {
-        let displayLabel = link.label;
-        if (idx === 0) {
-            displayLabel = trans("global.previous");
-        } else if (idx === n - 1) {
-            displayLabel = trans("global.next");
-        }
-        return { ...link, displayLabel };
-    });
-});
 
 function onNavigate(event) {
     const btn = event.currentTarget;

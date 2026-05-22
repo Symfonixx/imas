@@ -69,7 +69,16 @@
     </Head>
 
     <AppLayout>
-        <div ref="pageRef" class="inner-pages blog">
+        <div
+            ref="pageRef"
+            class="inner-pages blog imas-property-show-page imas-blog-v2 imas-property-listings"
+        >
+            <InnerPageHeadingHero
+                :page-title="trans('properties.proprty_details')"
+                :items="propertyHeadingItems"
+                :banner-image-url="propertyShowBannerUrl"
+            />
+
             <section class="single-proper blog details imas-property-show">
                 <div class="container">
                     <div class="row">
@@ -93,6 +102,7 @@
                                                         class="mt-0"
                                                     >
                                                         <a
+                                                            v-if="hasMapCoordinates"
                                                             href="#listing-location"
                                                             class="listing-address"
                                                         >
@@ -104,6 +114,18 @@
                                                                 addressLine
                                                             }}</span>
                                                         </a>
+                                                        <span
+                                                            v-else
+                                                            class="listing-address"
+                                                        >
+                                                            <i
+                                                                class="fa fa-map-marker imas-address-marker"
+                                                                aria-hidden="true"
+                                                            ></i>
+                                                            <span>{{
+                                                                addressLine
+                                                            }}</span>
+                                                        </span>
                                                     </div>
                                                     <div
                                                         v-if="propertyTypeLabel"
@@ -125,7 +147,30 @@
                                                         <h4
                                                             class="imas-price-heading"
                                                         >
-                                                            {{ priceLabel }}
+                                                            <template
+                                                                v-if="
+                                                                    priceAmount
+                                                                "
+                                                            >
+                                                                <span
+                                                                    class="imas-price-heading__prefix"
+                                                                    >{{
+                                                                        pricePrefix
+                                                                    }}</span
+                                                                >
+                                                                <span
+                                                                    class="imas-price-heading__amount text-gold"
+                                                                >
+                                                                    {{
+                                                                        priceAmount
+                                                                    }}
+                                                                </span>
+                                                            </template>
+                                                            <span
+                                                                v-else
+                                                                class="imas-price-heading__amount text-gold"
+                                                                >—</span
+                                                            >
                                                         </h4>
                                                     </div>
                                                 </div>
@@ -150,7 +195,7 @@
                                     <div
                                         v-if="overviewHtml"
                                         data-imas-reveal
-                                        class="blog-info details mb-30 text-start"
+                                        class="blog-info details mb-30 text-start imas-property-show-panel"
                                     >
                                         <h5 class="imas-section-title mb-4">
                                             {{
@@ -160,7 +205,7 @@
                                             }}
                                         </h5>
                                         <div
-                                            class="imas-rich-content"
+                                            class="imas-rich-content text-md"
                                             v-html="overviewHtml"
                                         />
                                     </div>
@@ -191,7 +236,7 @@
                                     <div
                                         v-if="facilitiesHtml"
                                         data-imas-reveal
-                                        class="blog-info details mb-30 text-start"
+                                        class="blog-info details mb-30 text-start imas-property-show-panel"
                                     >
                                         <h5 class="imas-section-title mb-4">
                                             {{
@@ -201,7 +246,7 @@
                                             }}
                                         </h5>
                                         <div
-                                            class="imas-rich-content"
+                                            class="imas-rich-content text-md"
                                             v-html="facilitiesHtml"
                                         />
                                     </div>
@@ -210,13 +255,13 @@
                             <div
                                 v-if="contentHtml"
                                 data-imas-reveal
-                                class="blog-info details mb-30 text-start"
+                                class="blog-info details mb-30 text-start imas-property-show-panel"
                             >
                                 <h5 class="imas-section-title mb-4">
                                     {{ trans("property_show.details") }}
                                 </h5>
                                 <div
-                                    class="imas-rich-content"
+                                    class="imas-rich-content text-md"
                                     v-html="contentHtml"
                                 />
                             </div>
@@ -237,30 +282,31 @@
                             <div
                                 v-if="whyToBuyHtml"
                                 data-imas-reveal
-                                class="blog-info details mb-30 text-start"
+                                class="blog-info details mb-30 text-start imas-property-show-panel"
                             >
                                 <h5 class="imas-section-title mb-4">
                                     {{ trans("property_show.why_to_buy") }}
                                 </h5>
                                 <div
-                                    class="imas-rich-content"
+                                    class="imas-rich-content text-md"
                                     v-html="whyToBuyHtml"
                                 />
                             </div>
 
-                            <div id="listing-location" data-imas-reveal>
+                            <div
+                                v-if="hasMapCoordinates"
+                                id="listing-location"
+                                data-imas-reveal
+                            >
                                 <PropertyShowMap
                                     :lat="property.lat"
                                     :lng="property.lng"
                                     :title="trans('property_show.location')"
-                                    :unavailable-text="
-                                        trans('property_show.map_unavailable')
-                                    "
                                 />
                             </div>
                         </div>
 
-                        <aside class="col-lg-4 col-md-12 car">
+                        <aside class="col-lg-4 col-md-12 car imas-blog-v2-sidebar">
                             <div data-imas-reveal="aside">
                                 <PropertyShowContactSidebar
                                     :contact-store-url="contactStoreUrl"
@@ -296,7 +342,9 @@
 import { computed, ref } from "vue";
 import { Head, usePage } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/App.vue";
+import InnerPageHeadingHero from "@/components/global/InnerPageHeadingHero.vue";
 import { useScrollReveal } from "@/composables/useScrollReveal";
+import { localizedRoute } from "@/utils/localizedRoute.js";
 import PopularPropertiesSection from "../../../../../Base/resources/assets/js/components/PopularPropertiesSection.vue";
 import PropertyShowGallery from "../components/PropertyShowGallery.vue";
 import PropertyShowVideo from "../components/PropertyShowVideo.vue";
@@ -319,6 +367,10 @@ const props = defineProps({
 
 const page = usePage();
 const locale = computed(() => page.props.locale || "en");
+const activeLocale = locale;
+
+const globals = computed(() => page.props.globals ?? {});
+const media = computed(() => globals.value.media ?? {});
 
 function trans(key) {
     return page.props.translations[key] || key;
@@ -337,6 +389,48 @@ const displayTitle = computed(() => {
         return fromProject;
     }
     return props.property.project_code || "Property";
+});
+
+const propertyHeadingItems = computed(() => {
+    const rows = [];
+    try {
+        if (typeof route === "function" && route().has?.("home")) {
+            rows.push({
+                title: trans("navBar.Home"),
+                href: localizedRoute("home", {}, activeLocale.value, "/"),
+            });
+        }
+        if (typeof route === "function" && route().has?.("property.index")) {
+            rows.push({
+                title: trans("navBar.Buy Real Estate"),
+                href: localizedRoute(
+                    "property.index",
+                    {},
+                    activeLocale.value,
+                    "/property",
+                ),
+            });
+        }
+    } catch {
+        /* Ziggy may be unavailable */
+    }
+    rows.push({
+        title: displayTitle.value,
+        href: null,
+    });
+    return rows;
+});
+
+const propertyShowBannerUrl = computed(() => {
+    const url = media.value.property_show_banner;
+    if (typeof url !== "string" || url.trim() === "") {
+        return "";
+    }
+    const trimmed = url.trim();
+    if (/\/default\.jpg(?:\?.*)?$/i.test(trimmed)) {
+        return "";
+    }
+    return trimmed;
 });
 
 const addressLine = computed(() =>
@@ -363,12 +457,14 @@ function formatMoney(amount) {
     }).format(n);
 }
 
-const priceLabel = computed(() => {
+const pricePrefix = computed(() => trans("properties.start_price"));
+
+const priceAmount = computed(() => {
     const start = propertyStartPrice(props.property);
     if (start == null) {
-        return "—";
+        return null;
     }
-    return `${trans("properties.price_from")} ${formatMoney(start)}`;
+    return formatMoney(start);
 });
 
 const overviewHtml = computed(() =>
@@ -382,6 +478,19 @@ const whyToBuyHtml = computed(() =>
 );
 const facilitiesHtml = computed(() =>
     localizedField(props.property.facilities, locale.value),
+);
+
+function hasValidCoordinate(value) {
+    if (value === null || value === undefined || value === "") {
+        return false;
+    }
+    return Number.isFinite(Number(value));
+}
+
+const hasMapCoordinates = computed(
+    () =>
+        hasValidCoordinate(props.property.lat) &&
+        hasValidCoordinate(props.property.lng),
 );
 
 const inquirySubject = computed(() =>
@@ -442,7 +551,7 @@ const twitterCard = computed(() =>
 
 const pageRef = ref(null);
 
-useScrollReveal(pageRef, { variant: "sections" });
+useScrollReveal(pageRef, { variant: "propertyListings" });
 </script>
 
 <style scoped lang="scss">
@@ -455,8 +564,9 @@ useScrollReveal(pageRef, { variant: "sections" });
     display: inline-block;
     padding-bottom: 0.35rem;
     margin-bottom: 1rem;
+    font-size: var(--text-md);
     font-weight: 700;
-    color: var(--brand-navy);
+    color: var(--text);
 }
 
 .imas-section-title::after {
@@ -465,46 +575,110 @@ useScrollReveal(pageRef, { variant: "sections" });
     inset-inline-start: 0;
     bottom: 0;
     width: 3.5rem;
-    height: 3px;
+    height: 2px;
     background: var(--brand-gold);
     border-radius: 2px;
+}
+
+.imas-rich-content {
+    color: var(--text);
+    line-height: var(--line-height-base);
+}
+
+.imas-rich-content :deep(p),
+.imas-rich-content :deep(li),
+.imas-rich-content :deep(blockquote) {
+    color: var(--text);
 }
 
 .imas-rich-content :deep(p:last-child) {
     margin-bottom: 0;
 }
 
-.imas-price-heading {
+.imas-rich-content :deep(a) {
+    color: var(--text);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.imas-rich-content :deep(a:hover) {
     color: var(--brand-gold);
-    font-weight: 700;
+}
+
+.imas-price-heading {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.2rem;
+    color: var(--text);
+    font-weight: 600;
+    font-size: var(--text-xl);
+    line-height: 1.3;
+}
+
+.listing-title-bar.text-lg-end .imas-price-heading {
+    align-items: flex-end;
+    text-align: end;
+}
+
+.imas-price-heading__prefix {
+    display: block;
+    font-size: var(--text-md);
+    font-weight: 600;
+    color: var(--text);
+    text-transform: none;
+}
+
+.imas-price-heading__amount {
+    display: block;
+    font-size: var(--text-xl);
+    font-weight: 600;
+    color: var(--brand-gold);
+    line-height: 1.3;
 }
 
 .imas-for-sale-pill {
     background: var(--brand-gold);
-    color: var(--brand-navy);
+    color: var(--text-on-gold);
 }
 
 .imas-sold-out-pill {
-    background: #dc3545;
-    color: #fff;
+    background: var(--danger);
+    color: var(--text);
 }
 
 .imas-property-type-badge {
     display: inline-block;
-    font-size: 0.85rem;
-    color: #fff;
+    font-size: var(--text-xs);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--text-on-gold);
     background: var(--brand-gold);
     padding: 5px 10px;
-    border-radius: 7px;
+    border-radius: 4px;
 }
 
 .imas-address-marker {
     margin-inline-end: 0.5rem;
+    color: var(--brand-gold);
 }
 
 .listing-title-bar h3 {
     text-align: start;
-    font-size: 24px;
+    font-size: var(--text-xl);
+    font-weight: 600;
+    color: var(--text);
+    text-transform: none !important;
+}
+
+.imas-property-show .listing-address {
+    color: var(--text-dim);
+    font-size: var(--text-sm);
+}
+
+.imas-property-show .listing-address:hover {
+    color: var(--brand-gold);
 }
 
 .imas-property-show .imas-property-title-row {
@@ -536,9 +710,11 @@ html[dir="rtl"]
     display: inline-block;
     padding-bottom: 0.35rem;
     margin-bottom: 1rem;
+    font-size: var(--text-md);
     font-weight: 700;
-    color: var(--brand-navy);
+    color: var(--text);
     text-align: start;
+    text-transform: none !important;
 }
 
 .imas-property-show .imas-section-title::after {
@@ -547,7 +723,7 @@ html[dir="rtl"]
     inset-inline-start: 0;
     bottom: 0;
     width: 3.5rem;
-    height: 3px;
+    height: 2px;
     background: var(--brand-gold);
     border-radius: 2px;
 }
@@ -565,7 +741,8 @@ html[dir="rtl"] .imas-property-show .carousel-control.right {
 html[dir="rtl"] .imas-property-show .imas-property-gallery .carousel-inner {
     direction: ltr;
 }
-h5:after {
+
+.imas-property-show-page .imas-property-show-panel h5.imas-section-title::after {
     margin-bottom: 0 !important;
 }
 </style>

@@ -381,5 +381,14 @@
     },
     "floating_whatsapp":{
         "aria_label":"Contact us on WhatsApp"
+    },
+    "floating_contact":{
+        "menu_title":"Talk to us on your favorite channel",
+        "menu_aria":"Contact channels",
+        "messenger":"Messenger chat",
+        "gmail":"Gmail",
+        "direct_call":"Direct call",
+        "aria_open":"Open contact menu",
+        "aria_close":"Close contact menu"
     }
 }

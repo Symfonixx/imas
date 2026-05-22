@@ -385,5 +385,14 @@
     },
     "floating_whatsapp":{
         "aria_label":"تواصل معنا عبر واتساب"
+    },
+    "floating_contact":{
+        "menu_title":"تحدث معنا عبر قناتك المفضلة",
+        "menu_aria":"قنوات التواصل",
+        "messenger":"محادثة ماسنجر",
+        "gmail":"جيميل",
+        "direct_call":"اتصال مباشر",
+        "aria_open":"فتح قائمة التواصل",
+        "aria_close":"إغلاق قائمة التواصل"
     }
 }

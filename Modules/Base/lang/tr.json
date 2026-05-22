@@ -383,5 +383,14 @@
     },
     "floating_whatsapp":{
         "aria_label":"WhatsApp üzerinden bize ulaşın"
+    },
+    "floating_contact":{
+        "menu_title":"Favori kanalınızdan bize ulaşın",
+        "menu_aria":"İletişim kanalları",
+        "messenger":"Messenger sohbeti",
+        "gmail":"Gmail",
+        "direct_call":"Doğrudan arama",
+        "aria_open":"İletişim menüsünü aç",
+        "aria_close":"İletişim menüsünü kapat"
     }
 }

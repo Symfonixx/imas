@@ -14,9 +14,6 @@
 
     {{-- Find Houses theme styles (order matches theme/findhouses/index.html) --}}
     <link rel="stylesheet" href="{{ $fh }}/css/jquery-ui.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Nunito:wght@300;400;500;600;700&display=swap">
     <link rel="stylesheet" href="{{ $fh }}/font/flaticon.css">
     <link rel="stylesheet" href="{{ $fh }}/css/fontawesome-all.min.css">
     <link rel="stylesheet" href="{{ $fh }}/css/fontawesome-5-all.min.css">

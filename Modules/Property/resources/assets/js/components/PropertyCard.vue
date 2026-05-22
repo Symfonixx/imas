@@ -109,7 +109,8 @@
 <script setup>
 import axios from "axios";
 import { computed, ref, watch } from "vue";
-import { Link, router, usePage } from "@inertiajs/vue3";
+import { Link, usePage } from "@inertiajs/vue3";
+import { useOpenAuthModal } from "@/composables/useOpenAuthModal";
 import VideoLightbox from "@/components/Global/VideoLightbox.vue";
 import { localizedField } from "../utils/propertyLocalized.js";
 import {
@@ -131,6 +132,7 @@ const props = defineProps({
 });
 
 const page = usePage();
+const { openAuthModal } = useOpenAuthModal();
 
 const trans = (key) => page.props.translations[key] || key;
 
@@ -251,7 +253,7 @@ async function onFavoriteClick(e) {
     e.stopPropagation();
 
     if (!isAuthenticated.value) {
-        router.visit(route("login"));
+        openAuthModal("login");
         return;
     }
 

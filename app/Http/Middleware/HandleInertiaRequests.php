@@ -70,6 +70,7 @@ class HandleInertiaRequests extends Middleware
             'globals' => fn () => $this->sharedGlobals(),
             'property_search' => fn () => $this->sharedPropertySearchBounds(),
             'auth' => fn () => $this->sharedAuthPayload($request),
+            'subscribe_store_url' => fn () => route('support.newsletter.subscribe'),
         ]);
     }
 

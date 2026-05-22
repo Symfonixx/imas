@@ -127,7 +127,7 @@
                                         :class="flagCountryClass(currentLocale)"
                                         aria-hidden="true"
                                     ></span>
-                                    <strong>{{ localeBadge }}</strong>
+                                    <!-- <strong>{{ localeBadge }}</strong> -->
                                 </span>
                                 <i class="fa fa-caret-down arrlan"></i>
                             </div>
@@ -270,6 +270,7 @@ import {
     watch,
 } from "vue";
 import { Link, router, usePage } from "@inertiajs/vue3";
+import { IMAS_OPEN_AUTH_EVENT } from "@/composables/useOpenAuthModal";
 import { useGsap } from "@/composables/useGsap";
 import { prefersReducedMotion } from "@/plugins/gsap";
 import AuthModal from "./AuthModal.vue";
@@ -304,6 +305,11 @@ function onDelegatedOpenAuth(e) {
     }
     e.preventDefault();
     const tab = el.getAttribute("data-open-auth") || "login";
+    openAuthModal(tab === "register" || tab === "reset" ? tab : "login");
+}
+
+function onImasOpenAuthEvent(e) {
+    const tab = e.detail?.tab || "login";
     openAuthModal(tab === "register" || tab === "reset" ? tab : "login");
 }
 
@@ -847,6 +853,7 @@ watch(
 );
 
 onMounted(() => {
+    document.addEventListener(IMAS_OPEN_AUTH_EVENT, onImasOpenAuthEvent);
     document.addEventListener("click", closeHeaderDropdownsOnOutsideClick);
     document.addEventListener("click", onDelegatedOpenAuth, true);
 
@@ -867,6 +874,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+    document.removeEventListener(IMAS_OPEN_AUTH_EVENT, onImasOpenAuthEvent);
     document.removeEventListener("click", closeHeaderDropdownsOnOutsideClick);
     document.removeEventListener("click", onDelegatedOpenAuth, true);
 

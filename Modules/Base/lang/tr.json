@@ -358,9 +358,10 @@
         "newsLetters":"Haber bültenleri",
         "signup_for_newsletters":"En son güncellemeleri ve teklifleri almak için bültenimize kayıt olun.",
         "subscribe":"Abone ol",
+        "subscription_success":"Teşekkürler! Bültenimize abone oldunuz.",
         "enter_your_email":"E-posta adresinizi girin",
         "useful_links":"Kullanışlı bağlantılar",
-        "All Rights Reserved.":"Tüm hakları saklıdır."
+        "All Rights Reserved":"Tüm hakları saklıdır."
         
     },
     "contact_us":{

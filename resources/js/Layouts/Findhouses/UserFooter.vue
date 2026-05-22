@@ -75,20 +75,43 @@
                             <p>{{ trans('navBar.signup_for_newsletters') }}</p>
                         </div>
                         <form
+                            ref="newsletterFormEl"
                             class="bloq-email mailchimp form-inline newsletter"
-                            @submit.prevent
+                            @submit.prevent="submitNewsletter"
                         >
-                            <label for="subscribeEmail" class="error"></label>
                             <div class="email">
                                 <input
                                     id="subscribeEmail"
+                                    v-model="subscribeForm.email"
                                     type="email"
-                                    name="EMAIL"
+                                    name="email"
+                                    required
+                                    maxlength="255"
                                     :placeholder="trans('navBar.enter_your_email')"
+                                    :disabled="subscribeForm.processing"
+                                    :class="{ 'is-invalid': subscribeForm.errors.email }"
                                 >
-                                <button type="submit">{{ trans('navBar.subscribe') }}</button>
-                                <p class="subscription-success"></p>
+                                <button
+                                    type="submit"
+                                    :disabled="subscribeForm.processing"
+                                >
+                                    {{ trans('navBar.subscribe') }}
+                                </button>
                             </div>
+                            <p
+                                v-if="subscribeForm.errors.email"
+                                class="subscription-error"
+                                role="alert"
+                            >
+                                {{ subscribeForm.errors.email }}
+                            </p>
+                            <p
+                                v-if="showSubscriptionSuccess"
+                                class="subscription-success"
+                                role="status"
+                            >
+                                {{ trans('navBar.subscription_success') }}
+                            </p>
                         </form>
                         <div
                             v-if="footerSocialLinks.length"
@@ -110,11 +133,37 @@
         </div>
         <div class="second-footer rec-pro copyright">
             <div class="container imas-footer-wrap imas-second-footer__inner">
+                <nav
+                    v-if="bottomBarPages.length"
+                    class="imas-second-footer__bottom-bar"
+                    :aria-label="trans('navBar.useful_links')"
+                >
+                    <template
+                        v-for="(p, index) in bottomBarPages"
+                        :key="p.id"
+                    >
+                        <span
+                            v-if="index > 0"
+                            class="imas-second-footer__separator"
+                            aria-hidden="true"
+                        >|</span>
+                        <Link
+                            class="imas-second-footer__page-link"
+                            :href="cmsPageUrl(p.slug)"
+                        >
+                            {{ p.title }}
+                        </Link>
+                    </template>
+                </nav>
+                <div
+                    v-else
+                    class="imas-second-footer__bottom-bar imas-second-footer__bottom-bar--empty"
+                    aria-hidden="true"
+                ></div>
                 <p class="imas-second-footer__copy">
                     {{ year }} © {{ appName }} —
-                    {{ trans("navBar.All Rights Reserved.   ") }}
+                    {{ trans("navBar.All Rights Reserved") }}
                 </p>
-             
                 <p class="imas-second-footer__developer">
                     <span>{{ developedByPrefix }}</span>
                     <a
@@ -132,8 +181,8 @@
 </template>
 
 <script setup>
-import {computed} from 'vue';
-import {Link, usePage} from '@inertiajs/vue3';
+import {computed, onBeforeUnmount, ref} from 'vue';
+import {Link, useForm, usePage} from '@inertiajs/vue3';
 import { cmsPageUrl } from '@/utils/cmsPageUrl.js';
 
 const props = defineProps({
@@ -144,6 +193,18 @@ const props = defineProps({
 });
 
 const page = usePage();
+const newsletterFormEl = ref(null);
+const showSubscriptionSuccess = ref(false);
+let subscriptionSuccessTimer = null;
+
+const subscribeForm = useForm({
+    email: '',
+});
+
+const subscribeStoreUrl = computed(() => {
+    const url = page.props.subscribe_store_url;
+    return typeof url === 'string' ? url.trim() : '';
+});
 
 const themeUrl = computed(() => page.props.theme_url || '');
 const auth = computed(() => page.props.auth);
@@ -183,6 +244,10 @@ const footerPagesLinks = computed(() =>
     })),
 );
 
+const bottomBarPages = computed(
+    () => page.props.globals?.pages?.bottom_bar ?? [],
+);
+
 const footerSocialLinks = computed(() => {
     const s = settings.value;
     const defs = [
@@ -206,6 +271,48 @@ const footerSocialLinks = computed(() => {
 function trans(key) {
     return page.props.translations[key] || key;
 }
+
+function clearSubscriptionSuccessTimer() {
+    if (subscriptionSuccessTimer !== null) {
+        clearTimeout(subscriptionSuccessTimer);
+        subscriptionSuccessTimer = null;
+    }
+}
+
+function showSubscriptionSuccessMessage() {
+    clearSubscriptionSuccessTimer();
+    showSubscriptionSuccess.value = true;
+    subscriptionSuccessTimer = setTimeout(() => {
+        showSubscriptionSuccess.value = false;
+        subscriptionSuccessTimer = null;
+    }, 8000);
+}
+
+function submitNewsletter() {
+    const el = newsletterFormEl.value;
+    if (el && typeof el.checkValidity === 'function' && !el.checkValidity()) {
+        el.reportValidity();
+        return;
+    }
+
+    const url = subscribeStoreUrl.value;
+    if (!url) {
+        return;
+    }
+
+    subscribeForm.post(url, {
+        preserveScroll: true,
+        onSuccess: () => {
+            subscribeForm.reset();
+            subscribeForm.clearErrors();
+            showSubscriptionSuccessMessage();
+        },
+    });
+}
+
+onBeforeUnmount(() => {
+    clearSubscriptionSuccessTimer();
+});
 </script>
 
 
@@ -270,7 +377,7 @@ function trans(key) {
 .imas-blog-footer .newsletters h3::after {
     content: "";
     position: absolute;
-    left: 0;
+    // left: 0;
     bottom: 0;
     width: 30px;
     height: 2px;
@@ -426,6 +533,33 @@ function trans(key) {
     background: var(--brand-gold-hover, #eecb3a);
 }
 
+.imas-blog-footer .newsletter .email button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.imas-blog-footer .newsletter .email input.is-invalid {
+    color: #f8b4b4 !important;
+}
+
+.imas-blog-footer .subscription-success,
+.imas-blog-footer .subscription-error {
+    margin: 10px 0 0;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.imas-blog-footer .subscription-success {
+    color: #6ee7a0;
+    background: rgba(110, 231, 160, 0.14);
+    padding: 10px 12px;
+    border-radius: 6px;
+}
+
+.imas-blog-footer .subscription-error {
+    color: #f8b4b4;
+}
+
 .imas-blog-footer .second-footer.copyright {
     background: var(--footer-bg, #06101f) !important;
     border-top: 1px solid var(--divider, rgba(255, 255, 255, 0.06)) !important;
@@ -434,19 +568,53 @@ function trans(key) {
 }
 
 .imas-second-footer__inner {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     align-items: center;
     gap: 1rem 1.5rem;
-    flex-wrap: wrap;
     padding-inline: 24px;
+}
+
+.imas-second-footer__bottom-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-self: start;
+    gap: 0;
+    margin: 0;
+}
+
+.imas-second-footer__bottom-bar--empty {
+    min-height: 0;
+}
+
+.imas-second-footer__page-link {
+    color: var(--text-muted, #6b7896);
+    font-size: 12.5px;
+    font-weight: 500;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color 0.2s ease;
+}
+
+.imas-second-footer__page-link:hover {
+    color: var(--brand-gold, #d9a800);
+    text-decoration: none;
+}
+
+.imas-second-footer__separator {
+    color: rgba(255, 255, 255, 0.45);
+    user-select: none;
+    line-height: 1;
+    margin-inline: 10px;
 }
 
 .imas-second-footer__copy {
     margin: 0;
     font-size: 12.5px;
     color: var(--text-muted, #6b7896) !important;
-    text-align: start;
+    text-align: center;
+    justify-self: center;
 }
 
 /* blog-v2 .copyright .socials — placed under newsletter */
@@ -483,6 +651,7 @@ function trans(key) {
 .imas-second-footer__developer {
     margin: 0;
     text-align: end;
+    justify-self: end;
     font-size: 12.5px;
     color: var(--text-muted, #6b7896);
     font-weight: 400;
@@ -513,14 +682,20 @@ function trans(key) {
     }
 
     .imas-second-footer__inner {
-        flex-direction: column;
+        grid-template-columns: 1fr;
+        justify-items: center;
         text-align: center;
+    }
+
+    .imas-second-footer__bottom-bar {
+        justify-self: center;
+        justify-content: center;
     }
 
     .imas-second-footer__copy,
     .imas-second-footer__developer {
         text-align: center;
-        justify-content: center;
+        justify-self: center;
     }
 
     .imas-footer-socials {

@@ -357,9 +357,10 @@
         "newsLetters":"News letters",
         "signup_for_newsletters":"Sign Up for Our Newsletter to get Latest Updates and Offers.",
         "subscribe":"Subscribe",
+        "subscription_success":"Thank you! You are subscribed to our newsletter.",
         "enter_your_email":"Enter your email",
         "useful_links":"Useful links",
-        "All Rights Reserved.":"All Rights Reserved."
+        "All Rights Reserved":"All Rights Reserved."
     },
     "contact_us":{
         "title":"Contact us",

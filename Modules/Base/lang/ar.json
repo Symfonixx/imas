@@ -361,9 +361,10 @@
         "newsLetters":"النشرات الإخبارية",
         "signup_for_newsletters":"اشترك في نشرتنا الإخبارية للحصول على آخر التحديثات والعروض.",
         "subscribe":"اشترك",
+        "subscription_success":"شكراً لك! تم اشتراكك في نشرتنا الإخبارية.",
         "enter_your_email":"أدخل بريدك الإلكتروني",
         "useful_links":"روابط مفيدة",
-        "All Rights Reserved.":"جميع الحقوق محفوظة."
+        "All Rights Reserved":"جميع الحقوق محفوظة."
     },
     "contact_us":{
         "title":"اتصل بنا",

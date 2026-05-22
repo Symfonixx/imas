@@ -144,8 +144,57 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped lang="scss">
+/* Equal-height cards in Owl carousel */
+.home-testimonials :deep(.owl-stage) {
+    display: flex;
+    align-items: stretch;
+}
+
+.home-testimonials :deep(.owl-item) {
+    display: flex;
+    height: auto;
+}
+
+.home-testimonials .singleJobClinet {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    width: 100%;
+    height: 100%;
+    margin-bottom: 0;
+}
+
 .quote {
+    flex: 1 1 auto;
     text-align: start;
     font-size: 16px;
+    line-height: 1.5;
+    margin-bottom: 25px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    text-overflow: ellipsis;
+    word-break: break-word;
+}
+
+.quote :deep(p) {
+    margin: 0;
+    display: inline;
+}
+
+.quote :deep(p + p) {
+    display: block;
+    margin-top: 0.5em;
+}
+
+.detailJC {
+    flex-shrink: 0;
+    margin-top: auto;
+}
+
+.homepage-1 .detailJC span {
+    background: var(--brand-gold);
 }
 </style>

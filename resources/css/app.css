@@ -1,19 +1,9 @@
 @import "toastr";
 @import "flag-icons/css/flag-icons.min.css";
 
-/* Optional self-hosted brand fonts (drop files in public/fonts/brand/) */
+/* Brand text font — drop Roman files in public/fonts/brand/ */
 @font-face {
-    font-family: "EngraversGothic BT";
-    src:
-        url("/fonts/brand/EngraversGothicBT.woff2") format("woff2"),
-        url("/fonts/brand/EngraversGothicBT.woff") format("woff");
-    font-weight: 400;
-    font-style: normal;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: "Avenir LT Std";
+    font-family: "Avenir LT Std 55 Roman";
     src:
         url("/fonts/brand/AvenirLTStd-Roman.woff2") format("woff2"),
         url("/fonts/brand/AvenirLTStd-Roman.woff") format("woff");
@@ -24,9 +14,10 @@
 
 /* Dark theme tokens (see .cursor/rules/DARK_THEME_SPEC.mdc) — loads after Find Houses theme CSS */
 :root {
-    /* —— Brand typography —— */
-    --font-heading: "EngraversGothic BT", "Cinzel", serif;
-    --font-body: "Avenir LT Std", "Avenir", "Nunito", sans-serif;
+    /* —— Brand typography (single family + 10pt base) —— */
+    --font-app: "Avenir LT Std 55 Roman";
+    --font-heading: var(--font-app);
+    --font-body: var(--font-app);
     --font-size-heading: 24pt;
     --font-size-body: 10pt;
     --letter-spacing-heading: 0.06em;
@@ -125,10 +116,11 @@
 }
 
 /**
- * Global typography — overrides Find Houses (Lato / Montserrat / Nunito).
+ * Global typography — Avenir LT Std 55 Roman @ 10pt only (overrides Find Houses fonts).
  * app.css loads after theme styles in app.blade.php; !important beats theme rules.
  */
 html {
+    font-family: var(--font-body) !important;
     font-size: var(--font-size-body) !important;
 }
 
@@ -174,6 +166,35 @@ body {
     background: var(--bg) !important;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+}
+
+/* Catch-all for theme markup still using Lato / Montserrat / Nunito / Cinzel */
+body.imas-theme-dark :where(
+    p,
+    span,
+    a,
+    li,
+    dt,
+    dd,
+    small,
+    strong,
+    em,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    label,
+    legend,
+    caption,
+    th,
+    td,
+    figcaption,
+    blockquote,
+    cite
+) {
+    font-family: var(--font-body) !important;
 }
 
 /**
@@ -297,7 +318,7 @@ h6,
 .counterup .section-title,
 .portfolio .sec-title h2,
 .team .sec-title h2 {
-    font-family: var(--font-heading) !important;
+    font-family: var(--font-body) !important;
     letter-spacing: var(--letter-spacing-heading) !important;
     text-transform: uppercase !important;
     color: var(--text) !important;

@@ -76,6 +76,7 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, ref, watch } from "vue";
 import { Link, router, usePage } from "@inertiajs/vue3";
+import { localizedRoute } from "@/utils/localizedRoute.js";
 
 const props = defineProps({
     modelValue: { type: Boolean, default: false },
@@ -85,6 +86,7 @@ const props = defineProps({
 const emit = defineEmits(["update:modelValue"]);
 
 const page = usePage();
+const activeLocale = computed(() => page.props.locale || "en");
 const query = ref("");
 const inputRef = ref(null);
 
@@ -109,16 +111,9 @@ const searchPlaceholder = computed(
 
 const searchAriaLabel = computed(() => searchLabel.value);
 
-const homeHref = computed(() => {
-    try {
-        if (typeof route === "function" && route().has?.("home")) {
-            return route("home");
-        }
-    } catch {
-        /* ignore */
-    }
-    return "/";
-});
+const homeHref = computed(() =>
+    localizedRoute("home", {}, activeLocale.value, "/"),
+);
 
 function close() {
     emit("update:modelValue", false);
@@ -143,22 +138,14 @@ function submitSearch() {
     close();
     query.value = "";
 
-    try {
-        if (typeof route === "function" && route().has?.("property.index")) {
-            router.get(route("property.index"), params, {
-                preserveState: false,
-                preserveScroll: false,
-            });
-            return;
-        }
-    } catch {
-        /* ignore */
-    }
-
-    router.get("/property", params, {
-        preserveState: false,
-        preserveScroll: false,
-    });
+    router.get(
+        localizedRoute("property.index", {}, activeLocale.value, "/property"),
+        params,
+        {
+            preserveState: false,
+            preserveScroll: false,
+        },
+    );
 }
 
 watch(

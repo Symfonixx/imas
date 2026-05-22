@@ -20,8 +20,12 @@ import UserTopBar from "@/Layouts/Findhouses/UserTopBar.vue";
 import UserFooter from "@/Layouts/Findhouses/UserFooter.vue";
 import FloatingWhatsAppButton from "@/components/Global/FloatingWhatsAppButton.vue";
 import { cmsPageUrl } from "@/utils/cmsPageUrl.js";
+import { localizedRoute } from "@/utils/localizedRoute.js";
+import { syncZiggy } from "@/utils/syncZiggy.js";
 
 const page = usePage();
+
+const activeLocale = computed(() => page.props.locale || "en");
 
 /** Home hero uses overlay header (white logo / light links). Inner pages need solid bar + in-flow height. */
 const navbarTransparent = computed(() => {
@@ -38,26 +42,16 @@ const navbarTransparent = computed(() => {
 });
 
 function safeRoute(name, fallbackHref = "#") {
-    try {
-        // Ziggy exposes a callable `route()` and a `route().has()` helper.
-        if (typeof route === "function" && route().has?.(name)) {
-            return route(name);
-        }
-    } catch {
-        // ignore
-    }
-    return fallbackHref;
+    return localizedRoute(name, {}, activeLocale.value, fallbackHref);
 }
 
 function blogCategoryUrl(categoryId) {
-    try {
-        if (typeof route === "function" && route().has?.("blog.index")) {
-            return route("blog.index", { category_id: categoryId });
-        }
-    } catch {
-        // ignore
-    }
-    const base = safeRoute("blog.index", "/blog");
+    const base = localizedRoute(
+        "blog.index",
+        {},
+        activeLocale.value,
+        "/blog",
+    );
     const sep = base.includes("?") ? "&" : "?";
     return `${base}${sep}category_id=${categoryId}`;
 }
@@ -69,6 +63,8 @@ const blogNavCategories = computed(
 const navbarPages = computed(() => page.props.globals?.pages?.navbar ?? []);
 
 const navLinks = computed(() => {
+    const loc = activeLocale.value;
+
     const blogCategoryChildren = blogNavCategories.value.map((c) => ({
         key: `blog-category-${c.id}`,
         label: c.name,
@@ -77,7 +73,7 @@ const navLinks = computed(() => {
 
     const blogsNav = {
         key: "navBar.Blogs",
-        href: safeRoute("blog.index"),
+        href: safeRoute("blog.index", "/blog"),
         ...(blogCategoryChildren.length > 0
             ? { children: blogCategoryChildren }
             : {}),
@@ -86,12 +82,12 @@ const navLinks = computed(() => {
     const pageNavChildren = navbarPages.value.map((p) => ({
         key: `page-${p.id}`,
         label: p.title,
-        href: cmsPageUrl(p.slug),
+        href: cmsPageUrl(p.slug, loc),
     }));
 
     const links = [
         { key: "navBar.Home", href: safeRoute("home", "/") },
-        { key: "navBar.Buy Real Estate", href: safeRoute("property.index") },
+        { key: "navBar.Buy Real Estate", href: safeRoute("property.index", "/property") },
         {
             key: "navBar.Turkish Citizenship",
             href: safeRoute("turkish-citizenship", "/turkish-citizenship"),
@@ -114,15 +110,21 @@ const navLinks = computed(() => {
 });
 
 function syncDocumentTextDirection() {
-    const locale = page.props.locale || "en";
+    const locale = activeLocale.value;
     const dir = page.props.text_direction || (locale === "ar" ? "rtl" : "ltr");
     document.documentElement.setAttribute("lang", String(locale));
     document.documentElement.setAttribute("dir", String(dir));
 }
 
 watch(
-    () => [page.props.locale, page.props.text_direction],
+    () => [activeLocale.value, page.props.text_direction],
     () => syncDocumentTextDirection(),
     { immediate: true },
+);
+
+watch(
+    () => page.props.ziggy,
+    (ziggy) => syncZiggy(ziggy),
+    { immediate: true, deep: true },
 );
 </script>

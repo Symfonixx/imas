@@ -52,7 +52,7 @@ class FortifyServiceProvider extends ServiceProvider
     {
         Route::group([
             'prefix' => LaravelLocalization::setLocale(),
-            'middleware' => ['localeSessionRedirect', 'localizationRedirect', 'localeViewPath'],
+            'middleware' => ['localeCookieRedirect', 'localeSessionRedirect', 'localizationRedirect', 'localeViewPath'],
         ], function () {
             $this->loadRoutesFrom((base_path('vendor/laravel/fortify/routes/routes.php')));
         });

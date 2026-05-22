@@ -19,7 +19,7 @@
         >
             <div class="container imas-nav__container">
                 <div id="logo" ref="logoRef" class="imas-nav__logo">
-                    <Link :href="route('home')" class="imas-nav__logo-link">
+                    <Link :href="homeHref" class="imas-nav__logo-link">
                         <img
                             :src="logoUrl"
                             :data-sticky-logo="logoUrl"
@@ -274,6 +274,7 @@ import { IMAS_OPEN_AUTH_EVENT } from "@/composables/useOpenAuthModal";
 import { useGsap } from "@/composables/useGsap";
 import { prefersReducedMotion } from "@/plugins/gsap";
 import AuthModal from "./AuthModal.vue";
+import { localizedRoute } from "@/utils/localizedRoute.js";
 
 const props = defineProps({
     navLinks: {
@@ -287,6 +288,12 @@ const props = defineProps({
 });
 
 const page = usePage();
+
+const activeLocale = computed(() => page.props.locale || "en");
+
+const homeHref = computed(() =>
+    localizedRoute("home", {}, activeLocale.value, "/"),
+);
 
 const authModalOpen = ref(false);
 const authStartTab = ref("login");
@@ -358,7 +365,7 @@ const profileHref = computed(() => {
     if (isAdmin.value) {
         return route("admin.profile.edit");
     }
-    return route("home");
+    return homeHref.value;
 });
 
 const mediaData = computed(() => page.props.globals.media || {});

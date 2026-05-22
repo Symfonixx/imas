@@ -15,6 +15,7 @@ use Modules\Base\Repositories\Settings\SettingsRepository;
 use Modules\Cms\Models\BlogCategory;
 use Modules\Cms\Models\Page;
 use Modules\Property\Support\PropertySearchBounds;
+use Tighten\Ziggy\Ziggy;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -71,6 +72,9 @@ class HandleInertiaRequests extends Middleware
             'property_search' => fn () => $this->sharedPropertySearchBounds(),
             'auth' => fn () => $this->sharedAuthPayload($request),
             'subscribe_store_url' => fn () => route('support.newsletter.subscribe'),
+            'ziggy' => fn () => array_merge((new Ziggy)->toArray(), [
+                'location' => $request->url(),
+            ]),
         ]);
     }
 

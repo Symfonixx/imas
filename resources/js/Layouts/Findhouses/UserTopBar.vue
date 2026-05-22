@@ -29,7 +29,7 @@
                     v-for="p in topBarPages"
                     :key="p.id"
                     class="imas-top-bar__link imas-top-bar__page-link"
-                    :href="cmsPageUrl(p.slug)"
+                    :href="cmsPageUrl(p.slug, activeLocale)"
                 >
                     {{ p.title }}
                 </Link>
@@ -60,6 +60,8 @@ import { Link, usePage } from "@inertiajs/vue3";
 import { cmsPageUrl } from "@/utils/cmsPageUrl.js";
 
 const page = usePage();
+
+const activeLocale = computed(() => page.props.locale || "en");
 
 const settings = computed(() => page.props.settings || {});
 

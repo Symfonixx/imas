@@ -149,7 +149,7 @@
                         >|</span>
                         <Link
                             class="imas-second-footer__page-link"
-                            :href="cmsPageUrl(p.slug)"
+                            :href="cmsPageUrl(p.slug, activeLocale)"
                         >
                             {{ p.title }}
                         </Link>
@@ -236,11 +236,13 @@ const pagesNavLinks = computed(() => {
     return pages?.children || [];
 });
 
+const activeLocale = computed(() => page.props.locale || "en");
+
 const footerPagesLinks = computed(() =>
     (page.props.globals?.pages?.footer ?? []).map((p) => ({
         key: `footer-page-${p.id}`,
         label: p.title,
-        href: cmsPageUrl(p.slug),
+        href: cmsPageUrl(p.slug, activeLocale.value),
     })),
 );
 

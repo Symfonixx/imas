@@ -166,6 +166,16 @@
                             </ul>
                         </div>
                     </div>
+                    <Link
+                        v-if="auth"
+                        :href="favoritesHref"
+                        class="imas-nav__favorites imas-header-action"
+                        :class="{ 'is-active': favoritesNavActive }"
+                        :aria-label="trans('properties.favorite_properties')"
+                        :title="trans('properties.favorite_properties')"
+                    >
+                        <i class="fa fa-heart" aria-hidden="true"></i>
+                    </Link>
                     <div
                         v-if="auth"
                         ref="userMenuWrapRef"
@@ -366,6 +376,21 @@ const profileHref = computed(() => {
         return route("admin.profile.edit");
     }
     return homeHref.value;
+});
+
+const favoritesHref = computed(() =>
+    localizedRoute(
+        "property.favorites",
+        {},
+        activeLocale.value,
+        "/favorite-properties",
+    ),
+);
+
+const favoritesNavActive = computed(() => {
+    const current = normalizePath(page.url);
+    const target = normalizePath(favoritesHref.value);
+    return Boolean(target) && current === target;
 });
 
 const mediaData = computed(() => page.props.globals.media || {});
@@ -928,6 +953,33 @@ onBeforeUnmount(() => {
 
 .imas-nav__sign-in a:hover {
     color: var(--brand-gold, #d9a800);
+}
+
+.imas-nav__favorites {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    margin: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--text-dim, #9aa6bd);
+    text-decoration: none;
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.imas-nav__favorites .fa-heart {
+    font-size: 16px;
+    line-height: 1;
+}
+
+.imas-nav__favorites:hover,
+.imas-nav__favorites.is-active {
+    color: var(--brand-gold, #d9a800);
+    background: rgba(217, 168, 0, 0.12);
 }
 
 :deep(.imas-nav__lang-trigger.show-lang) {

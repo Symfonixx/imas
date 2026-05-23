@@ -42,7 +42,14 @@
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref, nextTick, watch } from "vue";
+import {
+    computed,
+    onBeforeUnmount,
+    onMounted,
+    ref,
+    nextTick,
+    watch,
+} from "vue";
 import { usePage } from "@inertiajs/vue3";
 import { useScrollReveal } from "@/composables/useScrollReveal";
 import { refreshScrollTrigger } from "@/plugins/gsap";

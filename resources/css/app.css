@@ -1,16 +1,7 @@
 @import "toastr";
 @import "flag-icons/css/flag-icons.min.css";
 
-/* Brand text font — drop Roman files in public/fonts/brand/ */
-@font-face {
-    font-family: "Avenir LT Std 55 Roman";
-    src:
-        url("/fonts/brand/AvenirLTStd-Roman.woff2") format("woff2"),
-        url("/fonts/brand/AvenirLTStd-Roman.woff") format("woff");
-    font-weight: 400;
-    font-style: normal;
-    font-display: swap;
-}
+/* @font-face for Avenir is in resources/views/app.blade.php (asset('fonts/Avenir_LT_Std_55_Roman.otf')) */
 
 /* Dark theme tokens (see .cursor/rules/DARK_THEME_SPEC.mdc) — loads after Find Houses theme CSS */
 :root {
@@ -157,6 +148,7 @@ body .header-user-name,
 body .show-lang span,
 body .lang-switch-row {
     font-family: var(--font-body) !important;
+    font-size: var(--font-size-body) !important;
     font-weight: 400 !important;
 }
 
@@ -197,6 +189,31 @@ body.imas-theme-dark
         cite
     ) {
     font-family: var(--font-body) !important;
+}
+
+/* Front-office: inherit Avenir everywhere; restore icon font stacks */
+body.imas-theme-dark {
+    font-family: var(--font-body) !important;
+    font-size: var(--font-size-body) !important;
+    font-weight: 400 !important;
+}
+
+body.imas-theme-dark * {
+    font-family: inherit !important;
+}
+
+body.imas-theme-dark [class*="fa-"],
+body.imas-theme-dark .fa,
+body.imas-theme-dark .fas,
+body.imas-theme-dark .far,
+body.imas-theme-dark .fab,
+body.imas-theme-dark .fal,
+body.imas-theme-dark [class*="flaticon"],
+body.imas-theme-dark .fi,
+body.imas-theme-dark .fis,
+body.imas-theme-dark .slick-arrow,
+body.imas-theme-dark .slick-arrow::before {
+    font-family: revert !important;
 }
 
 /**

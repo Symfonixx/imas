@@ -18,10 +18,7 @@
                     >
                 </h2>
                 <hr class="imas-about-overview__divider" />
-                <p
-                    class="imas-about-overview__text"
-                    :title="summaryText"
-                >
+                <p class="imas-about-overview__text" :title="summaryText">
                     {{ summaryText }}
                 </p>
                 <a :href="aboutHref" class="imas-about-overview__cta">
@@ -61,7 +58,10 @@ const summaryText = computed(() => {
     if (typeof raw !== "string") {
         return "";
     }
-    return raw.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+    return raw
+        .replace(/<[^>]*>/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
 });
 
 const isVisible = computed(() => summaryText.value !== "");
@@ -79,8 +79,8 @@ const titleAccent = computed(() => {
     return "Us";
 });
 
-const sectionTitle = computed(
-    () => `${titlePrimary.value} ${titleAccent.value}`.trim(),
+const sectionTitle = computed(() =>
+    `${titlePrimary.value} ${titleAccent.value}`.trim(),
 );
 
 const exploreLabel = computed(() =>

@@ -7,30 +7,56 @@
                         <div class="netabout">
                             <div class="brand-line">
                                 <div class="logo">
-                                    <img :src="logoUrl" alt="logo" class="footer_logo">
+                                    <img
+                                        :src="logoUrl"
+                                        alt="logo"
+                                        class="footer_logo"
+                                    />
                                 </div>
-                                <span class="website-name">{{ websiteName }}</span>
+                                <span class="website-name">{{
+                                    websiteName
+                                }}</span>
                             </div>
-                        
                         </div>
                         <div class="contactus text-start">
                             <ul>
                                 <li class="contact-line">
                                     <div class="info">
-                                        <span class="ic" aria-hidden="true"><i class="fa fa-map-marker"></i></span>
-                                        <p class="in-p">{{ settings.contact_address || fallbackAddress }}</p>
+                                        <span class="ic" aria-hidden="true"
+                                            ><i class="fa fa-map-marker"></i
+                                        ></span>
+                                        <p class="in-p">
+                                            {{
+                                                settings.contact_address ||
+                                                fallbackAddress
+                                            }}
+                                        </p>
                                     </div>
                                 </li>
                                 <li class="contact-line">
                                     <div class="info">
-                                        <span class="ic" aria-hidden="true"><i class="fa fa-phone"></i></span>
-                                        <p class="in-p">{{ settings.contact_phone || fallbackPhone }}</p>
+                                        <span class="ic" aria-hidden="true"
+                                            ><i class="fa fa-phone"></i
+                                        ></span>
+                                        <p class="in-p">
+                                            {{
+                                                settings.contact_phone ||
+                                                fallbackPhone
+                                            }}
+                                        </p>
                                     </div>
                                 </li>
                                 <li class="contact-line">
                                     <div class="info">
-                                        <span class="ic" aria-hidden="true"><i class="fa fa-envelope"></i></span>
-                                        <p class="in-p ti">{{ settings.contact_email || fallbackEmail }}</p>
+                                        <span class="ic" aria-hidden="true"
+                                            ><i class="fa fa-envelope"></i
+                                        ></span>
+                                        <p class="in-p ti">
+                                            {{
+                                                settings.contact_email ||
+                                                fallbackEmail
+                                            }}
+                                        </p>
                                     </div>
                                 </li>
                             </ul>
@@ -38,11 +64,16 @@
                     </div>
                     <div class="col-lg-3 col-md-6 f-col">
                         <div class="navigation text-start">
-                            <h3>{{ trans('navBar.navigation') }}</h3>
+                            <h3>{{ trans("navBar.navigation") }}</h3>
                             <div class="nav-footer text-start">
                                 <ul class="links">
-                                    <li v-for="item in mainNavLinks" :key="item.key">
-                                        <Link :href="item.href">{{ trans(item.key) }}</Link>
+                                    <li
+                                        v-for="item in mainNavLinks"
+                                        :key="item.key"
+                                    >
+                                        <Link :href="item.href">{{
+                                            trans(item.key)
+                                        }}</Link>
                                     </li>
                                 </ul>
                                 <!-- <ul class="nav-pages links">
@@ -57,7 +88,7 @@
                     </div>
                     <div class="col-lg-3 col-md-6 f-col">
                         <div class="navigation text-start">
-                            <h3>{{ trans('navBar.useful_links') }}</h3>
+                            <h3>{{ trans("navBar.useful_links") }}</h3>
                             <ul class="links links--single">
                                 <li
                                     v-for="item in footerPagesLinks"
@@ -72,8 +103,8 @@
                     </div>
                     <div class="col-lg-3 col-md-6 f-col">
                         <div class="newsletters text-start">
-                            <h3>{{ trans('navBar.newsLetters') }}</h3>
-                            <p>{{ trans('navBar.signup_for_newsletters') }}</p>
+                            <h3>{{ trans("navBar.newsLetters") }}</h3>
+                            <p>{{ trans("navBar.signup_for_newsletters") }}</p>
                         </div>
                         <form
                             ref="newsletterFormEl"
@@ -88,15 +119,20 @@
                                     name="email"
                                     required
                                     maxlength="255"
-                                    :placeholder="trans('navBar.enter_your_email')"
+                                    :placeholder="
+                                        trans('navBar.enter_your_email')
+                                    "
                                     :disabled="subscribeForm.processing"
-                                    :class="{ 'is-invalid': subscribeForm.errors.email }"
-                                >
+                                    :class="{
+                                        'is-invalid':
+                                            subscribeForm.errors.email,
+                                    }"
+                                />
                                 <button
                                     type="submit"
                                     :disabled="subscribeForm.processing"
                                 >
-                                    {{ trans('navBar.subscribe') }}
+                                    {{ trans("navBar.subscribe") }}
                                 </button>
                             </div>
                             <p
@@ -111,7 +147,7 @@
                                 class="subscription-success"
                                 role="status"
                             >
-                                {{ trans('navBar.subscription_success') }}
+                                {{ trans("navBar.subscription_success") }}
                             </p>
                         </form>
                         <div
@@ -126,7 +162,8 @@
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 :aria-label="item.label"
-                            ><i :class="item.icon" aria-hidden="true"></i></a>
+                                ><i :class="item.icon" aria-hidden="true"></i
+                            ></a>
                         </div>
                     </div>
                 </div>
@@ -139,15 +176,13 @@
                     class="imas-second-footer__bottom-bar"
                     :aria-label="trans('navBar.useful_links')"
                 >
-                    <template
-                        v-for="(p, index) in bottomBarPages"
-                        :key="p.id"
-                    >
+                    <template v-for="(p, index) in bottomBarPages" :key="p.id">
                         <span
                             v-if="index > 0"
                             class="imas-second-footer__separator"
                             aria-hidden="true"
-                        >|</span>
+                            >|</span
+                        >
                         <Link
                             class="imas-second-footer__page-link"
                             :href="cmsPageUrl(p.slug, activeLocale)"
@@ -172,19 +207,22 @@
                         target="_blank"
                         rel="noopener noreferrer"
                         class="imas-second-footer__developer-link"
-                    >Symfonix</a>
+                        >Symfonix</a
+                    >
                 </p>
             </div>
         </div>
     </footer>
 
-    <a data-scroll href="#wrapper" class="go-up"><i class="fa fa-angle-double-up" aria-hidden="true"></i></a>
+    <a data-scroll href="#wrapper" class="go-up"
+        ><i class="fa fa-angle-double-up" aria-hidden="true"></i
+    ></a>
 </template>
 
 <script setup>
-import {computed, onBeforeUnmount, ref} from 'vue';
-import {Link, useForm, usePage} from '@inertiajs/vue3';
-import { cmsPageUrl } from '@/utils/cmsPageUrl.js';
+import { computed, onBeforeUnmount, ref } from "vue";
+import { Link, useForm, usePage } from "@inertiajs/vue3";
+import { cmsPageUrl } from "@/utils/cmsPageUrl.js";
 
 const props = defineProps({
     navLinks: {
@@ -199,15 +237,15 @@ const showSubscriptionSuccess = ref(false);
 let subscriptionSuccessTimer = null;
 
 const subscribeForm = useForm({
-    email: '',
+    email: "",
 });
 
 const subscribeStoreUrl = computed(() => {
     const url = page.props.subscribe_store_url;
-    return typeof url === 'string' ? url.trim() : '';
+    return typeof url === "string" ? url.trim() : "";
 });
 
-const themeUrl = computed(() => page.props.theme_url || '');
+const themeUrl = computed(() => page.props.theme_url || "");
 const auth = computed(() => page.props.auth);
 const appName = computed(() => page.props.appName);
 const settings = computed(() => page.props.settings || {});
@@ -229,9 +267,9 @@ const developedByPrefix = computed(() => {
 });
 
 const tagline = computed(() => settings.value.tagline || page.props.appName);
-const fallbackAddress = '95 South Park Avenue, USA';
-const fallbackPhone = '+456 875 369 208';
-const fallbackEmail = 'support@example.com';
+const fallbackAddress = "95 South Park Avenue, USA";
+const fallbackPhone = "+456 875 369 208";
+const fallbackEmail = "support@example.com";
 
 const mainNavLinks = computed(() =>
     (props.navLinks || []).filter((l) => l?.href),
@@ -258,19 +296,19 @@ const bottomBarPages = computed(
 const footerSocialLinks = computed(() => {
     const s = settings.value;
     const defs = [
-        {key: 'facebook', label: 'Facebook', icon: 'fa fa-facebook'},
-        {key: 'twitter', label: 'Twitter', icon: 'fa fa-twitter'},
-        {key: 'instagram', label: 'Instagram', icon: 'fab fa-instagram'},
-        {key: 'youtube', label: 'YouTube', icon: 'fa fa-youtube'},
-        {key: 'tiktok', label: 'TikTok', icon: 'fab fa-tiktok'},
+        { key: "facebook", label: "Facebook", icon: "fa fa-facebook" },
+        { key: "twitter", label: "Twitter", icon: "fa fa-twitter" },
+        { key: "instagram", label: "Instagram", icon: "fab fa-instagram" },
+        { key: "youtube", label: "YouTube", icon: "fa fa-youtube" },
+        { key: "tiktok", label: "TikTok", icon: "fab fa-tiktok" },
     ];
     return defs
         .map((d) => {
-            const raw = String(s[d.key] ?? '').trim();
+            const raw = String(s[d.key] ?? "").trim();
             if (!raw) {
                 return null;
             }
-            return {...d, href: raw};
+            return { ...d, href: raw };
         })
         .filter(Boolean);
 });
@@ -297,7 +335,7 @@ function showSubscriptionSuccessMessage() {
 
 function submitNewsletter() {
     const el = newsletterFormEl.value;
-    if (el && typeof el.checkValidity === 'function' && !el.checkValidity()) {
+    if (el && typeof el.checkValidity === "function" && !el.checkValidity()) {
         el.reportValidity();
         return;
     }
@@ -321,7 +359,6 @@ onBeforeUnmount(() => {
     clearSubscriptionSuccessTimer();
 });
 </script>
-
 
 <style scoped lang="scss">
 /* Blog-v2 footer layout — dark theme tokens (see DARK_THEME_SPEC) */
@@ -480,7 +517,9 @@ onBeforeUnmount(() => {
 
 .nav-footer .links a,
 .navigation > .links a {
-    transition: color 0.2s ease, padding 0.2s ease;
+    transition:
+        color 0.2s ease,
+        padding 0.2s ease;
     color: var(--text-dim, #9aa6bd) !important;
 }
 
@@ -505,7 +544,9 @@ onBeforeUnmount(() => {
     overflow: hidden;
     background: var(--surface-2, #16264a);
     border: 1px solid transparent;
-    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    transition:
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
 }
 
 .imas-blog-footer .newsletter .email:focus-within {

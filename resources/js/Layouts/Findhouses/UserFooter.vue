@@ -13,9 +13,14 @@
                                         class="footer_logo"
                                     />
                                 </div>
-                                <span class="website-name">{{
-                                    websiteName
-                                }}</span>
+                                <div class="imas-brand-text">
+                                    <span class="website-name">{{
+                                        websiteName
+                                    }}</span>
+                                    <span class="website-slogan">{{
+                                        websiteSlogan
+                                    }}</span>
+                                </div>
                             </div>
                         </div>
                         <div class="contactus text-start">
@@ -258,6 +263,7 @@ const logoUrl = computed(() => {
 const websiteName = computed(
     () => page.props.globals?.seo?.website_name?.toUpperCase() || "",
 );
+const websiteSlogan = "MOST ACCURATE SOLUTIONS";
 
 const year = new Date().getFullYear();
 
@@ -445,11 +451,28 @@ onBeforeUnmount(() => {
     flex-shrink: 0;
 }
 
+.brand-line .imas-brand-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    min-width: 0;
+}
+
 .brand-line .website-name {
     font-size: 1.4rem;
     font-weight: 700;
     color: var(--brand-gold);
     line-height: 1.2;
+}
+
+.brand-line .website-slogan {
+    font-size: 8px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    line-height: 1.3;
 }
 
 .brand-line .logo img {

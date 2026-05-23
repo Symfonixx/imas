@@ -25,7 +25,10 @@
                             :data-sticky-logo="logoUrl"
                             alt=""
                         />
-                        <span class="website-name">{{ websiteName }}</span>
+                        <span class="imas-brand-text">
+                            <span class="website-name">{{ websiteName }}</span>
+                            <span class="website-slogan">{{ websiteSlogan }}</span>
+                        </span>
                     </Link>
                 </div>
 
@@ -372,6 +375,7 @@ let onResizePinnedBound = null;
 const websiteName = computed(
     () => page.props.globals.seo.website_name.toUpperCase() || "",
 );
+const websiteSlogan = "MOST ACCURATE SOLUTIONS";
 const themeUrl = computed(() => page.props.theme_url || "");
 const auth = computed(() => page.props.auth);
 
@@ -670,6 +674,14 @@ function customizeMmenuNavbar($) {
     });
 }
 
+/** Login/Register rows are mobile-only; drop from drawer when session is active. */
+function stripMmenuAuthLinks($) {
+    $(".mmenu-init")
+        .find("li.imas-mmenu-only")
+        .has(".imas-auth-nav-link")
+        .remove();
+}
+
 function initMobileMenuMmenu() {
     const $ = window.jQuery;
     if (!$ || !$.fn?.mmenu) {
@@ -705,6 +717,10 @@ function initMobileMenuMmenu() {
         .find("li.imas-mmenu-only")
         .has(".lang-switch-row")
         .remove();
+
+    if (auth.value) {
+        stripMmenuAuthLinks($);
+    }
 
     const isRtl =
         document.documentElement.getAttribute("dir") === "rtl" ||
@@ -747,6 +763,9 @@ function initMobileMenuMmenu() {
         setTimeout(() => {
             $icon.addClass("is-active");
             customizeMmenuNavbar($);
+            if (auth.value) {
+                stripMmenuAuthLinks($);
+            }
             playMobileNavEnterAnimation();
         });
     });
@@ -898,6 +917,18 @@ watch(
         nextTick(() => playNavbarEnterAnimation());
     },
     { deep: true },
+);
+
+watch(
+    () => auth.value,
+    () => {
+        nextTick(() => {
+            const $ = window.jQuery;
+            if ($ && $(window).width() <= 1024) {
+                initMobileMenuMmenu();
+            }
+        });
+    },
 );
 
 onMounted(() => {
@@ -1321,16 +1352,35 @@ html[dir="rtl"] :deep(.imas-nav__account-trigger--rtl.header-user-name) {
     }
 }
 
+.imas-brand-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    min-width: 0;
+}
+
 .website-name {
     font-size: 1.4rem;
     font-weight: 700;
     color: var(--brand-gold);
     text-decoration: none;
     transition: color 0.2s ease;
+    line-height: 1.15;
+}
+
+.website-slogan {
+    font-size: 8px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    line-height: 1.3;
+    white-space: nowrap;
 }
 
 @media (max-width: 1024px) {
-    .website-name {
+    .imas-brand-text {
         display: none !important;
     }
 

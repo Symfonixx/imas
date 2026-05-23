@@ -10,7 +10,7 @@
     --font-heading: var(--font-app);
     --font-body: var(--font-app);
     --font-size-heading: 24pt;
-    --font-size-body: 10pt;
+    --font-size-body: 12pt;
     --letter-spacing-heading: 0.06em;
     --line-height-base: 1.55;
 
@@ -54,7 +54,18 @@
     --ring: 0 0 0 3px rgba(217, 168, 0, 0.35);
 
     /* —— Type scale (DARK_THEME_SPEC §3) —— */
-    --text-xs: 11px;
+    --text-xs: 14px;
+    --text-sm: 16px;
+    --text-base: var(--font-size-body);
+    --text-md: 18px;
+    --text-lg: 22px;
+    --text-xl: 26px;
+    --text-2xl: 32px;
+    --text-3xl: 40px;
+    --text-4xl: 48px;
+    --text-card-excerpt: 16px;
+    --text-card-chip: 14px;
+    /* --text-xs: 11px;
     --text-sm: 12px;
     --text-base: var(--font-size-body);
     --text-md: 15px;
@@ -64,7 +75,7 @@
     --text-3xl: 36px;
     --text-4xl: 44px;
     --text-card-excerpt: 16px;
-    --text-card-chip: 14px;
+    --text-card-chip: 14px; */
 
     /* —— Cards (DARK_THEME_SPEC §4.3 / §4.15) —— */
     --card-radius: 10px;
@@ -191,29 +202,56 @@ body.imas-theme-dark
     font-family: var(--font-body) !important;
 }
 
-/* Front-office: inherit Avenir everywhere; restore icon font stacks */
+/* Front-office base: Avenir on body (do not use * { font-family: inherit } — breaks icon fonts) */
 body.imas-theme-dark {
     font-family: var(--font-body) !important;
     font-size: var(--font-size-body) !important;
     font-weight: 400 !important;
 }
 
-body.imas-theme-dark * {
-    font-family: inherit !important;
-}
-
-body.imas-theme-dark [class*="fa-"],
+/*
+ * Icon / glyph fonts — explicit stacks only (revert does NOT restore FontAwesome).
+ * Keep Find Houses FA4 (.fa), FA5 (.fas/.far/.fab), Flaticon, flag-icons, Slick arrows.
+ */
 body.imas-theme-dark .fa,
+body.imas-theme-dark i.fa,
 body.imas-theme-dark .fas,
 body.imas-theme-dark .far,
-body.imas-theme-dark .fab,
 body.imas-theme-dark .fal,
+body.imas-theme-dark i.fas,
+body.imas-theme-dark i.far,
+body.imas-theme-dark i.fal,
+body.imas-theme-dark [class*=" fa-"],
+body.imas-theme-dark [class^="fa-"],
+body.imas-theme-dark .fa::before,
+body.imas-theme-dark [class*=" fa-"]::before,
+body.imas-theme-dark .fas::before,
+body.imas-theme-dark .far::before,
+body.imas-theme-dark .fal::before {
+    font-family: FontAwesome, "Font Awesome 5 Free" !important;
+}
+
+body.imas-theme-dark .fab,
+body.imas-theme-dark i.fab,
+body.imas-theme-dark [class*=" fab"],
+body.imas-theme-dark .fab::before {
+    font-family: "Font Awesome 5 Brands", FontAwesome !important;
+}
+
 body.imas-theme-dark [class*="flaticon"],
+body.imas-theme-dark [class^="flaticon-"],
+body.imas-theme-dark [class*="flaticon"]::before,
+body.imas-theme-dark [class^="flaticon-"]::before {
+    font-family: flaticon, Flaticon, "flaticon" !important;
+}
+
 body.imas-theme-dark .fi,
-body.imas-theme-dark .fis,
-body.imas-theme-dark .slick-arrow,
+body.imas-theme-dark .fis {
+    font-family: "flag-icons" !important;
+}
+
 body.imas-theme-dark .slick-arrow::before {
-    font-family: revert !important;
+    font-family: slick, sans-serif !important;
 }
 
 /**
@@ -1554,8 +1592,8 @@ html[dir="rtl"]
         justify-content: flex-start;
     }
 
-    #header.imas-nav__bar .website-name,
-    .imas-nav__logo .website-name {
+    #header.imas-nav__bar .imas-brand-text,
+    .imas-nav__logo .imas-brand-text {
         display: none !important;
     }
 
@@ -2489,7 +2527,13 @@ html[dir="rtl"] .mm-menu .mm-listview .imas-auth-nav-link {
 .welcome-text h1,
 .welcome-text h1 a,
 .imas-hero-title,
+.imas-hero-title--static,
 .imas-hero-title-link,
+.imas-hero-title-lead,
+.imas-hero-title-typed {
+    color: var(--brand-gold) !important;
+}
+
 .imas-hero-subtitle,
 .hp-6 .welcome-text p {
     color: var(--text) !important;

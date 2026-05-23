@@ -185,15 +185,15 @@ const contactItems = computed(() => {
     const c = contact.value;
     const items = [];
 
-    if (c.address) {
-        items.push({
-            key: "address",
-            icon: "fa-map-marker",
-            iconClass: "la-map-marker",
-            text: c.address,
-            href: null,
-        });
-    }
+    // if (c.address) {
+    //     items.push({
+    //         key: "address",
+    //         icon: "fa-map-marker",
+    //         iconClass: "la-map-marker",
+    //         text: c.address,
+    //         href: null,
+    //     });
+    // }
 
     if (c.phone) {
         items.push({

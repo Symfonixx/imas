@@ -615,6 +615,14 @@ onBeforeUnmount(() => {
     width: 100%;
 }
 
+.imas-hero-title,
+.imas-hero-title--static,
+.imas-hero-title-link,
+.imas-hero-title-lead,
+.imas-hero-title-typed {
+    color: var(--brand-gold);
+}
+
 .imas-hero-title--static {
     display: block;
     margin: 0;
@@ -737,7 +745,14 @@ onBeforeUnmount(() => {
     .imas-hero-slider .imas-hero-title--static,
     .imas-hero-slider .imas-hero-title-lead,
     .imas-hero-slider .imas-hero-title-typed,
-    .imas-hero-slider .imas-hero-title-link,
+    .imas-hero-slider .imas-hero-title-link {
+        color: var(--brand-gold) !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        display: block;
+    }
+
     .imas-hero-slider .imas-hero-subtitle,
     .imas-hero-slider .welcome-text p {
         color: #fff !important;

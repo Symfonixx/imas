@@ -138,14 +138,44 @@
                                         <label for="imas-auth-login-password"
                                             >{{ trans("Password") }} *</label
                                         >
-                                        <input
-                                            id="imas-auth-login-password"
-                                            v-model="loginForm.password"
-                                            type="password"
-                                            autocomplete="current-password"
-                                            required
-                                            @focus="$event.target.select()"
-                                        />
+                                        <div class="imas-auth-password-field">
+                                            <input
+                                                id="imas-auth-login-password"
+                                                v-model="loginForm.password"
+                                                :type="
+                                                    passwordVisible.login
+                                                        ? 'text'
+                                                        : 'password'
+                                                "
+                                                autocomplete="current-password"
+                                                required
+                                                @focus="$event.target.select()"
+                                            />
+                                            <button
+                                                type="button"
+                                                class="imas-auth-password-toggle"
+                                                :aria-label="
+                                                    passwordToggleAria('login')
+                                                "
+                                                :aria-pressed="
+                                                    passwordVisible.login
+                                                "
+                                                @click="
+                                                    togglePasswordVisible(
+                                                        'login',
+                                                    )
+                                                "
+                                            >
+                                                <i
+                                                    :class="
+                                                        passwordVisible.login
+                                                            ? 'fa fa-eye-slash'
+                                                            : 'fa fa-eye'
+                                                    "
+                                                    aria-hidden="true"
+                                                ></i>
+                                            </button>
+                                        </div>
                                         <span
                                             v-if="loginForm.errors.password"
                                             class="imas-auth-field-error"
@@ -465,18 +495,52 @@
                                                     }}
                                                     *</label
                                                 >
-                                                <input
-                                                    id="imas-auth-reg-password"
-                                                    v-model="
-                                                        registerForm.password
-                                                    "
-                                                    type="password"
-                                                    autocomplete="new-password"
-                                                    required
-                                                    @focus="
-                                                        $event.target.select()
-                                                    "
-                                                />
+                                                <div
+                                                    class="imas-auth-password-field"
+                                                >
+                                                    <input
+                                                        id="imas-auth-reg-password"
+                                                        v-model="
+                                                            registerForm.password
+                                                        "
+                                                        :type="
+                                                            passwordVisible.register
+                                                                ? 'text'
+                                                                : 'password'
+                                                        "
+                                                        autocomplete="new-password"
+                                                        required
+                                                        @focus="
+                                                            $event.target.select()
+                                                        "
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        class="imas-auth-password-toggle"
+                                                        :aria-label="
+                                                            passwordToggleAria(
+                                                                'register',
+                                                            )
+                                                        "
+                                                        :aria-pressed="
+                                                            passwordVisible.register
+                                                        "
+                                                        @click="
+                                                            togglePasswordVisible(
+                                                                'register',
+                                                            )
+                                                        "
+                                                    >
+                                                        <i
+                                                            :class="
+                                                                passwordVisible.register
+                                                                    ? 'fa fa-eye-slash'
+                                                                    : 'fa fa-eye'
+                                                            "
+                                                            aria-hidden="true"
+                                                        ></i>
+                                                    </button>
+                                                </div>
                                                 <span
                                                     v-if="
                                                         registerForm.errors
@@ -499,18 +563,52 @@
                                                     }}
                                                     *</label
                                                 >
-                                                <input
-                                                    id="imas-auth-reg-password-confirmation"
-                                                    v-model="
-                                                        registerForm.password_confirmation
-                                                    "
-                                                    type="password"
-                                                    autocomplete="new-password"
-                                                    required
-                                                    @focus="
-                                                        $event.target.select()
-                                                    "
-                                                />
+                                                <div
+                                                    class="imas-auth-password-field"
+                                                >
+                                                    <input
+                                                        id="imas-auth-reg-password-confirmation"
+                                                        v-model="
+                                                            registerForm.password_confirmation
+                                                        "
+                                                        :type="
+                                                            passwordVisible.registerConfirm
+                                                                ? 'text'
+                                                                : 'password'
+                                                        "
+                                                        autocomplete="new-password"
+                                                        required
+                                                        @focus="
+                                                            $event.target.select()
+                                                        "
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        class="imas-auth-password-toggle"
+                                                        :aria-label="
+                                                            passwordToggleAria(
+                                                                'registerConfirm',
+                                                            )
+                                                        "
+                                                        :aria-pressed="
+                                                            passwordVisible.registerConfirm
+                                                        "
+                                                        @click="
+                                                            togglePasswordVisible(
+                                                                'registerConfirm',
+                                                            )
+                                                        "
+                                                    >
+                                                        <i
+                                                            :class="
+                                                                passwordVisible.registerConfirm
+                                                                    ? 'fa fa-eye-slash'
+                                                                    : 'fa fa-eye'
+                                                            "
+                                                            aria-hidden="true"
+                                                        ></i>
+                                                    </button>
+                                                </div>
                                                 <span
                                                     v-if="
                                                         registerForm.errors
@@ -708,6 +806,28 @@ function escapeHtml(s) {
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;");
+}
+
+const passwordVisible = ref({
+    login: false,
+    register: false,
+    registerConfirm: false,
+});
+
+function togglePasswordVisible(field) {
+    passwordVisible.value[field] = !passwordVisible.value[field];
+}
+
+function passwordToggleAria(field) {
+    return passwordVisible.value[field]
+        ? trans("Hide password")
+        : trans("Show password");
+}
+
+function resetPasswordVisibility() {
+    passwordVisible.value.login = false;
+    passwordVisible.value.register = false;
+    passwordVisible.value.registerConfirm = false;
 }
 
 const loginForm = useForm({
@@ -914,6 +1034,7 @@ function resetAllForms() {
     resetForm.reset();
     registerMobileLocal.value = "";
     registerMobileClientError.value = "";
+    resetPasswordVisibility();
     pickDefaultRegisterCountry();
     syncResetFromUrl();
 }
@@ -1225,6 +1346,48 @@ onBeforeUnmount(() => {
 .imas-auth-modal.login-and-register-form .custom-form textarea:focus {
     outline: none;
     border-color: var(--brand-gold) !important;
+    box-shadow: var(--ring);
+}
+
+.imas-auth-password-field {
+    position: relative;
+    width: 100%;
+    margin-bottom: 0.5rem;
+}
+
+.imas-auth-password-field input {
+    margin-bottom: 0 !important;
+    padding-inline-end: 2.75rem !important;
+}
+
+.imas-auth-password-toggle {
+    position: absolute;
+    top: 50%;
+    inset-inline-end: 0.35rem;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 0;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition:
+        color 0.15s ease,
+        background 0.15s ease;
+}
+
+.imas-auth-password-toggle:hover {
+    color: var(--brand-gold);
+    background: color-mix(in srgb, var(--brand-gold) 12%, transparent);
+}
+
+.imas-auth-password-toggle:focus-visible {
+    outline: none;
     box-shadow: var(--ring);
 }
 

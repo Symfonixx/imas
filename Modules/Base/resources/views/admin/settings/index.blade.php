@@ -53,6 +53,35 @@
             <!--end::Col-->
 
         </div>
+        
+        <h5 class="my-3 fw-bold text-primary">{{ __('Pages Banners') }}</h5>
+        <hr/>
+        <div class="row mb-10">
+            <div class="col-xl-3 mb-5">
+                <div class="fs-6 fw-bold mt-2 mb-5">{{ __('Contact Us Page Banner') }}</div>
+                <x-admin.image-input
+                    name="imgs[contact_us_banner]"
+                    :preview="asset('storage/' . $settings->get('contact_us_banner', 'default.jpg'))"
+                    mediaInputName="imgs_media[contact_us_banner]"/>
+                <div class="form-text">{{ __('Minimum 1920×600 px, max 4 MB (JPEG, PNG, WebP).') }}</div>
+            </div>
+            <div class="col-xl-3 mb-5">
+                <div class="fs-6 fw-bold mt-2 mb-5">{{ __('Blog Details Page Banner') }}</div>
+                <x-admin.image-input
+                    name="imgs[blog_show_banner]"
+                    :preview="asset('storage/' . $settings->get('blog_show_banner', 'default.jpg'))"
+                    mediaInputName="imgs_media[blog_show_banner]"/>
+                <div class="form-text">{{ __('Minimum 1920×600 px, max 4 MB (JPEG, PNG, WebP).') }}</div>
+            </div>
+            <div class="col-xl-3 mb-5">
+                <div class="fs-6 fw-bold mt-2 mb-5">{{ __('Property Listings Page Banner') }}</div>
+                <x-admin.image-input
+                    name="imgs[property_show_banner]"
+                    :preview="asset('storage/' . $settings->get('property_show_banner', 'default.jpg'))"
+                    mediaInputName="imgs_media[property_show_banner]"/>
+                <div class="form-text">{{ __('Minimum 1920×600 px, max 4 MB (JPEG, PNG, WebP).') }}</div>
+            </div>
+        </div>
         <div class="row mb-8">
             <!--begin::Col-->
             <div class="col-xl-3">
@@ -191,34 +220,6 @@
             </div>
         </div>
 
-        <h5 class="my-3 fw-bold text-primary">{{ __('Pages Banners') }}</h5>
-        <hr/>
-        <div class="row mb-10">
-            <div class="col-xl-3 mb-5">
-                <div class="fs-6 fw-bold mt-2 mb-5">{{ __('Contact Us Page Banner') }}</div>
-                <x-admin.image-input
-                    name="imgs[contact_us_banner]"
-                    :preview="asset('storage/' . $settings->get('contact_us_banner', 'default.jpg'))"
-                    mediaInputName="imgs_media[contact_us_banner]"/>
-                <div class="form-text">{{ __('Minimum 1920×600 px, max 4 MB (JPEG, PNG, WebP).') }}</div>
-            </div>
-            <div class="col-xl-3 mb-5">
-                <div class="fs-6 fw-bold mt-2 mb-5">{{ __('Blog Details Page Banner') }}</div>
-                <x-admin.image-input
-                    name="imgs[blog_show_banner]"
-                    :preview="asset('storage/' . $settings->get('blog_show_banner', 'default.jpg'))"
-                    mediaInputName="imgs_media[blog_show_banner]"/>
-                <div class="form-text">{{ __('Minimum 1920×600 px, max 4 MB (JPEG, PNG, WebP).') }}</div>
-            </div>
-            <div class="col-xl-3 mb-5">
-                <div class="fs-6 fw-bold mt-2 mb-5">{{ __('Property Listings Page Banner') }}</div>
-                <x-admin.image-input
-                    name="imgs[property_show_banner]"
-                    :preview="asset('storage/' . $settings->get('property_show_banner', 'default.jpg'))"
-                    mediaInputName="imgs_media[property_show_banner]"/>
-                <div class="form-text">{{ __('Minimum 1920×600 px, max 4 MB (JPEG, PNG, WebP).') }}</div>
-            </div>
-        </div>
 
     </x-admin.create-card>
 </x-admin-layout>

@@ -74,7 +74,7 @@
             :welcome-subtitle="welcomeSubtitle"
             :slides="slides"
             :property-types="propertyTypes"
-            :cities="cities"
+            :districts="districts"
         />
 
         <FeaturedPropertiesSection
@@ -184,7 +184,7 @@ defineProps({
     welcomeSubtitle: { type: String, required: true },
     slides: { type: Array, default: () => [] },
     propertyTypes: { type: Array, default: () => [] },
-    cities: { type: Array, default: () => [] },
+    districts: { type: Array, default: () => [] },
     featuredProperties: { type: Array, default: () => [] },
     recommendedProperties: { type: Array, default: () => [] },
     corporateServices: { type: Array, default: () => [] },

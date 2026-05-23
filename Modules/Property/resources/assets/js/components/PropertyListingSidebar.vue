@@ -48,11 +48,11 @@
                                             {{ trans("Location") }}
                                         </option>
                                         <option
-                                            v-for="c in cities"
-                                            :key="c.id"
-                                            :value="String(c.id)"
+                                            v-for="d in districts"
+                                            :key="d.id"
+                                            :value="String(d.id)"
                                         >
-                                            {{ c.name }}
+                                            {{ d.name }}
                                         </option>
                                     </select>
                                 </div>
@@ -211,7 +211,7 @@ const props = defineProps({
     searchAction: { type: String, required: true },
     filters: { type: Object, required: true },
     sort: { type: String, required: true },
-    cities: { type: Array, default: () => [] },
+    districts: { type: Array, default: () => [] },
     propertyTypes: { type: Array, default: () => [] },
     recentProperties: { type: Array, default: () => [] },
     featuredProperties: { type: Array, default: () => [] },

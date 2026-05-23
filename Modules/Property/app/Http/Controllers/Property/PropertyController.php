@@ -87,13 +87,13 @@ class PropertyController extends Controller
             ->values()
             ->all();
 
-        $cities = Location::query()
-            ->where('type', LocationType::City)
+        $districts = Location::query()
+            ->where('type', LocationType::District)
             ->orderBy('id')
             ->get(['id', 'name'])
-            ->map(static fn (Location $city) => [
-                'id' => $city->id,
-                'name' => $city->name,
+            ->map(static fn (Location $district) => [
+                'id' => $district->id,
+                'name' => $district->name,
             ])
             ->values()
             ->all();
@@ -129,7 +129,7 @@ class PropertyController extends Controller
             'filters' => $filters,
             'sort' => $sort,
             'propertyTypes' => $propertyTypes,
-            'cities' => $cities,
+            'districts' => $districts,
             'recentProperties' => $recentProperties,
             'featuredProperties' => $featuredProperties,
         ]);
@@ -287,7 +287,14 @@ class PropertyController extends Controller
             ->withFavoriteStateForUser($userId);
 
         if (! empty($validated['location_id'])) {
-            $query->where('location_id', (int) $validated['location_id']);
+            $locationId = (int) $validated['location_id'];
+            $descendantIds = Location::descendantIdsOf($locationId);
+
+            if ($descendantIds !== []) {
+                $query->whereIn('location_id', $descendantIds);
+            } else {
+                $query->where('location_id', $locationId);
+            }
         }
 
         if (! empty($validated['property_type_id'])) {

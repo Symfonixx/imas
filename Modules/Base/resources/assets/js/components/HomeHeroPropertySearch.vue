@@ -30,16 +30,7 @@
             <div class="tab-pane fade show active">
                 <div class="rld-main-search">
                     <div class="row">
-                        <!-- <div class="rld-single-input">
-                            <input
-                                v-model="searchKeyword"
-                                type="search"
-                                name="q"
-                                autocomplete="off"
-                                class="pt-0 pb-0"
-                                :placeholder="trans('Enter Keyword...')"
-                            />
-                        </div> -->
+                     
                         <div class="rld-single-select">
                             <select
                                 v-model="searchLocationId"
@@ -50,11 +41,11 @@
                                     {{ trans("Location") }}
                                 </option>
                                 <option
-                                    v-for="c in cities"
-                                    :key="c.id"
-                                    :value="String(c.id)"
+                                    v-for="d in districts"
+                                    :key="d.id"
+                                    :value="String(d.id)"
                                 >
-                                    {{ c.name }}
+                                    {{ d.name }}
                                 </option>
                             </select>
                         </div>
@@ -189,7 +180,7 @@ const props = defineProps({
     action: { type: String, required: true },
     purpose: { type: String, default: "sale" },
     propertyTypes: { type: Array, default: () => [] },
-    cities: { type: Array, default: () => [] },
+    districts: { type: Array, default: () => [] },
 });
 
 const page = usePage();

@@ -94,7 +94,7 @@
                                     :action="propertyIndexUrl"
                                     :purpose="purpose"
                                     :property-types="propertyTypes"
-                                    :cities="cities"
+                                    :districts="districts"
                                 />
                             </div>
                         </div>
@@ -117,7 +117,7 @@ const props = defineProps({
     welcomeSubtitle: {type: String, required: true},
     slides: {type: Array, default: () => []},
     propertyTypes: {type: Array, default: () => []},
-    cities: {type: Array, default: () => []},
+    districts: {type: Array, default: () => []},
 
 });
 

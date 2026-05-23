@@ -66,7 +66,12 @@
                 </div>
             </div>
 
-            <div :class="pairRowClass">
+            <div
+                :class="[
+                    pairRowClass,
+                    isPairedLayout && 'imas-contact-form__pair--stack-sm',
+                ]"
+            >
                 <div :class="pairColClass">
                     <div class="form-group">
                         <input
@@ -310,16 +315,34 @@ function submit() {
     width: 100%;
     margin-bottom: 12px;
     border-radius: 6px;
-    padding: 10px 12px;
     font-size: var(--text-sm);
 }
 
+.imas-contact-form--sidebar :deep(input.form-control) {
+    height: 48px !important;
+    min-height: 48px !important;
+    padding: 0 0.85rem;
+    line-height: 1.5;
+    box-sizing: border-box;
+    border: 1px red solid;
+}
+
+.imas-contact-form--sidebar :deep(textarea.form-control) {
+    padding: 10px 12px;
+}
+
 .imas-contact-form--sidebar :deep(.imas-auth-phone-field) {
+    height: 48px !important;
+    min-height: 48px !important;
     margin-bottom: 12px;
 }
 
 .imas-contact-form--sidebar :deep(textarea.form-control) {
     min-height: 120px;
     resize: vertical;
+}
+
+input{
+    height: 48px !important;
 }
 </style>

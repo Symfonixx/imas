@@ -4599,6 +4599,12 @@ html[dir="rtl"] .imas-featured-properties-sidebar__badge--price {
     margin-bottom: 0;
 }
 
+@media (max-width: 575.98px) {
+    .imas-contact-page .imas-contact-form__pair--stack-sm {
+        grid-template-columns: 1fr;
+    }
+}
+
 .imas-contact-page .imas-contact-form__pair-field {
     min-width: 0;
 }
@@ -4613,6 +4619,23 @@ html[dir="rtl"] .imas-featured-properties-sidebar__badge--price {
 
 .imas-contact-page .imas-contact-form :deep(.form-control) {
     border-radius: 6px;
+}
+
+.imas-contact-page .imas-contact-form :deep(input.form-control) {
+    height: 48px !important;
+    min-height: 48px !important;
+    padding: 0 0.85rem;
+    font-size: var(--text-sm);
+    line-height: 1.5;
+    box-sizing: border-box;
+}
+
+.imas-contact-page .imas-contact-form :deep(.imas-auth-phone-field) {
+    height: 48px !important;
+    min-height: 48px !important;
+}
+
+.imas-contact-page .imas-contact-form :deep(textarea.form-control) {
     padding: 12px 14px;
 }
 

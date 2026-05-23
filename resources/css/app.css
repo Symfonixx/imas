@@ -170,31 +170,32 @@ body {
 }
 
 /* Catch-all for theme markup still using Lato / Montserrat / Nunito / Cinzel */
-body.imas-theme-dark :where(
-    p,
-    span,
-    a,
-    li,
-    dt,
-    dd,
-    small,
-    strong,
-    em,
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6,
-    label,
-    legend,
-    caption,
-    th,
-    td,
-    figcaption,
-    blockquote,
-    cite
-) {
+body.imas-theme-dark
+    :where(
+        p,
+        span,
+        a,
+        li,
+        dt,
+        dd,
+        small,
+        strong,
+        em,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        label,
+        legend,
+        caption,
+        th,
+        td,
+        figcaption,
+        blockquote,
+        cite
+    ) {
     font-family: var(--font-body) !important;
 }
 
@@ -2089,7 +2090,9 @@ section.featured.portfolio.bg-white-2 .sec-title p,
     color: var(--text) !important;
     box-shadow: none !important;
     flex-shrink: 0;
-    transition: background 0.2s ease, color 0.2s ease;
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
 }
 
 .imas-card .imas-card-actions .button-effect .btn:hover {
@@ -2210,7 +2213,9 @@ section.featured.portfolio.bg-white-2 .sec-title p,
     border-color: var(--border) !important;
 }
 
-.hp-6 .imas-hero-property-search .imas-hero-advanced-panel.full-filter.filter-block {
+.hp-6
+    .imas-hero-property-search
+    .imas-hero-advanced-panel.full-filter.filter-block {
     background: var(--surface) !important;
     border: 1px solid var(--border) !important;
     border-radius: 8px !important;
@@ -2220,8 +2225,14 @@ section.featured.portfolio.bg-white-2 .sec-title p,
     color: var(--text) !important;
 }
 
-.hp-6 .imas-hero-property-search .imas-hero-advanced-panel input.first-slider-value,
-.hp-6 .imas-hero-property-search .imas-hero-advanced-panel input.second-slider-value {
+.hp-6
+    .imas-hero-property-search
+    .imas-hero-advanced-panel
+    input.first-slider-value,
+.hp-6
+    .imas-hero-property-search
+    .imas-hero-advanced-panel
+    input.second-slider-value {
     background: transparent !important;
     background-color: transparent !important;
     color: var(--text) !important;
@@ -2536,6 +2547,41 @@ html[dir="rtl"] .mm-menu .mm-listview .imas-auth-nav-link {
     background-blend-mode: multiply;
 }
 
+.imas-inner-page-heading-hero--video::after {
+    background:
+        linear-gradient(
+            color-mix(in srgb, var(--brand-navy-hover) 72%, transparent),
+            color-mix(in srgb, var(--bg) 88%, transparent)
+        ),
+        radial-gradient(
+            circle at 20% 30%,
+            rgba(255, 255, 255, 0.05),
+            transparent 40%
+        ),
+        radial-gradient(
+            circle at 80% 70%,
+            color-mix(in srgb, var(--brand-gold) 8%, transparent),
+            transparent 40%
+        );
+}
+
+.imas-inner-page-heading-hero__bg--video {
+    overflow: hidden;
+}
+
+.imas-inner-page-heading-hero__video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 177.77777778vh;
+    min-width: 100%;
+    min-height: 100%;
+    height: 56.25vw;
+    transform: translate(-50%, -50%);
+    border: 0;
+    pointer-events: none;
+}
+
 .imas-inner-page-heading-hero::after {
     content: "";
     position: absolute;
@@ -2583,13 +2629,15 @@ html[dir="rtl"] .imas-inner-page-heading-hero__title {
     display: inline-block;
     opacity: 0;
     transform: translateY(14px);
-    animation: imas-inner-page-hero-letter-in 0.55s var(--imas-inner-page-hero-ease) 0.12s forwards;
+    animation: imas-inner-page-hero-letter-in 0.55s
+        var(--imas-inner-page-hero-ease) 0.12s forwards;
 }
 
 .imas-inner-page-heading-hero__letter {
     opacity: 0;
     transform: translateY(14px);
-    animation: imas-inner-page-hero-letter-in 0.55s var(--imas-inner-page-hero-ease) forwards;
+    animation: imas-inner-page-hero-letter-in 0.55s
+        var(--imas-inner-page-hero-ease) forwards;
     margin-inline-end: 6px;
 }
 
@@ -2859,7 +2907,8 @@ html[dir="rtl"] .imas-inner-page-heading-hero__title {
     font-weight: 600;
     font-size: var(--text-sm);
     letter-spacing: 0.02em;
-    box-shadow: 0 8px 20px -8px color-mix(in srgb, var(--brand-gold) 70%, transparent);
+    box-shadow: 0 8px 20px -8px
+        color-mix(in srgb, var(--brand-gold) 70%, transparent);
     opacity: 0;
     transform: translateY(14px);
     transition:
@@ -2899,7 +2948,8 @@ html[dir="rtl"] .imas-blog-v2-card__pill {
     gap: 24px;
     opacity: 0;
     transform: translateX(40px);
-    animation: imas-blog-v2-sidebar-in 0.8s var(--imas-blog-v2-ease) 0.3s forwards;
+    animation: imas-blog-v2-sidebar-in 0.8s var(--imas-blog-v2-ease) 0.3s
+        forwards;
 }
 
 html[dir="rtl"] .imas-blog-v2-sidebar {
@@ -3342,24 +3392,105 @@ html[dir="rtl"] .imas-blog-show-body blockquote {
     padding-inline: 24px;
 }
 
+/* About Us — two-column layout with blog-style quick links sidebar */
+.imas-about-page {
+    --imas-blog-v2-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+    background: var(--bg);
+    width: 100%;
+    max-width: 100%;
+    overflow-x: clip;
+}
+
+.imas-about-page__page {
+    width: 100%;
+    max-width: 1280px;
+    box-sizing: border-box;
+}
+
+.imas-about-page__main {
+    min-width: 0;
+}
+
+.imas-about-page .imas-blog-v2-sidebar,
+.imas-about-page .imas-about-page__quick-links {
+    min-width: 0;
+    max-width: 100%;
+}
+
+/* Sidebar: skip blog enter animation (GSAP + missing .imas-blog-v2 parent left it at opacity 0) */
+.imas-about-page .imas-blog-v2-sidebar,
+.imas-about-page .imas-about-page__quick-links {
+    opacity: 1;
+    transform: none;
+    animation: none;
+}
+
+/* RTL blog sidebar slide-in overrides About Us reset — keep quick links centered/visible */
+html[dir="rtl"] .imas-about-page .imas-blog-v2-sidebar,
+html[dir="rtl"] .imas-about-page .imas-about-page__quick-links {
+    transform: none;
+}
+
+.imas-about-page .imas-blog-v2-sidebar__box,
+.imas-about-page .imas-blog-v2-sidebar__recent-item,
+.imas-about-page .imas-blog-v2-sidebar__recent-title {
+    opacity: 1 !important;
+    transform: none !important;
+}
+
+html[dir="rtl"] .imas-about-page .imas-blog-v2-sidebar__recent-item:hover img {
+    transform: scale(1.04);
+}
+
+.imas-about-page .imas-blog-v2-sidebar__heading,
+.imas-about-page .imas-blog-v2-sidebar__recent-title {
+    text-align: start;
+}
+
+.imas-about-page .imas-featured-properties-sidebar {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+}
+
+.imas-about-page .imas-featured-properties-sidebar__body,
+.imas-about-page .imas-featured-properties-sidebar__carousel {
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.imas-about-page .imas-featured-properties-sidebar__heading {
+    text-align: start;
+}
+
+@media (max-width: 980px) {
+    .imas-about-page .imas-about-page__quick-links {
+        width: 100%;
+        max-width: min(320px, 100%);
+        margin-inline: auto;
+        justify-self: center;
+        place-self: center;
+    }
+
+    html[dir="rtl"] .imas-about-page .imas-about-page__quick-links {
+        transform: none !important;
+        margin-inline: auto;
+        justify-self: center;
+        place-self: center;
+    }
+
+    .imas-about-page .imas-about-page__quick-links .imas-blog-v2-sidebar__box {
+        width: 100%;
+    }
+}
+
 /* Admin HTML: default copy to white on dark surface (override theme + pasted inline colors) */
 .imas-cms-page-show__body {
     color: #fff;
 }
 
-.imas-cms-page-show__body :is(
-    p,
-    li,
-    span,
-    div,
-    td,
-    th,
-    strong,
-    em,
-    small,
-    label,
-    figcaption
-) {
+.imas-cms-page-show__body
+    :is(p, li, span, div, td, th, strong, em, small, label, figcaption) {
     color: #fff;
 }
 
@@ -3493,7 +3624,8 @@ html[dir="rtl"] .imas-blog-show-body blockquote {
 }
 
 .imas-property-listings-toolbar__sort-toggle:hover,
-.imas-property-listings-toolbar--open .imas-property-listings-toolbar__sort-toggle {
+.imas-property-listings-toolbar--open
+    .imas-property-listings-toolbar__sort-toggle {
     border-color: var(--border-strong);
     background: var(--surface-3);
 }
@@ -3597,25 +3729,45 @@ html[dir="rtl"] .imas-blog-show-body blockquote {
 }
 
 /* Listing sliders: same DOM/init as hero — inputs inside #imas-listing-*-range; body.hp-6 supplies floats */
-.hp-6 .imas-property-listings-filter .imas-listing-range-panel .range-slider label {
+.hp-6
+    .imas-property-listings-filter
+    .imas-listing-range-panel
+    .range-slider
+    label {
     color: var(--text) !important;
 }
 
-.hp-6 .imas-property-listings-filter .imas-listing-range-panel .ui-widget-content {
+.hp-6
+    .imas-property-listings-filter
+    .imas-listing-range-panel
+    .ui-widget-content {
     background-color: var(--surface-3) !important;
 }
 
-.hp-6 .imas-property-listings-filter .imas-listing-range-panel .ui-widget-header {
+.hp-6
+    .imas-property-listings-filter
+    .imas-listing-range-panel
+    .ui-widget-header {
     background-color: var(--brand-gold) !important;
 }
 
-.hp-6 .imas-property-listings-filter .imas-listing-range-panel .ui-slider .ui-slider-handle {
+.hp-6
+    .imas-property-listings-filter
+    .imas-listing-range-panel
+    .ui-slider
+    .ui-slider-handle {
     border-color: var(--brand-gold) !important;
     background: var(--text) !important;
 }
 
-.hp-6 .imas-property-listings-filter .imas-listing-range-panel input.first-slider-value,
-.hp-6 .imas-property-listings-filter .imas-listing-range-panel input.second-slider-value {
+.hp-6
+    .imas-property-listings-filter
+    .imas-listing-range-panel
+    input.first-slider-value,
+.hp-6
+    .imas-property-listings-filter
+    .imas-listing-range-panel
+    input.second-slider-value {
     background: transparent !important;
     background-color: transparent !important;
     color: var(--text) !important;
@@ -3673,7 +3825,8 @@ html[dir="rtl"] .imas-blog-show-body blockquote {
     height: 100% !important;
 }
 
-.imas-property-listings .imas-inner-page-heading-hero__bg[style*="background-image"] {
+.imas-property-listings
+    .imas-inner-page-heading-hero__bg[style*="background-image"] {
     background-size: cover !important;
     background-position: center center !important;
     background-repeat: no-repeat !important;
@@ -3761,10 +3914,20 @@ html[dir="rtl"] .imas-blog-show-body blockquote {
 
 .imas-featured-properties-sidebar__body {
     position: relative;
+    max-width: 100%;
+    overflow: hidden;
 }
 
 .imas-featured-properties-sidebar__carousel {
     margin: 0;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+/* Before Slick init: one slide only (avoids stacked slides widening the grid) */
+.imas-featured-properties-sidebar__carousel:not(.slick-initialized)
+    .imas-featured-properties-sidebar__slide:not(:first-child) {
+    display: none;
 }
 
 .imas-featured-properties-sidebar__slide {
@@ -3802,6 +3965,58 @@ html[dir="rtl"] .imas-blog-show-body blockquote {
     box-shadow: var(--ring);
 }
 
+.imas-featured-properties-sidebar__slide--sold-out,
+.imas-featured-properties-sidebar__card--sold-out {
+    cursor: not-allowed;
+}
+
+.imas-featured-properties-sidebar__card--sold-out {
+    pointer-events: none;
+    opacity: 0.82;
+}
+
+.imas-featured-properties-sidebar__card--sold-out:hover {
+    border-color: var(--border);
+    box-shadow: var(--shadow-sm);
+    transform: none;
+}
+
+.imas-featured-properties-sidebar__card--sold-out:hover
+    .imas-featured-properties-sidebar__media
+    img {
+    transform: none;
+}
+
+.imas-featured-properties-sidebar__card--sold-out
+    .imas-featured-properties-sidebar__media
+    img {
+    filter: grayscale(0.45);
+    opacity: 0.9;
+}
+
+.imas-featured-properties-sidebar__card--sold-out
+    .imas-featured-properties-sidebar__badge--price {
+    background: color-mix(in srgb, var(--text-dim) 12%, transparent);
+    color: var(--text-dim);
+}
+
+.imas-featured-properties-sidebar__card--sold-out
+    .imas-featured-properties-sidebar__title,
+.imas-featured-properties-sidebar__card--sold-out
+    .imas-featured-properties-sidebar__location,
+.imas-featured-properties-sidebar__card--sold-out
+    .imas-featured-properties-sidebar__stat-label,
+.imas-featured-properties-sidebar__card--sold-out
+    .imas-featured-properties-sidebar__stat-value {
+    color: color-mix(in srgb, var(--text-dim) 88%, transparent);
+}
+
+.imas-featured-properties-sidebar__badge--sold-out {
+    background: var(--danger) !important;
+    color: var(--text) !important;
+    border-color: var(--danger) !important;
+}
+
 .imas-featured-properties-sidebar__media {
     position: relative;
     aspect-ratio: var(--card-media-ratio);
@@ -3817,7 +4032,9 @@ html[dir="rtl"] .imas-blog-show-body blockquote {
     transition: transform 0.35s ease;
 }
 
-.imas-featured-properties-sidebar__card:hover .imas-featured-properties-sidebar__media img {
+.imas-featured-properties-sidebar__card:hover
+    .imas-featured-properties-sidebar__media
+    img {
     transform: scale(1.04);
 }
 
@@ -3976,14 +4193,13 @@ html[dir="rtl"] .imas-blog-show-body blockquote {
 .imas-featured-properties-sidebar__arrow--next::before {
     content: "❯";
 }
-html[dir="rtl"] .imas-featured-properties-sidebar .slick-prev::before, html[dir="rtl"]
-.imas-featured-properties-sidebar__arrow--prev::before {
+html[dir="rtl"] .imas-featured-properties-sidebar .slick-prev::before,
+html[dir="rtl"] .imas-featured-properties-sidebar__arrow--prev::before {
     content: "❯";
 }
 
-html[dir="rtl"] .imas-featured-properties-sidebar .slick-next::before, html[dir="rtl"]
-.imas-featured-properties-sidebar__arrow--next::before {
-    
+html[dir="rtl"] .imas-featured-properties-sidebar .slick-next::before,
+html[dir="rtl"] .imas-featured-properties-sidebar__arrow--next::before {
     content: "❮";
 }
 
@@ -4074,7 +4290,10 @@ html[dir="rtl"] .imas-featured-properties-sidebar__badge--price {
         padding: 18px 16px;
     }
 
-    .imas-property-listings .hp-6 .imas-property-listings-filter .rld-main-search,
+    .imas-property-listings
+        .hp-6
+        .imas-property-listings-filter
+        .rld-main-search,
     .imas-property-listings .imas-property-listings-filter .rld-main-search {
         height: auto !important;
         min-height: 0 !important;
@@ -4150,7 +4369,9 @@ html[dir="rtl"] .imas-featured-properties-sidebar__badge--price {
 }
 
 /* Theme adds a second gold bar via h5::after — keep only .imas-section-title underline */
-.imas-property-show-page .imas-property-show-panel h5.imas-section-title::after {
+.imas-property-show-page
+    .imas-property-show-panel
+    h5.imas-section-title::after {
     display: block !important;
     content: "" !important;
     width: 3.5rem !important;
@@ -4166,12 +4387,18 @@ html[dir="rtl"] .imas-featured-properties-sidebar__badge--price {
     line-height: var(--line-height-base);
 }
 
-.imas-property-show-page .imas-property-show-panel .imas-rich-content :is(p, li, span, div, td, th, blockquote, strong, em, b, i) {
+.imas-property-show-page
+    .imas-property-show-panel
+    .imas-rich-content
+    :is(p, li, span, div, td, th, blockquote, strong, em, b, i) {
     color: var(--text) !important;
     font-size: inherit;
 }
 
-.imas-property-show-page .imas-property-show-panel .imas-rich-content :is(h1, h2, h3, h4, h5, h6) {
+.imas-property-show-page
+    .imas-property-show-panel
+    .imas-rich-content
+    :is(h1, h2, h3, h4, h5, h6) {
     color: var(--text) !important;
     font-weight: 600;
     text-transform: none !important;
@@ -4187,7 +4414,10 @@ html[dir="rtl"] .imas-featured-properties-sidebar__badge--price {
     color: var(--brand-gold) !important;
 }
 
-.imas-property-show-page .imas-property-show-panel .imas-rich-content :is(ul, ol) {
+.imas-property-show-page
+    .imas-property-show-panel
+    .imas-rich-content
+    :is(ul, ol) {
     padding-inline-start: 1.35rem;
     margin-bottom: 1rem;
 }
@@ -4290,7 +4520,11 @@ html[dir="rtl"] .imas-featured-properties-sidebar__badge--price {
 }
 
 .imas-contact-page .imas-contact-page__alert--success {
-    background: color-mix(in srgb, var(--success) 14%, var(--surface)) !important;
+    background: color-mix(
+        in srgb,
+        var(--success) 14%,
+        var(--surface)
+    ) !important;
     border: 1px solid color-mix(in srgb, var(--success) 45%, transparent) !important;
     color: var(--text) !important;
     border-radius: 6px;
@@ -4339,7 +4573,7 @@ html[dir="rtl"] .imas-featured-properties-sidebar__badge--price {
 .imas-contact-page .imas-contact-page__submit {
     background: var(--brand-gold) !important;
     border-color: var(--brand-gold) !important;
-    color:var(--text) !important;
+    color: var(--text) !important;
     font-weight: 600;
     border-radius: 6px;
     padding: 12px 22px;

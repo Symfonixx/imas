@@ -7,7 +7,7 @@
             <h4
                 class="imas-blog-v2-sidebar__heading imas-featured-properties-sidebar__heading text-start"
             >
-                {{ trans("listing_page.feature_properties") }}
+                {{ heading || trans("listing_page.feature_properties") }}
             </h4>
             <div
                 v-show="showCarouselArrows"
@@ -38,10 +38,23 @@
                     v-for="p in featuredProperties"
                     :key="p.id"
                     class="imas-featured-properties-sidebar__slide"
+                    :class="{
+                        'imas-featured-properties-sidebar__slide--sold-out':
+                            isSoldOut(p),
+                    }"
+                    :aria-disabled="isSoldOut(p) ? 'true' : undefined"
                 >
-                    <a
-                        :href="p.url"
+                    <component
+                        :is="isSoldOut(p) ? 'div' : 'a'"
+                        :href="isSoldOut(p) ? undefined : p.url"
                         class="imas-featured-properties-sidebar__card"
+                        :class="{
+                            'imas-featured-properties-sidebar__card--sold-out':
+                                isSoldOut(p),
+                        }"
+                        :aria-label="
+                            isSoldOut(p) ? soldOutCardLabel(p) : undefined
+                        "
                     >
                         <div class="imas-featured-properties-sidebar__media">
                             <img
@@ -57,7 +70,12 @@
                                 >
                                     {{ formatMoney(propertyStartPrice(p)) }}
                                 </span>
-                               
+                                <span
+                                    v-if="isSoldOut(p)"
+                                    class="imas-featured-properties-sidebar__badge imas-featured-properties-sidebar__badge--sold-out imas-sold-out-badge imas-badge--danger"
+                                >
+                                    {{ trans("properties.sold_out") }}
+                                </span>
                             </div>
                             <div
                                 class="imas-featured-properties-sidebar__overlay"
@@ -93,7 +111,7 @@
                                 </ul>
                             </div>
                         </div>
-                    </a>
+                    </component>
                 </article>
             </div>
         </div>
@@ -115,6 +133,8 @@ import { propertyStartPrice } from "../utils/propertyPrice.js";
 
 const props = defineProps({
     featuredProperties: { type: Array, default: () => [] },
+    /** When set, replaces the default “featured properties” sidebar title. */
+    heading: { type: String, default: "" },
 });
 
 const page = usePage();
@@ -172,6 +192,14 @@ function displayTitle(p) {
 
 function locationLine(p) {
     return propertyLocationLine(p.location, locale());
+}
+
+function isSoldOut(p) {
+    return Boolean(p.is_sold_out);
+}
+
+function soldOutCardLabel(p) {
+    return `${displayTitle(p)} – ${trans("properties.sold_out")}`;
 }
 
 function formatMoney(amount) {

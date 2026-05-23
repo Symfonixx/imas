@@ -401,6 +401,7 @@
     "about_us":{
         "title":"Hakkımızda",
         "no_content":"Hakkımızda sayfasında henüz yayınlanmış içerik yok.",
-        "latest_properties":"En son eklenen mülkler"
+        "latest_properties":"En son eklenen mülkler",
+        "quick_links":"Hızlı bağlantılar"
     }
 }

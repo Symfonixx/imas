@@ -14,7 +14,7 @@
                 :banner-image-url="listingsBannerUrl"
             />
 
-            <main class="imas-blog-v2__page imas-blog-v2__page--single">
+            <main class="imas-blog-v2__page">
                 <section class="imas-blog-v2__main">
                     <p
                         v-if="(properties.data ?? []).length > 0"
@@ -41,6 +41,15 @@
                         @navigate="scrollToListingsTop"
                     />
                 </section>
+
+                <aside class="imas-blog-v2-sidebar">
+                    <div class="imas-favorites-aside-sticky">
+                        <PropertyShowContactSidebar
+                            :contact-store-url="contactStoreUrl"
+                            :default-subject="inquirySubject"
+                        />
+                    </div>
+                </aside>
             </main>
         </div>
     </AppLayout>
@@ -55,10 +64,12 @@ import { useScrollReveal } from "@/composables/useScrollReveal";
 import { localizedRoute } from "@/utils/localizedRoute.js";
 import PropertyGridSection from "../components/PropertyGridSection.vue";
 import PropertyListingPagination from "../components/PropertyListingPagination.vue";
+import PropertyShowContactSidebar from "../components/PropertyShowContactSidebar.vue";
 
 const props = defineProps({
     title: { type: String, required: true },
     properties: { type: Object, required: true },
+    contactStoreUrl: { type: String, required: true },
 });
 
 const page = usePage();
@@ -78,6 +89,8 @@ onMounted(() => {
 const documentTitle = computed(
     () => `${props.title} | ${page.props.appName}`,
 );
+
+const inquirySubject = computed(() => props.title);
 
 function trans(key) {
     return page.props.translations[key] || key;
@@ -133,3 +146,18 @@ const listingsBannerUrl = computed(() => {
 
 useScrollReveal(pageRef, { variant: "propertyListings" });
 </script>
+
+<style scoped lang="scss">
+.imas-favorites-aside-sticky {
+    position: sticky;
+    top: 6.5rem;
+    z-index: 2;
+}
+
+@media (max-width: 991.98px) {
+    .imas-favorites-aside-sticky {
+        position: static;
+        margin-top: 0;
+    }
+}
+</style>

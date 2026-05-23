@@ -403,6 +403,7 @@
     "about_us":{
         "title":"من نحن",
         "no_content":"لا يوجد محتوى منشور لصفحة من نحن بعد.",
-        "latest_properties":"أحدث العقارات"
+        "latest_properties":"أحدث العقارات",
+        "quick_links":"روابط سريعة"
     }
 }

@@ -399,6 +399,7 @@
     "about_us":{
         "title":"About us",
         "no_content":"About us page has no published content yet.",
-        "latest_properties":"Latest properties"
+        "latest_properties":"Latest properties",
+        "quick_links":"Quick links"
     }
 }

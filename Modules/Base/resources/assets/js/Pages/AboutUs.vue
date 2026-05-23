@@ -74,39 +74,40 @@
                 :page-title="pageHeadingTitle"
                 :items="headingItems"
                 :banner-image-url="heroBannerUrl"
+                :banner-video-embed="heroYoutubeEmbed"
             />
 
-            <main class="imas-cms-page-show__page container">
-                <div
-                    v-if="youtubeEmbedHtml"
-                    class="imas-about-page__video imas-tc-video ratio ratio-16x9"
-                    v-html="youtubeEmbedHtml"
+            <main
+                class="imas-about-page__page imas-blog-v2__page container"
+                :class="{
+                    'imas-about-page__page--with-sidebar': hasSidebar,
+                }"
+            >
+                <section class="imas-about-page__main">
+                    <article
+                        v-if="contentHtml"
+                        class="imas-blog-show imas-cms-page-show"
+                    >
+                        <div class="imas-blog-show__content">
+                            <div
+                                class="imas-blog-show-body imas-cms-page-show__body text-base text-start"
+                                v-html="contentHtml"
+                            />
+                        </div>
+                    </article>
+                    <p
+                        v-if="!contentHtml"
+                        class="imas-about-page__empty text-muted text-base"
+                    >
+                        {{ trans("about_us.no_content") }}
+                    </p>
+                </section>
+
+                <AboutUsQuickLinksSidebar
+                    v-if="hasSidebar"
+                    :latest-properties="latestProperties"
                 />
-                <article
-                    v-if="contentHtml"
-                    class="imas-blog-show imas-cms-page-show"
-                >
-                    <div class="imas-blog-show__content">
-                        <div
-                            class="imas-blog-show-body imas-cms-page-show__body text-base text-start"
-                            v-html="contentHtml"
-                        />
-                    </div>
-                </article>
-                <p
-                    v-if="!contentHtml && !youtubeEmbedHtml"
-                    class="imas-about-page__empty text-muted text-base"
-                >
-                    {{ trans("about_us.no_content") }}
-                </p>
             </main>
-
-            <PopularPropertiesSection
-                v-if="latestProperties.length > 0"
-                :properties="latestProperties"
-                :hide-title="true"
-                :custom-title="trans('about_us.latest_properties')"
-            />
         </div>
     </AppLayout>
 </template>
@@ -117,7 +118,7 @@ import { Head, usePage } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/App.vue";
 import { useScrollReveal } from "@/composables/useScrollReveal";
 import InnerPageHeadingHero from "@/components/global/InnerPageHeadingHero.vue";
-import PopularPropertiesSection from "../components/PopularPropertiesSection.vue";
+import AboutUsQuickLinksSidebar from "../components/AboutUsQuickLinksSidebar.vue";
 
 const props = defineProps({
     aboutUs: {
@@ -140,9 +141,10 @@ const seo = computed(() => globals.value.seo ?? {});
 const media = computed(() => globals.value.media ?? {});
 const contentHtml = computed(() => props.aboutUs.content ?? "");
 
-const youtubeEmbedHtml = computed(() =>
-    withYoutubeAutoplay(props.aboutUs.youtube_embed ?? ""),
-);
+const heroYoutubeEmbed = computed(() => {
+    const raw = props.aboutUs.youtube_embed ?? "";
+    return typeof raw === "string" ? raw.trim() : "";
+});
 
 function pickSeoString(fromProps, ...globalKeys) {
     const p = fromProps;
@@ -166,10 +168,7 @@ function trans(key) {
 const sectionLabel = computed(() => trans("about_us.title"));
 
 const pageHeadingTitle = computed(() => {
-    const t = pickSeoString(
-        props.aboutUs.meta_title,
-        "about_us_meta_title",
-    );
+    const t = pickSeoString(props.aboutUs.meta_title, "about_us_meta_title");
     return t !== "" ? t : sectionLabel.value;
 });
 
@@ -205,10 +204,7 @@ const heroBannerUrl = computed(() => {
 });
 
 const documentTitle = computed(() => {
-    const t = pickSeoString(
-        props.aboutUs.meta_title,
-        "about_us_meta_title",
-    );
+    const t = pickSeoString(props.aboutUs.meta_title, "about_us_meta_title");
     if (t !== "") {
         return `${t} | ${page.props.appName}`;
     }
@@ -234,10 +230,7 @@ const metaKeywords = computed(() =>
 );
 
 const ogTitle = computed(() => {
-    const t = pickSeoString(
-        props.aboutUs.meta_title,
-        "about_us_meta_title",
-    );
+    const t = pickSeoString(props.aboutUs.meta_title, "about_us_meta_title");
     return t !== "" ? t : sectionLabel.value;
 });
 
@@ -274,90 +267,31 @@ const twitterCard = computed(() =>
     ogImage.value ? "summary_large_image" : "summary",
 );
 
-/**
- * Ensure admin YouTube iframe autoplays on load (muted per browser policy).
- */
-function withYoutubeAutoplay(html) {
-    const raw = String(html || "").trim();
-    if (!raw) {
-        return "";
-    }
-
-    if (typeof DOMParser !== "undefined") {
-        try {
-            const doc = new DOMParser().parseFromString(raw, "text/html");
-            const iframe = doc.querySelector("iframe");
-            if (iframe) {
-                const src = iframe.getAttribute("src") || "";
-                if (src) {
-                    iframe.setAttribute("src", appendYoutubeAutoplayParams(src));
-                }
-                const allow = iframe.getAttribute("allow") || "";
-                if (!/autoplay/i.test(allow)) {
-                    iframe.setAttribute(
-                        "allow",
-                        allow
-                            ? `${allow}; autoplay`
-                            : "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share",
-                    );
-                }
-                iframe.setAttribute("allowfullscreen", "");
-                return iframe.outerHTML;
-            }
-        } catch {
-            /* regex fallback */
-        }
-    }
-
-    return raw.replace(
-        /(<iframe[^>]*\ssrc=["'])([^"']+)(["'])/i,
-        (_, pre, src, post) => `${pre}${appendYoutubeAutoplayParams(src)}${post}`,
-    );
-}
-
-function appendYoutubeAutoplayParams(src) {
+const hasQuickLinks = computed(() => {
     try {
-        const url = new URL(src, "https://www.youtube.com");
-        url.searchParams.set("autoplay", "1");
-        url.searchParams.set("mute", "1");
-        url.searchParams.set("playsinline", "1");
-        return url.toString();
+        return (
+            (typeof route === "function" &&
+                route().has?.("turkish-citizenship")) ||
+            (typeof route === "function" && route().has?.("blog.index"))
+        );
     } catch {
-        const sep = src.includes("?") ? "&" : "?";
-        return `${src}${sep}autoplay=1&mute=1&playsinline=1`;
+        return true;
     }
-}
+});
+
+const hasSidebar = computed(
+    () => hasQuickLinks.value || props.latestProperties.length > 0,
+);
 </script>
 
 <style scoped lang="scss">
-.imas-about-page__video {
-    width: 100%;
-    max-width: 100%;
-    margin-bottom: 2rem;
-}
-
-.imas-about-page__video :deep(iframe),
-.imas-about-page__video :deep(embed) {
-    width: 100% !important;
-    height: 100% !important;
-    min-height: 400px;
-    border: 0 !important;
-}
-
-.imas-about-page__video + .imas-about-page__empty,
-.imas-about-page__video + .imas-blog-show {
-    margin-top: 0;
+.imas-about-page__page:not(.imas-about-page__page--with-sidebar) {
+    display: block;
+    max-width: 960px;
 }
 
 .imas-about-page__empty {
     text-align: center;
     padding: 2rem 0 3rem;
-}
-
-@media (max-width: 768px) {
-    .imas-about-page__video :deep(iframe),
-    .imas-about-page__video :deep(embed) {
-        min-height: 200px;
-    }
 }
 </style>

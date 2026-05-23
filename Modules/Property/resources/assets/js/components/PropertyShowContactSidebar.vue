@@ -124,7 +124,8 @@
                         :contact-store-url="contactStoreUrl"
                         variant="sidebar"
                         hide-title
-                        :default-subject="defaultSubject"
+                        :hide-subject="hideFormSubject"
+                        :default-subject="effectiveDefaultSubject"
                     />
                 </div>
             </div>
@@ -137,9 +138,17 @@ import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { usePage } from "@inertiajs/vue3";
 import ContactForm from "../../../../../Support/resources/assets/js/Components/ContactForm.vue";
 
-defineProps({
+const props = defineProps({
     contactStoreUrl: { type: String, required: true },
     defaultSubject: { type: String, default: "" },
+    hideFormSubject: { type: Boolean, default: false },
+});
+
+const effectiveDefaultSubject = computed(() => {
+    if (!props.hideFormSubject) {
+        return props.defaultSubject;
+    }
+    return shareUrl.value || props.defaultSubject;
 });
 
 const page = usePage();

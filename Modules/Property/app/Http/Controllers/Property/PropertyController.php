@@ -157,6 +157,7 @@ class PropertyController extends Controller
         return Inertia::render('Property::FavoriteProperties', [
             'title' => $pageTitle,
             'properties' => $properties,
+            'contactStoreUrl' => route('support.contact-us.store'),
         ]);
     }
 

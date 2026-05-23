@@ -310,7 +310,8 @@
                             <div data-imas-reveal="aside">
                                 <PropertyShowContactSidebar
                                     :contact-store-url="contactStoreUrl"
-                                    :default-subject="inquirySubject"
+                                    :default-subject="canonicalUrl"
+                                    hide-form-subject
                                 />
                             </div>
                             <div data-imas-reveal="aside">
@@ -491,13 +492,6 @@ const hasMapCoordinates = computed(
     () =>
         hasValidCoordinate(props.property.lat) &&
         hasValidCoordinate(props.property.lng),
-);
-
-const inquirySubject = computed(() =>
-    trans("property_show.inquiry_subject").replace(
-        ":title",
-        displayTitle.value,
-    ),
 );
 
 const meta = computed(() => props.property.metadata ?? {});

@@ -685,7 +685,6 @@ const authSubview = ref(null);
 const activeMainTab = ref("login");
 const resetToken = ref("");
 const seo = computed(() => page.props.globals.seo || {});
-console.log(seo.value);
 const appName = computed(() => String(seo.value.main_title || ""));
 
 /** Match theme emphasis: last word in `<strong>…</strong>` when possible */
@@ -1019,32 +1018,173 @@ onBeforeUnmount(() => {
 /* Theme default is `display: none` on `.login-and-register-form` (jQuery fades it in). */
 .imas-auth-modal.login-and-register-form.modal {
     display: block !important;
+    background: var(--overlay) !important;
+    font-family: var(--font-app);
+}
+
+.imas-auth-modal.login-and-register-form .main-register-holder {
+    margin: 4rem auto 2rem;
+}
+
+.imas-auth-modal.login-and-register-form .main-register {
+    --imas-auth-content-width: 80%;
+    background: var(--surface) !important;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: var(--shadow-lg) !important;
+    margin-bottom: 2rem;
+    padding: 0 0 1rem;
+}
+
+.imas-auth-modal.login-and-register-form .main-register h3 {
+    float: none;
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 0;
+    font-size: var(--text-md);
+    font-weight: 600;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--divider);
+    text-align: center;
+}
+
+.imas-auth-modal.login-and-register-form .main-register h3 span {
+    font-size: inherit;
+    font-weight: inherit;
+    color: var(--text);
+    text-transform: none;
+    font-family: var(--font-app);
+}
+
+.imas-auth-modal.login-and-register-form .main-register h3 :deep(strong) {
+    color: var(--brand-gold);
+    font-weight: 700;
+}
+
+.imas-auth-modal.login-and-register-form .close-reg {
+    top: 0.65rem;
+    right: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    line-height: 1;
+    background: var(--brand-gold);
+    color: var(--text-on-gold);
+}
+
+.imas-auth-modal.login-and-register-form .close-reg:hover {
+    background: var(--brand-gold-hover);
+}
+
+.imas-auth-modal.login-and-register-form .close-reg .fa.fa-times {
+    padding: 0 !important;
+    margin: 0;
+    line-height: 1;
+    font-size: 1rem;
+    text-align: center;
+    pointer-events: none;
+}
+
+.imas-auth-modal.login-and-register-form #tabs-container {
+    margin-top: 0.5rem;
+    padding: 0;
+}
+
+.imas-auth-modal.login-and-register-form .tabs-menu {
+    float: none;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: var(--imas-auth-content-width);
+    max-width: 100%;
+    margin: 0.5rem auto 0.75rem;
+    padding: 0 !important;
+    border-bottom-color: var(--divider);
+}
+
+.imas-auth-modal.login-and-register-form .tabs-menu li {
+    margin-right: 0.5rem;
+}
+
+.imas-auth-modal.login-and-register-form .tabs-menu li a {
+    padding: 0.5rem 1.25rem;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--text-dim);
+    background: var(--surface-2);
+    border-radius: 6px 6px 0 0;
+}
+
+.imas-auth-modal.login-and-register-form .tabs-menu li.current a,
+.imas-auth-modal.login-and-register-form .tabs-menu li a:hover {
+    color: var(--text-on-gold);
+    background: var(--brand-gold);
+}
+
+.imas-auth-modal.login-and-register-form .tab-contents {
+    padding: 0.5rem 0 0;
+}
+
+/* Form + tabs: shared width, centered (header stays full width) */
+.imas-auth-modal.login-and-register-form .custom-form {
+    width: var(--imas-auth-content-width);
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
+}
+
+@media (max-width: 520px) {
+    .imas-auth-modal.login-and-register-form .main-register-holder {
+        margin: 2rem 1rem 1.5rem;
+        width: auto;
+        max-width: none;
+        box-sizing: border-box;
+    }
+
+    .imas-auth-modal.login-and-register-form .main-register {
+        --imas-auth-content-width: 100%;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .imas-auth-modal.login-and-register-form .custom-form {
+        padding-left: 0;
+        padding-right: 0;
+    }
 }
 
 /* Theme hides all `.tab-contents` and only shows `#tab-1`; we use active class instead. */
-.login-and-register-form .tab-contents.imas-auth-tab--active {
+.imas-auth-modal.login-and-register-form .tab-contents.imas-auth-tab--active {
     display: block !important;
 }
 
 .imas-auth-form-field {
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 .imas-auth-form-field--actions {
     margin-bottom: 0;
-    margin-top: 0.35rem;
+    margin-top: 0.25rem;
+}
+
+.forgot-password-form {
+    padding: 0 !important;
 }
 
 /* Theme forces float + text-align:left on labels; use logical start for RTL/LTR. */
-.forgot-password-form {
-    padding: 0 30px !important;
-}
 .imas-auth-modal.login-and-register-form .custom-form label {
     float: none;
     display: block;
     clear: both;
     text-align: start;
-    /* padding: 0 30px !important; */
+    padding-bottom: 0.25rem;
+    margin-bottom: 0;
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--text-dim);
 }
 
 .imas-auth-modal.login-and-register-form .imas-auth-field-error {
@@ -1055,7 +1195,83 @@ onBeforeUnmount(() => {
     .custom-form
     input:not([type="checkbox"]):not([type="radio"]),
 .imas-auth-modal.login-and-register-form .custom-form textarea {
+    float: none;
     text-align: start;
+    width: 100%;
+    margin-bottom: 0.5rem;
+    padding: 0.65rem 0.85rem !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 6px;
+    background: var(--surface-2) !important;
+    color: var(--text) !important;
+    font-size: var(--text-sm);
+    -webkit-appearance: none;
+    appearance: none;
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.imas-auth-modal.login-and-register-form
+    .custom-form
+    input:not([type="checkbox"]):not([type="radio"])::placeholder,
+.imas-auth-modal.login-and-register-form .custom-form textarea::placeholder {
+    color: var(--text-muted);
+}
+
+.imas-auth-modal.login-and-register-form
+    .custom-form
+    input:not([type="checkbox"]):not([type="radio"]):focus,
+.imas-auth-modal.login-and-register-form .custom-form textarea:focus {
+    outline: none;
+    border-color: var(--brand-gold) !important;
+    box-shadow: var(--ring);
+}
+
+.imas-auth-modal.login-and-register-form .custom-form .log-submit-btn {
+    float: none;
+    width: 100%;
+    margin-top: 0.35rem;
+    padding: 0.65rem 1.25rem;
+    border-radius: 6px;
+    background: var(--brand-gold) !important;
+    color: var(--text-on-gold) !important;
+    font-size: var(--text-sm);
+    font-weight: 600;
+}
+
+.imas-auth-modal.login-and-register-form .custom-form .log-submit-btn:hover:not(:disabled) {
+    background: var(--brand-gold-hover) !important;
+}
+
+.imas-auth-modal.login-and-register-form .custom-form .log-submit-btn:focus-visible {
+    outline: none;
+    box-shadow: var(--ring);
+}
+
+.imas-auth-modal.login-and-register-form .filter-tags {
+    margin-top: 0.5rem;
+    align-items: center;
+}
+
+.imas-auth-modal.login-and-register-form .filter-tags label {
+    width: auto;
+    padding-bottom: 0;
+    color: var(--text-dim);
+    font-weight: 400;
+}
+
+.imas-auth-modal.login-and-register-form .lost_password {
+    margin-top: 0.5rem;
+}
+
+.imas-auth-modal.login-and-register-form .lost_password a {
+    color: var(--text-dim);
+    font-size: var(--text-sm);
+}
+
+.imas-auth-modal.login-and-register-form .lost_password a:hover {
+    color: var(--brand-gold);
 }
 
 /* Match `.login-and-register-form .custom-form input[type="text"]` (theme): single cohesive field */
@@ -1063,11 +1279,11 @@ onBeforeUnmount(() => {
     display: flex;
     align-items: stretch;
     width: 100%;
-    border: 1px solid #eee;
-    background: #f9f9f9;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
     border-radius: 6px;
     overflow: visible;
-    margin-bottom: 20px;
+    margin-bottom: 0.5rem;
 }
 
 .imas-auth-phone-field .imas-auth-country-select-shell {
@@ -1086,17 +1302,18 @@ onBeforeUnmount(() => {
     width: 100%;
     height: 100%;
     min-height: 100%;
-    padding: 15px 2rem 15px 14px;
+    padding: 0.65rem 1.75rem 0.65rem 0.75rem;
     margin: 0;
     border: none;
     border-radius: 0;
     background-color: transparent;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239aa6bd' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 10px center;
     background-size: 10px;
     cursor: pointer;
     text-align: start;
+    color: var(--text);
     -webkit-appearance: none;
     appearance: none;
 }
@@ -1106,7 +1323,7 @@ onBeforeUnmount(() => {
 }
 
 .imas-auth-country-trigger:focus-visible {
-    box-shadow: inset 0 0 0 2px rgba(217, 168, 0, 0.45);
+    box-shadow: inset var(--ring);
 }
 
 .imas-auth-country-dropdown-panel {
@@ -1120,44 +1337,44 @@ onBeforeUnmount(() => {
     flex-direction: column;
     margin: 0;
     padding: 0;
-    background: #fff;
-    border: 1px solid #eee;
+    background: var(--surface);
+    border: 1px solid var(--border);
     border-radius: 6px;
-    box-shadow: 0 8px 24px rgba(26, 42, 74, 0.12);
+    box-shadow: var(--shadow-md);
     z-index: 10050;
     overflow: hidden;
 }
 
 .imas-auth-country-dropdown-search-wrap {
     flex-shrink: 0;
-    padding: 8px;
-    border-bottom: 1px solid #eee;
-    background: #fff;
+    padding: 6px;
+    border-bottom: 1px solid var(--divider);
+    background: var(--surface);
 }
 
 .imas-auth-country-dropdown-search {
     display: block;
     width: 100%;
     box-sizing: border-box;
-    padding: 9px 10px;
-    border: 1px solid #eee;
+    padding: 0.5rem 0.65rem;
+    border: 1px solid var(--border);
     border-radius: 6px;
-    font-size: 13px;
+    font-size: var(--text-sm);
     font-weight: 500;
-    color: #666;
-    background: #f9f9f9;
+    color: var(--text);
+    background: var(--surface-2);
     -webkit-appearance: none;
     appearance: none;
 }
 
 .imas-auth-country-dropdown-search::placeholder {
-    color: #999;
+    color: var(--text-muted);
 }
 
 .imas-auth-country-dropdown-search:focus {
     outline: none;
-    border-color: rgba(217, 168, 0, 0.55);
-    box-shadow: 0 0 0 1px rgba(217, 168, 0, 0.25);
+    border-color: var(--brand-gold);
+    box-shadow: var(--ring);
 }
 
 .imas-auth-country-dropdown-scroll {
@@ -1180,7 +1397,7 @@ onBeforeUnmount(() => {
 
 .imas-auth-country-option--empty {
     cursor: default;
-    color: #888;
+    color: var(--text-muted);
     font-weight: 400;
 }
 
@@ -1192,26 +1409,26 @@ onBeforeUnmount(() => {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 14px;
+    padding: 0.5rem 0.75rem;
     margin: 0;
     cursor: pointer;
-    color: #666;
-    font-size: 13px;
+    color: var(--text);
+    font-size: var(--text-sm);
     font-weight: 500;
     line-height: 1;
 }
 
 .imas-auth-country-option:hover {
-    background: #f5f5f5;
+    background: var(--surface-3);
 }
 
 .imas-auth-country-option--selected {
-    background: #efefef;
+    background: var(--surface-2);
 }
 
 .imas-auth-country-option-code {
     flex-shrink: 0;
-    color: #666;
+    color: var(--text-dim);
 }
 
 .imas-auth-country-flag-img--option {
@@ -1229,15 +1446,16 @@ onBeforeUnmount(() => {
 
 .imas-auth-country-code-label {
     flex-shrink: 0;
-    font-size: 13px;
+    font-size: var(--text-sm);
     line-height: 1;
     font-weight: 500;
-    color: #666;
+    color: var(--text-dim);
     pointer-events: none;
 }
 
 .imas-auth-phone-field:focus-within {
-    box-shadow: 0 0 0 1px rgba(217, 168, 0, 0.35);
+    border-color: var(--brand-gold);
+    box-shadow: var(--ring);
 }
 
 .imas-auth-phone-field--country-open {
@@ -1248,7 +1466,7 @@ onBeforeUnmount(() => {
 .imas-auth-phone-sep {
     width: 1px;
     align-self: stretch;
-    background: #eee;
+    background: var(--divider);
     flex-shrink: 0;
 }
 
@@ -1258,39 +1476,35 @@ onBeforeUnmount(() => {
     float: none;
     width: auto;
     margin: 0 !important;
-    padding: 15px 20px;
+    padding: 0.65rem 0.85rem;
     border: none;
     border-radius: 0;
     background: transparent;
-    color: #666;
-    font-size: 13px;
+    color: var(--text);
+    font-size: var(--text-sm);
     -webkit-appearance: none;
     appearance: none;
 }
 
 .imas-auth-phone-field .imas-auth-phone-input:focus {
     outline: none;
+    box-shadow: none;
 }
 
 .imas-auth-phone-field .imas-auth-phone-input::placeholder {
-    color: #999;
-}
-
-.imas-auth-modal__brand :deep(strong) {
-    /* text-align: center; */
-    font-weight: 700;
+    color: var(--text-muted);
 }
 
 .imas-auth-modal__back {
     font-weight: 600;
     text-decoration: none;
     width: 100%;
-    padding: 0 30px 20px 20px !important;
+    padding: 0 1.25rem 0.75rem 1.25rem !important;
     text-align: start;
     display: flex;
     justify-content: start;
     align-items: center;
-    gap: 10px;
+    gap: 0.5rem;
     color: var(--brand-gold) !important;
 }
 
@@ -1311,25 +1525,35 @@ onBeforeUnmount(() => {
 }
 
 .imas-auth-modal__hint {
-    color: #666;
-    font-size: 14px;
-    margin-bottom: 12px;
+    color: var(--text-dim);
+    font-size: var(--text-sm);
+    margin-bottom: 0.5rem;
 }
 
 .imas-auth-field-error {
     display: block;
-    color: #c0392b;
-    font-size: 13px;
-    margin: -6px 0 10px;
+    color: var(--danger);
+    font-size: var(--text-xs);
+    margin: -0.15rem 0 0.35rem;
 }
-.login-and-register-form .tabs-menu {
-    display: flex;
-    align-items: center;
-    justify-content: start;
-    padding: 0 !important;
-}
-.remember-me-checkbox {
-    width: 33px !important;
+
+.imas-auth-modal.login-and-register-form .custom-form .filter-tags input[type="checkbox"],
+.imas-auth-modal.login-and-register-form .remember-me-checkbox {
+    width: 1rem !important;
+    height: 1rem !important;
+    margin: 0 0.35rem 0 0 !important;
+    padding: 0;
+    border: 1px solid var(--border) !important;
     border-radius: 3px;
+    background: var(--surface-2) !important;
+    accent-color: var(--brand-gold);
+    cursor: pointer;
+}
+
+.imas-auth-modal.login-and-register-form
+    .custom-form
+    .filter-tags
+    input[type="checkbox"]:checked::after {
+    color: var(--brand-gold);
 }
 </style>

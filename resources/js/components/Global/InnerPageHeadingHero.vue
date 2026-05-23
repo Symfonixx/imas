@@ -1,10 +1,27 @@
 <template>
-    <header class="imas-inner-page-heading-hero">
+    <header
+        class="imas-inner-page-heading-hero"
+        :class="{ 'imas-inner-page-heading-hero--video': hasVideoBackground }"
+    >
         <div
             class="imas-inner-page-heading-hero__bg"
             ref="heroBgRef"
+            :class="{
+                'imas-inner-page-heading-hero__bg--video': hasVideoBackground,
+            }"
             :style="bgStyle"
-        />
+        >
+            <iframe
+                v-if="heroVideoSrc"
+                ref="heroVideoIframeRef"
+                class="imas-inner-page-heading-hero__video"
+                :src="heroVideoSrc"
+                title=""
+                tabindex="-1"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                aria-hidden="true"
+            />
+        </div>
         <div class="imas-inner-page-heading-hero__inner">
             <h1
                 class="imas-inner-page-heading-hero__title"
@@ -61,6 +78,8 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { Link, usePage } from "@inertiajs/vue3";
+import { useYoutubeHeroPlayer } from "@/composables/useYoutubeHeroPlayer.js";
+import { resolveYoutubeHeroBackgroundSrc } from "@/utils/videoEmbed.js";
 
 /** Arabic and related scripts need cursive joining — do not split per character. */
 const CONNECTED_SCRIPT_RE =
@@ -75,12 +94,15 @@ const props = defineProps({
     /** @type {InnerPageHeadingCrumb[]} */
     items: { type: Array, default: () => [] },
     bannerImageUrl: { type: String, default: "" },
+    /** YouTube iframe HTML, watch URL, or embed URL for a muted autoplay hero background. */
+    bannerVideoEmbed: { type: String, default: "" },
     /** Letter-by-letter title uses uppercase (Latin blog-v2 style only). */
     uppercaseTitle: { type: Boolean, default: true },
 });
 
 const page = usePage();
 const heroBgRef = ref(null);
+const heroVideoIframeRef = ref(null);
 const prefersCompactHeroTitle = ref(false);
 
 let compactTitleMq = null;
@@ -118,7 +140,18 @@ const displayTitle = computed(() => {
 
 const titleLetters = computed(() => displayTitle.value.split(""));
 
+const heroVideoSrc = computed(() =>
+    resolveYoutubeHeroBackgroundSrc(props.bannerVideoEmbed),
+);
+
+const hasVideoBackground = computed(() => Boolean(heroVideoSrc.value));
+
+useYoutubeHeroPlayer(heroVideoIframeRef, hasVideoBackground);
+
 const bgStyle = computed(() => {
+    if (hasVideoBackground.value) {
+        return undefined;
+    }
     const url =
         typeof props.bannerImageUrl === "string"
             ? props.bannerImageUrl.trim()
@@ -147,7 +180,7 @@ function syncCompactHeroTitle() {
 }
 
 function onScroll() {
-    if (prefersCompactHeroTitle.value) {
+    if (prefersCompactHeroTitle.value || hasVideoBackground.value) {
         if (heroBgRef.value) {
             heroBgRef.value.style.transform = "";
         }

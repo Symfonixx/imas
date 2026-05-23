@@ -7,7 +7,7 @@
             {{ trans("contact_us.title") }}
         </h3>
 
-        <Transition name="imas-contact-alert">
+        <!-- <Transition name="imas-contact-alert">
             <div
                 v-if="successVisible"
                 class="alert alert-success imas-contact-page__alert imas-contact-page__alert--success text-start"
@@ -15,7 +15,7 @@
             >
                 {{ trans("contact_us.message_sent") }}
             </div>
-        </Transition>
+        </Transition> -->
 
         <form
             ref="contactFormEl"
@@ -89,13 +89,13 @@
                 </div>
                 <div :class="pairColClass">
                     <div class="form-group">
-                        <input
+                        <PhoneCountryInput
                             v-model="form.mobile"
-                            type="text"
-                            class="form-control input-custom input-full"
-                            :class="{ 'is-invalid': form.errors.mobile }"
-                            :placeholder="trans('contact_us.phone_optional')"
-                            autocomplete="tel"
+                            input-id="imas-contact-mobile"
+                            :placeholder="
+                                trans('auth_modal.mobile_national_placeholder')
+                            "
+                            :invalid="!!form.errors.mobile"
                         />
                         <div
                             v-if="form.errors.mobile"
@@ -106,7 +106,7 @@
                     </div>
                 </div>
             </div>
-            <div class="form-group">
+            <div v-if="!hideSubject" class="form-group">
                 <input
                     v-model="form.subject"
                     type="text"
@@ -163,6 +163,7 @@
 <script setup>
 import { computed, onBeforeUnmount, ref, watch } from "vue";
 import { useForm, usePage } from "@inertiajs/vue3";
+import PhoneCountryInput from "@/components/Global/PhoneCountryInput.vue";
 
 const props = defineProps({
     contactStoreUrl: {
@@ -180,6 +181,10 @@ const props = defineProps({
     defaultSubject: {
         type: String,
         default: "",
+    },
+    hideSubject: {
+        type: Boolean,
+        default: false,
     },
 });
 
@@ -235,14 +240,24 @@ const form = useForm({
     message: "",
 });
 
+function applyDefaultSubject(value) {
+    if (typeof value !== "string" || value.trim() === "") {
+        return;
+    }
+    if (props.hideSubject || !form.subject) {
+        form.subject = value;
+    }
+}
+
+watch(() => props.defaultSubject, applyDefaultSubject, { immediate: true });
+
 watch(
-    () => props.defaultSubject,
-    (value) => {
-        if (typeof value === "string" && value.trim() !== "" && !form.subject) {
-            form.subject = value;
+    () => props.hideSubject,
+    (hidden) => {
+        if (hidden) {
+            applyDefaultSubject(props.defaultSubject);
         }
     },
-    { immediate: true },
 );
 
 function trans(key) {
@@ -297,6 +312,10 @@ function submit() {
     border-radius: 6px;
     padding: 10px 12px;
     font-size: var(--text-sm);
+}
+
+.imas-contact-form--sidebar :deep(.imas-auth-phone-field) {
+    margin-bottom: 12px;
 }
 
 .imas-contact-form--sidebar :deep(textarea.form-control) {

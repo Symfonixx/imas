@@ -9,6 +9,7 @@
                                 <div class="logo">
                                     <img :src="logoUrl" alt="logo" class="footer_logo">
                                 </div>
+                                <span class="website-name">{{ websiteName }}</span>
                             </div>
                         
                         </div>
@@ -216,6 +217,10 @@ const logoUrl = computed(() => {
     return m.transparent_logo || m.white_logo || "";
 });
 
+const websiteName = computed(
+    () => page.props.globals?.seo?.website_name?.toUpperCase() || "",
+);
+
 const year = new Date().getFullYear();
 
 const developedByPrefix = computed(() => {
@@ -400,7 +405,14 @@ onBeforeUnmount(() => {
     height: 55px !important;
     width: 55px !important;
     margin: 0 !important;
-    margin-bottom: 10px !important;
+    flex-shrink: 0;
+}
+
+.brand-line .website-name {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--brand-gold);
+    line-height: 1.2;
 }
 
 .brand-line .logo img {

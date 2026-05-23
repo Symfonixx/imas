@@ -95,7 +95,7 @@ import { usePage } from "@inertiajs/vue3";
 import { buildGmailComposeUrl } from "@/utils/gmailUrl.js";
 
 const MESSENGER_URL =
-    "https://www.facebook.com/messages/e2ee/t/26491266473805964";
+    "#";
 
 const page = usePage();
 const isOpen = ref(false);

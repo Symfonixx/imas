@@ -23,5 +23,3 @@ yarn-error.log
 /.zed
 .rnd
 
-/public/build
-/public/hot

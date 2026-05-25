@@ -1,0 +1,1 @@
+import{P as e,U as t,f as n}from"./app-7Wah2FEI.js";var r={};function i(n,r){return t(),e(`div`)}var a=n(r,[[`render`,i]]);export{a as default};

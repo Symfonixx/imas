@@ -47,9 +47,56 @@ export function resolveVideoPlayback(raw) {
 }
 
 /**
+ * Build a muted, looping YouTube embed URL for a full-bleed hero background.
+ *
+ * @param {string|null|undefined} raw Admin iframe HTML, watch URL, or embed URL
+ * @returns {string|null}
+ */
+export function resolveYoutubeHeroBackgroundSrc(raw) {
+    const playback = resolveVideoPlayback(raw);
+    if (!playback || playback.type !== "iframe") {
+        return null;
+    }
+
+    const embedSrc = playback.src;
+    if (!/youtube(-nocookie)?\.com\/embed\//i.test(embedSrc)) {
+        return null;
+    }
+
+    const videoId = extractYoutubeId(String(raw ?? "")) || extractYoutubeId(embedSrc);
+    if (!videoId) {
+        return null;
+    }
+
+    try {
+        const url = new URL(`https://www.youtube.com/embed/${videoId}`);
+        url.searchParams.set("autoplay", "1");
+        url.searchParams.set("mute", "1");
+        url.searchParams.set("controls", "0");
+        url.searchParams.set("loop", "1");
+        url.searchParams.set("playlist", videoId);
+        url.searchParams.set("playsinline", "1");
+        url.searchParams.set("modestbranding", "1");
+        url.searchParams.set("rel", "0");
+        url.searchParams.set("showinfo", "0");
+        url.searchParams.set("disablekb", "1");
+        url.searchParams.set("fs", "0");
+        url.searchParams.set("iv_load_policy", "3");
+        url.searchParams.set("enablejsapi", "1");
+        if (typeof window !== "undefined" && window.location?.origin) {
+            url.searchParams.set("origin", window.location.origin);
+        }
+        return url.toString();
+    } catch {
+        return null;
+    }
+}
+
+/**
  * @param {string} embedSrc
  * @param {{ autoplay?: boolean }} [options]
  */
+
 export function withVideoAutoplay(embedSrc, options = {}) {
     const autoplay = options.autoplay !== false;
 
@@ -78,14 +125,14 @@ function extractIframeSrc(value) {
 
 function isEmbeddableUrl(value) {
     return (
-        /youtube\.com\/embed\//i.test(value) ||
+        /youtube(-nocookie)?\.com\/embed\//i.test(value) ||
         /player\.vimeo\.com\/video\//i.test(value)
     );
 }
 
 function extractYoutubeId(value) {
     const patterns = [
-        /youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/i,
+        /youtube(?:-nocookie)?\.com\/embed\/([a-zA-Z0-9_-]{11})/i,
         /youtube\.com\/watch\?[^#]*v=([a-zA-Z0-9_-]{11})/i,
         /youtu\.be\/([a-zA-Z0-9_-]{11})/i,
         /youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/i,

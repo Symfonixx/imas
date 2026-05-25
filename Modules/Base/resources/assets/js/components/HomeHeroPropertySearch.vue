@@ -30,20 +30,46 @@
             <div class="tab-pane fade show active">
                 <div class="rld-main-search">
                     <div class="row">
-                        <!-- <div class="rld-single-input">
-                            <input
-                                v-model="searchKeyword"
-                                type="search"
-                                name="q"
-                                autocomplete="off"
-                                class="pt-0 pb-0"
-                                :placeholder="trans('Enter Keyword...')"
-                            />
-                        </div> -->
-
+                     
+                        <div class="rld-single-select">
+                            <select
+                                v-model="searchLocationId"
+                                class="select single-select mr-22"
+                                name="location_id"
+                            >
+                                <option value="">
+                                    {{ trans("Location") }}
+                                </option>
+                                <option
+                                    v-for="d in districts"
+                                    :key="d.id"
+                                    :value="String(d.id)"
+                                >
+                                    {{ d.name }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="rld-single-select ml-22">
+                            <select
+                                v-model="searchPropertyTypeId"
+                                class="select single-select wide"
+                                name="property_type_id"
+                            >
+                                <option value="">
+                                    {{ trans("Property Type") }}
+                                </option>
+                                <option
+                                    v-for="t in propertyTypes"
+                                    :key="t.id"
+                                    :value="String(t.id)"
+                                >
+                                    {{ t.name }}
+                                </option>
+                            </select>
+                        </div>
                         <div
                             v-if="projectUnitTypes.length"
-                            class="rld-single-select"
+                            class="rld-single-select unitTypeSelect"
                         >
                             <select
                                 v-model="searchUnitTypeId"
@@ -68,44 +94,6 @@
                             />
                         </div>
 
-                        <div class="rld-single-select ml-22">
-                            <select
-                                v-model="searchPropertyTypeId"
-                                class="select single-select wide"
-                                name="property_type_id"
-                            >
-                                <option value="">
-                                    {{ trans("Property Type") }}
-                                </option>
-                                <option
-                                    v-for="t in propertyTypes"
-                                    :key="t.id"
-                                    :value="String(t.id)"
-                                >
-                                    {{ t.name }}
-                                </option>
-                            </select>
-                        </div>
-
-                        <div class="rld-single-select">
-                            <select
-                                v-model="searchLocationId"
-                                class="select single-select mr-0"
-                                name="location_id"
-                            >
-                                <option value="">
-                                    {{ trans("Location") }}
-                                </option>
-                                <option
-                                    v-for="c in cities"
-                                    :key="c.id"
-                                    :value="String(c.id)"
-                                >
-                                    {{ c.name }}
-                                </option>
-                            </select>
-                        </div>
-
                         <div
                             class="dropdown-filter"
                             role="button"
@@ -121,7 +109,7 @@
                         <div class="col-xl-2 col-lg-2 col-md-4 pl-0">
                             <button
                                 type="submit"
-                                class="btn btn-yellow btn-block "
+                                class="btn btn-yellow btn-block"
                             >
                                 {{ trans("Search Now") }}
                             </button>
@@ -132,7 +120,7 @@
                             :class="{ 'filter-block': advancedOpen }"
                         >
                             <div class="row">
-                                <div class="col-12 py-1 pr-30  sld">
+                                <div class="col-12 py-1 pr-30 sld">
                                     <div class="main-search-field-2">
                                         <div class="range-slider">
                                             <label>{{
@@ -192,7 +180,7 @@ const props = defineProps({
     action: { type: String, required: true },
     purpose: { type: String, default: "sale" },
     propertyTypes: { type: Array, default: () => [] },
-    cities: { type: Array, default: () => [] },
+    districts: { type: Array, default: () => [] },
 });
 
 const page = usePage();
@@ -341,18 +329,22 @@ onBeforeUnmount(() => {
     margin-top: 0.75rem !important;
 }
 
-.imas-hero-property-search :deep(.imas-hero-advanced-panel .main-search-field-2) {
+.imas-hero-property-search
+    :deep(.imas-hero-advanced-panel .main-search-field-2) {
     margin-top: 0;
 }
 
-.imas-hero-property-search :deep(.imas-hero-advanced-panel .range-slider label) {
+.imas-hero-property-search
+    :deep(.imas-hero-advanced-panel .range-slider label) {
     color: var(--text) !important;
     font-size: 0.95rem;
     margin-bottom: 1rem;
 }
 
-.imas-hero-property-search :deep(.imas-hero-advanced-panel input.first-slider-value),
-.imas-hero-property-search :deep(.imas-hero-advanced-panel input.second-slider-value) {
+.imas-hero-property-search
+    :deep(.imas-hero-advanced-panel input.first-slider-value),
+.imas-hero-property-search
+    :deep(.imas-hero-advanced-panel input.second-slider-value) {
     background: transparent !important;
     background-color: transparent !important;
     color: var(--text) !important;
@@ -367,7 +359,6 @@ onBeforeUnmount(() => {
 
 /* Small screens: full-width fields, tighter height, more horizontal padding */
 @media (max-width: 991.98px) {
-
     .homepage-9.hp-6
         .imas-hero-property-search
         .imas-hero-advanced-panel.full-filter.filter-block {
@@ -430,15 +421,29 @@ onBeforeUnmount(() => {
     }
 }
 
-.imas-hero-property-search :deep(#imas-hero-area-range .first-slider-value),.imas-hero-property-search :deep(#imas-hero-area-range .second-slider-value),.imas-hero-property-search :deep(#imas-hero-price-range .first-slider-value),.imas-hero-property-search :deep(#imas-hero-price-range .second-slider-value){
+.imas-hero-property-search :deep(#imas-hero-area-range .first-slider-value),
+.imas-hero-property-search :deep(#imas-hero-area-range .second-slider-value),
+.imas-hero-property-search :deep(#imas-hero-price-range .first-slider-value),
+.imas-hero-property-search :deep(#imas-hero-price-range .second-slider-value) {
     background: transparent !important;
 }
 
+html[dir="rtl"]
+    .imas-hero-property-search
+    :deep(#imas-hero-area-range .first-slider-value) {
+    text-align: end !important;
+}
+html[dir="rtl"]
+    .imas-hero-property-search
+    :deep(#imas-hero-price-range .first-slider-value) {
+    text-align: end !important;
+}
+
 .hp-6 .dropdown-filter span {
-        color: var(--text) !important;
-        border-color: var(--border) !important;
-        background: var(--surface-2) !important;
-    }
+    color: var(--text) !important;
+    border-color: var(--border) !important;
+    background: var(--surface-2) !important;
+}
 </style>
 
 <style>
@@ -450,5 +455,9 @@ onBeforeUnmount(() => {
 
 .rld-main-search .rld-single-select .single-select {
     box-shadow: none !important;
+}
+
+html[dir="ltr"] .unitTypeSelect .single-select {
+    margin-right: 0 !important;
 }
 </style>

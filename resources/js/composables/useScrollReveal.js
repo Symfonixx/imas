@@ -158,15 +158,19 @@ export function useScrollReveal(sectionRef, options = {}) {
             const heading = root.querySelector(
                 ".imas-property-listings-heading, .imas-inner-page-heading-hero",
             );
-            const toolbar = root.querySelector(".blog-pots .headings-2");
+            const toolbar = root.querySelector(
+                ".blog-pots .headings-2, .imas-property-listings-toolbar",
+            );
             const cards = root.querySelectorAll(
-                ".blog-pots .row > *:not(.imas-blog-show-article-col), .imas-tc-page .imas-tc-page-content, .imas-contact-page .contact-us .row > [class*='col-']",
+                ".blog-pots .row > *:not(.imas-blog-show-article-col), .imas-property-listings__grid .row > *, .imas-tc-page .imas-tc-page-content, .imas-contact-page .contact-us .row > [class*='col-']",
             );
-            const sidebarBlocks = root.querySelectorAll(
-                "aside.car > *, aside.imas-blog-listing-sidebar > *",
-            );
+            const sidebarBlocks = [
+                ...root.querySelectorAll(
+                    "aside.car > *, aside.imas-blog-listing-sidebar > *, aside.imas-blog-v2-sidebar > *",
+                ),
+            ].filter((el) => !el.closest(".imas-about-page"));
             const pagination = root.querySelector(
-                "nav.agents, nav.imas-blog-pagination",
+                "nav.agents, nav.imas-blog-pagination, nav.imas-blog-v2-pagination",
             );
 
             if (heading) {

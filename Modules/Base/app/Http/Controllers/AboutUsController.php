@@ -1,0 +1,49 @@
+<?php
+
+namespace Modules\Base\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use Inertia\Inertia;
+use Inertia\Response;
+use Modules\Base\Models\Seo;
+use Modules\Property\Models\Property;
+use Modules\Property\Support\PropertyCardEagerLoads;
+use Modules\Property\Support\PropertyListingCardSerializer;
+use Modules\User\Enums\CmsStatus;
+
+class AboutUsController extends Controller
+{
+    public function __invoke(): Response
+    {
+        $userId = auth()->id();
+
+        $latestProperties = Property::query()
+            ->where('status', CmsStatus::PUBLISHED)
+            ->with(PropertyCardEagerLoads::relations())
+            ->withFavoriteStateForUser($userId)
+            ->latest('created_at')
+            ->limit(8)
+            ->get()
+            ->map(static fn (Property $property) => PropertyListingCardSerializer::toArray($property))
+            ->values()
+            ->all();
+
+        return Inertia::render('Base::AboutUs', [
+            'aboutUs' => [
+                'content' => $this->seoString('about_us_content'),
+                'youtube_embed' => $this->seoString('about_us_youtube_embed'),
+                'meta_title' => $this->seoString('about_us_meta_title'),
+                'meta_description' => $this->seoString('about_us_meta_description'),
+                'meta_keywords' => $this->seoString('about_us_meta_keywords'),
+            ],
+            'latestProperties' => $latestProperties,
+        ]);
+    }
+
+    private function seoString(string $key): string
+    {
+        $value = Seo::get($key, '');
+
+        return is_string($value) ? $value : '';
+    }
+}

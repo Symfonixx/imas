@@ -1,16 +1,21 @@
 <template>
     <div>
-        <h3 v-if="!hideTitle" class="mb-4 text-start">
+        <h3
+            v-if="!hideTitle"
+            class="imas-contact-page__heading text-xl font-semibold mb-4 text-start"
+        >
             {{ trans("contact_us.title") }}
         </h3>
 
-        <div
-            v-if="showSuccessFlash"
-            class="alert alert-success"
-            role="status"
-        >
-            {{ trans("contact_us.message_sent") }}
-        </div>
+        <!-- <Transition name="imas-contact-alert">
+            <div
+                v-if="successVisible"
+                class="alert alert-success imas-contact-page__alert imas-contact-page__alert--success text-start"
+                role="status"
+            >
+                {{ trans("contact_us.message_sent") }}
+            </div>
+        </Transition> -->
 
         <form
             ref="contactFormEl"
@@ -18,77 +23,95 @@
             :class="{ 'imas-contact-form--sidebar': variant === 'sidebar' }"
             @submit.prevent="submit"
         >
-            <div class="form-group">
-                <input
-                    v-model="form.first_name"
-                    type="text"
-                    required
-                    maxlength="120"
-                    class="form-control input-custom input-full"
-                    :class="{ 'is-invalid': form.errors.first_name }"
-                    :placeholder="trans('contact_us.first_name')"
-                    autocomplete="given-name"
-                />
-                <div
-                    v-if="form.errors.first_name"
-                    class="invalid-feedback d-block"
-                >
-                    {{ form.errors.first_name }}
+            <div :class="pairRowClass">
+                <div :class="pairColClass">
+                    <div class="form-group">
+                        <input
+                            v-model="form.first_name"
+                            type="text"
+                            required
+                            maxlength="120"
+                            class="form-control input-custom input-full"
+                            :class="{ 'is-invalid': form.errors.first_name }"
+                            :placeholder="trans('contact_us.first_name')"
+                            autocomplete="given-name"
+                        />
+                        <div
+                            v-if="form.errors.first_name"
+                            class="invalid-feedback d-block"
+                        >
+                            {{ form.errors.first_name }}
+                        </div>
+                    </div>
+                </div>
+                <div :class="pairColClass">
+                    <div class="form-group">
+                        <input
+                            v-model="form.last_name"
+                            type="text"
+                            required
+                            maxlength="120"
+                            class="form-control input-custom input-full"
+                            :class="{ 'is-invalid': form.errors.last_name }"
+                            :placeholder="trans('contact_us.last_name')"
+                            autocomplete="family-name"
+                        />
+                        <div
+                            v-if="form.errors.last_name"
+                            class="invalid-feedback d-block"
+                        >
+                            {{ form.errors.last_name }}
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="form-group">
-                <input
-                    v-model="form.last_name"
-                    type="text"
-                    required
-                    maxlength="120"
-                    class="form-control input-custom input-full"
-                    :class="{ 'is-invalid': form.errors.last_name }"
-                    :placeholder="trans('contact_us.last_name')"
-                    autocomplete="family-name"
-                />
-                <div
-                    v-if="form.errors.last_name"
-                    class="invalid-feedback d-block"
-                >
-                    {{ form.errors.last_name }}
+
+            <div
+                :class="[
+                    pairRowClass,
+                    isPairedLayout && 'imas-contact-form__pair--stack-sm',
+                ]"
+            >
+                <div :class="pairColClass">
+                    <div class="form-group">
+                        <input
+                            v-model="form.email"
+                            type="email"
+                            required
+                            maxlength="255"
+                            class="form-control input-custom input-full"
+                            :class="{ 'is-invalid': form.errors.email }"
+                            :placeholder="trans('contact_us.email')"
+                            autocomplete="email"
+                        />
+                        <div
+                            v-if="form.errors.email"
+                            class="invalid-feedback d-block"
+                        >
+                            {{ form.errors.email }}
+                        </div>
+                    </div>
+                </div>
+                <div :class="pairColClass">
+                    <div class="form-group">
+                        <PhoneCountryInput
+                            v-model="form.mobile"
+                            input-id="imas-contact-mobile"
+                            :placeholder="
+                                trans('auth_modal.mobile_national_placeholder')
+                            "
+                            :invalid="!!form.errors.mobile"
+                        />
+                        <div
+                            v-if="form.errors.mobile"
+                            class="invalid-feedback d-block"
+                        >
+                            {{ form.errors.mobile }}
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="form-group">
-                <input
-                    v-model="form.email"
-                    type="email"
-                    required
-                    maxlength="255"
-                    class="form-control input-custom input-full"
-                    :class="{ 'is-invalid': form.errors.email }"
-                    :placeholder="trans('contact_us.email')"
-                    autocomplete="email"
-                />
-                <div
-                    v-if="form.errors.email"
-                    class="invalid-feedback d-block"
-                >
-                    {{ form.errors.email }}
-                </div>
-            </div>
-            <div class="form-group">
-                <input
-                    v-model="form.mobile"
-                    type="text"
-                    class="form-control input-custom input-full"
-                    :class="{ 'is-invalid': form.errors.mobile }"
-                    :placeholder="trans('contact_us.phone_optional')"
-                    autocomplete="tel"
-                />
-                <div
-                    v-if="form.errors.mobile"
-                    class="invalid-feedback d-block"
-                >
-                    {{ form.errors.mobile }}
-                </div>
-            </div>
-            <div class="form-group">
+            <div v-if="!hideSubject" class="form-group">
                 <input
                     v-model="form.subject"
                     type="text"
@@ -123,7 +146,7 @@
            <div class="d-flex justify-content-start">
             <button
                 type="submit"
-                class="btn btn-primary"
+                class="btn btn-primary imas-contact-page__submit"
                 :class="
                     variant === 'sidebar'
                         ? 'multiple-send-message w-100'
@@ -143,8 +166,9 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from "vue";
+import { computed, onBeforeUnmount, ref, watch } from "vue";
 import { useForm, usePage } from "@inertiajs/vue3";
+import PhoneCountryInput from "@/components/Global/PhoneCountryInput.vue";
 
 const props = defineProps({
     contactStoreUrl: {
@@ -163,13 +187,54 @@ const props = defineProps({
         type: String,
         default: "",
     },
+    hideSubject: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 const page = usePage();
 const contactFormEl = ref(null);
 
 const flash = computed(() => page.props.flash ?? {});
-const showSuccessFlash = computed(() => Boolean(flash.value?.contact_sent));
+
+const successVisible = ref(false);
+let successHideTimer = null;
+
+function clearSuccessTimers() {
+    if (successHideTimer) {
+        clearTimeout(successHideTimer);
+        successHideTimer = null;
+    }
+}
+
+function showSuccessAlert() {
+    clearSuccessTimers();
+    successVisible.value = true;
+    successHideTimer = setTimeout(() => {
+        successVisible.value = false;
+    }, 8000);
+}
+
+watch(
+    () => flash.value?.contact_sent,
+    (sent) => {
+        if (sent) {
+            showSuccessAlert();
+        }
+    },
+    { immediate: true },
+);
+
+onBeforeUnmount(clearSuccessTimers);
+
+const isPairedLayout = computed(() => props.variant !== "sidebar");
+const pairRowClass = computed(() =>
+    isPairedLayout.value ? "imas-contact-form__pair" : null,
+);
+const pairColClass = computed(() =>
+    isPairedLayout.value ? "imas-contact-form__pair-field" : null,
+);
 
 const form = useForm({
     first_name: "",
@@ -180,14 +245,24 @@ const form = useForm({
     message: "",
 });
 
+function applyDefaultSubject(value) {
+    if (typeof value !== "string" || value.trim() === "") {
+        return;
+    }
+    if (props.hideSubject || !form.subject) {
+        form.subject = value;
+    }
+}
+
+watch(() => props.defaultSubject, applyDefaultSubject, { immediate: true });
+
 watch(
-    () => props.defaultSubject,
-    (value) => {
-        if (typeof value === "string" && value.trim() !== "" && !form.subject) {
-            form.subject = value;
+    () => props.hideSubject,
+    (hidden) => {
+        if (hidden) {
+            applyDefaultSubject(props.defaultSubject);
         }
     },
-    { immediate: true },
 );
 
 function trans(key) {
@@ -211,28 +286,24 @@ function submit() {
             form.reset();
             form.subject = subject;
             form.clearErrors();
+            showSuccessAlert();
         },
     });
 }
 </script>
 
 <style scoped>
-.imas-contact-form :deep(.form-control) {
-    border-color: #dddddd !important;
+.imas-contact-alert-enter-active,
+.imas-contact-alert-leave-active {
+    transition:
+        opacity 0.4s ease,
+        transform 0.4s ease;
 }
 
-.imas-contact-form :deep(.form-control:focus) {
-    border-color: #dddddd !important;
-    box-shadow: 0 0 0 0.2rem rgba(221, 221, 221, 0.35);
-}
-
-.imas-contact-form :deep(.form-control.is-invalid) {
-    border-color: #dc3545 !important;
-}
-
-.imas-contact-form :deep(.form-control.is-invalid:focus) {
-    border-color: #dc3545 !important;
-    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+.imas-contact-alert-enter-from,
+.imas-contact-alert-leave-to {
+    opacity: 0;
+    transform: translateY(-0.5rem);
 }
 
 .imas-contact-form--sidebar :deep(.form-group) {
@@ -243,10 +314,27 @@ function submit() {
 .imas-contact-form--sidebar :deep(.textarea-custom) {
     width: 100%;
     margin-bottom: 12px;
-    border: 1px solid #e5e5e5;
-    border-radius: 4px;
+    border-radius: 6px;
+    font-size: var(--text-sm);
+}
+
+.imas-contact-form--sidebar :deep(input.form-control) {
+    height: 48px !important;
+    min-height: 48px !important;
+    padding: 0 0.85rem;
+    line-height: 1.5;
+    box-sizing: border-box;
+    border: 1px red solid;
+}
+
+.imas-contact-form--sidebar :deep(textarea.form-control) {
     padding: 10px 12px;
-    font-size: 14px;
+}
+
+.imas-contact-form--sidebar :deep(.imas-auth-phone-field) {
+    height: 48px !important;
+    min-height: 48px !important;
+    margin-bottom: 12px;
 }
 
 .imas-contact-form--sidebar :deep(textarea.form-control) {
@@ -254,18 +342,7 @@ function submit() {
     resize: vertical;
 }
 
-.imas-contact-form--sidebar .multiple-send-message {
-    background: var(--brand-gold) !important;
-    border-color: var(--brand-gold) !important;
-    color: #fff !important;
-    font-weight: 600;
-}
-
-.imas-contact-form--sidebar .multiple-send-message:hover:not(:disabled),
-.imas-contact-form--sidebar .multiple-send-message:focus:not(:disabled),
-.imas-contact-form--sidebar .multiple-send-message:active:not(:disabled) {
-    background: var(--brand-gold-hover) !important;
-    border-color: var(--brand-gold-hover) !important;
-    color: #fff !important;
+input{
+    height: 48px !important;
 }
 </style>

@@ -7,6 +7,7 @@ import {resolvePageComponent} from 'laravel-vite-plugin/inertia-helpers';
 import PropertyCard from '../../Modules/Property/resources/assets/js/components/PropertyCard.vue';
 import VideoLightbox from './components/Global/VideoLightbox.vue';
 import gsapPlugin, {killAllGsap, refreshScrollTrigger} from './plugins/gsap';
+import {syncZiggy} from './utils/syncZiggy.js';
 
 createInertiaApp({
     resolve: (name) => {
@@ -36,6 +37,10 @@ createInertiaApp({
 
 router.on('start', () => {
     killAllGsap();
+});
+
+router.on('success', (event) => {
+    syncZiggy(event.detail.page?.props?.ziggy);
 });
 
 router.on('finish', () => {

@@ -9,22 +9,16 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Validator;
 use Modules\Property\Models\Property;
 use Modules\Property\Models\UserFavoriteProperty;
-use Modules\Property\Support\PropertyCardEagerLoads;
+use Modules\Property\Support\FavoritePropertiesQuery;
 use Modules\Property\Transformers\PropertyCardResource;
-use Modules\User\Enums\CmsStatus;
-use Modules\User\Models\User;
 
 class FavoriteController extends Controller
 {
     public function index(Request $request): AnonymousResourceCollection
     {
-        /** @var User $user */
-        $user = $request->user();
+        $userId = (int) $request->user()->id;
 
-        $paginator = $user
-            ->favoriteProperties()
-            ->where('properties.status', CmsStatus::PUBLISHED)
-            ->with(PropertyCardEagerLoads::relations())
+        $paginator = FavoritePropertiesQuery::publishedForUser($userId)
             ->paginate(8)
             ->withQueryString();
 

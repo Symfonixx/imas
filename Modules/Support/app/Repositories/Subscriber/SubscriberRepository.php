@@ -8,6 +8,8 @@ interface SubscriberRepository
 {
     public function paginate(): LengthAwarePaginator;
 
+    public function subscribe(string $email, string $ipAddress, string $lang): void;
+
     /**
      * @param  array<int, int|string>  $ids
      */

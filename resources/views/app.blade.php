@@ -12,11 +12,20 @@
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/favicon/apple-touch-icon.png') }}"/>
     <link rel="manifest" href="{{ asset('images/favicon/site.webmanifest') }}"/>
 
+    {{-- Brand font (public/fonts/Avenir_LT_Std_55_Roman.otf) — asset() so URL works in dev + subfolder deploys --}}
+    <link rel="preload" href="{{ asset('fonts/Avenir_LT_Std_55_Roman.otf') }}" as="font" type="font/otf" crossorigin="anonymous">
+    <style>
+        @font-face {
+            font-family: "Avenir LT Std 55 Roman";
+            src: url("{{ asset('fonts/Avenir_LT_Std_55_Roman.otf') }}") format("opentype");
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+        }
+    </style>
+
     {{-- Find Houses theme styles (order matches theme/findhouses/index.html) --}}
     <link rel="stylesheet" href="{{ $fh }}/css/jquery-ui.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Nunito:wght@300;400;500;600;700&display=swap">
     <link rel="stylesheet" href="{{ $fh }}/font/flaticon.css">
     <link rel="stylesheet" href="{{ $fh }}/css/fontawesome-all.min.css">
     <link rel="stylesheet" href="{{ $fh }}/css/fontawesome-5-all.min.css">

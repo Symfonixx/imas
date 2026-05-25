@@ -253,6 +253,8 @@
     "Short page summary for search snippets.": "ملخص قصير للصفحة يظهر في مقتطفات البحث.",
     "Use 3-8 focused keywords separated by commas.": "استخدم من 3 إلى 8 كلمات مفتاحية مركزة ومفصولة بفواصل.",
     "properties":{
+        "proprty_details":"تفاصيل العقار",
+        "start_price":"السعر الأدنى",
         "featured_properties":"العقارات المميزة",
         "we_provide_full_service_at_every_step":"نقدم خدمة كاملة في كل خطوة.",
         "title":"اكتشف العقارات الاكثر شعبية",
@@ -263,6 +265,9 @@
         "remove_favorite":"إزالة من المفضّلة",
         "recommended":"موصى به",
         "property_Listings":"قائمة العقارات",
+        "favorite_properties":"العقارات المفضّلة",
+        "favorite_properties_empty":"لم تحفظ أي عقارات في المفضّلة بعد.",
+        "favorite_properties_count":":count عقار محفوظ",
         "price_from":"من",
         "unit_types_count_one":"نوع واحد",
         "unit_types_count":":count أنواع",
@@ -361,9 +366,10 @@
         "newsLetters":"النشرات الإخبارية",
         "signup_for_newsletters":"اشترك في نشرتنا الإخبارية للحصول على آخر التحديثات والعروض.",
         "subscribe":"اشترك",
+        "subscription_success":"شكراً لك! تم اشتراكك في نشرتنا الإخبارية.",
         "enter_your_email":"أدخل بريدك الإلكتروني",
         "useful_links":"روابط مفيدة",
-        "All Rights Reserved.":"جميع الحقوق محفوظة."
+        "All Rights Reserved":"جميع الحقوق محفوظة."
     },
     "contact_us":{
         "title":"اتصل بنا",
@@ -384,5 +390,20 @@
     },
     "floating_whatsapp":{
         "aria_label":"تواصل معنا عبر واتساب"
+    },
+    "floating_contact":{
+        "menu_title":"تحدث معنا عبر قناتك المفضلة",
+        "menu_aria":"قنوات التواصل",
+        "messenger":"محادثة ماسنجر",
+        "gmail":"جيميل",
+        "direct_call":"اتصال مباشر",
+        "aria_open":"فتح قائمة التواصل",
+        "aria_close":"إغلاق قائمة التواصل"
+    },
+    "about_us":{
+        "title":"من نحن",
+        "no_content":"لا يوجد محتوى منشور لصفحة من نحن بعد.",
+        "latest_properties":"أحدث العقارات",
+        "quick_links":"روابط سريعة"
     }
 }

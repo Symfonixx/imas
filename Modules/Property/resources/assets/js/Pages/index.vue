@@ -69,76 +69,68 @@
     </Head>
 
     <AppLayout>
-       <div class="inner-pages listing homepage-4 agents hd-white">
-        <section
+        <div
+            class="imas-blog-v2 imas-property-listings imas-blog-section-anchor"
             ref="pageRef"
-            class="properties-right featured portfolio blog pt-5 "
         >
-            <div class="container">
-                <section
-                    class="headings-2 pt-0 pb-55 imas-property-listings-heading"
-                >
-                    <div class="pro-wrapper">
-                        <div class="detail-wrapper-body">
-                            <div class="listing-title-bar">
-                                <div class="text-heading text-left">
-                                    <p class="pb-2">
-                                        <Link :href="route('home')">{{
-                                            trans("navBar.Home")
-                                        }}</Link>
-                                        &nbsp;/&nbsp;
-                                        <span>{{
-                                            trans("navBar.Buy Real Estate")
-                                        }}</span>
-                                    </p>
-                                </div>
-                                <h3 class="text-start">{{ title }}</h3>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-                <div class="row">
-                    <div class="col-lg-8 col-md-12 blog-pots">
-                        <PropertyListingToolbar
-                            :properties="properties"
-                            :filters="filters"
-                            :sort="sort"
-                        />
+            <InnerPageHeadingHero
+                :page-title="title"
+                :items="propertyHeadingItems"
+                :banner-image-url="listingsBannerUrl"
+            />
+
+            <main class="imas-blog-v2__page">
+                <section class="imas-blog-v2__main">
+                    <PropertyListingToolbar
+                        :properties="properties"
+                        :filters="filters"
+                        :sort="sort"
+                    />
+
+                    <div
+                        v-if="(properties.data ?? []).length > 0"
+                        class="imas-property-listings__grid"
+                    >
                         <PropertyGridSection :properties="properties" />
                     </div>
-                    <aside class="col-lg-4 col-md-12 car">
-                        <PropertyFilterSidebar
-                            :filters="filters"
-                            :sort="sort"
-                            :cities="cities"
-                            :property-types="propertyTypes"
-                        />
-                        <FeaturedPropertiesSidebar
-                            :featured-properties="featuredProperties"
-                        />
-                        <RecentPropertiesSidebar
-                            :recent-properties="recentProperties"
-                        />
-                    </aside>
-                </div>
-                <PropertyListingPagination :properties="properties" />
-            </div>
-        </section>
-       </div>
+                    <p
+                        v-else
+                        class="imas-blog-v2__empty text-dim"
+                    >
+                        {{ trans("listing_page.results_count").replace(":count", "0") }}
+                    </p>
+
+                    <PropertyListingPagination
+                        :properties="properties"
+                        @navigate="scrollToListingsTop"
+                    />
+                </section>
+
+                <PropertyListingSidebar
+                    :search-action="propertyIndexUrl"
+                    :filters="filters"
+                    :sort="sort"
+                    :districts="districts"
+                    :property-types="propertyTypes"
+                    :recent-properties="recentProperties"
+                    :featured-properties="featuredProperties"
+                />
+            </main>
+        </div>
     </AppLayout>
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
-import { Head, Link, usePage } from "@inertiajs/vue3";
+import { computed, ref, onMounted } from "vue";
+import { Head, usePage } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/App.vue";
+import InnerPageHeadingHero from "@/components/global/InnerPageHeadingHero.vue";
 import { useScrollReveal } from "@/composables/useScrollReveal";
+import { localizedRoute } from "@/utils/localizedRoute.js";
 import PropertyListingToolbar from "../components/PropertyListingToolbar.vue";
 import PropertyGridSection from "../components/PropertyGridSection.vue";
 import PropertyListingPagination from "../components/PropertyListingPagination.vue";
-import PropertyFilterSidebar from "../components/PropertyFilterSidebar.vue";
-import FeaturedPropertiesSidebar from "../components/FeaturedPropertiesSidebar.vue";
-import RecentPropertiesSidebar from "../components/RecentPropertiesSidebar.vue";
+import PropertyListingSidebar from "../components/PropertyListingSidebar.vue";
 
 const props = defineProps({
     title: { type: String, required: true },
@@ -146,16 +138,26 @@ const props = defineProps({
     filters: { type: Object, required: true },
     sort: { type: String, required: true },
     propertyTypes: { type: Array, default: () => [] },
-    cities: { type: Array, default: () => [] },
+    districts: { type: Array, default: () => [] },
     recentProperties: { type: Array, default: () => [] },
     featuredProperties: { type: Array, default: () => [] },
 });
 
 const page = usePage();
+const activeLocale = computed(() => page.props.locale || "en");
+const pageRef = ref(null);
 
 const globals = computed(() => page.props.globals ?? {});
 const seo = computed(() => globals.value.seo ?? {});
 const media = computed(() => globals.value.media ?? {});
+
+function scrollToListingsTop() {
+    pageRef.value?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+onMounted(() => {
+    scrollToListingsTop();
+});
 
 function pickSeoString(...keys) {
     const s = seo.value;
@@ -188,16 +190,7 @@ const ogImage = computed(() => {
     return typeof url === "string" && url.trim() !== "" ? url.trim() : "";
 });
 
-const canonicalUrl = computed(() => {
-    if (typeof route !== "function" || !route().has?.("property.index")) {
-        return "";
-    }
-    try {
-        return route("property.index");
-    } catch {
-        return "";
-    }
-});
+const canonicalUrl = computed(() => propertyIndexUrl.value);
 
 const ogUrl = computed(() => canonicalUrl.value);
 
@@ -209,17 +202,45 @@ function trans(key) {
     return page.props.translations[key] || key;
 }
 
-const pageRef = ref(null);
+const propertyHeadingItems = computed(() => {
+    const rows = [];
+    try {
+        if (typeof route === "function" && route().has?.("home")) {
+            rows.push({
+                title: trans("navBar.Home"),
+                href: localizedRoute("home", {}, activeLocale.value, "/"),
+            });
+        }
+    } catch {
+        /* Ziggy may be unavailable */
+    }
+    rows.push({
+        title: trans("navBar.Buy Real Estate"),
+        href: null,
+    });
+    return rows;
+});
+
+const propertyIndexUrl = computed(() =>
+    localizedRoute(
+        "property.index",
+        {},
+        activeLocale.value,
+        "/property",
+    ),
+);
+
+const listingsBannerUrl = computed(() => {
+    const url = media.value.property_show_banner;
+    if (typeof url !== "string" || url.trim() === "") {
+        return "";
+    }
+    const trimmed = url.trim();
+    if (/\/default\.jpg(?:\?.*)?$/i.test(trimmed)) {
+        return "";
+    }
+    return trimmed;
+});
 
 useScrollReveal(pageRef, { variant: "propertyListings" });
 </script>
-
-
-<style scoped lang="scss">
-/* Below Bootstrap `sm` (576px): remove bottom padding; keep theme `pb-55` from sm up */
-.imas-property-listings-heading {
-    @media (max-width: 575.98px) {
-        padding-bottom: 0 !important;
-    }
-}
-</style>

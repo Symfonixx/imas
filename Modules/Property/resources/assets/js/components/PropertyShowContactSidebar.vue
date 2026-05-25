@@ -1,7 +1,9 @@
 <template>
-    <div class="widget-boxed mt-33 mt-5 imas-property-show-contact">
-        <div class="widget-boxed-header imas-contact-sidebar-header">
-            <h4 class="text-start mb-0">
+    <div
+        class="imas-blog-v2-sidebar__box imas-property-show-contact mt-33 mt-5"
+    >
+        <div class="imas-contact-sidebar-header">
+            <h4 class="imas-blog-v2-sidebar__heading text-start mb-0">
                 {{ trans("property_show.contact_info") }}
             </h4>
             <div ref="shareMenuRef" class="imas-contact-share">
@@ -49,9 +51,12 @@
                 </div>
             </div>
         </div>
-        <div class="widget-boxed-body">
+        <div class="imas-property-show-contact__body">
             <div class="sidebar-widget author-widget2">
-                <ul v-if="contactItems.length" class="author__contact imas-contact-list">
+                <ul
+                    v-if="contactItems.length"
+                    class="author__contact imas-contact-list"
+                >
                     <li
                         v-for="item in contactItems"
                         :key="item.key"
@@ -107,15 +112,20 @@
                 >
                     {{ trans("contact_us.message_sent") }}
                 </div>
-                <div class="agent-contact-form-sidebar">
-                    <h4 class="text-start">
+                <div
+                    class="agent-contact-form-sidebar imas-property-show-contact__form"
+                >
+                    <h4
+                        class="imas-property-show-contact__form-title text-start"
+                    >
                         {{ trans("property_show.request_inquiry") }}
                     </h4>
                     <ContactForm
                         :contact-store-url="contactStoreUrl"
                         variant="sidebar"
                         hide-title
-                        :default-subject="defaultSubject"
+                        :hide-subject="hideFormSubject"
+                        :default-subject="effectiveDefaultSubject"
                     />
                 </div>
             </div>
@@ -128,9 +138,17 @@ import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { usePage } from "@inertiajs/vue3";
 import ContactForm from "../../../../../Support/resources/assets/js/Components/ContactForm.vue";
 
-defineProps({
+const props = defineProps({
     contactStoreUrl: { type: String, required: true },
     defaultSubject: { type: String, default: "" },
+    hideFormSubject: { type: Boolean, default: false },
+});
+
+const effectiveDefaultSubject = computed(() => {
+    if (!props.hideFormSubject) {
+        return props.defaultSubject;
+    }
+    return shareUrl.value || props.defaultSubject;
 });
 
 const page = usePage();
@@ -167,15 +185,15 @@ const contactItems = computed(() => {
     const c = contact.value;
     const items = [];
 
-    if (c.address) {
-        items.push({
-            key: "address",
-            icon: "fa-map-marker",
-            iconClass: "la-map-marker",
-            text: c.address,
-            href: null,
-        });
-    }
+    // if (c.address) {
+    //     items.push({
+    //         key: "address",
+    //         icon: "fa-map-marker",
+    //         iconClass: "la-map-marker",
+    //         text: c.address,
+    //         href: null,
+    //     });
+    // }
 
     if (c.phone) {
         items.push({
@@ -335,10 +353,10 @@ onBeforeUnmount(() => {
     width: 2.25rem;
     height: 2.25rem;
     padding: 0;
-    border: 1px solid rgba(26, 42, 74, 0.12);
+    border: 1px solid var(--border);
     border-radius: 50%;
-    background: #fff;
-    color: var(--brand-navy);
+    background: var(--surface-2);
+    color: var(--text);
     cursor: pointer;
     transition:
         color 0.2s ease,
@@ -350,7 +368,8 @@ onBeforeUnmount(() => {
 .imas-contact-share__toggle:focus-visible {
     color: var(--brand-gold);
     border-color: var(--brand-gold);
-    background: rgba(217, 168, 0, 0.08);
+    background: var(--color-accent-soft);
+    box-shadow: var(--ring);
 }
 
 .imas-contact-share__menu {
@@ -361,25 +380,28 @@ onBeforeUnmount(() => {
     min-width: 11.5rem;
     padding: 0.35rem 0;
     border-radius: 8px;
-    background: #fff;
-    box-shadow: 0 8px 24px rgba(26, 42, 74, 0.16);
-    border: 1px solid rgba(26, 42, 74, 0.08);
+    background: var(--surface);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border);
 }
 
 .imas-contact-share__item {
     display: flex;
     align-items: center;
+
     gap: 0.625rem;
     width: 100%;
     padding: 0.5rem 0.875rem;
     border: 0;
     background: transparent;
-    color: #444;
-    font-size: 0.875rem;
+    color: var(--text);
+    font-size: var(--text-sm);
     text-align: start;
     text-decoration: none;
     cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
 }
 
 .imas-contact-share__item--button {
@@ -388,8 +410,8 @@ onBeforeUnmount(() => {
 
 .imas-contact-share__item:hover,
 .imas-contact-share__item:focus-visible {
-    background: rgba(217, 168, 0, 0.1);
-    color: var(--brand-navy);
+    background: var(--color-accent-soft);
+    color: var(--brand-gold);
 }
 
 .imas-contact-share__item i {
@@ -410,7 +432,7 @@ onBeforeUnmount(() => {
     align-items: flex-start;
     gap: 0.625rem;
     margin-bottom: 0.75rem;
-    color: #666;
+    color: var(--text-dim);
 }
 
 .imas-property-show-contact .imas-contact-list__item--rtl {
@@ -425,7 +447,9 @@ onBeforeUnmount(() => {
     text-align: start;
 }
 
-.imas-property-show-contact .imas-contact-list__item--rtl .imas-contact-list__label {
+.imas-property-show-contact
+    .imas-contact-list__item--rtl
+    .imas-contact-list__label {
     flex: 0 1 auto;
     text-align: end;
 }
@@ -447,5 +471,30 @@ onBeforeUnmount(() => {
 .imas-property-show-contact :deep(.imas-contact-list__icon i) {
     margin-right: 0 !important;
     margin-left: 0 !important;
+}
+
+.imas-property-show-contact__body {
+    padding-top: 0;
+}
+
+.imas-property-show-contact .imas-contact-sidebar-header {
+    margin-bottom: 14px;
+}
+
+.imas-property-show-contact .imas-blog-v2-sidebar__heading {
+    margin-bottom: 0;
+}
+
+.imas-property-show-contact__form {
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--divider);
+}
+
+.imas-property-show-contact__form-title {
+    font-size: var(--text-md);
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 1rem;
 }
 </style>

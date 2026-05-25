@@ -12,6 +12,13 @@ export function buildWhatsAppContactUrl(phoneOrUrl, text = "") {
     }
 
     if (/^https?:\/\//i.test(raw)) {
+        if (/api\.whatsapp\.com/i.test(raw)) {
+            return raw;
+        }
+        const waMeFromUrl = raw.match(/wa\.me\/(\d+)/i);
+        if (waMeFromUrl) {
+            return buildWhatsAppContactUrl(waMeFromUrl[1], text);
+        }
         return raw;
     }
 
@@ -20,12 +27,12 @@ export function buildWhatsAppContactUrl(phoneOrUrl, text = "") {
         return "";
     }
 
-    const base = `https://wa.me/${digits}`;
+    const params = new URLSearchParams({ phone: digits });
     if (text) {
-        return `${base}?text=${encodeURIComponent(text)}`;
+        params.set("text", text);
     }
 
-    return base;
+    return `https://api.whatsapp.com/send/?${params.toString()}`;
 }
 
 /**

@@ -69,105 +69,66 @@
     </Head>
 
     <AppLayout>
-        <div class="inner-pages imas-blog-section-anchor" ref="pageRef">
-        
+        <div class="imas-blog-v2 imas-blog-section-anchor" ref="pageRef">
+            <InnerPageHeadingHero
+                :page-title="trans('blogs.hub_title')"
+                :items="blogHeadingItems"
+                :banner-image-url="blogShowBannerUrl"
+            />
 
-            <!-- START SECTION BLOG -->
-            <section class="blog blog-section">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-9 col-md-12 col-xs-12 blog-pots">
-                            <template
-                                v-for="(row, rowIdx) in blogRows"
-                                :key="'row-' + rowIdx"
-                            >
-                                <div :class="row.rowClass">
-                                    <div
-                                        v-for="(post, idx) in row.pair"
-                                        :key="post.id"
-                                        class="col-md-6 col-xs-12"
-                                        :class="row.colExtraClass"
-                                    >
-                                        <ArticleCard
-                                            :article="post"
-                                            :is-last="false"
-                                            :theme-root-class="
-                                                articleThemeRootClass(
-                                                    rowIdx,
-                                                    idx,
-                                                )
-                                            "
-                                            :read-more-label="
-                                                trans('articles.read_more')
-                                            "
-                                        />
-                                    </div>
-                                </div>
-                            </template>
-                            <div v-if="blogs.data.length === 0" class="row">
-                                <div class="col-12">
-                                    <p class="text-muted py-4">
-                                        {{ trans("blogs.no_posts") }}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <BlogListingSidebar
-                            :search-action="blogIndexUrl"
-                            :filters="filters"
-                            :categories="categories"
-                            :recent-blogs="recentBlogs"
-                            :category-url="categoryIndexUrl"
+            <main class="imas-blog-v2__page container">
+                <section class="imas-blog-v2__main">
+                    <div
+                        v-if="blogs.data.length > 0"
+                        class="imas-blog-v2__grid"
+                    >
+                        <BlogV2ArticleCard
+                            v-for="(post, idx) in blogs.data"
+                            :key="post.id"
+                            :article="post"
+                            :stagger-index="idx"
+                            :read-more-label="trans('articles.read_more')"
+                            :read-article-label="readArticleCta"
                         />
                     </div>
-                    <nav
-                        v-if="paginationLinks.length > 0"
-                        aria-label="..."
-                        class="pt-5 agents imas-blog-pagination"
+                    <p
+                        v-else
+                        class="imas-blog-v2__empty text-dim"
                     >
-                        <ul class="pagination">
-                            <li
-                                v-for="(link, idx) in paginationLinks"
-                                :key="idx"
-                                class="page-item"
-                                :class="{
-                                    active: link.active,
-                                    disabled: !link.url,
-                                }"
-                            >
-                                <Link
-                                    v-if="link.url"
-                                    class="page-link"
-                                    :href="link.url"
-                                    :preserve-scroll="false"
-                                    @click="scrollToBlogTop"
-                                >
-                                    <span v-html="link.displayLabel" />
-                                </Link>
-                                <span v-else class="page-link">
-                                    <span v-html="link.displayLabel" />
-                                </span>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
-            </section>
-            <!-- END SECTION BLOG -->
+                        {{ trans("blogs.no_posts") }}
+                    </p>
+
+                    <BlogV2Pagination
+                        :links="paginationLinks"
+                        @navigate="scrollToBlogTop"
+                    />
+                </section>
+
+                <BlogListingSidebar
+                    :search-action="blogIndexUrl"
+                    :filters="filters"
+                    :categories="categories"
+                    :recent-blogs="recentBlogs"
+                    :category-url="categoryIndexUrl"
+                />
+            </main>
         </div>
     </AppLayout>
 </template>
 
 <script setup>
 import { computed, ref, onMounted } from "vue";
-import { Head, Link, usePage } from "@inertiajs/vue3";
+import { Head, usePage } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/App.vue";
-import ArticleCard from "@/components/articles/ArticleCard.vue";
-import BlogListingSidebar from "../Components/BlogListingSidebar.vue";
 import InnerPageHeadingHero from "@/components/global/InnerPageHeadingHero.vue";
-import { useScrollReveal } from "@/composables/useScrollReveal";
+import BlogV2ArticleCard from "../Components/BlogV2ArticleCard.vue";
+import BlogV2Pagination from "../Components/BlogV2Pagination.vue";
+import BlogListingSidebar from "../Components/BlogListingSidebar.vue";
+import { blogIndexLocalizedUrl } from "../utils/blogLocalizedRoute.js";
+import { localizedRoute } from "@/utils/localizedRoute.js";
 
 const props = defineProps({
-    title: { type: String, required: true },
+ 
     blogs: { type: Object, required: true },
     recentBlogs: { type: Array, default: () => [] },
     categories: { type: Array, default: () => [] },
@@ -175,19 +136,20 @@ const props = defineProps({
 });
 
 const page = usePage();
+const activeLocale = computed(() => page.props.locale || "en");
 const pageRef = ref(null);
 const globals = computed(() => page.props.globals ?? {});
 const seo = computed(() => globals.value.seo ?? {});
 const media = computed(() => globals.value.media ?? {});
+
 function scrollToBlogTop() {
     pageRef.value?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-useScrollReveal(pageRef, { variant: "propertyListings" });
-
 onMounted(() => {
     scrollToBlogTop();
 });
+
 function pickSeoString(...keys) {
     const s = seo.value;
     for (const key of keys) {
@@ -217,16 +179,9 @@ const ogImage = computed(() => {
     return typeof url === "string" && url.trim() !== "" ? url.trim() : "";
 });
 
-const canonicalUrl = computed(() => {
-    if (typeof route !== "function" || !route().has?.("blog.index")) {
-        return "";
-    }
-    try {
-        return route("blog.index");
-    } catch {
-        return "";
-    }
-});
+const canonicalUrl = computed(() =>
+    blogIndexLocalizedUrl(activeLocale.value),
+);
 
 const ogUrl = computed(() => canonicalUrl.value);
 
@@ -234,9 +189,16 @@ const twitterCard = computed(() =>
     ogImage.value ? "summary_large_image" : "summary",
 );
 
+
+
 function trans(key) {
     return page.props.translations[key] || key;
 }
+
+const readArticleCta = computed(() => {
+    const base = trans("articles.read_more").replace(/\.\.\.$|…$/u, "").trim();
+    return `${base} ›`;
+});
 
 const blogHeadingItems = computed(() => {
     const rows = [];
@@ -244,7 +206,7 @@ const blogHeadingItems = computed(() => {
         if (typeof route === "function" && route().has?.("home")) {
             rows.push({
                 title: trans("navBar.Home"),
-                href: route("home"),
+                href: localizedRoute("home", {}, activeLocale.value, "/"),
             });
         }
     } catch {
@@ -257,18 +219,10 @@ const blogHeadingItems = computed(() => {
     return rows;
 });
 
-const blogIndexUrl = computed(() => {
-    try {
-        if (typeof route === "function" && route().has?.("blog.index")) {
-            return route("blog.index");
-        }
-    } catch {
-        /* ignore */
-    }
-    return "";
-});
+const blogIndexUrl = computed(() =>
+    blogIndexLocalizedUrl(activeLocale.value),
+);
 
-/** Preserve text search when switching category (and vice versa). */
 function categoryIndexUrl(categoryId) {
     const params = {};
     if (props.filters.q) {
@@ -277,25 +231,7 @@ function categoryIndexUrl(categoryId) {
     if (categoryId != null) {
         params.category_id = categoryId;
     }
-    return route("blog.index", params);
-}
-
-const blogRows = computed(() => {
-    const items = props.blogs?.data ?? [];
-    const pairs = [];
-    for (let i = 0; i < items.length; i += 2) {
-        pairs.push(items.slice(i, i + 2));
-    }
-    const lastIdx = pairs.length - 1;
-    return pairs.map((pair, rowIdx) => ({
-        pair,
-        rowClass: rowIdx === 1 && pairs.length > 1 ? "row space2 port" : "row",
-        colExtraClass: rowIdx === lastIdx && lastIdx >= 0 ? "no-mb wpt-2" : "",
-    }));
-});
-
-function articleThemeRootClass(rowIdx, idxInPair) {
-    return rowIdx === 0 && idxInPair === 0 ? "nomb" : "";
+    return blogIndexLocalizedUrl(activeLocale.value, params);
 }
 
 const paginationLinks = computed(() => {
@@ -314,5 +250,15 @@ const paginationLinks = computed(() => {
         return { ...link, displayLabel };
     });
 });
+const blogShowBannerUrl = computed(() => {
+    const url = media.value.blog_show_banner;
+    if (typeof url !== "string" || url.trim() === "") {
+        return "";
+    }
+    const trimmed = url.trim();
+    if (/\/default\.jpg(?:\?.*)?$/i.test(trimmed)) {
+        return "";
+    }
+    return trimmed;
+});
 </script>
-

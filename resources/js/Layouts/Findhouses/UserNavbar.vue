@@ -19,13 +19,16 @@
         >
             <div class="container imas-nav__container">
                 <div id="logo" ref="logoRef" class="imas-nav__logo">
-                    <Link :href="route('home')" class="imas-nav__logo-link">
+                    <Link :href="homeHref" class="imas-nav__logo-link">
                         <img
                             :src="logoUrl"
                             :data-sticky-logo="logoUrl"
                             alt=""
                         />
-                        <span class="website-name">{{ websiteName }}</span>
+                        <span class="imas-brand-text">
+                            <span class="website-name">{{ websiteName }}</span>
+                            <span class="website-slogan">{{ websiteSlogan }}</span>
+                        </span>
                     </Link>
                 </div>
 
@@ -92,161 +95,189 @@
                                 >{{ trans("Register") }}</a
                             >
                         </li>
-                       
                     </ul>
                 </nav>
 
                 <div class="imas-nav__end">
-                <div
-                    class="imas-nav__actions right"
-                    :class="{ 'imas-nav__actions--rtl': isRtl }"
-                >
                     <div
-                        class="header-user-menu user-menu add imas-nav__lang imas-header-action"
+                        class="imas-nav__actions right"
+                        :class="{ 'imas-nav__actions--rtl': isRtl }"
                     >
                         <div
-                            ref="langWrapRef"
-                            class="lang-wrap"
-                            :class="{ 'lang-wrap--open': langMenuOpen }"
+                            class="header-user-menu user-menu add imas-nav__lang imas-header-action"
                         >
                             <div
-                                class="show-lang imas-nav__lang-trigger"
-                                role="button"
-                                tabindex="0"
-                                :aria-expanded="langMenuOpen"
-                                aria-haspopup="listbox"
-                                :aria-label="trans('Language')"
-                                @click.stop="toggleLangMenu"
-                                @keydown.enter.prevent="toggleLangMenu"
-                                @keydown.space.prevent="toggleLangMenu"
+                                ref="langWrapRef"
+                                class="lang-wrap"
+                                :class="{ 'lang-wrap--open': langMenuOpen }"
                             >
-                                <span class="show-lang-trigger-inner">
-                                    <span
-                                        v-if="flagCountryClass(currentLocale)"
-                                        class="fi lang-switch-flag lang-switch-flag--trigger"
-                                        :class="flagCountryClass(currentLocale)"
-                                        aria-hidden="true"
-                                    ></span>
-                                    <strong>{{ localeBadge }}</strong>
-                                </span>
-                                <i class="fa fa-caret-down arrlan"></i>
-                            </div>
-                            <ul
-                                class="lang-tooltip lang-action no-list-style"
-                                role="listbox"
-                            >
-                                <li
-                                    v-for="loc in localeSwitcher"
-                                    :key="loc.code"
+                                <div
+                                    class="show-lang imas-nav__lang-trigger"
+                                    role="button"
+                                    tabindex="0"
+                                    :aria-expanded="langMenuOpen"
+                                    aria-haspopup="listbox"
+                                    :aria-label="trans('Language')"
+                                    @click.stop="toggleLangMenu"
+                                    @keydown.enter.prevent="toggleLangMenu"
+                                    @keydown.space.prevent="toggleLangMenu"
                                 >
-                                    <a
-                                        href="#"
-                                        class="lang-switch-row"
-                                        :class="{
-                                            'current-lan':
-                                                loc.code === currentLocale,
-                                        }"
-                                        role="option"
-                                        :aria-selected="
-                                            loc.code === currentLocale
-                                        "
-                                        @click.prevent="switchLocale(loc.url)"
-                                    >
+                                    <span class="show-lang-trigger-inner">
                                         <span
-                                            v-if="flagCountryClass(loc.code)"
-                                            class="fi lang-switch-flag"
-                                            :class="flagCountryClass(loc.code)"
+                                            v-if="
+                                                flagCountryClass(currentLocale)
+                                            "
+                                            class="fi lang-switch-flag lang-switch-flag--trigger"
+                                            :class="
+                                                flagCountryClass(currentLocale)
+                                            "
                                             aria-hidden="true"
                                         ></span>
-                                        <span class="mx-2">{{
-                                            loc.native
-                                        }}</span>
-                                    </a>
+                                        <!-- <strong>{{ localeBadge }}</strong> -->
+                                    </span>
+                                    <i class="fa fa-caret-down arrlan"></i>
+                                </div>
+                                <ul
+                                    class="lang-tooltip lang-action no-list-style"
+                                    role="listbox"
+                                >
+                                    <li
+                                        v-for="loc in localeSwitcher"
+                                        :key="loc.code"
+                                    >
+                                        <a
+                                            href="#"
+                                            class="lang-switch-row"
+                                            :class="{
+                                                'current-lan':
+                                                    loc.code === currentLocale,
+                                            }"
+                                            role="option"
+                                            :aria-selected="
+                                                loc.code === currentLocale
+                                            "
+                                            @click.prevent="
+                                                switchLocale(loc.url)
+                                            "
+                                        >
+                                            <span
+                                                v-if="
+                                                    flagCountryClass(loc.code)
+                                                "
+                                                class="fi lang-switch-flag"
+                                                :class="
+                                                    flagCountryClass(loc.code)
+                                                "
+                                                aria-hidden="true"
+                                            ></span>
+                                            <span class="mx-2">{{
+                                                loc.native
+                                            }}</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <Link
+                            v-if="auth"
+                            :href="favoritesHref"
+                            class="imas-nav__favorites imas-header-action"
+                            :class="{ 'is-active': favoritesNavActive }"
+                            :aria-label="
+                                trans('properties.favorite_properties')
+                            "
+                            :title="trans('properties.favorite_properties')"
+                        >
+                            <i class="fa fa-heart" aria-hidden="true"></i>
+                        </Link>
+                        <div
+                            v-if="auth"
+                            ref="userMenuWrapRef"
+                            class="header-user-menu user-menu add UserMenu imas-header-action"
+                            :class="{ active: userMenuOpen }"
+                        >
+                            <div
+                                class="header-user-name imas-nav__account-trigger"
+                                :class="{
+                                    'imas-nav__account-trigger--rtl': isRtl,
+                                }"
+                                role="button"
+                                tabindex="0"
+                                :aria-expanded="userMenuOpen"
+                                aria-haspopup="true"
+                                :aria-label="trans('Account menu')"
+                                @click.stop="toggleUserMenu"
+                                @keydown.enter.prevent="toggleUserMenu"
+                                @keydown.space.prevent="toggleUserMenu"
+                            >
+                                <span class="imas-nav__avatar">
+                                    <img :src="auth.avatar" alt="" />
+                                </span>
+                                <span
+                                    class="imas-nav__account-text imas-nav__desktop-only"
+                                >
+                                    {{ accountGreeting }}
+                                </span>
+                                <i
+                                    class="fa fa-caret-down imas-nav__account-caret imas-nav__desktop-only"
+                                    aria-hidden="true"
+                                ></i>
+                            </div>
+                            <ul class="imas-user-menu-dropdown text-start">
+                                <li v-if="isAdmin">
+                                    <Link
+                                        class="imas-user-menu-dropdown__item"
+                                        :href="route('admin.dashboard.index')"
+                                        @click="userMenuOpen = false"
+                                    >
+                                        {{ trans("Dashboard") }}
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link
+                                        class="imas-user-menu-dropdown__item"
+                                        :href="profileHref"
+                                        @click="userMenuOpen = false"
+                                    >
+                                        {{ trans("global.profile") }}
+                                    </Link>
+                                </li>
+                                <li>
+                                    <button
+                                        type="button"
+                                        class="imas-user-menu-dropdown__item dropdown-logout"
+                                        @click="logout"
+                                    >
+                                        {{ trans("global.LogOut") }}
+                                    </button>
                                 </li>
                             </ul>
                         </div>
-                    </div>
-                    <div
-                        v-if="auth"
-                        ref="userMenuWrapRef"
-                        class="header-user-menu user-menu add UserMenu imas-header-action"
-                        :class="{ active: userMenuOpen }"
-                    >
+
                         <div
-                            class="header-user-name imas-nav__account-trigger"
-                            :class="{ 'imas-nav__account-trigger--rtl': isRtl }"
-                            role="button"
-                            tabindex="0"
-                            :aria-expanded="userMenuOpen"
-                            aria-haspopup="true"
-                            :aria-label="trans('Account menu')"
-                            @click.stop="toggleUserMenu"
-                            @keydown.enter.prevent="toggleUserMenu"
-                            @keydown.space.prevent="toggleUserMenu"
+                            v-else
+                            class="imas-nav__sign-in imas-header-action"
                         >
-                            <span class="imas-nav__avatar">
-                                <img :src="auth.avatar" alt="" />
-                            </span>
-                            <span class="imas-nav__account-text imas-nav__desktop-only">
-                                {{ accountGreeting }}
-                            </span>
-                            <i
-                                class="fa fa-caret-down imas-nav__account-caret imas-nav__desktop-only"
-                                aria-hidden="true"
-                            ></i>
+                            <a
+                                href="#"
+                                class="imas-nav__sign-in-link show-reg-form modal-open"
+                                data-open-auth="login"
+                                >{{ trans("Sign In") }}</a
+                            >
                         </div>
-                        <ul class="imas-user-menu-dropdown text-start">
-                            <li v-if="isAdmin">
-                                <Link
-                                    class="imas-user-menu-dropdown__item"
-                                    :href="route('admin.dashboard.index')"
-                                    @click="userMenuOpen = false"
-                                >
-                                    {{ trans("Dashboard") }}
-                                </Link>
-                            </li>
-                            <li>
-                                <Link
-                                    class="imas-user-menu-dropdown__item"
-                                    :href="profileHref"
-                                    @click="userMenuOpen = false"
-                                >
-                                    {{ trans("global.profile") }}
-                                </Link>
-                            </li>
-                            <li>
-                                <button
-                                    type="button"
-                                    class="imas-user-menu-dropdown__item dropdown-logout"
-                                    @click="logout"
-                                >
-                                    {{ trans("global.LogOut") }}
-                                </button>
-                            </li>
-                        </ul>
                     </div>
 
-                    <div v-else class="imas-nav__sign-in imas-header-action">
-                        <a
-                            href="#"
-                            class="imas-nav__sign-in-link show-reg-form modal-open"
-                            data-open-auth="login"
-                            >{{ trans("Sign In") }}</a
+                    <div class="mmenu-trigger imas-nav__mmenu">
+                        <button
+                            class="hamburger hamburger--collapse"
+                            type="button"
+                            :aria-label="trans('Menu')"
                         >
+                            <span class="hamburger-box">
+                                <span class="hamburger-inner"></span>
+                            </span>
+                        </button>
                     </div>
-                </div>
-
-                <div class="mmenu-trigger imas-nav__mmenu">
-                    <button
-                        class="hamburger hamburger--collapse"
-                        type="button"
-                        :aria-label="trans('Menu')"
-                    >
-                        <span class="hamburger-box">
-                            <span class="hamburger-inner"></span>
-                        </span>
-                    </button>
-                </div>
                 </div>
             </div>
         </div>
@@ -270,9 +301,11 @@ import {
     watch,
 } from "vue";
 import { Link, router, usePage } from "@inertiajs/vue3";
+import { IMAS_OPEN_AUTH_EVENT } from "@/composables/useOpenAuthModal";
 import { useGsap } from "@/composables/useGsap";
 import { prefersReducedMotion } from "@/plugins/gsap";
 import AuthModal from "./AuthModal.vue";
+import { localizedRoute } from "@/utils/localizedRoute.js";
 
 const props = defineProps({
     navLinks: {
@@ -286,6 +319,12 @@ const props = defineProps({
 });
 
 const page = usePage();
+
+const activeLocale = computed(() => page.props.locale || "en");
+
+const homeHref = computed(() =>
+    localizedRoute("home", {}, activeLocale.value, "/"),
+);
 
 const authModalOpen = ref(false);
 const authStartTab = ref("login");
@@ -304,6 +343,11 @@ function onDelegatedOpenAuth(e) {
     }
     e.preventDefault();
     const tab = el.getAttribute("data-open-auth") || "login";
+    openAuthModal(tab === "register" || tab === "reset" ? tab : "login");
+}
+
+function onImasOpenAuthEvent(e) {
+    const tab = e.detail?.tab || "login";
     openAuthModal(tab === "register" || tab === "reset" ? tab : "login");
 }
 
@@ -331,13 +375,12 @@ let onResizePinnedBound = null;
 const websiteName = computed(
     () => page.props.globals.seo.website_name.toUpperCase() || "",
 );
+const websiteSlogan = "MOST ACCURATE SOLUTIONS";
 const themeUrl = computed(() => page.props.theme_url || "");
 const auth = computed(() => page.props.auth);
 
 const isRtl = computed(
-    () =>
-        page.props.text_direction === "rtl" ||
-        page.props.locale === "ar",
+    () => page.props.text_direction === "rtl" || page.props.locale === "ar",
 );
 
 const accountGreeting = computed(() => {
@@ -352,7 +395,22 @@ const profileHref = computed(() => {
     if (isAdmin.value) {
         return route("admin.profile.edit");
     }
-    return route("home");
+    return homeHref.value;
+});
+
+const favoritesHref = computed(() =>
+    localizedRoute(
+        "property.favorites",
+        {},
+        activeLocale.value,
+        "/favorite-properties",
+    ),
+);
+
+const favoritesNavActive = computed(() => {
+    const current = normalizePath(page.url);
+    const target = normalizePath(favoritesHref.value);
+    return Boolean(target) && current === target;
 });
 
 const mediaData = computed(() => page.props.globals.media || {});
@@ -616,6 +674,14 @@ function customizeMmenuNavbar($) {
     });
 }
 
+/** Login/Register rows are mobile-only; drop from drawer when session is active. */
+function stripMmenuAuthLinks($) {
+    $(".mmenu-init")
+        .find("li.imas-mmenu-only")
+        .has(".imas-auth-nav-link")
+        .remove();
+}
+
 function initMobileMenuMmenu() {
     const $ = window.jQuery;
     if (!$ || !$.fn?.mmenu) {
@@ -651,6 +717,10 @@ function initMobileMenuMmenu() {
         .find("li.imas-mmenu-only")
         .has(".lang-switch-row")
         .remove();
+
+    if (auth.value) {
+        stripMmenuAuthLinks($);
+    }
 
     const isRtl =
         document.documentElement.getAttribute("dir") === "rtl" ||
@@ -693,6 +763,9 @@ function initMobileMenuMmenu() {
         setTimeout(() => {
             $icon.addClass("is-active");
             customizeMmenuNavbar($);
+            if (auth.value) {
+                stripMmenuAuthLinks($);
+            }
             playMobileNavEnterAnimation();
         });
     });
@@ -846,7 +919,20 @@ watch(
     { deep: true },
 );
 
+watch(
+    () => auth.value,
+    () => {
+        nextTick(() => {
+            const $ = window.jQuery;
+            if ($ && $(window).width() <= 1024) {
+                initMobileMenuMmenu();
+            }
+        });
+    },
+);
+
 onMounted(() => {
+    document.addEventListener(IMAS_OPEN_AUTH_EVENT, onImasOpenAuthEvent);
     document.addEventListener("click", closeHeaderDropdownsOnOutsideClick);
     document.addEventListener("click", onDelegatedOpenAuth, true);
 
@@ -867,6 +953,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+    document.removeEventListener(IMAS_OPEN_AUTH_EVENT, onImasOpenAuthEvent);
     document.removeEventListener("click", closeHeaderDropdownsOnOutsideClick);
     document.removeEventListener("click", onDelegatedOpenAuth, true);
 
@@ -913,6 +1000,35 @@ onBeforeUnmount(() => {
 
 .imas-nav__sign-in a:hover {
     color: var(--brand-gold, #d9a800);
+}
+
+.imas-nav__favorites {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    margin: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--text-dim, #9aa6bd);
+    text-decoration: none;
+    transition:
+        color 0.2s ease,
+        background-color 0.2s ease;
+}
+
+.imas-nav__favorites .fa-heart {
+    font-size: 16px;
+    line-height: 1;
+}
+
+.imas-nav__favorites:hover,
+.imas-nav__favorites.is-active {
+    color: var(--brand-gold, #d9a800);
+    background: rgba(217, 168, 0, 0.12);
 }
 
 :deep(.imas-nav__lang-trigger.show-lang) {
@@ -1125,10 +1241,8 @@ html[dir="rtl"] :deep(.imas-nav__account-trigger--rtl.header-user-name) {
 }
 
 :deep(
-        #navigation.style-1
-            > ul#responsive
-            > li.imas-nav-item.has-submenu:hover
-    ) {
+    #navigation.style-1 > ul#responsive > li.imas-nav-item.has-submenu:hover
+) {
     background: transparent !important;
 }
 
@@ -1238,16 +1352,35 @@ html[dir="rtl"] :deep(.imas-nav__account-trigger--rtl.header-user-name) {
     }
 }
 
+.imas-brand-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    min-width: 0;
+}
+
 .website-name {
     font-size: 1.4rem;
     font-weight: 700;
     color: var(--brand-gold);
     text-decoration: none;
     transition: color 0.2s ease;
+    line-height: 1.15;
+}
+
+.website-slogan {
+    font-size: 8px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    line-height: 1.3;
+    white-space: nowrap;
 }
 
 @media (max-width: 1024px) {
-    .website-name {
+    .imas-brand-text {
         display: none !important;
     }
 
@@ -1308,13 +1441,13 @@ html[dir="rtl"] :deep(.imas-nav__account-trigger--rtl.header-user-name) {
 }
 
 .header-user-menu.user-menu {
-    padding:0 !important;
+    padding: 0 !important;
 }
 
- .header-user-menu.user-menu{
+.header-user-menu.user-menu {
     padding-left: 15px !important;
 }
-.show-lang span strong{
+.show-lang span strong {
     padding-left: 0 !important;
 }
 </style>

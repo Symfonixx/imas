@@ -8,30 +8,22 @@
                 :items="blogHeadingItems"
                 :banner-image-url="contactUsBannerUrl"
             />
-            <section class="contact-us">
+            <section class="contact-us imas-contact-page__section">
                 <div class="container">
-                    <!-- <div v-if="mapEmbedHtml" class="property-location mb-5">
-                        <h3>{{ trans("contact_us.our_location") }}</h3>
-                        <div class="divider-fade"></div>
-                        <div
-                            class="contact-map imas-contact-map"
-                            v-html="mapEmbedHtml"
-                        />
-                    </div>
-                    <div v-else class="property-location mb-5">
-                        <h3>{{ trans("contact_us.our_location") }}</h3>
-                        <div class="divider-fade"></div>
-                        <p class="text-muted mb-0">
-                            {{ trans("contact_us.map_not_configured") }}
-                        </p>
-                    </div> -->
-
-                    <div class="row">
+                    <div class="row g-4">
                         <div class="col-lg-8 col-md-12">
-                            <ContactForm :contact-store-url="contactStoreUrl" />
+                            <div class="imas-contact-page__panel imas-contact-page__panel--form">
+                                <ContactForm
+                                    :contact-store-url="contactStoreUrl"
+                                />
+                            </div>
                         </div>
-                        <div class="col-lg-4 col-md-12 ContactDetails py-4">
-                            <ContactDetails />
+                        <div class="col-lg-4 col-md-12">
+                            <div
+                                class="imas-contact-page__panel imas-contact-page__panel--details"
+                            >
+                                <ContactDetails />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -62,7 +54,6 @@ const pageRef = ref(null);
 useScrollReveal(pageRef, { variant: "propertyListings" });
 
 const globals = computed(() => page.props.globals ?? {});
-const contact = computed(() => globals.value.contact ?? {});
 const media = computed(() => globals.value.media ?? {});
 
 const contactUsBannerUrl = computed(() => {
@@ -75,14 +66,6 @@ const contactUsBannerUrl = computed(() => {
         return "";
     }
     return trimmed;
-});
-
-const mapEmbedHtml = computed(() => {
-    const raw = contact.value.map;
-    if (typeof raw !== "string") {
-        return "";
-    }
-    return raw.trim();
 });
 
 function trans(key) {
@@ -112,20 +95,3 @@ const blogHeadingItems = computed(() => {
     return rows;
 });
 </script>
-
-<style scoped>
-.imas-contact-map :deep(iframe) {
-    width: 100%;
-    max-width: 100%;
-    min-height: 360px;
-    border: 0;
-}
-.contact-map {
-    height: 365px !important;
-}
-.ContactDetails {
-    border-radius: 5px;
-
-    background-color: var(--brand-navy-light);
-}
-</style>

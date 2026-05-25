@@ -49,13 +49,13 @@ class HomeController extends Controller
             ->values()
             ->all();
 
-        $cities = Location::query()
-            ->where('type', LocationType::City)
+        $districts = Location::query()
+            ->where('type', LocationType::District)
             ->orderBy('id')
             ->get(['id', 'name'])
-            ->map(static fn (Location $city) => [
-                'id' => $city->id,
-                'name' => $city->name,
+            ->map(static fn (Location $district) => [
+                'id' => $district->id,
+                'name' => $district->name,
             ])
             ->values()
             ->all();
@@ -126,6 +126,7 @@ class HomeController extends Controller
 
         $articles = Blog::query()
             ->featured()
+            ->with(['category:id,name,slug'])
             ->latest('created_at')
             ->limit(3)
             ->get()
@@ -141,6 +142,13 @@ class HomeController extends Controller
                     'url' => LaravelLocalization::localizeUrl('/blog/'.$blog->slug),
                     'visits' => (int) $blog->visits,
                     'date' => $blog->created_at?->locale(app()->getLocale())->translatedFormat('d M Y') ?? '',
+                    'category' => $blog->category
+                        ? [
+                            'id' => $blog->category->id,
+                            'name' => $blog->category->name,
+                            'slug' => $blog->category->slug,
+                        ]
+                        : null,
                 ];
             })
             ->values()
@@ -151,7 +159,7 @@ class HomeController extends Controller
             'welcomeSubtitle' => 'Browse curated listings and discover properties that match your goals.',
             'slides' => $slides,
             'propertyTypes' => $propertyTypes,
-            'cities' => $cities,
+            'districts' => $districts,
             'featuredProperties' => $featuredProperties,
             'recommendedProperties' => $recommendedProperties,
             'corporateServices' => $corporateServices,

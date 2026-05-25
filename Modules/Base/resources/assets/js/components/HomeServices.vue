@@ -1,46 +1,48 @@
 <template>
-   <section class="home-services">
-    <div class="container">
-        <section
-            v-if="services.length"
-            ref="sectionRef"
-            class="how-it-works bg-white rec-pro"
-        >
-            <div class="container-fluid">
-                <div class="sec-title">
-                    <h2 v-html="sectionTitleHtml"></h2>
-                    <p>{{ trans("services.description") }}</p>
-                </div>
-                <div class="row service-1">
-                    <article
-                        v-for="(service, index) in services"
-                        :key="service.id"
-                        class="col-lg-4 col-md-6 col-xs-12 serv"
-                        :class="{ 'mb-0 pt': index === services.length - 1 }"
-                    >
-                        <div class="serv-flex">
-                            <div class="art-1 img-13 corporate-service-art">
-                                <img
-                                    v-if="service.image"
-                                    class="corporate-service-img"
-                                    :src="service.image"
-                                    :alt="service.title"
-                                    loading="lazy"
-                                />
-                                <h3>{{ service.title }}</h3>
+    <section class="home-services">
+        <div class="container">
+            <section
+                v-if="services.length"
+                ref="sectionRef"
+                class="how-it-works bg-white rec-pro"
+            >
+                <div class="container-fluid">
+                    <div class="sec-title">
+                        <h2 v-html="sectionTitleHtml"></h2>
+                        <p>{{ trans("services.description") }}</p>
+                    </div>
+                    <div class="row service-1">
+                        <article
+                            v-for="(service, index) in services"
+                            :key="service.id"
+                            class="col-lg-4 col-md-6 col-xs-12 serv"
+                            :class="{
+                                'mb-0 pt': index === services.length - 1,
+                            }"
+                        >
+                            <div class="serv-flex">
+                                <div class="art-1 img-13 corporate-service-art">
+                                    <img
+                                        v-if="service.image"
+                                        class="corporate-service-img"
+                                        :src="service.image"
+                                        :alt="service.title"
+                                        loading="lazy"
+                                    />
+                                    <h3>{{ service.title }}</h3>
+                                </div>
+                                <div class="service-text-p">
+                                    <p class="text-center">
+                                        {{ service.description }}
+                                    </p>
+                                </div>
                             </div>
-                            <div class="service-text-p">
-                                <p class="text-center">
-                                    {{ service.description }}
-                                </p>
-                            </div>
-                        </div>
-                    </article>
+                        </article>
+                    </div>
                 </div>
-            </div>
-        </section>
-    </div>
-   </section>
+            </section>
+        </div>
+    </section>
 </template>
 
 <script setup>
@@ -97,11 +99,10 @@ const sectionTitleHtml = computed(() => {
     border-radius: 4px;
     margin-bottom: 0.75rem;
 }
-.home-services{
-
+.home-services {
     background: var(--section-alt-bg) !important;
 }
-.service-text-p{
+.service-text-p {
     font-size: 16px;
 }
 </style>

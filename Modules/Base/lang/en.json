@@ -248,6 +248,8 @@
     "About page title shown in search results.": "About page title shown in search results.",
     "Short page summary for search snippets.": "Short page summary for search snippets.",
     "properties":{
+        "proprty_details":"Property details",
+        "start_price":"Start price",
         "featured_properties":"Featured properties",
         "we_provide_full_service_at_every_step":"We provide full service at every step.",
         "title":"Discover popular properties",
@@ -259,6 +261,9 @@
         "remove_favorite":"Remove from favorites",
         "recommended":"Recommended",
         "property_Listings":"Property listings",
+        "favorite_properties":"Favorite properties",
+        "favorite_properties_empty":"You have not saved any properties to your favorites yet.",
+        "favorite_properties_count":":count saved properties",
         "price_from":"From",
         "unit_types_count_one":"1 type",
         "unit_types_count":":count types",
@@ -357,9 +362,10 @@
         "newsLetters":"News letters",
         "signup_for_newsletters":"Sign Up for Our Newsletter to get Latest Updates and Offers.",
         "subscribe":"Subscribe",
+        "subscription_success":"Thank you! You are subscribed to our newsletter.",
         "enter_your_email":"Enter your email",
         "useful_links":"Useful links",
-        "All Rights Reserved.":"All Rights Reserved."
+        "All Rights Reserved":"All Rights Reserved."
     },
     "contact_us":{
         "title":"Contact us",
@@ -380,5 +386,20 @@
     },
     "floating_whatsapp":{
         "aria_label":"Contact us on WhatsApp"
+    },
+    "floating_contact":{
+        "menu_title":"Talk to us on your favorite channel",
+        "menu_aria":"Contact channels",
+        "messenger":"Messenger chat",
+        "gmail":"Gmail",
+        "direct_call":"Direct call",
+        "aria_open":"Open contact menu",
+        "aria_close":"Close contact menu"
+    },
+    "about_us":{
+        "title":"About us",
+        "no_content":"About us page has no published content yet.",
+        "latest_properties":"Latest properties",
+        "quick_links":"Quick links"
     }
 }

@@ -18,6 +18,11 @@ use Modules\Property\Http\Controllers\TurkishCitizenshipController;
 
 Route::resource('property', PropertyController::class)->except(['index', 'show'])->names('property');
 
+Route::middleware('auth')->group(function () {
+    Route::get('/favorite-properties', [PropertyPropertyController::class, 'favoriteProperties'])
+        ->name('property.favorites');
+});
+
 Route::get('/property', [PropertyPropertyController::class, 'index'])->name('property.index');
 Route::get('/property/{property}', [PropertyPropertyController::class, 'show'])->name('property.show');
 

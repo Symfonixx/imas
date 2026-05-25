@@ -14,6 +14,7 @@ use Modules\Property\Enums\LocationType;
 use Modules\Property\Models\Location;
 use Modules\Property\Models\Property;
 use Modules\Property\Models\PropertyType;
+use Modules\Property\Support\FavoritePropertiesQuery;
 use Modules\Property\Support\PropertyCardEagerLoads;
 use Modules\Property\Support\PropertyDetailEagerLoads;
 use Modules\Property\Support\PropertyDetailSerializer;
@@ -86,13 +87,13 @@ class PropertyController extends Controller
             ->values()
             ->all();
 
-        $cities = Location::query()
-            ->where('type', LocationType::City)
+        $districts = Location::query()
+            ->where('type', LocationType::District)
             ->orderBy('id')
             ->get(['id', 'name'])
-            ->map(static fn (Location $city) => [
-                'id' => $city->id,
-                'name' => $city->name,
+            ->map(static fn (Location $district) => [
+                'id' => $district->id,
+                'name' => $district->name,
             ])
             ->values()
             ->all();
@@ -128,9 +129,35 @@ class PropertyController extends Controller
             'filters' => $filters,
             'sort' => $sort,
             'propertyTypes' => $propertyTypes,
-            'cities' => $cities,
+            'districts' => $districts,
             'recentProperties' => $recentProperties,
             'featuredProperties' => $featuredProperties,
+        ]);
+    }
+
+    /**
+     * Authenticated user's favorited published properties.
+     */
+    public function favoriteProperties(Request $request): Response
+    {
+        $userId = (int) $request->user()->id;
+
+        $propertiesPaginator = FavoritePropertiesQuery::publishedForUser($userId)
+            ->paginate(8)
+            ->withQueryString();
+
+        $properties = $propertiesPaginator->through(function (Property $property) {
+            $property->setAttribute('is_favorited', true);
+
+            return PropertyListingCardSerializer::toArray($property);
+        });
+
+        $pageTitle = $this->favoritePropertiesPageTitle();
+
+        return Inertia::render('Property::FavoriteProperties', [
+            'title' => $pageTitle,
+            'properties' => $properties,
+            'contactStoreUrl' => route('support.contact-us.store'),
         ]);
     }
 
@@ -260,7 +287,14 @@ class PropertyController extends Controller
             ->withFavoriteStateForUser($userId);
 
         if (! empty($validated['location_id'])) {
-            $query->where('location_id', (int) $validated['location_id']);
+            $locationId = (int) $validated['location_id'];
+            $descendantIds = Location::descendantIdsOf($locationId);
+
+            if ($descendantIds !== []) {
+                $query->whereIn('location_id', $descendantIds);
+            } else {
+                $query->where('location_id', $locationId);
+            }
         }
 
         if (! empty($validated['property_type_id'])) {
@@ -347,28 +381,42 @@ class PropertyController extends Controller
      * same strings as Inertia `translations` (e.g. tr: "Mülk listeleri").
      * English JSON may store a Laravel key (`property::Listings`) which is resolved here.
      */
+    private function favoritePropertiesPageTitle(): string
+    {
+        return $this->pageTitleFromLangJson('properties.favorite_properties', 'property::Favorite properties');
+    }
+
     private function listingPageTitle(): string
+    {
+        return $this->pageTitleFromLangJson('properties.property_Listings', 'property::Listings');
+    }
+
+    /**
+     * @param  non-empty-string  $dotKey  e.g. properties.favorite_properties
+     */
+    private function pageTitleFromLangJson(string $dotKey, string $fallback): string
     {
         $locale = app()->getLocale();
         $path = module_path('Base', "lang/{$locale}.json");
 
         if (! is_readable($path)) {
-            return (string) __('property::Listings');
+            return (string) __($fallback);
         }
 
         $decoded = json_decode((string) file_get_contents($path), true);
         if (! is_array($decoded)) {
-            return (string) __('property::Listings');
+            return (string) __($fallback);
         }
 
-        $properties = $decoded['properties'] ?? null;
-        if (! is_array($properties)) {
-            return (string) __('property::Listings');
+        [$group, $field] = explode('.', $dotKey, 2);
+        $section = $decoded[$group] ?? null;
+        if (! is_array($section)) {
+            return (string) __($fallback);
         }
 
-        $label = $properties['property_Listings'] ?? null;
+        $label = $section[$field] ?? null;
         if (! is_string($label) || $label === '') {
-            return (string) __('property::Listings');
+            return (string) __($fallback);
         }
 
         if (str_contains($label, '::')) {

@@ -24,17 +24,18 @@
                     :title="summaryText"
                 >
                     <span class="imas-tc-overview__text-flow">
-                            <span
-                                v-for="(word, index) in summaryWords"
-                                :key="`${word}-${index}`"
-                                class="imas-tc-overview__word"
+                        <span
+                            v-for="(word, index) in summaryWords"
+                            :key="`${word}-${index}`"
+                            class="imas-tc-overview__word"
                             >{{ word }}&nbsp;</span
                         >
                         <span
                             v-if="summaryWords.length"
                             class="imas-tc-overview__cursor"
                             aria-hidden="true"
-                        >|</span>
+                            >|</span
+                        >
                     </span>
                 </p>
                 <a :href="citizenshipHref" class="imas-tc-overview__cta">
@@ -74,13 +75,14 @@ const media = computed(() => globals.value.media ?? {});
 
 const summaryText = computed(() => {
     const raw =
-        turkishCitizenship.value.summary ??
-        seo.value.turkish_citizenship ??
-        "";
+        turkishCitizenship.value.summary ?? seo.value.turkish_citizenship ?? "";
     if (typeof raw !== "string") {
         return "";
     }
-    return raw.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+    return raw
+        .replace(/<[^>]*>/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
 });
 
 const summaryWords = computed(() => {
@@ -137,8 +139,8 @@ const titleAccent = computed(() =>
     ),
 );
 
-const sectionTitle = computed(
-    () => `${titlePrimary.value} ${titleAccent.value}`.trim(),
+const sectionTitle = computed(() =>
+    `${titlePrimary.value} ${titleAccent.value}`.trim(),
 );
 
 const discoverLabel = computed(() =>
@@ -231,11 +233,7 @@ function setupPanelAnimation() {
         }
 
         if (divider) {
-            tl.to(
-                divider,
-                { opacity: 1, scaleX: 1, duration: 0.5 },
-                0.32,
-            );
+            tl.to(divider, { opacity: 1, scaleX: 1, duration: 0.5 }, 0.32);
         }
 
         const typingEnd =
@@ -256,11 +254,7 @@ function setupPanelAnimation() {
         }
 
         if (cta) {
-            tl.to(
-                cta,
-                { opacity: 1, y: 0, duration: 0.1 },
-                typingEnd + 0.1,
-            );
+            tl.to(cta, { opacity: 1, y: 0, duration: 0.1 }, typingEnd + 0.1);
         }
 
         if (cursor) {

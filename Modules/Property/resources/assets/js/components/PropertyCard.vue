@@ -1,12 +1,18 @@
 <template>
     <div
-        class="imas-property-card imas-card imas-card--property imas-card--media-overlay item user-select-none"
-        :class="columnClass"
+        class="imas-property-card imas-property-card--media-overlay item user-select-none"
+        :class="[columnClass, { 'imas-property-card--sold-out': isSoldOut }]"
+        :aria-disabled="isSoldOut ? 'true' : undefined"
     >
         <div class="project-single imas-card__surface">
             <div class="project-inner project-head imas-card__media">
                 <div class="homes">
-                    <a :href="property.url" class="homes-img">
+                    <component
+                        :is="isSoldOut ? 'div' : 'a'"
+                        :href="isSoldOut ? undefined : property.url"
+                        class="homes-img"
+                        :aria-label="isSoldOut ? soldOutCardLabel : undefined"
+                    >
                         <div
                             v-if="propertyTypeLabel || property.is_featured"
                             class="homes-tag button alt imas-badge--type"
@@ -31,7 +37,7 @@
                             :alt="displayTitle"
                             class="img-responsive"
                         />
-                    </a>
+                    </component>
                 </div>
                 <div class="imas-card-actions">
                     <div class="homes-price imas-start-price imas-chip">
@@ -42,7 +48,7 @@
                             priceAmount
                         }}</span>
                     </div>
-                    <div class="button-effect">
+                    <div v-if="!isSoldOut" class="button-effect">
                         <button
                             v-if="property.youtube_video_url"
                             type="button"
@@ -73,7 +79,12 @@
             </div>
             <div class="homes-content imas-card__body">
                 <h3 class="imas-property-title imas-card__title">
-                    <Link :href="showUrl">{{ displayTitle }}</Link>
+                    <Link v-if="!isSoldOut" :href="showUrl">{{
+                        displayTitle
+                    }}</Link>
+                    <span v-else class="imas-card__title-text">{{
+                        displayTitle
+                    }}</span>
                 </h3>
                 <p
                     v-if="overviewText"
@@ -82,13 +93,16 @@
                     {{ overviewText }}
                 </p>
                 <p class="homes-address imas-card__meta text-base mb-3">
-                    <a :href="property.url">
+                    <component
+                        :is="isSoldOut ? 'span' : 'a'"
+                        :href="isSoldOut ? undefined : property.url"
+                    >
                         <i
                             class="fa fa-map-marker imas-address-marker"
                             aria-hidden="true"
                         ></i>
                         <span>{{ addressLine }}</span>
-                    </a>
+                    </component>
                 </p>
                 <PropertyCardUnitTypesBar
                     :unit-types="property.unit_types ?? []"
@@ -97,7 +111,7 @@
         </div>
 
         <VideoLightbox
-            v-if="property.youtube_video_url"
+            v-if="property.youtube_video_url && !isSoldOut"
             v-model="videoLightboxOpen"
             :video-url="property.youtube_video_url"
             :aria-label="videoLightboxAria"
@@ -109,7 +123,8 @@
 <script setup>
 import axios from "axios";
 import { computed, ref, watch } from "vue";
-import { Link, router, usePage } from "@inertiajs/vue3";
+import { Link, usePage } from "@inertiajs/vue3";
+import { useOpenAuthModal } from "@/composables/useOpenAuthModal";
 import VideoLightbox from "@/components/Global/VideoLightbox.vue";
 import { localizedField } from "../utils/propertyLocalized.js";
 import {
@@ -131,12 +146,15 @@ const props = defineProps({
 });
 
 const page = usePage();
+const { openAuthModal } = useOpenAuthModal();
 
 const trans = (key) => page.props.translations[key] || key;
 
 const locale = computed(() => page.props.locale || "en");
 
 const isAuthenticated = computed(() => page.props.auth != null);
+
+const isSoldOut = computed(() => Boolean(props.property.is_sold_out));
 
 const localFavorited = ref(Boolean(props.property.is_favorited));
 const videoLightboxOpen = ref(false);
@@ -173,8 +191,15 @@ const displayTitle = computed(() => {
               "Property";
 });
 
+const soldOutCardLabel = computed(
+    () => `${displayTitle.value} – ${trans("properties.sold_out")}`,
+);
+
 const showUrl = computed(() => {
-    if (typeof props.property.url === "string" && props.property.url.trim() !== "") {
+    if (
+        typeof props.property.url === "string" &&
+        props.property.url.trim() !== ""
+    ) {
         return props.property.url;
     }
 
@@ -190,10 +215,7 @@ const showUrl = computed(() => {
 });
 
 const addressLine = computed(() => {
-    const line = propertyLocationLine(
-        props.property.location,
-        locale.value,
-    );
+    const line = propertyLocationLine(props.property.location, locale.value);
 
     return line !== "" ? line : "—";
 });
@@ -243,6 +265,9 @@ const videoLightboxAria = computed(
 function openVideoLightbox(e) {
     e.preventDefault();
     e.stopPropagation();
+    if (isSoldOut.value) {
+        return;
+    }
     videoLightboxOpen.value = true;
 }
 
@@ -250,8 +275,12 @@ async function onFavoriteClick(e) {
     e.preventDefault();
     e.stopPropagation();
 
+    if (isSoldOut.value) {
+        return;
+    }
+
     if (!isAuthenticated.value) {
-        router.visit(route("login"));
+        openAuthModal("login");
         return;
     }
 
@@ -290,25 +319,347 @@ async function onFavoriteClick(e) {
 </script>
 
 <style scoped lang="scss">
-/* Property-specific layout; shell/colors from global .imas-card in app.css */
+/* Property card shell — self-contained (no .portfolio / .imas-card global dependency). */
+
+.imas-property-card {
+    width: 100%;
+}
+
+.imas-property-card .imas-card__surface,
+.imas-property-card .project-single {
+    background: var(--surface) !important;
+    border: none !important;
+    border-radius: var(--card-radius) !important;
+    box-shadow: var(--shadow-sm) !important;
+    overflow: hidden;
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .imas-property-card:not(.imas-property-card--sold-out):hover
+        .imas-card__surface,
+    .imas-property-card:not(.imas-property-card--sold-out):hover
+        .project-single {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg) !important;
+    }
+}
+
+.imas-property-card--sold-out {
+    cursor: not-allowed;
+}
+
+.imas-property-card--sold-out .imas-card__surface,
+.imas-property-card--sold-out .project-single {
+    opacity: 0.82;
+    box-shadow: none !important;
+}
+
+.imas-property-card--sold-out .homes-img img.img-responsive {
+    filter: grayscale(0.45);
+    opacity: 0.9;
+}
+
+.imas-property-card--sold-out.imas-property-card--media-overlay
+    .homes-img::after,
+.imas-property-card--sold-out.imas-property-card--media-overlay
+    .imas-card__media::after {
+    background: linear-gradient(
+        to top,
+        color-mix(in srgb, var(--brand-navy-hover) 72%, transparent) 0%,
+        transparent 58%
+    );
+}
+
+.imas-property-card--sold-out .imas-card-actions .homes-price.imas-start-price {
+    background: color-mix(in srgb, var(--text-dim) 12%, transparent) !important;
+    color: var(--text-dim) !important;
+}
+
+.imas-property-card--sold-out .imas-card__title-text,
+.imas-property-card--sold-out .imas-card__title a,
+.imas-property-card--sold-out .imas-property-title a,
+.imas-property-card--sold-out .homes-content h3 a {
+    color: var(--text-dim) !important;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.imas-property-card--sold-out .imas-card__excerpt,
+.imas-property-card--sold-out .imas-property-overview,
+.imas-property-card--sold-out .imas-card__meta,
+.imas-property-card--sold-out .homes-address,
+.imas-property-card--sold-out .homes-address span {
+    color: color-mix(in srgb, var(--text-dim) 88%, transparent) !important;
+}
+
+.imas-property-card--sold-out .homes-address .fa-map-marker,
+.imas-property-card--sold-out .imas-address-marker {
+    color: color-mix(in srgb, var(--text-dim) 75%, transparent) !important;
+}
+
+.imas-property-card--sold-out .imas-unit-types-bar {
+    opacity: 0.75;
+}
+
+.imas-property-card .imas-card__media,
+.imas-property-card .project-head,
+.imas-property-card .project-inner.project-head {
+    position: relative;
+    overflow: hidden;
+    background: var(--surface-2) !important;
+    border-radius: var(--card-radius) var(--card-radius) 0 0;
+}
+
+.imas-property-card--media-overlay .homes-img::after,
+.imas-property-card--media-overlay .imas-card__media::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: linear-gradient(
+        to top,
+        color-mix(in srgb, var(--brand-navy-hover) 88%, transparent) 0%,
+        transparent 58%
+    );
+}
+
+.imas-property-card .homes,
+.imas-property-card .homes-img {
+    position: relative;
+    overflow: hidden;
+}
+
+.imas-property-card .homes-img {
+    display: block;
+    aspect-ratio: var(--card-media-ratio);
+    background: var(--surface-2);
+    text-decoration: none;
+    color: inherit;
+}
+
+.imas-property-card .homes-img img.img-responsive {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    object-fit: cover;
+    object-position: center;
+    z-index: 0;
+}
+
+.imas-property-card .homes-tag {
+    position: absolute;
+    z-index: 2;
+}
+
+.imas-property-card .homes-tag.imas-badge--type {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center;
+    gap: 0.35rem;
+    line-height: 1.2 !important;
+    background: var(--brand-gold) !important;
+    color: var(--text-on-gold) !important;
+    border-color: var(--brand-gold) !important;
+    font-size: var(--text-card-chip) !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.03em;
+    text-transform: capitalize;
+    padding: 6px 12px !important;
+    border-radius: 4px !important;
+    inset-inline-start: 15px;
+    inset-inline-end: auto;
+    margin-top: 15px;
+    top: 0;
+    width: auto !important;
+    min-width: 0;
+    max-width: calc(100% - 2rem);
+    height: auto !important;
+    white-space: nowrap;
+    overflow: visible;
+}
+
+.imas-property-card .imas-badge--type > span {
+    display: inline-flex;
+    align-items: center;
+    font-size: inherit !important;
+    font-weight: inherit !important;
+    line-height: 1.2;
+}
+
+.imas-property-card .imas-badge--type .imas-featured-star {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    align-self: center;
+    flex-shrink: 0;
+    width: 1em;
+    height: 1em;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: var(--text-card-chip) !important;
+    line-height: 1 !important;
+    color: var(--text) !important;
+}
+
+.imas-property-card .imas-badge--type .imas-featured-star::before {
+    display: block;
+    line-height: 1;
+}
+
+.imas-property-card .imas-sold-out-badge {
+    top: 0;
+    margin-top: 15px;
+    inset-inline-end: 15px;
+    inset-inline-start: auto;
+    background: var(--danger) !important;
+    color: var(--text) !important;
+    border-color: var(--danger) !important;
+}
+
+.imas-property-card .imas-card-actions {
+    position: absolute;
+    inset-inline: 15px;
+    bottom: 0.7rem;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.imas-property-card .imas-card-actions > * {
+    pointer-events: auto;
+}
 
 .imas-property-card .imas-card-actions .homes-price.imas-start-price {
     position: static !important;
     bottom: auto !important;
     left: auto !important;
     flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    height: auto;
+    min-height: 34px;
+    max-height: none;
+    padding: 6px 12px;
+    background: rgba(217, 168, 0, 0.1) !important;
+    border-radius: 5px;
+    color: var(--brand-gold) !important;
+    font-size: var(--text-card-chip) !important;
+    font-weight: 700 !important;
+    line-height: 1.2;
+    white-space: nowrap;
 }
 
-.imas-start-price__from {
+.imas-property-card .imas-start-price__from,
+.imas-property-card .imas-start-price__amount {
+    font-size: inherit !important;
+    line-height: inherit;
+}
+
+.imas-property-card .imas-start-price__from {
     opacity: 0.92;
     text-transform: capitalize;
+    font-weight: 500 !important;
 }
 
-.imas-property-card .imas-property-title {
+.imas-property-card .imas-start-price__amount {
+    font-weight: 700 !important;
+}
+
+.imas-property-card .imas-card-actions .button-effect {
+    position: static !important;
+    transform: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+}
+
+.imas-property-card .imas-card-actions .button-effect .btn {
+    display: inline-block !important;
+    width: 31px !important;
+    height: 31px !important;
+    line-height: 31px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    border-radius: 100% !important;
+    background: var(--surface-2) !important;
+    color: var(--text) !important;
+    box-shadow: none !important;
+    flex-shrink: 0;
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+.imas-property-card .imas-card-actions .button-effect .btn:hover {
+    background: var(--brand-gold) !important;
+    color: var(--text-on-gold) !important;
+}
+
+.imas-property-card .imas-card-actions .button-effect .btn:focus-visible {
+    outline: none;
+    box-shadow: var(--ring) !important;
+}
+
+.imas-property-card .imas-favorite-btn:not(.is-favorited) i,
+.imas-property-card .imas-card-video-btn i {
+    color: var(--text) !important;
+}
+
+.imas-property-card .imas-card-actions .button-effect .btn:hover i {
+    color: var(--text-on-gold) !important;
+}
+
+.imas-property-card .imas-favorite-btn.is-favorited i {
+    color: var(--brand-gold) !important;
+}
+
+.imas-property-card .imas-favorite-btn.is-favorited:hover i {
+    color: var(--text-on-gold) !important;
+}
+
+.imas-property-card .imas-card__body,
+.imas-property-card .homes-content {
+    padding: var(--card-body-padding) !important;
+    background: var(--surface) !important;
+    color: var(--text) !important;
+    text-align: start;
+}
+
+.imas-property-card .imas-card__title,
+.imas-property-card .imas-property-title,
+.imas-property-card .homes-content h3 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
     min-height: calc(1.4em * 2);
+    font-family: var(--font-body) !important;
+    font-size: var(--text-lg) !important;
+    font-weight: 600 !important;
+    line-height: 1.4 !important;
+    color: var(--text) !important;
+    text-transform: none !important;
 }
 
-.imas-property-card .imas-property-title a {
+.imas-property-card .imas-card__title a,
+.imas-property-card .imas-card__title-text,
+.imas-property-card .imas-property-title a,
+.imas-property-card .homes-content h3 a {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
@@ -316,8 +667,18 @@ async function onFavoriteClick(e) {
     overflow: hidden;
     text-overflow: ellipsis;
     word-break: break-word;
+    font-family: var(--font-body) !important;
+    color: var(--text) !important;
+    text-transform: none !important;
+    transition: color 0.2s ease;
 }
 
+.imas-property-card .imas-card__title a:hover,
+.imas-property-card .imas-property-title a:hover {
+    color: var(--brand-gold) !important;
+}
+
+.imas-property-card .imas-card__excerpt,
 .imas-property-card .imas-property-overview {
     display: -webkit-box;
     -webkit-box-orient: vertical;
@@ -326,21 +687,27 @@ async function onFavoriteClick(e) {
     overflow: hidden;
     text-overflow: ellipsis;
     word-break: break-word;
+    color: var(--text-dim) !important;
+    font-family: var(--font-body) !important;
+    font-size: var(--text-card-excerpt) !important;
+    line-height: 1.55;
 }
 
-.imas-property-card .imas-sold-out-badge {
-    top: 0;
-    margin-top: 15px;
-    right: 15px;
-    left: auto;
+.imas-property-card .imas-card__meta,
+.imas-property-card .homes-address,
+.imas-property-card .homes-address a,
+.imas-property-card .homes-address a span {
+    color: var(--text-dim) !important;
+    font-size: var(--text-base) !important;
 }
 
-:global(html[dir="rtl"]) .imas-property-card .imas-sold-out-badge {
-    right: auto !important;
-    left: 15px !important;
-}
-
-.imas-property-card .homes-address .imas-address-marker {
+.imas-property-card .homes-address .fa-map-marker,
+.imas-property-card .imas-address-marker {
+    color: var(--brand-gold) !important;
     margin-inline-end: 10px;
+}
+.imas-badge--danger {
+    padding: 6px 12px !important;
+    border-radius: 4px !important;
 }
 </style>

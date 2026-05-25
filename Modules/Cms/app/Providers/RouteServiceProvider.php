@@ -46,7 +46,7 @@ class RouteServiceProvider extends ServiceProvider
         $name = $this->name;
         Route::group([
             'prefix' => LaravelLocalization::setLocale(),
-            'middleware' => ['localeSessionRedirect', 'localizationRedirect', 'localeViewPath'],
+            'middleware' => ['localeCookieRedirect', 'localeSessionRedirect', 'localizationRedirect', 'localeViewPath'],
         ], static function () use ($name) {
             Route::middleware('web')->group(module_path($name, '/routes/web.php'));
         });
@@ -62,7 +62,7 @@ class RouteServiceProvider extends ServiceProvider
         $this->app->booted(function (): void {
             Route::group([
                 'prefix' => LaravelLocalization::setLocale(),
-                'middleware' => ['localeSessionRedirect', 'localizationRedirect', 'localeViewPath'],
+                'middleware' => ['localeCookieRedirect', 'localeSessionRedirect', 'localizationRedirect', 'localeViewPath'],
             ], function (): void {
                 Route::middleware('web')
                     ->get('/{slug}', [PageController::class, 'show'])
@@ -77,7 +77,7 @@ class RouteServiceProvider extends ServiceProvider
         $name = $this->name;
         Route::group([
             'prefix' => LaravelLocalization::setLocale(),
-            'middleware' => ['localeSessionRedirect', 'localizationRedirect', 'localeViewPath'],
+            'middleware' => ['localeCookieRedirect', 'localeSessionRedirect', 'localizationRedirect', 'localeViewPath'],
         ], static function () use ($name) {
             Route::prefix('admin')
                 ->name('admin.')

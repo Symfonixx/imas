@@ -1,5 +1,9 @@
 <?php
 
+echo  "<h1>sorry! The version 1 has not been expired!</h1>";
+
+exit;
+
 use Illuminate\Http\Request;
 
 define('LARAVEL_START', microtime(true));

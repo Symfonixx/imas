@@ -21,12 +21,19 @@
                     >
                         <i class="fa fa-times" aria-hidden="true"></i>
                     </div>
+                    <div class="app_logo" v-if="logoUrl">
+                        <img
+                            :src="logoUrl"
+                            :data-sticky-logo="logoUrl"
+                            alt=""
+                        />
+                    </div>
                     <h3 class="text-center">
-                        {{ trans("auth_modal.welcome_prefix") }}
-                        <span
+                        {{ trans("RegisterNote") }}
+                        <!-- <span
                             class="imas-auth-modal__brand"
                             v-html="welcomeBrandHtml"
-                        ></span>
+                        ></span> -->
                     </h3>
 
                     <!-- Recover password (theme: lost password flow)  / forgot password -->
@@ -224,33 +231,87 @@
                                     }"
                                 >
                                     <div class="custom-form main-register-form">
-                                        <form @submit.prevent="submitRegister">
-                                            <div class="imas-auth-form-field">
-                                                <label for="imas-auth-reg-name"
-                                                    >{{
-                                                        trans("Name")
-                                                    }}
-                                                    *</label
+                                        <form
+                                            ref="registerFormRef"
+                                            @submit.prevent="submitRegister"
+                                        >
+                                            <div
+                                                class="imas-auth-form-field-row"
+                                            >
+                                                <div
+                                                    class="imas-auth-form-field"
                                                 >
-                                                <input
-                                                    id="imas-auth-reg-name"
-                                                    v-model="registerForm.name"
-                                                    type="text"
-                                                    autocomplete="name"
-                                                    required
-                                                    @focus="
-                                                        $event.target.select()
-                                                    "
-                                                />
-                                                <span
-                                                    v-if="
-                                                        registerForm.errors.name
-                                                    "
-                                                    class="imas-auth-field-error"
-                                                    >{{
-                                                        registerForm.errors.name
-                                                    }}</span
+                                                    <label
+                                                        for="imas-auth-reg-first-name"
+                                                        >{{
+                                                            trans(
+                                                                "contact_us.first_name",
+                                                            )
+                                                        }}
+                                                        *</label
+                                                    >
+                                                    <input
+                                                        id="imas-auth-reg-first-name"
+                                                        v-model="
+                                                            registerForm.first_name
+                                                        "
+                                                        type="text"
+                                                        autocomplete="given-name"
+                                                        required
+                                                        maxlength="120"
+                                                        @focus="
+                                                            $event.target.select()
+                                                        "
+                                                    />
+                                                    <span
+                                                        v-if="
+                                                            registerForm.errors
+                                                                .first_name
+                                                        "
+                                                        class="imas-auth-field-error"
+                                                        >{{
+                                                            registerForm.errors
+                                                                .first_name
+                                                        }}</span
+                                                    >
+                                                </div>
+                                                <div
+                                                    class="imas-auth-form-field"
                                                 >
+                                                    <label
+                                                        for="imas-auth-reg-last-name"
+                                                        >{{
+                                                            trans(
+                                                                "contact_us.last_name",
+                                                            )
+                                                        }}
+                                                        *</label
+                                                    >
+                                                    <input
+                                                        id="imas-auth-reg-last-name"
+                                                        v-model="
+                                                            registerForm.last_name
+                                                        "
+                                                        type="text"
+                                                        autocomplete="family-name"
+                                                        required
+                                                        maxlength="120"
+                                                        @focus="
+                                                            $event.target.select()
+                                                        "
+                                                    />
+                                                    <span
+                                                        v-if="
+                                                            registerForm.errors
+                                                                .last_name
+                                                        "
+                                                        class="imas-auth-field-error"
+                                                        >{{
+                                                            registerForm.errors
+                                                                .last_name
+                                                        }}</span
+                                                    >
+                                                </div>
                                             </div>
                                             <div class="imas-auth-form-field">
                                                 <label for="imas-auth-reg-email"
@@ -621,6 +682,51 @@
                                                     }}</span
                                                 >
                                             </div>
+                                            <div class="imas-auth-terms-wrap">
+                                                <div
+                                                    class="filter-tags imas-auth-terms"
+                                                >
+                                                    <input
+                                                        id="imas-auth-terms"
+                                                        v-model="
+                                                            registerTermsAccepted
+                                                        "
+                                                        type="checkbox"
+                                                        class="mx-2 remember-me-checkbox"
+                                                    />
+                                                    <label
+                                                        for="imas-auth-terms"
+                                                        class="imas-auth-terms__label"
+                                                    >
+                                                        {{
+                                                            trans(
+                                                                "auth_modal.agree_terms_prefix",
+                                                            )
+                                                        }}
+                                                        <a
+                                                            href="#"
+                                                            class="imas-auth-terms__link"
+                                                            @click.prevent
+                                                            >{{
+                                                                trans(
+                                                                    "auth_modal.terms_and_conditions",
+                                                                )
+                                                            }}</a
+                                                        >
+                                                    </label>
+                                                </div>
+                                                <p
+                                                    v-if="
+                                                        registerTermsClientError
+                                                    "
+                                                    class="imas-auth-terms__error"
+                                                    role="alert"
+                                                >
+                                                    {{
+                                                        registerTermsClientError
+                                                    }}
+                                                </p>
+                                            </div>
                                             <div
                                                 class="imas-auth-form-field imas-auth-form-field--actions"
                                             >
@@ -837,7 +943,8 @@ const loginForm = useForm({
 });
 
 const registerForm = useForm({
-    name: "",
+    first_name: "",
+    last_name: "",
     email: "",
     mobile: "",
     password: "",
@@ -851,6 +958,9 @@ const registerCountryDropdownOpen = ref(false);
 const registerCountryDropdownRoot = ref(null);
 const registerCountrySearchQuery = ref("");
 const registerCountrySearchInput = ref(null);
+const registerFormRef = ref(null);
+const registerTermsAccepted = ref(false);
+const registerTermsClientError = ref("");
 
 const countries = computed(() => page.props.globals?.countries ?? []);
 
@@ -1034,6 +1144,8 @@ function resetAllForms() {
     resetForm.reset();
     registerMobileLocal.value = "";
     registerMobileClientError.value = "";
+    registerTermsAccepted.value = false;
+    registerTermsClientError.value = "";
     resetPasswordVisibility();
     pickDefaultRegisterCountry();
     syncResetFromUrl();
@@ -1064,7 +1176,7 @@ watch(
 );
 
 function submitLogin() {
-    loginForm.post(route("login"), {
+    loginForm.post(route("login.store"), {
         preserveScroll: true,
         onSuccess: () => {
             closeModal();
@@ -1075,6 +1187,19 @@ function submitLogin() {
 
 function submitRegister() {
     registerMobileClientError.value = "";
+    registerTermsClientError.value = "";
+
+    const form = registerFormRef.value;
+    if (!form?.checkValidity()) {
+        form?.reportValidity();
+        return;
+    }
+
+    if (!registerTermsAccepted.value) {
+        registerTermsClientError.value = trans("auth_modal.terms_required");
+        return;
+    }
+
     const mobile = buildRegisterMobilePayload();
     if (mobile.length < 8 || mobile.length > 15) {
         registerMobileClientError.value = trans(
@@ -1083,7 +1208,7 @@ function submitRegister() {
         return;
     }
     registerForm.mobile = mobile;
-    registerForm.post(route("register"), {
+    registerForm.post(route("register.store"), {
         preserveScroll: true,
         onSuccess: () => {
             closeModal();
@@ -1133,6 +1258,12 @@ onBeforeUnmount(() => {
     );
     document.removeEventListener("keydown", onRegisterCountryDocKeydown);
 });
+
+const mediaData = computed(() => page.props.globals.media || {});
+const logoUrl = computed(() => {
+    const m = mediaData.value;
+    return m.transparent_logo || m.white_logo || "";
+});
 </script>
 
 <style scoped>
@@ -1161,10 +1292,13 @@ onBeforeUnmount(() => {
     float: none;
     padding: 0.75rem 1.25rem;
     margin-bottom: 0;
-    font-size: var(--text-md);
+    font-size: var(--text-sm) !important;
     font-weight: 600;
     color: var(--text-dim);
     border-bottom: 1px solid var(--divider);
+    max-width: 85%;
+    line-height: 1.5 !important;
+    margin: 0 auto;
     text-align: center;
 }
 
@@ -1286,6 +1420,23 @@ onBeforeUnmount(() => {
     margin-bottom: 0.5rem;
 }
 
+.imas-auth-form-field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.65rem;
+    margin-bottom: 0.5rem;
+}
+
+.imas-auth-form-field-row .imas-auth-form-field {
+    margin-bottom: 0;
+}
+
+@media (max-width: 480px) {
+    .imas-auth-form-field-row {
+        grid-template-columns: 1fr;
+    }
+}
+
 .imas-auth-form-field--actions {
     margin-bottom: 0;
     margin-top: 0.25rem;
@@ -1403,11 +1554,15 @@ onBeforeUnmount(() => {
     font-weight: 600;
 }
 
-.imas-auth-modal.login-and-register-form .custom-form .log-submit-btn:hover:not(:disabled) {
+.imas-auth-modal.login-and-register-form
+    .custom-form
+    .log-submit-btn:hover:not(:disabled) {
     background: var(--brand-gold-hover) !important;
 }
 
-.imas-auth-modal.login-and-register-form .custom-form .log-submit-btn:focus-visible {
+.imas-auth-modal.login-and-register-form
+    .custom-form
+    .log-submit-btn:focus-visible {
     outline: none;
     box-shadow: var(--ring);
 }
@@ -1435,6 +1590,48 @@ onBeforeUnmount(() => {
 
 .imas-auth-modal.login-and-register-form .lost_password a:hover {
     color: var(--brand-gold);
+}
+
+.imas-auth-terms-wrap {
+    clear: both;
+    width: 100%;
+    margin-top: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.imas-auth-terms {
+    float: none !important;
+    width: 100%;
+    margin-top: 0;
+    margin-bottom: 0;
+    align-items: flex-start;
+}
+
+.imas-auth-terms__label {
+    font-size: var(--text-xs) !important;
+    line-height: 1.5;
+    cursor: pointer;
+}
+
+.imas-auth-terms__link {
+    color: var(--brand-gold);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.imas-auth-terms__link:hover {
+    color: var(--brand-gold-hover);
+}
+
+.imas-auth-terms__error {
+    display: block;
+    text-align: start !important;   
+    width: 100%;
+    margin: 0.35rem 0 0;
+    padding-inline-start: 1.35rem;
+    color: var(--danger);
+    font-size: var(--text-xs);
+    line-height: 1.4;
 }
 
 /* Match `.login-and-register-form .custom-form input[type="text"]` (theme): single cohesive field */
@@ -1700,9 +1897,13 @@ onBeforeUnmount(() => {
     margin: -0.15rem 0 0.35rem;
 }
 
-.imas-auth-modal.login-and-register-form .custom-form .filter-tags input[type="checkbox"],
+.imas-auth-modal.login-and-register-form
+    .custom-form
+    .filter-tags
+    input[type="checkbox"],
 .imas-auth-modal.login-and-register-form .remember-me-checkbox {
     width: 1rem !important;
+   
     height: 1rem !important;
     margin: 0 0.35rem 0 0 !important;
     padding: 0;
@@ -1718,5 +1919,21 @@ onBeforeUnmount(() => {
     .filter-tags
     input[type="checkbox"]:checked::after {
     color: var(--brand-gold);
+
+
+}
+
+.app_logo {
+    width:60px;
+    height:60px;
+    margin: 0 auto;
+    margin-bottom: 1rem;
+}
+.app_logo 
+img {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    margin: 0 auto;
 }
 </style>

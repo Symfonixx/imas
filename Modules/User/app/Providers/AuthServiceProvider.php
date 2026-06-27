@@ -3,8 +3,8 @@
 namespace Modules\User\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Inertia\Inertia;
-use Laravel\Fortify\Fortify;
+// use Inertia\Inertia;
+// use Laravel\Fortify\Fortify;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -13,21 +13,24 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        Fortify::loginView(function () {
-            return Inertia::render('User::Auth/Login');
-        });
+        // Standalone auth pages disabled — front-office uses AuthModal (Find Houses layout).
+        // Fortify view routes are off (config/fortify.php views => false); POST routes remain for the modal.
 
-        Fortify::registerView(function () {
-            return Inertia::render('User::Auth/Register');
-        });
+        // Fortify::loginView(function () {
+        //     return Inertia::render('User::Auth/Login');
+        // });
 
-        Fortify::requestPasswordResetLinkView(function () {
-            return Inertia::render('User::Auth/ForgotPassword');
-        });
+        // Fortify::registerView(function () {
+        //     return Inertia::render('User::Auth/Register');
+        // });
 
-        Fortify::resetPasswordView(function () {
-            return Inertia::render('User::Auth/ResetPassword');
-        });
+        // Fortify::requestPasswordResetLinkView(function () {
+        //     return Inertia::render('User::Auth/ForgotPassword');
+        // });
+
+        // Fortify::resetPasswordView(function () {
+        //     return Inertia::render('User::Auth/ResetPassword');
+        // });
 
     }
 

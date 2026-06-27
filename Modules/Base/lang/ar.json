@@ -20,7 +20,10 @@
         "mobile_national_placeholder":"الرقم الوطني (بدون رمز الدولة)",
         "mobile_invalid_length":"أدخل رقم جوال صالحًا (8–15 رقمًا إجمالاً بما في ذلك رمز الدولة).",
         "country_code_search_placeholder":"ابحث بالرمز أو اسم الدولة…",
-        "country_code_search_empty":"لا توجد دول مطابقة لبحثك."
+        "country_code_search_empty":"لا توجد دول مطابقة لبحثك.",
+        "agree_terms_prefix":"بإنشاء حساب، أنت توافق على Imas Global",
+        "terms_and_conditions":"الشروط والأحكام",
+        "terms_required":"يرجى الموافقة على الشروط."
     },
     "Name": "الاسم",
     "Language": "اللغة",

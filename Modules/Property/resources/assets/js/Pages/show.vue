@@ -663,7 +663,7 @@ useScrollReveal(pageRef, { variant: "propertyListings" });
     font-size: var(--text-xl);
     font-weight: 600;
     color: var(--text);
-    text-transform: none !important;
+    text-transform: capitalize !important;
 }
 
 .imas-property-show .listing-address {
@@ -708,7 +708,7 @@ html[dir="rtl"]
     font-weight: 700;
     color: var(--text);
     text-align: start;
-    text-transform: none !important;
+    text-transform: capitalize !important;
 }
 
 .imas-property-show .imas-section-title::after {

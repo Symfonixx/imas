@@ -44,10 +44,17 @@
                                             ><i class="fa fa-phone"></i
                                         ></span>
                                         <p class="in-p">
-                                            {{
-                                                settings.contact_phone ||
-                                                fallbackPhone
-                                            }}
+                                            <a
+                                                v-if="phoneDisplay && phoneHref"
+                                                :href="phoneHref"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
+                                                {{ phoneDisplay }}
+                                            </a>
+                                            <template v-else-if="phoneDisplay">{{
+                                                phoneDisplay
+                                            }}</template>
                                         </p>
                                     </div>
                                 </li>
@@ -228,6 +235,11 @@
 import { computed, onBeforeUnmount, ref } from "vue";
 import { Link, useForm, usePage } from "@inertiajs/vue3";
 import { cmsPageUrl } from "@/utils/cmsPageUrl.js";
+import {
+    formatTurkishPhone,
+    normalizeTurkishPhoneDigits,
+} from "@/utils/turkishPhone.js";
+import { resolveWhatsAppContactHref } from "@/utils/whatsappUrl.js";
 
 const props = defineProps({
     navLinks: {
@@ -254,6 +266,7 @@ const themeUrl = computed(() => page.props.theme_url || "");
 const auth = computed(() => page.props.auth);
 const appName = computed(() => page.props.appName);
 const settings = computed(() => page.props.settings || {});
+const globals = computed(() => page.props.globals ?? {});
 const mediaData = computed(() => page.props.globals.media || {});
 const logoUrl = computed(() => {
     const m = mediaData.value;
@@ -276,6 +289,36 @@ const tagline = computed(() => settings.value.tagline || page.props.appName);
 const fallbackAddress = "95 South Park Avenue, USA";
 const fallbackPhone = "+456 875 369 208";
 const fallbackEmail = "support@example.com";
+
+const rawPhone = computed(() =>
+    String(settings.value.contact_phone || settings.value.phone || "").trim(),
+);
+
+const phoneDisplay = computed(() => {
+    const raw = rawPhone.value;
+    if (raw) {
+        return formatTurkishPhone(raw);
+    }
+    return formatTurkishPhone(fallbackPhone) || fallbackPhone;
+});
+
+const phoneHref = computed(() => {
+    const social = globals.value.social ?? {};
+    const contact = globals.value.contact ?? {};
+    const raw =
+        rawPhone.value ||
+        contact.phone ||
+        settings.value.contact_phone ||
+        settings.value.phone ||
+        fallbackPhone;
+    const normalized = normalizeTurkishPhoneDigits(raw);
+    const phoneForWhatsApp = normalized ? `+${normalized}` : raw;
+
+    return resolveWhatsAppContactHref({
+        whatsapp: social.whatsapp || settings.value.whatsapp,
+        phone: phoneForWhatsApp,
+    });
+});
 
 const mainNavLinks = computed(() =>
     (props.navLinks || []).filter((l) => l?.href),
@@ -513,6 +556,16 @@ onBeforeUnmount(() => {
 
 .contact-line .in-p {
     margin: 0 !important;
+}
+
+.contact-line .in-p a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.contact-line .in-p a:hover {
+    color: var(--brand-gold, #d9a800);
 }
 
 .nav-footer {

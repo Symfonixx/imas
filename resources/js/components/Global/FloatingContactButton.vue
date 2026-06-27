@@ -95,7 +95,7 @@ import { usePage } from "@inertiajs/vue3";
 import { buildGmailComposeUrl } from "@/utils/gmailUrl.js";
 
 const MESSENGER_URL =
-    "#";
+    "https://m.me/61584547460936";
 
 const page = usePage();
 const isOpen = ref(false);

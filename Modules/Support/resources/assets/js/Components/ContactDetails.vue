@@ -17,14 +17,19 @@
                     <p class="in-p">{{ contact.address }}</p>
                 </div>
             </li>
-            <li v-if="contact.phone" class="imas-contact-phone">
+            <li v-if="phoneDisplay" class="imas-contact-phone">
                 <div class="info">
                     <i class="fa fa-phone m-end" aria-hidden="true"></i>
                     <p class="in-p">
-                        <a v-if="phoneTel" :href="'tel:' + phoneTel">{{
-                            contact.phone
-                        }}</a>
-                        <template v-else>{{ contact.phone }}</template>
+                        <a
+                            v-if="phoneHref"
+                            :href="phoneHref"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            {{ phoneDisplay }}
+                        </a>
+                        <template v-else>{{ phoneDisplay }}</template>
                     </p>
                 </div>
             </li>
@@ -64,18 +69,37 @@
 import { computed } from "vue";
 import { usePage } from "@inertiajs/vue3";
 import { resolveWhatsAppContactHref } from "@/utils/whatsappUrl.js";
+import {
+    formatTurkishPhone,
+    normalizeTurkishPhoneDigits,
+} from "@/utils/turkishPhone.js";
 
 const page = usePage();
 
 const globals = computed(() => page.props.globals ?? {});
+const settings = computed(() => page.props.settings ?? {});
 const contact = computed(() => globals.value.contact ?? {});
 
-const phoneTel = computed(() => {
-    const p = contact.value.phone;
-    if (typeof p !== "string") {
+const rawPhone = computed(() => String(contact.value.phone ?? "").trim());
+
+const phoneDisplay = computed(
+    () => formatTurkishPhone(rawPhone.value) || rawPhone.value,
+);
+
+const phoneHref = computed(() => {
+    const raw = rawPhone.value;
+    if (!raw) {
         return "";
     }
-    return p.replace(/[^\d+]/g, "");
+
+    const social = globals.value.social ?? {};
+    const normalized = normalizeTurkishPhoneDigits(raw);
+    const phoneForWhatsApp = normalized ? `+${normalized}` : raw;
+
+    return resolveWhatsAppContactHref({
+        whatsapp: social.whatsapp || settings.value.whatsapp,
+        phone: phoneForWhatsApp,
+    });
 });
 
 const socialLinks = computed(() => {
@@ -115,6 +139,16 @@ function trans(key) {
 </script>
 
 <style scoped>
+.in-p a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.in-p a:hover {
+    color: var(--brand-gold, #d9a800);
+}
+
 .netsocials {
     gap: 25px;
 }

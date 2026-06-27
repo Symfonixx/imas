@@ -3,9 +3,11 @@
         <div class="container imas-nav__container imas-top-bar__inner">
             <div class="imas-top-bar__contacts contact">
                 <a
-                    v-if="phoneDisplay"
+                    v-if="phoneDisplay && phoneHref"
                     class="imas-top-bar__link"
                     :href="phoneHref"
+                    target="_blank"
+                    rel="noopener noreferrer"
                 >
                     <i class="fa fa-phone" aria-hidden="true"></i>
                     <span>{{ phoneDisplay }}</span>
@@ -58,12 +60,16 @@
 import { computed } from "vue";
 import { Link, usePage } from "@inertiajs/vue3";
 import { cmsPageUrl } from "@/utils/cmsPageUrl.js";
+import { formatTurkishPhone, normalizeTurkishPhoneDigits } from "@/utils/turkishPhone.js";
+import { resolveWhatsAppContactHref } from "@/utils/whatsappUrl.js";
 
 const page = usePage();
 
 const activeLocale = computed(() => page.props.locale || "en");
 
 const settings = computed(() => page.props.settings || {});
+
+const globals = computed(() => page.props.globals ?? {});
 
 const topBarPages = computed(
     () => page.props.globals?.pages?.top_bar ?? [],
@@ -72,11 +78,18 @@ const topBarPages = computed(
 const fallbackPhone = "+456 875 369 208";
 const fallbackEmail = "support@example.com";
 
-const phoneDisplay = computed(
-    () =>
-        String(settings.value.contact_phone || settings.value.phone || "").trim() ||
-        fallbackPhone,
+const rawPhone = computed(() =>
+    String(settings.value.contact_phone || settings.value.phone || "").trim(),
 );
+
+const phoneDisplay = computed(() => {
+    const raw = rawPhone.value;
+    if (raw) {
+        return formatTurkishPhone(raw);
+    }
+    return formatTurkishPhone(fallbackPhone) || fallbackPhone;
+});
+
 const emailDisplay = computed(
     () =>
         String(settings.value.contact_email || settings.value.email || "").trim() ||
@@ -88,9 +101,21 @@ const hasContactInfo = computed(
 );
 
 const phoneHref = computed(() => {
-    const raw = String(settings.value.contact_phone || settings.value.phone || "").trim();
-    const digits = raw.replace(/[^\d+]/g, "");
-    return digits ? `tel:${digits}` : `tel:${fallbackPhone.replace(/[^\d+]/g, "")}`;
+    const social = globals.value.social ?? {};
+    const contact = globals.value.contact ?? {};
+    const raw =
+        rawPhone.value ||
+        contact.phone ||
+        settings.value.contact_phone ||
+        settings.value.phone ||
+        fallbackPhone;
+    const normalized = normalizeTurkishPhoneDigits(raw);
+    const phoneForWhatsApp = normalized ? `+${normalized}` : raw;
+
+    return resolveWhatsAppContactHref({
+        whatsapp: social.whatsapp || settings.value.whatsapp,
+        phone: phoneForWhatsApp,
+    });
 });
 
 const emailHref = computed(() => {

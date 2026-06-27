@@ -14,17 +14,34 @@
                         <div class="card-body">
                             <form @submit.prevent="form.post(route('register'))">
 
-                                <div class="mb-3">
-                                    <label class="form-label" for="name">{{ trans("Name") }}</label>
-                                    <input
-                                        id="name"
-                                        v-model="form.name"
-                                        autofocus
-                                        class="form-control"
-                                        required
-                                        type="name"
-                                    />
-                                    <span v-if="errors.name" class="invalid-feedback d-block">{{ errors.name }}</span>
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="first_name">{{ trans("contact_us.first_name") }}</label>
+                                        <input
+                                            id="first_name"
+                                            v-model="form.first_name"
+                                            autofocus
+                                            class="form-control"
+                                            required
+                                            type="text"
+                                            maxlength="120"
+                                            autocomplete="given-name"
+                                        />
+                                        <span v-if="errors.first_name" class="invalid-feedback d-block">{{ errors.first_name }}</span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="last_name">{{ trans("contact_us.last_name") }}</label>
+                                        <input
+                                            id="last_name"
+                                            v-model="form.last_name"
+                                            class="form-control"
+                                            required
+                                            type="text"
+                                            maxlength="120"
+                                            autocomplete="family-name"
+                                        />
+                                        <span v-if="errors.last_name" class="invalid-feedback d-block">{{ errors.last_name }}</span>
+                                    </div>
                                 </div>
 
                                 <div class="mb-3">
@@ -87,9 +104,11 @@
                                 </button>
                             </form>
 
+                            <!-- Standalone auth pages disabled; use navbar AuthModal instead.
                             <div class="mt-3 text-center">
                                 <Link :href="route('login')">{{ trans("Already Have An Account?") }}</Link>
                             </div>
+                            -->
                         </div>
                     </div>
                 </div>
@@ -118,7 +137,8 @@ export default {
         const trans = (key) => page.props.translations[key] || key;
 
         const form = useForm({
-            name: '',
+            first_name: '',
+            last_name: '',
             email: '',
             mobile: '',
             password: '',

@@ -69,6 +69,14 @@
                                     v-if="item.href"
                                     class="imas-contact-list__link"
                                     :href="item.href"
+                                    :target="
+                                        item.external ? '_blank' : undefined
+                                    "
+                                    :rel="
+                                        item.external
+                                            ? 'noopener noreferrer'
+                                            : undefined
+                                    "
                                     >{{ item.text }}</a
                                 >
                                 <template v-else>{{ item.text }}</template>
@@ -98,6 +106,14 @@
                                     v-if="item.href"
                                     class="imas-contact-list__link"
                                     :href="item.href"
+                                    :target="
+                                        item.external ? '_blank' : undefined
+                                    "
+                                    :rel="
+                                        item.external
+                                            ? 'noopener noreferrer'
+                                            : undefined
+                                    "
                                     >{{ item.text }}</a
                                 >
                                 <template v-else>{{ item.text }}</template>
@@ -137,6 +153,11 @@
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { usePage } from "@inertiajs/vue3";
 import ContactForm from "../../../../../Support/resources/assets/js/Components/ContactForm.vue";
+import {
+    formatTurkishPhone,
+    normalizeTurkishPhoneDigits,
+} from "@/utils/turkishPhone.js";
+import { resolveWhatsAppContactHref } from "@/utils/whatsappUrl.js";
 
 const props = defineProps({
     contactStoreUrl: { type: String, required: true },
@@ -171,14 +192,29 @@ const showSuccessFlash = computed(() =>
 );
 
 const globals = computed(() => page.props.globals ?? {});
+const settings = computed(() => page.props.settings ?? {});
 const contact = computed(() => globals.value.contact ?? {});
 
-const phoneTel = computed(() => {
-    const p = contact.value.phone;
-    if (typeof p !== "string") {
+const rawPhone = computed(() => String(contact.value.phone ?? "").trim());
+
+const phoneDisplay = computed(
+    () => formatTurkishPhone(rawPhone.value) || rawPhone.value,
+);
+
+const phoneHref = computed(() => {
+    const raw = rawPhone.value;
+    if (!raw) {
         return "";
     }
-    return p.replace(/[^\d+]/g, "");
+
+    const social = globals.value.social ?? {};
+    const normalized = normalizeTurkishPhoneDigits(raw);
+    const phoneForWhatsApp = normalized ? `+${normalized}` : raw;
+
+    return resolveWhatsAppContactHref({
+        whatsapp: social.whatsapp || settings.value.whatsapp,
+        phone: phoneForWhatsApp,
+    });
 });
 
 const contactItems = computed(() => {
@@ -195,13 +231,14 @@ const contactItems = computed(() => {
     //     });
     // }
 
-    if (c.phone) {
+    if (phoneDisplay.value) {
         items.push({
             key: "phone",
             icon: "fa-phone",
             iconClass: "la-phone",
-            text: c.phone,
-            href: phoneTel.value ? `tel:${phoneTel.value}` : null,
+            text: phoneDisplay.value,
+            href: phoneHref.value || null,
+            external: Boolean(phoneHref.value),
         });
     }
 

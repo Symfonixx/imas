@@ -20,7 +20,10 @@
         "mobile_national_placeholder":"National number (no country code)",
         "mobile_invalid_length":"Enter a valid mobile number (8–15 digits total, including country code).",
         "country_code_search_placeholder":"Search by code or country…",
-        "country_code_search_empty":"No countries match your search."
+        "country_code_search_empty":"No countries match your search.",
+        "agree_terms_prefix":"By Creating an Account, You Agree on Imas Global's",
+        "terms_and_conditions":"terms and conditions",
+        "terms_required":"Please accept the terms."
     },
     "Name": "Name",
     "Language": "Language",
@@ -359,7 +362,7 @@
         "Services":"Services",
         "navigation":"Navigation",
         "explore":"Explore",
-        "newsLetters":"News letters",
+        "newsLetters":"Newsletters",
         "signup_for_newsletters":"Sign Up for Our Newsletter to get Latest Updates and Offers.",
         "subscribe":"Subscribe",
         "subscription_success":"Thank you! You are subscribed to our newsletter.",

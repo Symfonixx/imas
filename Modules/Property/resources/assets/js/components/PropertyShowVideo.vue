@@ -225,7 +225,8 @@ const invalidMessageText = computed(
 
 .imas-property-show-page .imas-property-video.imas-property-show-panel h5.imas-section-title {
     color: var(--text) !important;
-    text-transform: none !important;
+    text-transform: capitalize !important;
+   // text-transform: none !important;
 }
 
 .imas-property-show-page

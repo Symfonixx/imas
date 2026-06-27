@@ -503,9 +503,27 @@ html[dir="rtl"] #header .show-lang .fa-caret-down.arrlan {
 }
 
 /* Language list: anchor to inline-end of trigger; beat theme `left:-1px !important` + narrow width */
-html[dir="rtl"] #header .header-user-menu .lang-wrap ul.lang-tooltip {
+html[dir="rtl"] #header .header-user-menu .lang-wrap ul.lang-tooltip,
+html[dir="rtl"] #header.imas-nav__bar .imas-nav__actions .lang-wrap ul.lang-tooltip {
     left: auto !important;
     right: 0 !important;
+    inset-inline-end: 0 !important;
+    inset-inline-start: auto !important;
+}
+
+/* IMas navbar: language dropdown under trigger, aligned to inline-end (LTR + RTL) */
+#header.imas-nav__bar .imas-nav__actions .imas-nav__lang .lang-wrap {
+    position: relative !important;
+}
+
+#header.imas-nav__bar .imas-nav__actions .lang-wrap ul.lang-tooltip {
+    position: absolute !important;
+    top: calc(100% + 8px) !important;
+    inset-inline-end: 0 !important;
+    inset-inline-start: auto !important;
+    left: auto !important;
+    right: 0 !important;
+    z-index: 10005 !important;
 }
 
 @media only screen and (max-width: 1024px) {
@@ -932,7 +950,7 @@ html[dir="rtl"]
 
 /* Shared nav / topbar container (matches darkTheme index.html) */
 .imas-nav__container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin-inline: auto;
     padding-inline: 20px;
     width: 100%;
@@ -1051,6 +1069,8 @@ html[dir="rtl"]
     margin: 0 !important;
     padding: 0 !important;
     position: relative;
+   
+
 }
 
 .imas-nav__menu#navigation > ul#responsive > li.imas-nav-item > a {
@@ -1058,12 +1078,13 @@ html[dir="rtl"]
     font-size: 14px !important;
     font-weight: 500 !important;
     font-family: var(--font-body) !important;
-    text-transform: none !important;
+    text-transform: capitalize !important;
     letter-spacing: normal !important;
     color: var(--text) !important;
     padding: 8px 0 !important;
     white-space: nowrap;
     transition: color 0.2s ease;
+
 }
 
 /* Beat theme `#navigation.style-1 ul li:hover { background: gold }` — hover text white */
@@ -1146,7 +1167,7 @@ html[dir="rtl"]
     font-size: 13px !important;
     font-weight: 500 !important;
     font-family: var(--font-body) !important;
-    text-transform: none !important;
+    text-transform: capitalize !important;
     letter-spacing: normal !important;
     text-align: start !important;
     white-space: nowrap !important;
@@ -1324,7 +1345,7 @@ html[dir="rtl"]
     font-family: var(--font-body) !important;
     line-height: 1.4 !important;
     color: var(--text-dim) !important;
-    text-transform: none !important;
+    text-transform: capitalize !important;
     letter-spacing: normal !important;
     white-space: nowrap;
     unicode-bidi: isolate;
@@ -1554,16 +1575,20 @@ html[dir="rtl"]
     }
 
     #header.imas-nav__bar .imas-nav__container {
-        display: flex !important;
-        flex-direction: row;
+        display: grid !important;
+        grid-template-columns: auto minmax(0, 1fr);
+        grid-template-areas: "logo end";
         align-items: center;
-        justify-content: flex-start;
-        gap: 12px;
+        justify-content: stretch;
+        gap: 8px;
         min-height: 64px;
         width: 100%;
+        max-width: 100%;
+        overflow: visible;
     }
+
     html[dir="rtl"] #header.imas-nav__bar .imas-nav__container {
-        gap: 0 !important;
+        gap: 8px !important;
     }
 
     #header.imas-nav__bar #navigation.imas-nav__menu,
@@ -1580,11 +1605,12 @@ html[dir="rtl"]
     }
 
     #header.imas-nav__bar .imas-nav__logo {
+        grid-area: logo;
         flex: 0 0 auto;
         grid-column: auto;
-        justify-self: auto;
+        justify-self: start;
         width: auto !important;
-        max-width: none !important;
+        max-width: min(120px, 28vw) !important;
         padding-inline: 0 !important;
     }
 
@@ -1598,20 +1624,69 @@ html[dir="rtl"]
     }
 
     #header.imas-nav__bar .imas-nav__end {
+        grid-area: end;
         display: flex !important;
-        flex: 0 0 auto;
         align-items: center;
         justify-content: flex-end;
-        gap: 10px;
-        margin-inline-start: auto !important;
+        gap: 8px;
+        min-width: 0;
+        overflow: visible;
+        position: relative;
+        z-index: 2;
     }
 
     #header.imas-nav__bar .imas-nav__actions {
+        flex: 1 1 auto;
         display: flex !important;
         align-items: center;
-        gap: 10px;
+        justify-content: center;
+        gap: 6px;
         margin: 0 !important;
-        grid-column: auto;
+        min-width: 0;
+        max-width: 100%;
+        flex-wrap: nowrap;
+        overflow: visible;
+        position: relative;
+    }
+
+    #header.imas-nav__bar .imas-nav__actions .header-user-menu,
+    #header.imas-nav__bar .imas-nav__actions .imas-nav__lang.header-user-menu {
+        position: relative !important;
+        overflow: visible !important;
+        padding: 0 !important;
+        padding-left: 0 !important;
+    }
+
+    #header.imas-nav__bar .imas-nav__actions .lang-wrap {
+        position: relative !important;
+        overflow: visible !important;
+    }
+
+    #header.imas-nav__bar .header-user-menu.user-menu.active,
+    #header.imas-nav__bar .lang-wrap.lang-wrap--open {
+        z-index: 6;
+    }
+
+    #header.imas-nav__bar .header-user-menu ul.imas-user-menu-dropdown {
+        position: absolute !important;
+        top: calc(100% + 8px) !important;
+        left: auto !important;
+        right: 0 !important;
+        inset-inline-end: 0 !important;
+        inset-inline-start: auto !important;
+        z-index: 10010 !important;
+        min-width: 10rem;
+    }
+
+    html[dir="rtl"] #header.imas-nav__bar .header-user-menu ul.imas-user-menu-dropdown {
+        right: auto !important;
+        left: 0 !important;
+        inset-inline-start: 0 !important;
+        inset-inline-end: auto !important;
+    }
+
+    #header.imas-nav__bar .imas-nav__actions .lang-wrap ul.lang-tooltip {
+        z-index: 10010 !important;
     }
 
     #header.imas-nav__bar .imas-nav__desktop-only,
@@ -1695,28 +1770,12 @@ html[dir="rtl"]
     }
 
     #header.imas-nav__bar .imas-nav__actions .lang-wrap ul.lang-tooltip {
-        position: absolute !important;
-        top: calc(100% + 8px) !important;
-        inset-inline-end: 0 !important;
-        inset-inline-start: auto !important;
-        left: auto !important;
-        right: 0 !important;
-        z-index: 10005 !important;
         margin: 0 !important;
         padding: 8px 0 !important;
         background: var(--surface) !important;
         border: 1px solid var(--border) !important;
         border-radius: 6px !important;
         box-shadow: var(--shadow-md);
-    }
-
-    html[dir="rtl"]
-        #header.imas-nav__bar
-        .imas-nav__actions
-        .lang-wrap
-        ul.lang-tooltip {
-        left: 0 !important;
-        right: auto !important;
     }
 
     #header.imas-nav__bar .imas-nav__actions .lang-wrap ul.lang-tooltip > li {
@@ -1750,13 +1809,57 @@ html[dir="rtl"]
     }
 
     #header.imas-nav__bar .imas-nav__mmenu.mmenu-trigger {
-        /* display: block !important;
-        position: relative !important;
-        top: auto !important; */
-
+        flex: 0 0 auto;
+        justify-self: end;
         margin: 0 !important;
         padding: 0 !important;
         background-color: transparent !important;
+    }
+
+    /* RTL: neutralize legacy Find Houses float/absolute mobile rules that
+       collide with the new grid navbar (logo has id #logo, hamburger has
+       class .mmenu-trigger). Keep the same grid flow as LTR. */
+    html[dir="rtl"] #header.imas-nav__bar #logo.imas-nav__logo {
+        width: auto !important;
+        max-width: min(120px, 28vw) !important;
+        padding-inline-end: 0 !important;
+        padding-inline-start: 0 !important;
+    }
+
+    html[dir="rtl"] #header.imas-nav__bar .imas-nav__mmenu.mmenu-trigger {
+        position: relative !important;
+        top: auto !important;
+        right: auto !important;
+        left: auto !important;
+        z-index: auto !important;
+    }
+
+    html[dir="rtl"] #header.imas-nav__bar .imas-nav__mmenu.mmenu-trigger .hamburger {
+        right: auto !important;
+        left: auto !important;
+    }
+}
+
+@media only screen and (max-width: 480px) {
+    #header.imas-nav__bar .imas-nav__container {
+        gap: 4px;
+    }
+
+    #header.imas-nav__bar .imas-nav__logo {
+        max-width: min(96px, 24vw) !important;
+    }
+
+    #header.imas-nav__bar .imas-nav__logo-link img {
+        max-height: 34px;
+    }
+
+    #header.imas-nav__bar .imas-nav__actions {
+        gap: 4px;
+    }
+
+    #header.imas-nav__bar .imas-nav__actions .imas-nav__sign-in-link {
+        padding: 5px 8px !important;
+        font-size: 12px !important;
     }
 }
 
@@ -2735,6 +2838,7 @@ html[dir="rtl"] .imas-inner-page-heading-hero__title {
 
 .imas-inner-page-heading-hero__crumb-active {
     position: relative;
+    text-transform: capitalize !important;
     color: var(--brand-gold);
     font-weight: 600;
 }
@@ -4756,3 +4860,7 @@ html[dir="rtl"] .imas-featured-properties-sidebar__badge--price {
         margin-top: 0.5rem;
     }
 }
+
+.capitalize-text {
+    text-transform: capitalize; /* Capitalizes every word */
+  }

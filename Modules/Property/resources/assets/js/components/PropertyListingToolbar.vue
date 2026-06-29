@@ -99,10 +99,17 @@ const resultsLabel = computed(() => {
 });
 
 function buildQuery(overrides = {}) {
+    const rawLocation = props.filters.location_id;
+    const locationIds = Array.isArray(rawLocation)
+        ? rawLocation.filter((id) => id != null && id !== "")
+        : rawLocation != null && rawLocation !== ""
+          ? [rawLocation]
+          : [];
+
     const q = {
         sort: props.sort,
         q: props.filters.q ?? undefined,
-        location_id: props.filters.location_id ?? undefined,
+        location_id: locationIds.length ? locationIds : undefined,
         property_type_id: props.filters.property_type_id ?? undefined,
         ...overrides,
     };

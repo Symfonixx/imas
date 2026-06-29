@@ -31,23 +31,13 @@
                 <div class="rld-main-search">
                     <div class="row">
                      
-                        <div class="rld-single-select">
-                            <select
-                                v-model="searchLocationId"
-                                class="select single-select mr-22"
-                                name="location_id"
-                            >
-                                <option value="">
-                                    {{ trans("Location") }}
-                                </option>
-                                <option
-                                    v-for="d in districts"
-                                    :key="d.id"
-                                    :value="String(d.id)"
-                                >
-                                    {{ d.name }}
-                                </option>
-                            </select>
+                        <div class="rld-single-select imas-hero-location-cell">
+                            <LocationAreaPicker
+                                v-model="searchLocationIds"
+                                :districts="districts"
+                                :areas="areas"
+                                name="location_id[]"
+                            />
                         </div>
                         <div class="rld-single-select ml-22">
                             <select
@@ -175,19 +165,21 @@ import {
     initHeroRangeSliders,
     loadJqueryUi,
 } from "@/utils/initHeroRangeSliders.js";
+import LocationAreaPicker from "@/components/Global/LocationAreaPicker.vue";
 
 const props = defineProps({
     action: { type: String, required: true },
     purpose: { type: String, default: "sale" },
     propertyTypes: { type: Array, default: () => [] },
     districts: { type: Array, default: () => [] },
+    areas: { type: Array, default: () => [] },
 });
 
 const page = usePage();
 
 const searchKeyword = ref("");
 const searchPropertyTypeId = ref("");
-const searchLocationId = ref("");
+const searchLocationIds = ref([]);
 const searchUnitTypeId = ref("");
 const advancedOpen = ref(false);
 const rangesDirty = ref(false);
@@ -311,6 +303,11 @@ onBeforeUnmount(() => {
     text-align: start;
 }
 
+/* Match theme spacing between hero search fields (.single-select has margin-right: 15px) */
+.imas-hero-property-search :deep(.imas-hero-location-cell) {
+    margin-inline-end: 15px;
+}
+
 /* Advanced filters panel (area / price sliders) — not the Advanced Search button */
 .imas-hero-property-search :deep(.imas-hero-advanced-panel.full-filter) {
     position: relative !important;
@@ -377,6 +374,13 @@ onBeforeUnmount(() => {
         padding-top: 1.25rem !important;
         padding-bottom: 1.25rem !important;
         padding-inline: 1.5rem !important;
+        overflow: visible !important;
+    }
+
+    .imas-hero-property-search :deep(.banner-search-wrap),
+    .imas-hero-property-search :deep(.tab-content),
+    .imas-hero-property-search :deep(.imas-hero-location-cell) {
+        overflow: visible !important;
     }
 
     .imas-hero-property-search :deep(.rld-main-search .row) {
@@ -390,6 +394,7 @@ onBeforeUnmount(() => {
 
     .imas-hero-property-search :deep(.rld-single-select),
     .imas-hero-property-search :deep(.rld-single-select.ml-22),
+    .imas-hero-property-search :deep(.imas-hero-location-cell),
     .imas-hero-property-search :deep(.dropdown-filter),
     .imas-hero-property-search
         :deep(.rld-main-search > .row > [class*="col-"]) {

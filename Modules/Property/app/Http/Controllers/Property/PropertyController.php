@@ -67,7 +67,7 @@ class PropertyController extends Controller
 
         $filters = [
             'q' => $keyword !== '' ? $keyword : null,
-            'location_id' => $validated['location_id'] ?? null,
+            'location_id' => $validated['location_id'] ?? [],
             'property_type_id' => $validated['property_type_id'] ?? null,
             'min_price' => isset($validated['min_price']) ? (float) $validated['min_price'] : null,
             'max_price' => isset($validated['max_price']) ? (float) $validated['max_price'] : null,
@@ -94,6 +94,17 @@ class PropertyController extends Controller
             ->map(static fn (Location $district) => [
                 'id' => $district->id,
                 'name' => $district->name,
+            ])
+            ->values()
+            ->all();
+
+        $areas = Location::query()
+            ->where('type', LocationType::Area)
+            ->orderBy('id')
+            ->get(['id', 'name'])
+            ->map(static fn (Location $area) => [
+                'id' => $area->id,
+                'name' => $area->name,
             ])
             ->values()
             ->all();
@@ -130,6 +141,7 @@ class PropertyController extends Controller
             'sort' => $sort,
             'propertyTypes' => $propertyTypes,
             'districts' => $districts,
+            'areas' => $areas,
             'recentProperties' => $recentProperties,
             'featuredProperties' => $featuredProperties,
         ]);
@@ -258,9 +270,22 @@ class PropertyController extends Controller
      */
     private function listingQueryRules(Request $request): array
     {
-        return Validator::make($request->query(), [
+        $query = $request->query();
+
+        // Accept location_id as a scalar (legacy single selects) or an array (multi-select picker).
+        if (isset($query['location_id']) && $query['location_id'] !== '' && $query['location_id'] !== []) {
+            $query['location_id'] = array_values(array_unique(array_filter(
+                array_map('intval', (array) $query['location_id']),
+                static fn (int $id): bool => $id > 0,
+            )));
+        } else {
+            unset($query['location_id']);
+        }
+
+        return Validator::make($query, [
             'sort' => ['sometimes', 'string', 'in:price_asc,price_desc'],
-            'location_id' => ['sometimes', 'nullable', 'integer', 'exists:locations,id'],
+            'location_id' => ['sometimes', 'array'],
+            'location_id.*' => ['integer', 'exists:locations,id'],
             'property_type_id' => ['sometimes', 'nullable', 'integer', 'exists:property_types,id'],
             'q' => ['sometimes', 'nullable', 'string', 'max:255'],
             'per_page' => ['sometimes', 'integer', 'min:1', 'max:50'],
@@ -287,14 +312,16 @@ class PropertyController extends Controller
             ->withFavoriteStateForUser($userId);
 
         if (! empty($validated['location_id'])) {
-            $locationId = (int) $validated['location_id'];
-            $descendantIds = Location::descendantIdsOf($locationId);
+            $selectedIds = array_map('intval', (array) $validated['location_id']);
 
-            if ($descendantIds !== []) {
-                $query->whereIn('location_id', $descendantIds);
-            } else {
-                $query->where('location_id', $locationId);
+            $allIds = $selectedIds;
+            foreach ($selectedIds as $selectedId) {
+                foreach (Location::descendantIdsOf($selectedId) as $descendantId) {
+                    $allIds[] = (int) $descendantId;
+                }
             }
+
+            $query->whereIn('location_id', array_values(array_unique($allIds)));
         }
 
         if (! empty($validated['property_type_id'])) {

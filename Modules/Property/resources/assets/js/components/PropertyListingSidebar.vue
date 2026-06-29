@@ -38,23 +38,14 @@
                     <div class="tab-pane fade show active">
                         <div class="rld-main-search">
                             <div class="row imas-listing-property-search__fields">
-                                <div class="rld-single-select">
-                                    <select
-                                        v-model="searchLocationId"
-                                        class="select single-select"
-                                        name="location_id"
-                                    >
-                                        <option value="">
-                                            {{ trans("Location") }}
-                                        </option>
-                                        <option
-                                            v-for="d in districts"
-                                            :key="d.id"
-                                            :value="String(d.id)"
-                                        >
-                                            {{ d.name }}
-                                        </option>
-                                    </select>
+                                <div class="rld-single-select imas-listing-location-cell">
+                                    <LocationAreaPicker
+                                        v-model="searchLocationIds"
+                                        layout="sidebar"
+                                        :districts="districts"
+                                        :areas="areas"
+                                        name="location_id[]"
+                                    />
                                 </div>
 
                                 <div class="rld-single-select">
@@ -203,6 +194,7 @@ import {
 } from "@/utils/initHeroRangeSliders.js";
 import { propertyStartPrice } from "../utils/propertyPrice.js";
 import FeaturedPropertiesSidebar from "./FeaturedPropertiesSidebar.vue";
+import LocationAreaPicker from "@/components/Global/LocationAreaPicker.vue";
 
 const LISTING_AREA_SELECTOR = "#imas-listing-area-range";
 const LISTING_PRICE_SELECTOR = "#imas-listing-price-range";
@@ -212,6 +204,7 @@ const props = defineProps({
     filters: { type: Object, required: true },
     sort: { type: String, required: true },
     districts: { type: Array, default: () => [] },
+    areas: { type: Array, default: () => [] },
     propertyTypes: { type: Array, default: () => [] },
     recentProperties: { type: Array, default: () => [] },
     featuredProperties: { type: Array, default: () => [] },
@@ -220,7 +213,7 @@ const props = defineProps({
 const page = usePage();
 
 const searchPropertyTypeId = ref("");
-const searchLocationId = ref("");
+const searchLocationIds = ref([]);
 const searchUnitTypeId = ref("");
 const rangesDirty = ref(false);
 const slidersReady = ref(false);
@@ -266,10 +259,16 @@ function locale() {
 }
 
 function syncFromFilters(f) {
-    searchLocationId.value =
-        f.location_id != null && f.location_id !== ""
-            ? String(f.location_id)
-            : "";
+    const locationIds = f.location_id;
+    if (Array.isArray(locationIds)) {
+        searchLocationIds.value = locationIds
+            .filter((id) => id != null && id !== "")
+            .map((id) => String(id));
+    } else if (locationIds != null && locationIds !== "") {
+        searchLocationIds.value = [String(locationIds)];
+    } else {
+        searchLocationIds.value = [];
+    }
     searchPropertyTypeId.value =
         f.property_type_id != null && f.property_type_id !== ""
             ? String(f.property_type_id)
@@ -440,7 +439,29 @@ onBeforeUnmount(() => {
 .imas-listing-property-search {
     max-width: 100%;
     min-width: 0;
-    overflow-x: visible;
+    overflow: visible;
+}
+
+.imas-listing-property-search :deep(.imas-listing-location-cell) {
+    overflow: visible !important;
+    position: relative;
+    z-index: 1;
+}
+
+.imas-listing-property-search
+    :deep(.imas-listing-location-cell .imas-loc-picker.is-open) {
+    z-index: 1100;
+}
+
+.imas-listing-property-search :deep(.imas-loc-picker__trigger) {
+    width: 100%;
+    box-shadow: none !important;
+}
+
+.imas-listing-property-search :deep(.rld-main-search),
+.imas-listing-property-search :deep(.tab-content),
+.imas-listing-property-search :deep(.banner-search-wrap) {
+    overflow: visible !important;
 }
 
 .imas-listing-property-search :deep(.banner-search-wrap),
@@ -473,6 +494,7 @@ onBeforeUnmount(() => {
 }
 
 .imas-listing-property-search :deep(.rld-single-select),
+.imas-listing-property-search :deep(.imas-listing-location-cell),
 .imas-listing-property-search :deep(.imas-listing-range-panel),
 .imas-listing-property-search :deep(.imas-listing-property-search__submit) {
     width: 100% !important;
@@ -645,6 +667,12 @@ html[dir="rtl"] .imas-listing-property-search .nice-select.open .list {
 }
 
 .imas-blog-v2-sidebar .imas-listing-property-search .nice-select {
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--text);
+}
+
+.imas-blog-v2-sidebar .imas-listing-property-search .imas-loc-picker__trigger {
     border: 1px solid var(--border);
     background: var(--surface-2);
     color: var(--text);

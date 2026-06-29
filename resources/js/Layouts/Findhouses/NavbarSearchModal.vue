@@ -181,7 +181,6 @@ function readCurrentListingParams() {
         const sp = new URLSearchParams(window.location.search);
         const keys = [
             "sort",
-            "location_id",
             "property_type_id",
             "min_price",
             "max_price",
@@ -193,6 +192,16 @@ function readCurrentListingParams() {
             const value = sp.get(key);
             if (value !== null && value !== "") {
                 params[key] = value;
+            }
+        }
+
+        const locationIds = sp.getAll("location_id[]");
+        if (locationIds.length > 0) {
+            params.location_id = locationIds;
+        } else {
+            const singleLocation = sp.get("location_id");
+            if (singleLocation !== null && singleLocation !== "") {
+                params.location_id = singleLocation;
             }
         }
 

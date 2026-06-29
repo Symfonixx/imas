@@ -1,23 +1,51 @@
-﻿@php
+@php
     $isEdit = isset($property);
     $seoMeta = $isEdit ? ($property->metadata ?? []) : [];
     $defaultStatus = old('status', $isEdit ? (($property->status?->value) ?? 'Published') : 'Published');
-    $selectedAreaIdValue = old('location_id', $isEdit ? $property->location_id : null);
-
     $prefillCityId = null;
-    $prefillDistrictId = null;
-    if ($selectedAreaIdValue) {
+    $prefillDistrictId = old('district_id');
+    $selectedAreaIdValue = old('area_id');
+
+    if ($prefillDistrictId === null && $selectedAreaIdValue === null && $isEdit && $property->location_id) {
         $prefillLoc = \Modules\Property\Models\Location::query()
             ->with(['parent:id,parent_id,type', 'parent.parent:id,parent_id,type'])
-            ->find((int) $selectedAreaIdValue);
-        if ($prefillLoc && $prefillLoc->type === \Modules\Property\Enums\LocationType::Area && $prefillLoc->parent) {
-            $prefillDistrictId = $prefillLoc->parent_id;
-            $par = $prefillLoc->parent;
-            if ($par->type === \Modules\Property\Enums\LocationType::District) {
-                $prefillCityId = $par->parent_id;
-            } elseif ($par->type === \Modules\Property\Enums\LocationType::City) {
-                $prefillCityId = $par->id;
-                $prefillDistrictId = null;
+            ->find((int) $property->location_id);
+
+        if ($prefillLoc) {
+            if ($prefillLoc->type === \Modules\Property\Enums\LocationType::Area) {
+                $selectedAreaIdValue = $prefillLoc->id;
+                $prefillDistrictId = $prefillLoc->parent_id;
+                $par = $prefillLoc->parent;
+                if ($par && $par->type === \Modules\Property\Enums\LocationType::Municipality) {
+                    $prefillCityId = $par->parent_id;
+                } elseif ($par && $par->type === \Modules\Property\Enums\LocationType::City) {
+                    $prefillCityId = $par->id;
+                    $prefillDistrictId = null;
+                }
+            } elseif ($prefillLoc->type === \Modules\Property\Enums\LocationType::Municipality) {
+                $prefillDistrictId = $prefillLoc->id;
+                $prefillCityId = $prefillLoc->parent_id;
+            }
+        }
+    } elseif ($prefillDistrictId !== null || $selectedAreaIdValue !== null) {
+        $resolveId = $selectedAreaIdValue ?: $prefillDistrictId;
+        if ($resolveId) {
+            $prefillLoc = \Modules\Property\Models\Location::query()
+                ->with(['parent:id,parent_id,type', 'parent.parent:id,parent_id,type'])
+                ->find((int) $resolveId);
+
+            if ($prefillLoc) {
+                if ($prefillLoc->type === \Modules\Property\Enums\LocationType::Area && $prefillLoc->parent) {
+                    if ($prefillDistrictId === null) {
+                        $prefillDistrictId = $prefillLoc->parent_id;
+                    }
+                    $par = $prefillLoc->parent;
+                    if ($par->type === \Modules\Property\Enums\LocationType::Municipality) {
+                        $prefillCityId = $par->parent_id;
+                    }
+                } elseif ($prefillLoc->type === \Modules\Property\Enums\LocationType::Municipality) {
+                    $prefillCityId = $prefillLoc->parent_id;
+                }
             }
         }
     }
@@ -45,7 +73,8 @@
     <div class="card-body">
         <div class="row mb-2">
             <div class="col-xl-12">
-                <x-admin.form-group label="Thumbnail" name="thumbnail" :required="! $isEdit">
+                <x-admin.form-group label="Thumbnail" name="thumbnail" :required="! $isEdit"
+                                    helper="Recommended dimensions: 1200px × 900px (4:3).">
                     <x-admin.image-input name="thumbnail"
                                          :preview="$isEdit && $property->thumbnail ? asset('storage/' . $property->thumbnail) : null"/>
                 </x-admin.form-group>
@@ -106,8 +135,10 @@
 
 
                 <x-admin.form-group label="Overview" name="overview" required translatable>
-            <textarea class="form-control form-control-solid" name="overview"
-                      rows="8">{{ old('overview', optional($property)->overview) }}</textarea>
+                    <textarea id="tinymce-overview"
+                              class="form-control form-control-solid tinymce-editor"
+                              name="overview"
+                              rows="8">{!! old('overview', optional($property)->overview) !!}</textarea>
                 </x-admin.form-group>
             </div>
         </div>
@@ -126,17 +157,17 @@
                 </x-admin.form-group>
             </div>
             <div class="col-md-4">
-                <x-admin.form-group label="Municipality" name="district_id">
-                    <select id="district_id" class="form-select form-select-solid"
-                        @disabled(! $prefillCityId)>
-                        <option value="">{{ __('Select district') }}</option>
+                <x-admin.form-group label="Municipality" name="district_id" required>
+                    <select id="district_id" name="district_id" class="form-select form-select-solid" required
+                        @disabled(! $prefillCityId && ! old('district_id'))>
+                        <option value="">{{ __('Select municipality') }}</option>
                     </select>
                 </x-admin.form-group>
             </div>
             <div class="col-md-4">
-                <x-admin.form-group label="Location" name="location_id" required>
-                    <select id="location_id" name="location_id" class="form-select form-select-solid"
-                        @disabled(! $prefillDistrictId)>
+                <x-admin.form-group label="Location" name="area_id">
+                    <select id="area_id" name="area_id" class="form-select form-select-solid"
+                        @disabled(! $prefillDistrictId && ! old('district_id'))>
                         <option value="">{{ __('Select area') }}</option>
                     </select>
                 </x-admin.form-group>
@@ -230,13 +261,17 @@
         </x-admin.form-group>
 
         <x-admin.form-group label="Facilities" name="facilities" translatable>
-            <textarea class="form-control form-control-solid" name="facilities"
-                      rows="6">{{ old('facilities', optional($property)->facilities) }}</textarea>
+            <textarea id="tinymce-facilities"
+                      class="form-control form-control-solid tinymce-editor"
+                      name="facilities"
+                      rows="6">{!! old('facilities', optional($property)->facilities) !!}</textarea>
         </x-admin.form-group>
 
         <x-admin.form-group label="Location specifications" name="content" required translatable>
-            <textarea class="form-control form-control-solid" name="content"
-                      rows="8">{{ old('content', optional($property)->content) }}</textarea>
+            <textarea id="tinymce-content"
+                      class="form-control form-control-solid tinymce-editor"
+                      name="content"
+                      rows="8">{!! old('content', optional($property)->content) !!}</textarea>
         </x-admin.form-group>
 
         <div class="row mb-2">
@@ -273,7 +308,8 @@
                    value="{{ old('youtube_video_url', optional($property)->youtube_video_url) }}"/>
         </x-admin.form-group>
 
-        <x-admin.form-group label="Add photos" name="slides" helper="{{ __('Maximum 20 images.') }}">
+        <x-admin.form-group label="Add photos" name="slides"
+                            helper="Recommended dimensions: 1920px × 1080px. Maximum 20 images.">
             <div class="dropzone border-dashed border-primary rounded p-5 text-center" id="property-slides-dropzone">
                 <div class="dz-message needsclick">
                     <i class="bi bi-cloud-upload fs-1 text-primary"></i>
@@ -346,7 +382,7 @@
 
             const $city = window.jQuery ? window.jQuery('#city_id') : null;
             const $district = window.jQuery ? window.jQuery('#district_id') : null;
-            const $area = window.jQuery ? window.jQuery('#location_id') : null;
+            const $area = window.jQuery ? window.jQuery('#area_id') : null;
 
             async function fetchLocations(parentId, type) {
                 const params = new URLSearchParams();
@@ -396,7 +432,7 @@
 
             async function onCityChange() {
                 const cityId = $city?.val();
-                fillSelect($district, [], '', @json(__('Select district')));
+                fillSelect($district, [], '', @json(__('Select municipality')));
                 fillSelect($area, [], '', @json(__('Select area')));
                 if (!cityId) {
                     $district?.prop('disabled', true);
@@ -405,7 +441,7 @@
                     return;
                 }
                 const districts = await fetchLocations(cityId, TYPE_DISTRICT);
-                fillSelect($district, districts, '', @json(__('Select district')));
+                fillSelect($district, districts, '', @json(__('Select municipality')));
                 $district?.prop('disabled', districts.length === 0);
                 $area?.prop('disabled', true);
             }
@@ -435,7 +471,7 @@
                     }
                     $city.val(String(PREFILL_CITY_ID)).trigger('change');
                     const districts = await fetchLocations(PREFILL_CITY_ID, TYPE_DISTRICT);
-                    fillSelect($district, districts, PREFILL_DISTRICT_ID, @json(__('Select district')));
+                    fillSelect($district, districts, PREFILL_DISTRICT_ID, @json(__('Select municipality')));
                     $district?.prop('disabled', districts.length === 0);
                     if (PREFILL_DISTRICT_ID) {
                         const areas = await fetchLocations(PREFILL_DISTRICT_ID, TYPE_AREA);
@@ -626,6 +662,10 @@
 
             const propertyForm = document.getElementById('property-form');
             propertyForm?.addEventListener('submit', () => {
+                if (typeof tinymce !== 'undefined') {
+                    tinymce.triggerSave();
+                }
+
                 document.querySelectorAll('.js-unit-row').forEach((row) => syncUnitRowHidden(row));
                 document.querySelectorAll('.js-unit-row').forEach((row) => {
                     const h = row.querySelector('.js-unit-name-hidden');

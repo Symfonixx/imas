@@ -40,13 +40,13 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="form-label" for="mobile">{{ trans("Mobile") }}</label>
-                                    <input
-                                        id="mobile"
+                                    <label class="form-label" for="register-mobile">{{ trans("Mobile") }}</label>
+                                    <PhoneCountryInput
                                         v-model="form.mobile"
-                                        class="form-control"
+                                        input-id="register-mobile"
+                                        :placeholder="trans('auth_modal.mobile_national_placeholder')"
+                                        :invalid="!!errors.mobile"
                                         required
-                                        type="mobile"
                                     />
                                     <span v-if="errors.mobile"
                                           class="invalid-feedback d-block">{{ errors.mobile }}</span>
@@ -103,10 +103,11 @@
 import {computed} from 'vue';
 import {usePage, Link, useForm} from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/App.vue';
+import PhoneCountryInput from '@/components/Global/PhoneCountryInput.vue';
 
 export default {
     components: {
-        AppLayout, Link
+        AppLayout, Link, PhoneCountryInput
     },
     props: {
         errors: Object

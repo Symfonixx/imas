@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Modules\Core\Http\Requests\DeleteMultiRequest;
 use Modules\Core\Support\AdminImageInput;
 use Modules\Property\Enums\LocationType;
@@ -215,14 +216,15 @@ class PropertyController extends Controller
             $unitTypeIdRules[] = Rule::exists('unit_types', 'id')->where('property_id', $property->id);
         }
 
-        return $request->validate([
+        $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'project_name' => ['nullable', 'string', 'max:255'],
             'project_code' => ['required', 'string', 'max:128', $uniqueProjectCode],
             'overview' => ['required', 'string'],
             'thumbnail' => [$property === null ? 'required' : 'nullable', 'image', 'max:4096'],
             'thumbnail_media_path' => ['nullable', 'string'],
-            'location_id' => ['required', 'integer', Rule::exists('locations', 'id')->where('type', LocationType::Area->value)],
+            'district_id' => ['required', 'integer', Rule::exists('locations', 'id')->where('type', LocationType::Municipality->value)],
+            'area_id' => ['nullable', 'integer', Rule::exists('locations', 'id')->where('type', LocationType::Area->value)],
             'property_type_id' => ['required', 'integer', 'exists:property_types,id'],
             'is_sold_out' => ['nullable', 'boolean'],
             'is_recommended' => ['nullable', 'boolean'],
@@ -253,6 +255,31 @@ class PropertyController extends Controller
             'unit_types.*.max_area' => ['nullable', 'numeric', 'min:0'],
             'unit_types.*.price' => ['nullable', 'numeric', 'min:0'],
         ]);
+
+        if (! empty($validated['area_id'])) {
+            $area = Location::query()->find((int) $validated['area_id']);
+            if ($area === null || (int) $area->parent_id !== (int) $validated['district_id']) {
+                throw ValidationException::withMessages([
+                    'area_id' => __('Invalid area selection.'),
+                ]);
+            }
+        }
+
+        $validated['location_id'] = $this->resolveLocationId($validated);
+
+        return $validated;
+    }
+
+    /**
+     * @param  array<string, mixed>  $validated
+     */
+    private function resolveLocationId(array $validated): int
+    {
+        if (! empty($validated['area_id'])) {
+            return (int) $validated['area_id'];
+        }
+
+        return (int) $validated['district_id'];
     }
 
     /**

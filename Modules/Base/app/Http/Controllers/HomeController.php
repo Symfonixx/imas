@@ -50,7 +50,7 @@ class HomeController extends Controller
             ->all();
 
         $districts = Location::query()
-            ->where('type', LocationType::District)
+            ->where('type', LocationType::Municipality)
             ->orderBy('id')
             ->get(['id', 'name'])
             ->map(static fn (Location $district) => [

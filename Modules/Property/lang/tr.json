@@ -1,0 +1,9 @@
+{
+    "District": "Belediye",
+    "district": "Belediye",
+    "Municipality": "Belediye",
+    "Select district": "Belediye seçin",
+    "Select municipality": "Belediye seçin",
+    "The district field is required when area is not selected.": "Alan seçilmediğinde belediye alanı zorunludur.",
+    "The area field is required when district is not selected.": "Belediye seçilmediğinde alan zorunludur."
+}

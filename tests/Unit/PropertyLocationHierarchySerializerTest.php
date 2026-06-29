@@ -22,7 +22,7 @@ class PropertyLocationHierarchySerializerTest extends TestCase
 
         $district = new Location([
             'name' => ['en' => 'Besiktas'],
-            'type' => LocationType::District,
+            'type' => LocationType::Municipality,
             'parent_id' => 1,
         ]);
         $district->id = 2;

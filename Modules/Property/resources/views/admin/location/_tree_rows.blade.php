@@ -8,6 +8,7 @@
                 <input class="form-check-input" type="checkbox" name="ids[]" value="{{ $node->id }}"/>
             </div>
         </td>
+        <td><code>{{ $node->id }}</code></td>
         <td class="location-tree-name-cell">
             <div class="d-flex align-items-center gap-2 min-w-0"
                  style="padding-inline-start: {{ $depth * 1.65 }}rem;">

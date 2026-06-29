@@ -23,7 +23,11 @@ class BlogCategoryController extends Controller
 
     public function index()
     {
-        $model = $this->categoryRepository->all(['id', 'name', 'slug', 'add_to_navbar', 'created_at']);
+        $model = $this->categoryRepository->all([
+            'id', 'name', 'slug', 'add_to_navbar',
+            'meta_title', 'meta_description', 'meta_keywords', 'meta_image',
+            'created_at',
+        ]);
 
         return view('cms::admin.blog_category.index', compact('model'));
     }

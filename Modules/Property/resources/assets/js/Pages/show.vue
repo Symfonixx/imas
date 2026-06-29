@@ -599,6 +599,30 @@ useScrollReveal(pageRef, { variant: "propertyListings" });
     color: var(--brand-gold);
 }
 
+.imas-rich-content :deep(img) {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.imas-rich-content :deep(table) {
+    width: 100%;
+    margin-bottom: 1rem;
+    border-collapse: collapse;
+}
+
+.imas-rich-content :deep(th),
+.imas-rich-content :deep(td) {
+    padding: 0.65rem 0.85rem;
+    border: 1px solid var(--divider);
+    vertical-align: top;
+}
+
+.imas-rich-content :deep(th) {
+    background: var(--surface-2);
+    font-weight: 600;
+}
+
 .imas-price-heading {
     display: flex;
     flex-direction: column;

@@ -4487,6 +4487,46 @@ html[dir="rtl"] .imas-featured-properties-sidebar__badge--price {
     margin-bottom: 0.35rem;
 }
 
+.imas-property-show-page .imas-property-show-panel .imas-rich-content :is(p, ul, ol) {
+    margin-bottom: 1rem;
+}
+
+.imas-property-show-page .imas-property-show-panel .imas-rich-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.imas-property-show-page .imas-property-show-panel .imas-rich-content table {
+    width: 100%;
+    margin-bottom: 1rem;
+    border-collapse: collapse;
+}
+
+.imas-property-show-page .imas-property-show-panel .imas-rich-content :is(th, td) {
+    padding: 0.65rem 0.85rem;
+    border: 1px solid var(--divider);
+    vertical-align: top;
+}
+
+.imas-property-show-page .imas-property-show-panel .imas-rich-content th {
+    background: var(--surface-2);
+    font-weight: 600;
+}
+
+.imas-property-show-page .imas-property-show-panel .imas-rich-content blockquote {
+    margin: 1.25rem 0;
+    padding: 1rem 1.25rem;
+    border-inline-start: 3px solid var(--brand-gold);
+    background: var(--surface-2);
+    color: var(--text-dim);
+    border-radius: 0 8px 8px 0;
+}
+
+html[dir="rtl"] .imas-property-show-page .imas-property-show-panel .imas-rich-content blockquote {
+    border-radius: 8px 0 0 8px;
+}
+
 .imas-property-show-page .listing-details-sliders.mb-30,
 .imas-property-show-page .property-location,
 .imas-property-show-page .wprt-image-video.w50.pro.imas-property-video {

@@ -14,6 +14,7 @@ class UserController extends Controller
     {
         $this->setActive('support');
         $this->setActive('users');
+        $this->withCountries();
     }
 
     public function index()

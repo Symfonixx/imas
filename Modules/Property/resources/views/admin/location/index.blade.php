@@ -17,7 +17,7 @@
             <select name="type" class="form-select form-select-sm form-select-solid w-auto" onchange="this.form.submit()">
                 <option value="">{{ __('All types') }}</option>
                 <option value="city" @selected(request('type') === 'city')>{{ __('City') }}</option>
-                <option value="district" @selected(request('type') === 'district')>{{ __('District') }}</option>
+                <option value="district" @selected(request('type') === 'district')>{{ __('Municipality') }}</option>
                 <option value="area" @selected(request('type') === 'area')>{{ __('Area') }}</option>
             </select>
         </form>
@@ -45,6 +45,7 @@
                            data-kt-check-target="#dataTable .form-check-input" value="1"/>
                 </div>
             </th>
+            <th class="min-w-60px">{{ __('ID') }}</th>
             <th class="min-w-300px">{{ __('Name') }}</th>
             <th class="min-w-120px">{{ __('Type') }}</th>
             <th class="min-w-150px">{{ __('Created At') }}</th>
@@ -56,7 +57,7 @@
             @include('property::admin.location._tree_rows', ['nodes' => collect([$root]), 'depth' => 0])
         @empty
             <tr>
-                <td colspan="5" class="text-center text-muted py-10">{{ __('No locations found.') }}</td>
+                <td colspan="6" class="text-center text-muted py-10">{{ __('No locations found.') }}</td>
             </tr>
         @endforelse
         </tbody>

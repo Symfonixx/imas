@@ -69,7 +69,7 @@
                         <x-admin.form-group label="Type" name="type" required>
                             <select name="type" class="form-select form-select-solid" required>
                                 <option value="city" @selected(old('type', $location->type->value) === 'city')>{{ __('City') }}</option>
-                                <option value="district" @selected(old('type', $location->type->value) === 'district')>{{ __('District') }}</option>
+                                <option value="district" @selected(old('type', $location->type->value) === 'district')>{{ __('Municipality') }}</option>
                                 <option value="area" @selected(old('type', $location->type->value) === 'area')>{{ __('Area') }}</option>
                             </select>
                         </x-admin.form-group>

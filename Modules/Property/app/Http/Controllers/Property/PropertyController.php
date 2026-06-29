@@ -88,7 +88,7 @@ class PropertyController extends Controller
             ->all();
 
         $districts = Location::query()
-            ->where('type', LocationType::District)
+            ->where('type', LocationType::Municipality)
             ->orderBy('id')
             ->get(['id', 'name'])
             ->map(static fn (Location $district) => [
@@ -288,13 +288,12 @@ class PropertyController extends Controller
 
         if (! empty($validated['location_id'])) {
             $locationId = (int) $validated['location_id'];
-            $descendantIds = Location::descendantIdsOf($locationId);
+            $matchIds = array_merge(
+                [$locationId],
+                Location::descendantIdsOf($locationId)
+            );
 
-            if ($descendantIds !== []) {
-                $query->whereIn('location_id', $descendantIds);
-            } else {
-                $query->where('location_id', $locationId);
-            }
+            $query->whereIn('location_id', $matchIds);
         }
 
         if (! empty($validated['property_type_id'])) {

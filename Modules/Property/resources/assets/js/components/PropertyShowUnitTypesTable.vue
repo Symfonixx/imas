@@ -1,6 +1,28 @@
 <template>
     <div v-if="unitTypes.length > 0" class="imas-unit-types-table mb-30">
         <h5 class="imas-section-title mb-4">{{ title }}</h5>
+        <dl
+            v-if="projectId || projectLocation"
+            class="imas-unit-types-table__meta mb-4"
+        >
+            <div v-if="projectId" class="imas-unit-types-table__meta-item">
+                <dt class="imas-unit-types-table__meta-label">
+                    {{ projectIdLabel }}
+                </dt>
+                <dd class="imas-unit-types-table__meta-value">{{ projectId }}</dd>
+            </div>
+            <div
+                v-if="projectLocation"
+                class="imas-unit-types-table__meta-item"
+            >
+                <dt class="imas-unit-types-table__meta-label">
+                    {{ projectLocationLabel }}
+                </dt>
+                <dd class="imas-unit-types-table__meta-value">
+                    {{ projectLocation }}
+                </dd>
+            </div>
+        </dl>
         <div class="table-responsive">
             <table class="table imas-unit-types-table__grid mb-0">
                 <thead>
@@ -34,6 +56,10 @@ defineProps({
     colRooms: { type: String, required: true },
     colArea: { type: String, required: true },
     colPrice: { type: String, required: true },
+    projectId: { type: String, default: "" },
+    projectIdLabel: { type: String, default: "" },
+    projectLocation: { type: String, default: "" },
+    projectLocationLabel: { type: String, default: "" },
 });
 
 const page = usePage();
@@ -82,6 +108,34 @@ function formatPrice(amount) {
 </script>
 
 <style scoped lang="scss">
+.imas-unit-types-table__meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 0;
+}
+
+.imas-unit-types-table__meta-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.35rem 0.5rem;
+    margin: 0;
+}
+
+.imas-unit-types-table__meta-label {
+    margin: 0;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--text-dim);
+}
+
+.imas-unit-types-table__meta-value {
+    margin: 0;
+    font-size: var(--text-sm);
+    color: var(--text);
+}
+
 .imas-unit-types-table__grid {
     width: 100%;
     border-collapse: separate;

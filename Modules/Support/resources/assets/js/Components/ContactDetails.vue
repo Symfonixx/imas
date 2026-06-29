@@ -10,6 +10,22 @@
                 )
             }}
         </p>
+
+        <div class="imas-contact-page__head-office mb-4 text-start">
+            <p class="imas-contact-page__head-office-title mb-1">
+                <template v-if="headOfficePrefix">
+                    {{ headOfficePrefix }}
+                </template>
+                <span class="imas-contact-page__head-office-brand">IMAS GLOBAL</span>
+                <template v-if="headOfficeSuffix">
+                    {{ " " }}{{ headOfficeSuffix }}
+                </template>
+            </p>
+            <p class="imas-contact-page__head-office-location mb-0">
+                {{ trans("navBar.footer_location") }}
+            </p>
+        </div>
+
         <ul>
             <li v-if="contact.address">
                 <div class="info text-start">
@@ -133,6 +149,16 @@ const socialLinks = computed(() => {
         .filter(Boolean);
 });
 
+const headOfficePrefix = computed(() => {
+    const value = trans("contact_us.head_office_prefix");
+    return value === "contact_us.head_office_prefix" ? "" : value.trim();
+});
+
+const headOfficeSuffix = computed(() => {
+    const value = trans("contact_us.head_office_suffix");
+    return value === "contact_us.head_office_suffix" ? "" : value.trim();
+});
+
 function trans(key) {
     return page.props.translations[key] || key;
 }
@@ -160,5 +186,23 @@ function trans(key) {
 
 html[dir="rtl"] .m-end {
     margin-inline-end: 1.5rem !important;
+}
+
+.imas-contact-page__head-office-title {
+    font-size: var(--text-sm);
+    font-weight: 500;
+    line-height: 1.45;
+    color: var(--text-dim);
+}
+
+.imas-contact-page__head-office-brand {
+    color: var(--brand-gold);
+    font-weight: 700;
+}
+
+.imas-contact-page__head-office-location {
+    font-size: var(--text-xs);
+    line-height: 1.4;
+    color: var(--text-muted);
 }
 </style>

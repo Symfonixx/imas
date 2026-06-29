@@ -227,7 +227,8 @@
     "Newsletter Subscribers": "مشتركو النشرة الإخبارية",
     "Users": "المستخدمون",
     "Turkish Citizenship": "الجنسية التركية"  ,
-    "suitable_properties_for": "العقارات المناسبة من اجل",
+    "suitable_properties_for_turkish_citizenship_by_citizenship_program": "عقارات مناسبة للحصول على الجنسية التركية من خلال برنامج الجنسية",
+    "by_citizenship_program": "من خلال برنامج الجنسية",
     "Choose from library": "اختر من المكتبة",
     "Attachment Details": "تفاصيل المرفق",
     "Select an image to see details.": "حدّد صورة لعرض التفاصيل.",
@@ -310,8 +311,11 @@
         "link_copied":"تم نسخ الرابط",
         "share_email":"البريد الإلكتروني",
         "request_inquiry":"طلب استفسار",
+        "default_inquiry_message":"أنا مهتم بهذا العقار",
         "similar_properties":"عقارات مشابهة",
         "unit_types_title":"الوحدات",
+        "project_id":"الكود",
+        "project_location":"الموقع ",
         "col_rooms":"عدد الغرف وغرف المعيشة",
         "col_area":"المساحات تبدأ من",
         "col_price":"الأسعار تبدأ من",
@@ -355,7 +359,9 @@
     "aboutUs":{
         "overview_title_primary":"من",
         "overview_title_accent":"نحن",
-        "explore_more":"اكتشف المزيد"
+        "explore_more":"اكتشف المزيد عن"
+        ,
+        "featured_properties":"العقارات المميزة"
     },
     "navBar":{
         "Home":"الرئيسية",
@@ -383,6 +389,8 @@
         "title":"اتصل بنا",
         "our_location":"موقعنا",
         "contact_details":"بيانات الاتصال",
+        "head_office_prefix":"المقر الرئيسي لـ",
+        "head_office_suffix":"",
         "Please_find_below_contact_details_and_contact_us_today":"فيما يلي بيانات الاتصال، تواصل معنا اليوم.",
         "first_name":"الاسم الأول",
         "last_name":"اسم العائلة",
@@ -391,7 +399,7 @@
         "subject_optional":"الموضوع (اختياري)",
         "message":"الرسالة",
         "submit":"إرسال",
-        "message_sent":"تم إرسال رسالتك بنجاح.",
+        "message_sent":" نشكرك على ثقتك بالعمل معنا , سنعمل على تلبية احتياجاتك وخدمتك بالشكل الأمثل",
         "send_failed":"حدث خطأ. يرجى المحاولة مرة أخرى.",
         "map_not_configured":"لم يتم إعداد الخريطة بعد.",
         "follow_us":"تابعنا"

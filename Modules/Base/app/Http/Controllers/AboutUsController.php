@@ -17,11 +17,12 @@ class AboutUsController extends Controller
     {
         $userId = auth()->id();
 
-        $latestProperties = Property::query()
+        $featuredProperties = Property::query()
             ->where('status', CmsStatus::PUBLISHED)
+            ->where('is_featured', true)
             ->with(PropertyCardEagerLoads::relations())
             ->withFavoriteStateForUser($userId)
-            ->latest('created_at')
+            ->latest('updated_at')
             ->limit(8)
             ->get()
             ->map(static fn (Property $property) => PropertyListingCardSerializer::toArray($property))
@@ -36,7 +37,7 @@ class AboutUsController extends Controller
                 'meta_description' => $this->seoString('about_us_meta_description'),
                 'meta_keywords' => $this->seoString('about_us_meta_keywords'),
             ],
-            'latestProperties' => $latestProperties,
+            'featuredProperties' => $featuredProperties,
         ]);
     }
 

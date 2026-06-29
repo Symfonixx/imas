@@ -120,7 +120,8 @@
     "Home": "Home",
     "Buy Real Estate": "Buy real estate",
     "Turkish Citizenship": "Turkish citizenship",
-    "suitable_properties_for": "Suitable Properties for ",
+    "suitable_properties_for_turkish_citizenship_by_citizenship_program": "Suitable properties for Turkish citizenship by Citizenship Program",
+    "by_citizenship_program": "by Citizenship Program",
     "Contact us": "Contact us",
     "Pages": "Pages",
     "News & Laws": "News & laws",
@@ -256,7 +257,7 @@
     "Short page summary for search snippets.": "Short page summary for search snippets.",
     "properties":{
         "proprty_details":"Property Details",
-        "start_price":"Start Price",
+        "start_price":"Starting Price",
         "featured_properties":"Today's Recommended Properties For You",
         "we_provide_full_service_at_every_step":"We provide full service at every step.",
         "title":"Recently Added Properties",
@@ -298,7 +299,7 @@
         "details":"Property Details",
         "why_to_buy":"Why To Buy",
         "facilities":"Facilities",
-        "property_video":"Property video",
+        "property_video":"Property Video",
         "location":"Location",
         "contact_info":"Contact info",
         "share_page":"Share this page",
@@ -306,8 +307,11 @@
         "link_copied":"Link copied",
         "share_email":"Email",
         "request_inquiry":"Request inquiry",
+        "default_inquiry_message":"I'm interested in this property",
         "similar_properties":"Similar properties",
-        "unit_types_title":"Properties",
+        "unit_types_title":"Featured",
+        "project_id":"Project Code",
+        "project_location":"Location",
         "col_rooms":"Number of rooms & living rooms",
         "col_area":"Spaces start at",
         "col_price":"Prices start at",
@@ -315,7 +319,7 @@
         "sold_out":"Sold out",
         "inquiry_subject":"Inquiry about :title",
         "map_unavailable":"Location map is not available for this property.",
-        "play_video":"Play property video",
+        "play_video":"Play Property Video",
         "video_unavailable":"Video is not available."
     },
     "services":{
@@ -351,7 +355,8 @@
     "aboutUs":{
         "overview_title_primary":"About",
         "overview_title_accent":"Us",
-        "explore_more":"Explore More"
+        "explore_more":"Explore More About",
+        "featured_properties":"Featured Properties"
     },
     "navBar":{
         "Home":"Home",
@@ -376,10 +381,12 @@
         "All Rights Reserved":"All Rights Reserved."
     },
     "contact_us":{
-        "title":"Contact us",
+        "title":"Contact With Us",
         "our_location":"Our location",
-        "contact_details":"Contact details",
-        "Please_find_below_contact_details_and_contact_us_today":"Please find below contact details and contact us today!",
+        "contact_details":"Contact Details",
+        "head_office_prefix":"",
+        "head_office_suffix":"Head Office",
+        "Please_find_below_contact_details_and_contact_us_today":"Please find below contact details and contact with us today!",
         "first_name":"First name",
         "last_name":"Last name",
         "email":"Email",
@@ -387,7 +394,7 @@
         "subject_optional":"Subject (optional)",
         "message":"Message",
         "submit":"Submit",
-        "message_sent":"Your message was sent successfully.",
+        "message_sent":"Thank you for your trust. We're committed to serving you with the best possible experience.",
         "send_failed":"Something went wrong. Please try again.",
         "map_not_configured":"Map is not configured yet.",
         "follow_us":"Follow us"

@@ -81,7 +81,10 @@
 
             <section class="single-proper blog details imas-property-show">
                 <div class="container">
-                    <div class="row">
+                    <div
+                        ref="propertyContentRowRef"
+                        class="row imas-property-show__content-row"
+                    >
                         <div class="col-lg-8 col-md-12 blog-pots">
                             <div class="row">
                                 <div class="col-md-12">
@@ -98,11 +101,26 @@
                                                 >
                                                     <h3>{{ displayTitle }}</h3>
                                                     <div
+                                                        v-if="
+                                                            property.project_code
+                                                        "
+                                                        class="mt-0"
+                                                    >
+                                                        <span
+                                                            class="listing-address"
+                                                            >{{
+                                                                property.project_code
+                                                            }}</span
+                                                        >
+                                                    </div>
+                                                    <div
                                                         v-if="addressLine"
                                                         class="mt-0"
                                                     >
                                                         <a
-                                                            v-if="hasMapCoordinates"
+                                                            v-if="
+                                                                hasMapCoordinates
+                                                            "
                                                             href="#listing-location"
                                                             class="listing-address"
                                                         >
@@ -221,6 +239,18 @@
                                                     'property_show.unit_types_title',
                                                 )
                                             "
+                                            :project-id="property.project_code"
+                                            :project-id-label="
+                                                trans(
+                                                    'property_show.project_id',
+                                                )
+                                            "
+                                            :project-location="addressLine"
+                                            :project-location-label="
+                                                trans(
+                                                    'property_show.project_location',
+                                                )
+                                            "
                                             :col-rooms="
                                                 trans('property_show.col_rooms')
                                             "
@@ -230,6 +260,24 @@
                                             :col-price="
                                                 trans('property_show.col_price')
                                             "
+                                        />
+                                    </div>
+
+                                    <div
+                                        v-if="whyToBuyHtml"
+                                        data-imas-reveal
+                                        class="blog-info details mb-30 text-start imas-property-show-panel"
+                                    >
+                                        <h5 class="imas-section-title mb-4">
+                                            {{
+                                                trans(
+                                                    "property_show.why_to_buy",
+                                                )
+                                            }}
+                                        </h5>
+                                        <div
+                                            class="imas-rich-content text-md"
+                                            v-html="whyToBuyHtml"
                                         />
                                     </div>
 
@@ -279,19 +327,6 @@
                                     "
                                 />
                             </div>
-                            <div
-                                v-if="whyToBuyHtml"
-                                data-imas-reveal
-                                class="blog-info details mb-30 text-start imas-property-show-panel"
-                            >
-                                <h5 class="imas-section-title mb-4">
-                                    {{ trans("property_show.why_to_buy") }}
-                                </h5>
-                                <div
-                                    class="imas-rich-content text-md"
-                                    v-html="whyToBuyHtml"
-                                />
-                            </div>
 
                             <div
                                 v-if="hasMapCoordinates"
@@ -306,24 +341,39 @@
                             </div>
                         </div>
 
-                        <aside class="col-lg-4 col-md-12 car imas-blog-v2-sidebar">
-                            <div data-imas-reveal="aside">
+                        <aside
+                            ref="propertySidebarColRef"
+                            class="col-lg-4 col-md-12 car imas-blog-v2-sidebar imas-property-show__sidebar-col"
+                        >
+                            <div
+                                ref="propertySidebarStickyRef"
+                                class="imas-property-show__contact-sticky"
+                                data-imas-reveal="aside"
+                            >
                                 <PropertyShowContactSidebar
                                     :contact-store-url="contactStoreUrl"
                                     :default-subject="canonicalUrl"
+                                    :default-message="
+                                        trans(
+                                            'property_show.default_inquiry_message',
+                                        )
+                                    "
                                     hide-form-subject
+                                    :property-id="property.id"
+                                    :is-favorited="property.is_favorited"
+                                    :is-sold-out="property.is_sold_out"
                                 />
                             </div>
-                            <div data-imas-reveal="aside">
+                            <!-- <div data-imas-reveal="aside">
                                 <RecentPropertiesSidebar
                                     :recent-properties="recentProperties"
                                 />
-                            </div>
-                            <div data-imas-reveal="aside">
+                            </div> -->
+                            <!-- <div data-imas-reveal="aside">
                                 <FeaturedPropertiesSidebar
                                     :featured-properties="featuredProperties"
                                 />
-                            </div>
+                            </div> -->
                         </aside>
                     </div>
                 </div>
@@ -345,6 +395,7 @@ import { Head, usePage } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/App.vue";
 import InnerPageHeadingHero from "@/components/global/InnerPageHeadingHero.vue";
 import { useScrollReveal } from "@/composables/useScrollReveal";
+import { useBoundedSticky } from "@/composables/useBoundedSticky";
 import { localizedRoute } from "@/utils/localizedRoute.js";
 import PopularPropertiesSection from "../../../../../Base/resources/assets/js/components/PopularPropertiesSection.vue";
 import PropertyShowGallery from "../components/PropertyShowGallery.vue";
@@ -531,8 +582,7 @@ const ogImage = computed(() => props.property.thumbnail_url || "");
 const canonicalUrl = computed(() => {
     try {
         if (typeof route === "function" && route().has?.("property.show")) {
-            const slug =
-                props.property.project_code || props.property.slug;
+            const slug = props.property.project_code || props.property.slug;
             if (slug) {
                 return route("property.show", slug);
             }
@@ -548,8 +598,17 @@ const twitterCard = computed(() =>
 );
 
 const pageRef = ref(null);
+const propertyContentRowRef = ref(null);
+const propertySidebarColRef = ref(null);
+const propertySidebarStickyRef = ref(null);
 
 useScrollReveal(pageRef, { variant: "propertyListings" });
+
+useBoundedSticky({
+    boundaryRef: propertyContentRowRef,
+    columnRef: propertySidebarColRef,
+    targetRef: propertySidebarStickyRef,
+});
 </script>
 
 <style scoped lang="scss">
@@ -664,7 +723,6 @@ useScrollReveal(pageRef, { variant: "propertyListings" });
 }
 
 .listing-title-bar h3 {
-    
     text-align: start;
     font-size: var(--text-xl);
     font-weight: 600;
@@ -742,7 +800,9 @@ html[dir="rtl"] .imas-property-show .imas-property-gallery .carousel-inner {
     direction: ltr;
 }
 
-.imas-property-show-page .imas-property-show-panel h5.imas-section-title::after {
+.imas-property-show-page
+    .imas-property-show-panel
+    h5.imas-section-title::after {
     margin-bottom: 0 !important;
 }
 </style>

@@ -69,7 +69,7 @@
     </Head>
 
     <AppLayout>
-        <div ref="pageRef" class="inner-pages">
+        <div ref="pageRef" class="inner-pages imas-tc-page-root">
             <InnerPageHeadingHero
                 :page-title="pageHeadingTitle"
                 :items="headingItems"
@@ -79,7 +79,7 @@
             <!--  content section  -->
             <section class="blog blog-section bg-white pt-3 pb-5 imas-tc-page">
                 <div class="container">
-                    <div class="row">
+                    <div ref="tcContentRowRef" class="row imas-tc-page__content-row">
                         <div class="col-lg-8 col-md-12">
                             <TurkishCitizenshipSplitTitle
                                 :primary="titlePrimary"
@@ -110,8 +110,14 @@
                                 </p>
                             </div>
                         </div>
-                        <aside class="col-lg-4 col-md-12 car">
-                            <div class="imas-tc-aside-sticky">
+                        <aside
+                            ref="tcSidebarColRef"
+                            class="col-lg-4 col-md-12 car imas-tc-page__sidebar-col"
+                        >
+                            <div
+                                ref="tcSidebarStickyRef"
+                                class="imas-tc-page__contact-sticky"
+                            >
                                 <PropertyShowContactSidebar
                                     :contact-store-url="contactStoreUrl"
                                     :default-subject="inquirySubject"
@@ -126,11 +132,7 @@
                 v-if="citizenshipProperties.length > 0"
                 :properties="citizenshipProperties"
                 :hide-title="true"
-                :custom-title="
-                    trans('suitable_properties_for') +
-                    ' ' +
-                    trans('Turkish Citizenship')
-                "
+                :custom-title="trans('suitable_properties_for_turkish_citizenship_by_citizenship_program')"
             />
         </div>
     </AppLayout>
@@ -141,6 +143,7 @@ import { computed, ref } from "vue";
 import { Head, usePage } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/App.vue";
 import { useScrollReveal } from "@/composables/useScrollReveal";
+import { useBoundedSticky } from "@/composables/useBoundedSticky";
 import InnerPageHeadingHero from "@/components/global/InnerPageHeadingHero.vue";
 import PropertyShowContactSidebar from "../components/PropertyShowContactSidebar.vue";
 import PopularPropertiesSection from "../../../../../Base/resources/assets/js/components/PopularPropertiesSection.vue";
@@ -163,8 +166,17 @@ const props = defineProps({
 
 const page = usePage();
 const pageRef = ref(null);
+const tcContentRowRef = ref(null);
+const tcSidebarColRef = ref(null);
+const tcSidebarStickyRef = ref(null);
 
 useScrollReveal(pageRef, { variant: "propertyListings" });
+
+useBoundedSticky({
+    boundaryRef: tcContentRowRef,
+    columnRef: tcSidebarColRef,
+    targetRef: tcSidebarStickyRef,
+});
 
 const globals = computed(() => page.props.globals ?? {});
 const seo = computed(() => globals.value.seo ?? {});
@@ -345,23 +357,7 @@ function trans(key) {
 </script>
 
 <style scoped lang="scss">
-.imas-tc-page .row {
-    align-items: flex-start;
-}
-
-.imas-tc-aside-sticky {
-    position: sticky;
-    top: 6.5rem;
-    z-index: 2;
-}
-
-@media (max-width: 991.98px) {
-    .imas-tc-aside-sticky {
-        position: static;
-        margin-top: 2rem;
-    }
-}
-.imas-tc-content{
+.imas-tc-content {
     text-align: start;
 }
 .imas-tc-content :deep(img) {

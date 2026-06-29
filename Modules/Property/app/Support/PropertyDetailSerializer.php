@@ -82,7 +82,11 @@ final class PropertyDetailSerializer
             return [];
         }
 
+        $thumbnailPath = $property->thumbnail;
+
         return $property->slides
+            ->filter(static fn (PropertySlide $slide): bool => $thumbnailPath === null
+                || $slide->image !== $thumbnailPath)
             ->map(static fn (PropertySlide $slide): array => [
                 'id' => $slide->id,
                 'position' => (int) $slide->position,

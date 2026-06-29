@@ -1,27 +1,43 @@
 <template>
     <div
-        class="imas-blog-v2-sidebar__box imas-property-show-contact mt-33 mt-5"
+        class="imas-blog-v2-sidebar__box imas-property-show-contact mt-33"
     >
         <div class="imas-contact-sidebar-header">
             <h4 class="imas-blog-v2-sidebar__heading text-start mb-0">
-                {{ trans("property_show.contact_info") }}
+                {{ trans("navBar.Contact us") }}
             </h4>
-            <div ref="shareMenuRef" class="imas-contact-share">
+            <div class="imas-contact-sidebar-actions">
                 <button
+                    v-if="!isSoldOut"
                     type="button"
-                    class="imas-contact-share__toggle"
-                    :aria-label="trans('property_show.share_page')"
-                    :aria-expanded="shareOpen ? 'true' : 'false'"
-                    aria-haspopup="true"
-                    @click.stop="toggleShareMenu"
+                    class="imas-contact-favorite__toggle"
+                    :class="{ 'is-favorited': localFavorited }"
+                    :aria-label="favoriteAriaLabel"
+                    :aria-pressed="localFavorited"
+                    @click="onFavoriteClick"
                 >
-                    <i class="fa fa-share-alt" aria-hidden="true"></i>
+                    <i
+                        class="fa favorite-icon"
+                        :class="localFavorited ? 'fa-heart' : 'fa-heart-o'"
+                        aria-hidden="true"
+                    ></i>
                 </button>
-                <div
-                    v-show="shareOpen"
-                    class="imas-contact-share__menu"
-                    role="menu"
-                >
+                <div ref="shareMenuRef" class="imas-contact-share">
+                    <button
+                        type="button"
+                        class="imas-contact-share__toggle"
+                        :aria-label="trans('property_show.share_page')"
+                        :aria-expanded="shareOpen ? 'true' : 'false'"
+                        aria-haspopup="true"
+                        @click.stop="toggleShareMenu"
+                    >
+                        <i class="fa fa-share-alt" aria-hidden="true"></i>
+                    </button>
+                    <div
+                        v-show="shareOpen"
+                        class="imas-contact-share__menu"
+                        role="menu"
+                    >
                     <a
                         v-for="item in shareLinks"
                         :key="item.key"
@@ -48,6 +64,7 @@
                                 : trans("property_show.copy_link")
                         }}</span>
                     </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -142,6 +159,7 @@
                         hide-title
                         :hide-subject="hideFormSubject"
                         :default-subject="effectiveDefaultSubject"
+                        :default-message="defaultMessage"
                     />
                 </div>
             </div>
@@ -150,8 +168,10 @@
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import axios from "axios";
+import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { usePage } from "@inertiajs/vue3";
+import { useOpenAuthModal } from "@/composables/useOpenAuthModal";
 import ContactForm from "../../../../../Support/resources/assets/js/Components/ContactForm.vue";
 import {
     formatTurkishPhone,
@@ -162,7 +182,11 @@ import { resolveWhatsAppContactHref } from "@/utils/whatsappUrl.js";
 const props = defineProps({
     contactStoreUrl: { type: String, required: true },
     defaultSubject: { type: String, default: "" },
+    defaultMessage: { type: String, default: "" },
     hideFormSubject: { type: Boolean, default: false },
+    propertyId: { type: Number, required: true },
+    isFavorited: { type: Boolean, default: false },
+    isSoldOut: { type: Boolean, default: false },
 });
 
 const effectiveDefaultSubject = computed(() => {
@@ -173,6 +197,24 @@ const effectiveDefaultSubject = computed(() => {
 });
 
 const page = usePage();
+const { openAuthModal } = useOpenAuthModal();
+
+const isAuthenticated = computed(() => page.props.auth != null);
+
+const localFavorited = ref(Boolean(props.isFavorited));
+
+watch(
+    () => props.isFavorited,
+    (v) => {
+        localFavorited.value = Boolean(v);
+    },
+);
+
+const favoriteAriaLabel = computed(() =>
+    localFavorited.value
+        ? trans("properties.remove_favorite")
+        : trans("properties.add_favorite"),
+);
 
 const shareMenuRef = ref(null);
 const shareOpen = ref(false);
@@ -319,6 +361,52 @@ function onShareLinkClick() {
     closeShareMenu();
 }
 
+async function onFavoriteClick(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (props.isSoldOut) {
+        return;
+    }
+
+    if (!isAuthenticated.value) {
+        openAuthModal("login");
+        return;
+    }
+
+    const next = !localFavorited.value;
+    const prev = localFavorited.value;
+    localFavorited.value = next;
+
+    try {
+        const headers = {
+            "X-CSRF-TOKEN": page.props.csrf,
+            "X-Requested-With": "XMLHttpRequest",
+            Accept: "application/json",
+        };
+        if (next) {
+            await axios.post(
+                "/api/favorites",
+                { property_id: props.propertyId },
+                { headers },
+            );
+        } else {
+            await axios.delete(`/api/favorites/${props.propertyId}`, {
+                headers,
+            });
+        }
+    } catch (err) {
+        localFavorited.value = prev;
+        const msg =
+            (err.response?.data?.message &&
+                String(err.response.data.message)) ||
+            trans("properties.favorite_error");
+        if (typeof window !== "undefined" && window.toastr) {
+            window.toastr.error(msg);
+        }
+    }
+}
+
 async function copyPageLink() {
     const url = shareUrl.value;
     if (!url) {
@@ -378,11 +466,19 @@ onBeforeUnmount(() => {
     gap: 0.75rem;
 }
 
+.imas-contact-sidebar-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
 .imas-contact-share {
     position: relative;
     flex-shrink: 0;
 }
 
+.imas-contact-favorite__toggle,
 .imas-contact-share__toggle {
     display: inline-flex;
     align-items: center;
@@ -401,12 +497,32 @@ onBeforeUnmount(() => {
         background-color 0.2s ease;
 }
 
+.imas-contact-favorite__toggle:hover,
+.imas-contact-favorite__toggle:focus-visible,
 .imas-contact-share__toggle:hover,
 .imas-contact-share__toggle:focus-visible {
     color: var(--brand-gold);
     border-color: var(--brand-gold);
     background: var(--color-accent-soft);
     box-shadow: var(--ring);
+}
+
+.imas-contact-favorite__toggle:not(.is-favorited) i {
+    color: var(--text);
+}
+
+.imas-contact-favorite__toggle.is-favorited i {
+    color: var(--brand-gold);
+}
+
+.imas-contact-favorite__toggle:hover i,
+.imas-contact-favorite__toggle:focus-visible i {
+    color: var(--brand-gold);
+}
+
+.imas-contact-favorite__toggle.is-favorited:hover i,
+.imas-contact-favorite__toggle.is-favorited:focus-visible i {
+    color: var(--text-on-gold);
 }
 
 .imas-contact-share__menu {

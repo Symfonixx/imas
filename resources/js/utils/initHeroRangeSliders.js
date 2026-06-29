@@ -1,5 +1,12 @@
 let jqueryUiPromise = null;
 
+const DEFAULT_PRICE_STEP = 500_000;
+
+function snapToStep(value, min, max, step) {
+    const snapped = min + Math.round((Number(value) - min) / step) * step;
+    return Math.min(max, Math.max(min, snapped));
+}
+
 /**
  * Load Find Houses jQuery UI (slider widget) once.
  */
@@ -81,7 +88,7 @@ function initAreaSlider(
 
 function initPriceSlider(
     $slider,
-    { min, max, unit, values, onChange },
+    { min, max, unit, values, step = DEFAULT_PRICE_STEP, onChange },
 ) {
     if (!$slider.length) {
         return;
@@ -99,6 +106,7 @@ function initPriceSlider(
     const dataMin = Number(min);
     const dataMax = Number(max);
     const dataUnit = unit || "$";
+    const dataStep = Number(step) || DEFAULT_PRICE_STEP;
 
     const format = (n) =>
         dataUnit +
@@ -106,11 +114,18 @@ function initPriceSlider(
             .toString()
             .replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
 
+    const rawValues = values ?? [dataMin, dataMax];
+    const snappedValues = [
+        snapToStep(rawValues[0], dataMin, dataMax, dataStep),
+        snapToStep(rawValues[1], dataMin, dataMax, dataStep),
+    ];
+
     $slider.slider({
         range: true,
         min: dataMin,
         max: dataMax,
-        values: values ?? [dataMin, dataMax],
+        step: dataStep,
+        values: snappedValues,
         slide(_event, ui) {
             $first.val(format(ui.values[0]));
             $second.val(format(ui.values[1]));
@@ -137,6 +152,7 @@ export function initHeroRangeSliders({
     priceMin = 0,
     priceMax = 600000,
     priceUnit = "$",
+    priceStep = DEFAULT_PRICE_STEP,
     initialArea = null,
     initialPrice = null,
     onAreaChange,
@@ -159,6 +175,7 @@ export function initHeroRangeSliders({
         min: priceMin,
         max: priceMax,
         unit: priceUnit,
+        step: priceStep,
         values: initialPrice,
         onChange: onPriceChange,
     });

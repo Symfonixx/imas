@@ -531,7 +531,11 @@ const ogImage = computed(() => props.property.thumbnail_url || "");
 const canonicalUrl = computed(() => {
     try {
         if (typeof route === "function" && route().has?.("property.show")) {
-            return route("property.show", props.property.id);
+            const slug =
+                props.property.project_code || props.property.slug;
+            if (slug) {
+                return route("property.show", slug);
+            }
         }
     } catch {
         /* ignore */
@@ -611,6 +615,7 @@ useScrollReveal(pageRef, { variant: "propertyListings" });
 }
 
 .listing-title-bar.text-lg-end .imas-price-heading {
+    text-transform: capitalize !important;
     align-items: flex-end;
     text-align: end;
 }
@@ -659,6 +664,7 @@ useScrollReveal(pageRef, { variant: "propertyListings" });
 }
 
 .listing-title-bar h3 {
+    
     text-align: start;
     font-size: var(--text-xl);
     font-weight: 600;

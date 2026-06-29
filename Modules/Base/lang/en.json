@@ -255,11 +255,11 @@
     "About page title shown in search results.": "About page title shown in search results.",
     "Short page summary for search snippets.": "Short page summary for search snippets.",
     "properties":{
-        "proprty_details":"Property details",
-        "start_price":"Start price",
-        "featured_properties":"Featured properties",
+        "proprty_details":"Property Details",
+        "start_price":"Start Price",
+        "featured_properties":"Today's Recommended Properties For You",
         "we_provide_full_service_at_every_step":"We provide full service at every step.",
-        "title":"Discover popular properties",
+        "title":"Recently Added Properties",
         "popular_properties":"Popular properties",
         "featured":"Featured",
         "sold_out":"Sold out",
@@ -295,8 +295,8 @@
     "property_show":{
         "gallery":"Gallery",
         "description":"Overview",
-        "details":"Property details",
-        "why_to_buy":"Why to buy",
+        "details":"Property Details",
+        "why_to_buy":"Why To Buy",
         "facilities":"Facilities",
         "property_video":"Property video",
         "location":"Location",
@@ -323,8 +323,8 @@
         "description":"We provide full service at every step."
     },
     "testimonials":{
-        "title":"Client testimonials",
-        "description":"Learn about the real experiences and honest reviews of our customers about our services in real estate and investment, because your trust is important to us at every step."
+        "title":"Our Client testimonials",
+        "description":"Read honest reviews from our real estate and investment clients."
     },
     "articles":{
         "title":"Articles & Tips",
@@ -372,6 +372,7 @@
         "subscription_success":"Thank you! You are subscribed to our newsletter.",
         "enter_your_email":"Enter your email",
         "useful_links":"Useful links",
+        "footer_location":"Istanbul, Turkey",
         "All Rights Reserved":"All Rights Reserved."
     },
     "contact_us":{

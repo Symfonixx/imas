@@ -5,11 +5,15 @@
         :aria-disabled="isSoldOut ? 'true' : undefined"
     >
         <div class="project-single imas-card__surface">
+            <Link
+                v-if="!isSoldOut"
+                :href="showUrl"
+                class="imas-property-card__stretched-link"
+                :aria-label="displayTitle"
+            />
             <div class="project-inner project-head imas-card__media">
                 <div class="homes">
-                    <component
-                        :is="isSoldOut ? 'div' : 'a'"
-                        :href="isSoldOut ? undefined : property.url"
+                    <div
                         class="homes-img"
                         :aria-label="isSoldOut ? soldOutCardLabel : undefined"
                     >
@@ -37,7 +41,7 @@
                             :alt="displayTitle"
                             class="img-responsive"
                         />
-                    </component>
+                    </div>
                 </div>
                 <div class="imas-card-actions">
                     <div class="homes-price imas-start-price imas-chip">
@@ -79,10 +83,7 @@
             </div>
             <div class="homes-content imas-card__body">
                 <h3 class="imas-property-title imas-card__title">
-                    <Link v-if="!isSoldOut" :href="showUrl">{{
-                        displayTitle
-                    }}</Link>
-                    <span v-else class="imas-card__title-text">{{
+                    <span class="imas-card__title-text">{{
                         displayTitle
                     }}</span>
                 </h3>
@@ -93,16 +94,13 @@
                     {{ overviewText }}
                 </p>
                 <p class="homes-address imas-card__meta text-base mb-3">
-                    <component
-                        :is="isSoldOut ? 'span' : 'a'"
-                        :href="isSoldOut ? undefined : property.url"
-                    >
+                    <span class="imas-card__address-line">
                         <i
                             class="fa fa-map-marker imas-address-marker"
                             aria-hidden="true"
                         ></i>
                         <span>{{ addressLine }}</span>
-                    </component>
+                    </span>
                 </p>
                 <PropertyCardUnitTypesBar
                     :unit-types="property.unit_types ?? []"
@@ -205,13 +203,18 @@ const showUrl = computed(() => {
 
     try {
         if (typeof route === "function" && route().has?.("property.show")) {
-            return route("property.show", props.property.id);
+            const slug =
+                props.property.project_code || props.property.slug;
+            if (slug) {
+                return route("property.show", slug);
+            }
         }
     } catch {
         /* ignore */
     }
 
-    return `/property/${props.property.id}`;
+    const slug = props.property.project_code || props.property.slug;
+    return slug ? `/property/${encodeURIComponent(slug)}` : "#";
 });
 
 const addressLine = computed(() => {
@@ -327,6 +330,7 @@ async function onFavoriteClick(e) {
 
 .imas-property-card .imas-card__surface,
 .imas-property-card .project-single {
+    position: relative;
     background: var(--surface) !important;
     border: none !important;
     border-radius: var(--card-radius) !important;
@@ -335,6 +339,24 @@ async function onFavoriteClick(e) {
     transition:
         transform 0.25s ease,
         box-shadow 0.25s ease;
+}
+
+.imas-property-card:not(.imas-property-card--sold-out) .project-single {
+    cursor: pointer;
+}
+
+.imas-property-card__stretched-link {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    border-radius: inherit;
+    text-decoration: none;
+    color: inherit;
+}
+
+.imas-property-card__stretched-link:focus-visible {
+    outline: none;
+    box-shadow: var(--ring);
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -379,12 +401,10 @@ async function onFavoriteClick(e) {
 }
 
 .imas-property-card--sold-out .imas-card__title-text,
-.imas-property-card--sold-out .imas-card__title a,
-.imas-property-card--sold-out .imas-property-title a,
-.imas-property-card--sold-out .homes-content h3 a {
+.imas-property-card--sold-out .imas-property-title .imas-card__title-text,
+.imas-property-card--sold-out .homes-content h3 .imas-card__title-text {
     color: var(--text-dim) !important;
     cursor: not-allowed;
-    pointer-events: none;
 }
 
 .imas-property-card--sold-out .imas-card__excerpt,
@@ -656,10 +676,9 @@ async function onFavoriteClick(e) {
     text-transform: none !important;
 }
 
-.imas-property-card .imas-card__title a,
 .imas-property-card .imas-card__title-text,
-.imas-property-card .imas-property-title a,
-.imas-property-card .homes-content h3 a {
+.imas-property-card .imas-property-title .imas-card__title-text,
+.imas-property-card .homes-content h3 .imas-card__title-text {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
@@ -673,8 +692,8 @@ async function onFavoriteClick(e) {
     transition: color 0.2s ease;
 }
 
-.imas-property-card .imas-card__title a:hover,
-.imas-property-card .imas-property-title a:hover {
+.imas-property-card:not(.imas-property-card--sold-out):hover
+    .imas-card__title-text {
     color: var(--brand-gold) !important;
 }
 
@@ -695,8 +714,8 @@ async function onFavoriteClick(e) {
 
 .imas-property-card .imas-card__meta,
 .imas-property-card .homes-address,
-.imas-property-card .homes-address a,
-.imas-property-card .homes-address a span {
+.imas-property-card .homes-address .imas-card__address-line,
+.imas-property-card .homes-address .imas-card__address-line span {
     color: var(--text-dim) !important;
     font-size: var(--text-base) !important;
 }

@@ -112,4 +112,12 @@ class Property extends Model
 
         return $query;
     }
+
+    /**
+     * Front-office show URLs use the unique project code (admin “URL slug”).
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'project_code';
+    }
 }

@@ -20,7 +20,7 @@
             <li v-if="phoneDisplay" class="imas-contact-phone">
                 <div class="info">
                     <i class="fa fa-phone m-end" aria-hidden="true"></i>
-                    <p class="in-p">
+                    <p class="in-p in-p--phone" dir="ltr">
                         <a
                             v-if="phoneHref"
                             :href="phoneHref"
@@ -147,6 +147,11 @@ function trans(key) {
 
 .in-p a:hover {
     color: var(--brand-gold, #d9a800);
+}
+
+.in-p--phone {
+    direction: ltr;
+    unicode-bidi: isolate;
 }
 
 .netsocials {

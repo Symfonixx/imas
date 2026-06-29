@@ -136,9 +136,20 @@ const visibleCount = ref(4);
 const activePage = ref(0);
 const isDragging = ref(false);
 
+const AXIS_LOCK_THRESHOLD = 8;
+
 let dragPointerId = null;
 let lastClientX = 0;
+let dragStartX = 0;
+let dragStartY = 0;
+let dragAxisLocked = null;
 let dragDistance = 0;
+
+function resetPointerDrag() {
+    isDragging.value = false;
+    dragPointerId = null;
+    dragAxisLocked = null;
+}
 
 /** Allow Inertia links / buttons inside slides; only drag on empty rail area. */
 function isInteractiveTarget(target) {
@@ -266,6 +277,9 @@ watch(visibleCount, async () => {
 });
 
 function onPointerDown(e) {
+    if (e.pointerType === "touch") {
+        return;
+    }
     if (e.pointerType === "mouse" && e.button !== 0) {
         return;
     }
@@ -276,25 +290,50 @@ function onPointerDown(e) {
     if (!vp || !(e.target instanceof Node) || !vp.contains(e.target)) {
         return;
     }
-    isDragging.value = true;
     dragPointerId = e.pointerId;
+    dragStartX = e.clientX;
+    dragStartY = e.clientY;
     lastClientX = e.clientX;
     dragDistance = 0;
-    try {
-        vp.setPointerCapture(e.pointerId);
-    } catch {
-        /* ignore */
-    }
+    dragAxisLocked = null;
+    isDragging.value = false;
 }
 
 function onPointerMove(e) {
-    if (!isDragging.value || e.pointerId !== dragPointerId) {
+    if (e.pointerId !== dragPointerId) {
         return;
     }
     const vp = viewportRef.value;
     if (!vp) {
         return;
     }
+
+    if (dragAxisLocked === null) {
+        const totalDx = e.clientX - dragStartX;
+        const totalDy = e.clientY - dragStartY;
+        if (
+            Math.abs(totalDx) < AXIS_LOCK_THRESHOLD &&
+            Math.abs(totalDy) < AXIS_LOCK_THRESHOLD
+        ) {
+            return;
+        }
+        if (Math.abs(totalDy) > Math.abs(totalDx)) {
+            resetPointerDrag();
+            return;
+        }
+        dragAxisLocked = "x";
+        isDragging.value = true;
+        try {
+            vp.setPointerCapture(e.pointerId);
+        } catch {
+            /* ignore */
+        }
+    }
+
+    if (!isDragging.value || dragAxisLocked !== "x") {
+        return;
+    }
+
     const dx = e.clientX - lastClientX;
     lastClientX = e.clientX;
     dragDistance += Math.abs(dx);
@@ -309,15 +348,14 @@ function endPointerDrag(e) {
         return;
     }
     const vp = viewportRef.value;
-    if (vp && dragPointerId !== null) {
+    if (vp && isDragging.value) {
         try {
             vp.releasePointerCapture(dragPointerId);
         } catch {
             /* ignore */
         }
     }
-    isDragging.value = false;
-    dragPointerId = null;
+    resetPointerDrag();
     syncActiveFromScroll();
 }
 
@@ -375,7 +413,8 @@ onBeforeUnmount(() => {
     unicode-bidi: isolate;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
-    touch-action: pan-x;
+    touch-action: pan-x pan-y;
+    overscroll-behavior-x: contain;
     cursor: grab;
     scrollbar-width: none;
     -ms-overflow-style: none;

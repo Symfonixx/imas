@@ -258,9 +258,9 @@
     "properties":{
         "proprty_details":"Mülk detayları",
         "start_price":"Başlangıç fiyatı",
-        "featured_properties":"Öne çıkan mülkler",
+        "featured_properties":"Bugün size önerilen mülkler",
         "we_provide_full_service_at_every_step":"Her adımda tam hizmet sağlıyoruz.",
-        "title":"Popüler mülkleri keşfedin",
+        "title":"Son eklenen mülkler",
         "popular_properties":"Popüler mülkler",
         "featured":"Öne çıkan",
         "sold_out":"Satıldı",
@@ -324,8 +324,8 @@
         "description":"Her adımda tam hizmet sağlıyoruz."
     },
     "testimonials":{
-        "title":"Müşteri yorumları",
-        "description":"Müşterilerimizin gerçek deneyimlerini ve dürüst yorumlarını öğrenin, çünkü müşteri güvenimiz her adımda önemlidir."
+        "title":"Müşterilerimizin yorumları",
+        "description":"Gayrimenkul ve yatırım müşterilerimizin samimi yorumlarını okuyun."
     },
     "articles":{
         "title":"Son gönderiler",
@@ -373,8 +373,8 @@
         "subscription_success":"Teşekkürler! Bültenimize abone oldunuz.",
         "enter_your_email":"E-posta adresinizi girin",
         "useful_links":"Kullanışlı bağlantılar",
+        "footer_location":"İstanbul, Türkiye",
         "All Rights Reserved":"Tüm hakları saklıdır."
-        
     },
     "contact_us":{
         "title":"Bize ulaşın",

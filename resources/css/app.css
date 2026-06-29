@@ -2790,6 +2790,7 @@ html[dir="rtl"] .imas-inner-page-heading-hero__title {
 }
 
 .imas-inner-page-heading-hero__title-text {
+
     display: inline-block;
     opacity: 0;
     transform: translateY(14px);
@@ -2798,6 +2799,7 @@ html[dir="rtl"] .imas-inner-page-heading-hero__title {
 }
 
 .imas-inner-page-heading-hero__letter {
+   
     opacity: 0;
     transform: translateY(14px);
     animation: imas-inner-page-hero-letter-in 0.55s
@@ -2824,6 +2826,7 @@ html[dir="rtl"] .imas-inner-page-heading-hero__title {
 }
 
 .imas-inner-page-heading-hero__crumb-link {
+    text-transform: capitalize !important;
     color: var(--text-dim);
     transition: color 0.2s ease;
 }

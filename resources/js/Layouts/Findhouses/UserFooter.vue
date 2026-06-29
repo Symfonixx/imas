@@ -3,7 +3,7 @@
         <div class="top-footer">
             <div class="container imas-footer-wrap">
                 <div class="row imas-footer-grid">
-                    <div class="col-lg-3 col-md-6 f-col">
+                    <div class="col-lg-3 col-md-6 f-col imas-footer-col--brand">
                         <div class="netabout">
                             <div class="brand-line">
                                 <div class="logo">
@@ -43,7 +43,7 @@
                                         <span class="ic" aria-hidden="true"
                                             ><i class="fa fa-phone"></i
                                         ></span>
-                                        <p class="in-p">
+                                        <p class="in-p in-p--phone" dir="ltr">
                                             <a
                                                 v-if="phoneDisplay && phoneHref"
                                                 :href="phoneHref"
@@ -68,6 +68,16 @@
                                                 settings.contact_email ||
                                                 fallbackEmail
                                             }}
+                                        </p>
+                                    </div>
+                                </li>
+                                <li class="contact-line">
+                                    <div class="info">
+                                        <!-- <span class="ic" aria-hidden="true"
+                                            ><i class="fa fa-map-marker"></i
+                                        ></span> -->
+                                        <p class="in-p">
+                                            {{ trans("navBar.footer_location") }}
                                         </p>
                                     </div>
                                 </li>
@@ -558,6 +568,11 @@ onBeforeUnmount(() => {
     margin: 0 !important;
 }
 
+.contact-line .in-p--phone {
+    direction: ltr;
+    unicode-bidi: isolate;
+}
+
 .contact-line .in-p a {
     color: inherit;
     text-decoration: none;
@@ -804,6 +819,10 @@ onBeforeUnmount(() => {
 @media screen and (max-width: 991px) {
     .imas-footer-grid {
         grid-template-columns: 1fr;
+    }
+
+    .imas-footer-col--brand {
+        order: 4;
     }
 }
 

@@ -95,6 +95,7 @@
                                     :purpose="purpose"
                                     :property-types="propertyTypes"
                                     :districts="districts"
+                                    :areas="areas"
                                 />
                             </div>
                         </div>
@@ -118,7 +119,7 @@ const props = defineProps({
     slides: {type: Array, default: () => []},
     propertyTypes: {type: Array, default: () => []},
     districts: {type: Array, default: () => []},
-
+    areas: {type: Array, default: () => []},
 });
 
 const purpose = ref('sale');

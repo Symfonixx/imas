@@ -60,6 +60,17 @@ class HomeController extends Controller
             ->values()
             ->all();
 
+        $areas = Location::query()
+            ->where('type', LocationType::Area)
+            ->orderBy('id')
+            ->get(['id', 'name'])
+            ->map(static fn (Location $area) => [
+                'id' => $area->id,
+                'name' => $area->name,
+            ])
+            ->values()
+            ->all();
+
         $userId = auth()->id();
 
         $featuredProperties = Property::query()
@@ -160,6 +171,7 @@ class HomeController extends Controller
             'slides' => $slides,
             'propertyTypes' => $propertyTypes,
             'districts' => $districts,
+            'areas' => $areas,
             'featuredProperties' => $featuredProperties,
             'recommendedProperties' => $recommendedProperties,
             'corporateServices' => $corporateServices,

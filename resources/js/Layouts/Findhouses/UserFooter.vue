@@ -3,7 +3,7 @@
         <div class="top-footer">
             <div class="container imas-footer-wrap">
                 <div class="row imas-footer-grid">
-                    <div class="col-lg-3 col-md-6 f-col">
+                    <div class="col-lg-3 col-md-6 f-col imas-footer-col--brand">
                         <div class="netabout">
                             <div class="brand-line">
                                 <div class="logo">
@@ -43,11 +43,18 @@
                                         <span class="ic" aria-hidden="true"
                                             ><i class="fa fa-phone"></i
                                         ></span>
-                                        <p class="in-p">
-                                            {{
-                                                settings.contact_phone ||
-                                                fallbackPhone
-                                            }}
+                                        <p class="in-p in-p--phone" dir="ltr">
+                                            <a
+                                                v-if="phoneDisplay && phoneHref"
+                                                :href="phoneHref"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
+                                                {{ phoneDisplay }}
+                                            </a>
+                                            <template v-else-if="phoneDisplay">{{
+                                                phoneDisplay
+                                            }}</template>
                                         </p>
                                     </div>
                                 </li>
@@ -61,6 +68,16 @@
                                                 settings.contact_email ||
                                                 fallbackEmail
                                             }}
+                                        </p>
+                                    </div>
+                                </li>
+                                <li class="contact-line">
+                                    <div class="info">
+                                        <!-- <span class="ic" aria-hidden="true"
+                                            ><i class="fa fa-map-marker"></i
+                                        ></span> -->
+                                        <p class="in-p">
+                                            {{ trans("navBar.footer_location") }}
                                         </p>
                                     </div>
                                 </li>
@@ -228,6 +245,11 @@
 import { computed, onBeforeUnmount, ref } from "vue";
 import { Link, useForm, usePage } from "@inertiajs/vue3";
 import { cmsPageUrl } from "@/utils/cmsPageUrl.js";
+import {
+    formatTurkishPhone,
+    normalizeTurkishPhoneDigits,
+} from "@/utils/turkishPhone.js";
+import { resolveWhatsAppContactHref } from "@/utils/whatsappUrl.js";
 
 const props = defineProps({
     navLinks: {
@@ -254,6 +276,7 @@ const themeUrl = computed(() => page.props.theme_url || "");
 const auth = computed(() => page.props.auth);
 const appName = computed(() => page.props.appName);
 const settings = computed(() => page.props.settings || {});
+const globals = computed(() => page.props.globals ?? {});
 const mediaData = computed(() => page.props.globals.media || {});
 const logoUrl = computed(() => {
     const m = mediaData.value;
@@ -276,6 +299,36 @@ const tagline = computed(() => settings.value.tagline || page.props.appName);
 const fallbackAddress = "95 South Park Avenue, USA";
 const fallbackPhone = "+456 875 369 208";
 const fallbackEmail = "support@example.com";
+
+const rawPhone = computed(() =>
+    String(settings.value.contact_phone || settings.value.phone || "").trim(),
+);
+
+const phoneDisplay = computed(() => {
+    const raw = rawPhone.value;
+    if (raw) {
+        return formatTurkishPhone(raw);
+    }
+    return formatTurkishPhone(fallbackPhone) || fallbackPhone;
+});
+
+const phoneHref = computed(() => {
+    const social = globals.value.social ?? {};
+    const contact = globals.value.contact ?? {};
+    const raw =
+        rawPhone.value ||
+        contact.phone ||
+        settings.value.contact_phone ||
+        settings.value.phone ||
+        fallbackPhone;
+    const normalized = normalizeTurkishPhoneDigits(raw);
+    const phoneForWhatsApp = normalized ? `+${normalized}` : raw;
+
+    return resolveWhatsAppContactHref({
+        whatsapp: social.whatsapp || settings.value.whatsapp,
+        phone: phoneForWhatsApp,
+    });
+});
 
 const mainNavLinks = computed(() =>
     (props.navLinks || []).filter((l) => l?.href),
@@ -515,6 +568,21 @@ onBeforeUnmount(() => {
     margin: 0 !important;
 }
 
+.contact-line .in-p--phone {
+    direction: ltr;
+    unicode-bidi: isolate;
+}
+
+.contact-line .in-p a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.contact-line .in-p a:hover {
+    color: var(--brand-gold, #d9a800);
+}
+
 .nav-footer {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -751,6 +819,10 @@ onBeforeUnmount(() => {
 @media screen and (max-width: 991px) {
     .imas-footer-grid {
         grid-template-columns: 1fr;
+    }
+
+    .imas-footer-col--brand {
+        order: 4;
     }
 }
 

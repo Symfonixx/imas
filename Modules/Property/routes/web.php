@@ -24,7 +24,7 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('/property', [PropertyPropertyController::class, 'index'])->name('property.index');
-Route::get('/property/{property}', [PropertyPropertyController::class, 'show'])->name('property.show');
+Route::get('/property/{property:project_code}', [PropertyPropertyController::class, 'show'])->name('property.show');
 
 Route::get('/turkish-citizenship', TurkishCitizenshipController::class)
     ->name('turkish-citizenship');

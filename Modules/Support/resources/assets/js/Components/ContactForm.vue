@@ -7,7 +7,7 @@
             {{ trans("contact_us.title") }}
         </h3>
 
-        <!-- <Transition name="imas-contact-alert">
+        <Transition name="imas-contact-alert">
             <div
                 v-if="successVisible"
                 class="alert alert-success imas-contact-page__alert imas-contact-page__alert--success text-start"
@@ -15,7 +15,7 @@
             >
                 {{ trans("contact_us.message_sent") }}
             </div>
-        </Transition> -->
+        </Transition>
 
         <form
             ref="contactFormEl"
@@ -23,8 +23,8 @@
             :class="{ 'imas-contact-form--sidebar': variant === 'sidebar' }"
             @submit.prevent="submit"
         >
-            <div :class="pairRowClass">
-                <div :class="pairColClass">
+            <div class="imas-contact-form__pair">
+                <div class="imas-contact-form__pair-field">
                     <div class="form-group">
                         <input
                             v-model="form.first_name"
@@ -44,7 +44,7 @@
                         </div>
                     </div>
                 </div>
-                <div :class="pairColClass">
+                <div class="imas-contact-form__pair-field">
                     <div class="form-group">
                         <input
                             v-model="form.last_name"
@@ -130,7 +130,7 @@
                 <textarea
                     v-model="form.message"
                     class="form-control textarea-custom input-full"
-                    rows="8"
+                    :rows="messageRows"
                     required
                     maxlength="5000"
                     :class="{ 'is-invalid': form.errors.message }"
@@ -191,6 +191,10 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
+    defaultMessage: {
+        type: String,
+        default: "",
+    },
 });
 
 const page = usePage();
@@ -229,6 +233,7 @@ watch(
 onBeforeUnmount(clearSuccessTimers);
 
 const isPairedLayout = computed(() => props.variant !== "sidebar");
+const messageRows = computed(() => (props.variant === "sidebar" ? 3 : 8));
 const pairRowClass = computed(() =>
     isPairedLayout.value ? "imas-contact-form__pair" : null,
 );
@@ -242,7 +247,7 @@ const form = useForm({
     email: "",
     mobile: "",
     subject: props.defaultSubject ?? "",
-    message: "",
+    message: props.defaultMessage ?? "",
 });
 
 function applyDefaultSubject(value) {
@@ -255,6 +260,17 @@ function applyDefaultSubject(value) {
 }
 
 watch(() => props.defaultSubject, applyDefaultSubject, { immediate: true });
+
+function applyDefaultMessage(value) {
+    if (typeof value !== "string" || value.trim() === "") {
+        return;
+    }
+    if (!form.message) {
+        form.message = value;
+    }
+}
+
+watch(() => props.defaultMessage, applyDefaultMessage, { immediate: true });
 
 watch(
     () => props.hideSubject,
@@ -283,8 +299,10 @@ function submit() {
         preserveScroll: true,
         onSuccess: () => {
             const subject = props.defaultSubject ?? "";
+            const message = props.defaultMessage ?? "";
             form.reset();
             form.subject = subject;
+            form.message = message;
             form.clearErrors();
             showSuccessAlert();
         },
@@ -304,6 +322,18 @@ function submit() {
 .imas-contact-alert-leave-to {
     opacity: 0;
     transform: translateY(-0.5rem);
+}
+
+.imas-contact-form--sidebar .imas-contact-form__pair {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 0.375rem;
+    row-gap: 0;
+    margin-bottom: 0;
+}
+
+.imas-contact-form--sidebar .imas-contact-form__pair-field {
+    min-width: 0;
 }
 
 .imas-contact-form--sidebar :deep(.form-group) {
@@ -329,17 +359,15 @@ function submit() {
 
 .imas-contact-form--sidebar :deep(textarea.form-control) {
     padding: 10px 12px;
+    height: auto !important;
+    min-height: 0;
+    resize: vertical;
 }
 
 .imas-contact-form--sidebar :deep(.imas-auth-phone-field) {
     height: 48px !important;
     min-height: 48px !important;
     margin-bottom: 12px;
-}
-
-.imas-contact-form--sidebar :deep(textarea.form-control) {
-    min-height: 120px;
-    resize: vertical;
 }
 
 input{

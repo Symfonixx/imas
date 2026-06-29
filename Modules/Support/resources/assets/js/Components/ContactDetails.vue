@@ -10,6 +10,22 @@
                 )
             }}
         </p>
+
+        <div class="imas-contact-page__head-office mb-4 text-start">
+            <p class="imas-contact-page__head-office-title mb-1">
+                <template v-if="headOfficePrefix">
+                    {{ headOfficePrefix }}
+                </template>
+                <span class="imas-contact-page__head-office-brand">IMAS GLOBAL</span>
+                <template v-if="headOfficeSuffix">
+                    {{ " " }}{{ headOfficeSuffix }}
+                </template>
+            </p>
+            <p class="imas-contact-page__head-office-location mb-0">
+                {{ trans("navBar.footer_location") }}
+            </p>
+        </div>
+
         <ul>
             <li v-if="contact.address">
                 <div class="info text-start">
@@ -17,14 +33,19 @@
                     <p class="in-p">{{ contact.address }}</p>
                 </div>
             </li>
-            <li v-if="contact.phone" class="imas-contact-phone">
+            <li v-if="phoneDisplay" class="imas-contact-phone">
                 <div class="info">
                     <i class="fa fa-phone m-end" aria-hidden="true"></i>
-                    <p class="in-p">
-                        <a v-if="phoneTel" :href="'tel:' + phoneTel">{{
-                            contact.phone
-                        }}</a>
-                        <template v-else>{{ contact.phone }}</template>
+                    <p class="in-p in-p--phone" dir="ltr">
+                        <a
+                            v-if="phoneHref"
+                            :href="phoneHref"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            {{ phoneDisplay }}
+                        </a>
+                        <template v-else>{{ phoneDisplay }}</template>
                     </p>
                 </div>
             </li>
@@ -64,18 +85,37 @@
 import { computed } from "vue";
 import { usePage } from "@inertiajs/vue3";
 import { resolveWhatsAppContactHref } from "@/utils/whatsappUrl.js";
+import {
+    formatTurkishPhone,
+    normalizeTurkishPhoneDigits,
+} from "@/utils/turkishPhone.js";
 
 const page = usePage();
 
 const globals = computed(() => page.props.globals ?? {});
+const settings = computed(() => page.props.settings ?? {});
 const contact = computed(() => globals.value.contact ?? {});
 
-const phoneTel = computed(() => {
-    const p = contact.value.phone;
-    if (typeof p !== "string") {
+const rawPhone = computed(() => String(contact.value.phone ?? "").trim());
+
+const phoneDisplay = computed(
+    () => formatTurkishPhone(rawPhone.value) || rawPhone.value,
+);
+
+const phoneHref = computed(() => {
+    const raw = rawPhone.value;
+    if (!raw) {
         return "";
     }
-    return p.replace(/[^\d+]/g, "");
+
+    const social = globals.value.social ?? {};
+    const normalized = normalizeTurkishPhoneDigits(raw);
+    const phoneForWhatsApp = normalized ? `+${normalized}` : raw;
+
+    return resolveWhatsAppContactHref({
+        whatsapp: social.whatsapp || settings.value.whatsapp,
+        phone: phoneForWhatsApp,
+    });
 });
 
 const socialLinks = computed(() => {
@@ -109,17 +149,60 @@ const socialLinks = computed(() => {
         .filter(Boolean);
 });
 
+const headOfficePrefix = computed(() => {
+    const value = trans("contact_us.head_office_prefix");
+    return value === "contact_us.head_office_prefix" ? "" : value.trim();
+});
+
+const headOfficeSuffix = computed(() => {
+    const value = trans("contact_us.head_office_suffix");
+    return value === "contact_us.head_office_suffix" ? "" : value.trim();
+});
+
 function trans(key) {
     return page.props.translations[key] || key;
 }
 </script>
 
 <style scoped>
+.in-p a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.in-p a:hover {
+    color: var(--brand-gold, #d9a800);
+}
+
+.in-p--phone {
+    direction: ltr;
+    unicode-bidi: isolate;
+}
+
 .netsocials {
     gap: 25px;
 }
 
 html[dir="rtl"] .m-end {
     margin-inline-end: 1.5rem !important;
+}
+
+.imas-contact-page__head-office-title {
+    font-size: var(--text-sm);
+    font-weight: 500;
+    line-height: 1.45;
+    color: var(--text-dim);
+}
+
+.imas-contact-page__head-office-brand {
+    color: var(--brand-gold);
+    font-weight: 700;
+}
+
+.imas-contact-page__head-office-location {
+    font-size: var(--text-xs);
+    line-height: 1.4;
+    color: var(--text-muted);
 }
 </style>

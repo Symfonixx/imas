@@ -30,9 +30,9 @@
         </div>
 
         <FeaturedPropertiesSidebar
-            v-if="latestProperties.length > 0"
-            :featured-properties="latestProperties"
-            :heading="latestPropertiesHeading"
+            v-if="featuredProperties.length > 0"
+            :featured-properties="featuredProperties"
+            :heading="featuredPropertiesHeading"
         />
     </aside>
 </template>
@@ -44,7 +44,7 @@ import { localizedRoute } from "@/utils/localizedRoute.js";
 import FeaturedPropertiesSidebar from "../../../../../../Modules/Property/resources/assets/js/components/FeaturedPropertiesSidebar.vue";
 
 const props = defineProps({
-    latestProperties: { type: Array, default: () => [] },
+    featuredProperties: { type: Array, default: () => [] },
 });
 
 const page = usePage();
@@ -56,12 +56,12 @@ function trans(key) {
     return page.props.translations[key] || key;
 }
 
-const latestPropertiesHeading = computed(() =>
-    trans("about_us.latest_properties"),
+const featuredPropertiesHeading = computed(() =>
+    trans("aboutUs.featured_properties"),
 );
 
 const showSidebar = computed(
-    () => quickLinks.value.length > 0 || props.latestProperties.length > 0,
+    () => quickLinks.value.length > 0 || props.featuredProperties.length > 0,
 );
 
 function resolveMediaBanner(url) {

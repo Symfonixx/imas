@@ -105,7 +105,7 @@
 
                 <AboutUsQuickLinksSidebar
                     v-if="hasSidebar"
-                    :latest-properties="latestProperties"
+                    :featured-properties="featuredProperties"
                 />
             </main>
         </div>
@@ -125,7 +125,7 @@ const props = defineProps({
         type: Object,
         required: true,
     },
-    latestProperties: {
+    featuredProperties: {
         type: Array,
         default: () => [],
     },
@@ -280,7 +280,7 @@ const hasQuickLinks = computed(() => {
 });
 
 const hasSidebar = computed(
-    () => hasQuickLinks.value || props.latestProperties.length > 0,
+    () => hasQuickLinks.value || props.featuredProperties.length > 0,
 );
 </script>
 

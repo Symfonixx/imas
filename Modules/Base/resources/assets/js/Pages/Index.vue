@@ -75,6 +75,7 @@
             :slides="slides"
             :property-types="propertyTypes"
             :districts="districts"
+            :areas="areas"
         />
 
         <FeaturedPropertiesSection
@@ -185,6 +186,7 @@ defineProps({
     slides: { type: Array, default: () => [] },
     propertyTypes: { type: Array, default: () => [] },
     districts: { type: Array, default: () => [] },
+    areas: { type: Array, default: () => [] },
     featuredProperties: { type: Array, default: () => [] },
     recommendedProperties: { type: Array, default: () => [] },
     corporateServices: { type: Array, default: () => [] },

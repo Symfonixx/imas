@@ -20,7 +20,10 @@
         "mobile_national_placeholder":"National number (no country code)",
         "mobile_invalid_length":"Enter a valid mobile number (8–15 digits total, including country code).",
         "country_code_search_placeholder":"Search by code or country…",
-        "country_code_search_empty":"No countries match your search."
+        "country_code_search_empty":"No countries match your search.",
+        "agree_terms_prefix":"By Creating an Account, You Agree on Imas Global's",
+        "terms_and_conditions":"terms and conditions",
+        "terms_required":"Please accept the terms."
     },
     "Name": "Name",
     "Language": "Language",
@@ -117,7 +120,8 @@
     "Home": "Home",
     "Buy Real Estate": "Buy real estate",
     "Turkish Citizenship": "Turkish citizenship",
-    "suitable_properties_for": "Suitable Properties for ",
+    "suitable_properties_for_turkish_citizenship_by_citizenship_program": "Suitable properties for Turkish citizenship by Citizenship Program",
+    "by_citizenship_program": "by Citizenship Program",
     "Contact us": "Contact us",
     "Pages": "Pages",
     "News & Laws": "News & laws",
@@ -127,6 +131,10 @@
     "Enter Keyword...": "Enter keyword…",
     "Property Type": "Property type",
     "Location": "Location",
+    "Municipalities": "Municipalities",
+    "Areas": "Areas",
+    "selected": "selected",
+    "Clear": "Clear",
     "Search Now": "Search now",
     "Advanced Search": "Advanced search",
     "Area Size": "Area size",
@@ -248,11 +256,11 @@
     "About page title shown in search results.": "About page title shown in search results.",
     "Short page summary for search snippets.": "Short page summary for search snippets.",
     "properties":{
-        "proprty_details":"Property details",
-        "start_price":"Start price",
-        "featured_properties":"Featured properties",
+        "proprty_details":"Property Details",
+        "start_price":"Starting Price",
+        "featured_properties":"Today's Recommended Properties For You",
         "we_provide_full_service_at_every_step":"We provide full service at every step.",
-        "title":"Discover popular properties",
+        "title":"Recently Added Properties",
         "popular_properties":"Popular properties",
         "featured":"Featured",
         "sold_out":"Sold out",
@@ -288,10 +296,10 @@
     "property_show":{
         "gallery":"Gallery",
         "description":"Overview",
-        "details":"Property details",
-        "why_to_buy":"Why to buy",
+        "details":"Property Details",
+        "why_to_buy":"Why To Buy",
         "facilities":"Facilities",
-        "property_video":"Property video",
+        "property_video":"Property Video",
         "location":"Location",
         "contact_info":"Contact info",
         "share_page":"Share this page",
@@ -299,8 +307,11 @@
         "link_copied":"Link copied",
         "share_email":"Email",
         "request_inquiry":"Request inquiry",
+        "default_inquiry_message":"I'm interested in this property",
         "similar_properties":"Similar properties",
-        "unit_types_title":"Properties",
+        "unit_types_title":"Featured",
+        "project_id":"Project Code",
+        "project_location":"Location",
         "col_rooms":"Number of rooms & living rooms",
         "col_area":"Spaces start at",
         "col_price":"Prices start at",
@@ -308,7 +319,7 @@
         "sold_out":"Sold out",
         "inquiry_subject":"Inquiry about :title",
         "map_unavailable":"Location map is not available for this property.",
-        "play_video":"Play property video",
+        "play_video":"Play Property Video",
         "video_unavailable":"Video is not available."
     },
     "services":{
@@ -316,8 +327,8 @@
         "description":"We provide full service at every step."
     },
     "testimonials":{
-        "title":"Client testimonials",
-        "description":"Learn about the real experiences and honest reviews of our customers about our services in real estate and investment, because your trust is important to us at every step."
+        "title":"Our Client testimonials",
+        "description":"Read honest reviews from our real estate and investment clients."
     },
     "articles":{
         "title":"Articles & Tips",
@@ -344,7 +355,8 @@
     "aboutUs":{
         "overview_title_primary":"About",
         "overview_title_accent":"Us",
-        "explore_more":"Explore More"
+        "explore_more":"Explore More About",
+        "featured_properties":"Featured Properties"
     },
     "navBar":{
         "Home":"Home",
@@ -359,19 +371,22 @@
         "Services":"Services",
         "navigation":"Navigation",
         "explore":"Explore",
-        "newsLetters":"News letters",
+        "newsLetters":"Newsletters",
         "signup_for_newsletters":"Sign Up for Our Newsletter to get Latest Updates and Offers.",
         "subscribe":"Subscribe",
         "subscription_success":"Thank you! You are subscribed to our newsletter.",
         "enter_your_email":"Enter your email",
         "useful_links":"Useful links",
+        "footer_location":"Istanbul, Turkey",
         "All Rights Reserved":"All Rights Reserved."
     },
     "contact_us":{
-        "title":"Contact us",
+        "title":"Contact With Us",
         "our_location":"Our location",
-        "contact_details":"Contact details",
-        "Please_find_below_contact_details_and_contact_us_today":"Please find below contact details and contact us today!",
+        "contact_details":"Contact Details",
+        "head_office_prefix":"",
+        "head_office_suffix":"Head Office",
+        "Please_find_below_contact_details_and_contact_us_today":"Please find below contact details and contact with us today!",
         "first_name":"First name",
         "last_name":"Last name",
         "email":"Email",
@@ -379,7 +394,7 @@
         "subject_optional":"Subject (optional)",
         "message":"Message",
         "submit":"Submit",
-        "message_sent":"Your message was sent successfully.",
+        "message_sent":"Thank you for your trust. We're committed to serving you with the best possible experience.",
         "send_failed":"Something went wrong. Please try again.",
         "map_not_configured":"Map is not configured yet.",
         "follow_us":"Follow us"

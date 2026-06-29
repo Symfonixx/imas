@@ -31,8 +31,13 @@
                 class="imas-gallery-counter"
                 aria-live="polite"
             >
-                <i class="fa fa-image" aria-hidden="true"></i>
-                <span>{{ activeIndex + 1 }} / {{ images.length }}</span>
+                <i
+                    class="fa fa-image imas-gallery-counter__icon"
+                    aria-hidden="true"
+                ></i>
+                <span class="imas-gallery-counter__text">
+                    {{ activeIndex + 1 }} / {{ images.length }}
+                </span>
             </div>
 
             <template v-if="images.length > 1">
@@ -118,10 +123,16 @@ const nextLabel = computed(
 const images = computed(() => {
     const rows = [];
     const seen = new Set();
+    const thumb = props.thumbnailUrl?.trim() ?? "";
+    const isPlaceholderThumb =
+        thumb === "" || thumb.includes("/images/blank.png");
 
     for (const slide of props.slides ?? []) {
         const url = slide?.image_url;
         if (typeof url !== "string" || url === "" || seen.has(url)) {
+            continue;
+        }
+        if (thumb && url === thumb) {
             continue;
         }
         seen.add(url);
@@ -132,9 +143,8 @@ const images = computed(() => {
         });
     }
 
-    const thumb = props.thumbnailUrl?.trim();
-    if (thumb && !seen.has(thumb)) {
-        rows.unshift({
+    if (rows.length === 0 && thumb && !isPlaceholderThumb) {
+        rows.push({
             key: "thumbnail",
             url: thumb,
             alt: props.alt,
@@ -220,15 +230,32 @@ function goNext() {
     z-index: 40;
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
-    padding: 0.35rem 0.65rem;
+    gap: 0.5rem;
+    min-width: 4.75rem;
+    padding: 0.45rem 0.8rem;
     border-radius: 4px;
     background: rgba(26, 42, 74, 0.78);
     color: #fff;
     font-size: 0.8rem;
     font-weight: 600;
-    line-height: 1;
+    line-height: 1.2;
+    white-space: nowrap;
     pointer-events: none;
+}
+
+.imas-gallery-counter__icon {
+    margin: 0 !important;
+    flex: 0 0 auto;
+    font-size: 0.85rem;
+    line-height: 1;
+    opacity: 0.92;
+}
+
+.imas-gallery-counter__text {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
 }
 
 .imas-gallery-control {
@@ -328,10 +355,10 @@ function goNext() {
 .fa-angle-right:before,.fa-angle-left:before{
 color:#fff;    
 }
-.blog .blog-pots .fa {
+.blog .blog-pots .imas-gallery-control .fa {
     margin: 6px 35% !important;
 }
-html[dir="rtl"] .blog .blog-pots .fa {
+html[dir="rtl"] .blog .blog-pots .imas-gallery-control .fa {
     transform: rotate(180deg);
 }
  h5:after{

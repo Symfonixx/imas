@@ -178,6 +178,15 @@
                                 </ul>
                             </div>
                         </div>
+                        <button
+                            type="button"
+                            class="imas-nav__search imas-header-action"
+                            :aria-label="trans('Search')"
+                            :title="trans('Search')"
+                            @click="openSearchModal"
+                        >
+                            <i class="fa fa-search" aria-hidden="true"></i>
+                        </button>
                         <Link
                             v-if="auth"
                             :href="favoritesHref"
@@ -288,6 +297,7 @@
             aria-hidden="true"
         ></div>
         <AuthModal v-model:open="authModalOpen" :start-tab="authStartTab" />
+        <NavbarSearchModal v-model:open="searchModalOpen" />
     </header>
 </template>
 
@@ -305,6 +315,7 @@ import { IMAS_OPEN_AUTH_EVENT } from "@/composables/useOpenAuthModal";
 import { useGsap } from "@/composables/useGsap";
 import { prefersReducedMotion } from "@/plugins/gsap";
 import AuthModal from "./AuthModal.vue";
+import NavbarSearchModal from "./NavbarSearchModal.vue";
 import { localizedRoute } from "@/utils/localizedRoute.js";
 
 const props = defineProps({
@@ -328,8 +339,16 @@ const homeHref = computed(() =>
 
 const authModalOpen = ref(false);
 const authStartTab = ref("login");
+const searchModalOpen = ref(false);
+
+function openSearchModal() {
+    authModalOpen.value = false;
+    searchModalOpen.value = true;
+    mmenuApi?.close?.();
+}
 
 function openAuthModal(tab = "login") {
+    searchModalOpen.value = false;
     authStartTab.value = tab === "register" || tab === "reset" ? tab : "login";
     authModalOpen.value = true;
     mmenuApi?.close?.();
@@ -1002,7 +1021,8 @@ onBeforeUnmount(() => {
     color: var(--brand-gold, #d9a800);
 }
 
-.imas-nav__favorites {
+.imas-nav__favorites,
+.imas-nav__search {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1015,20 +1035,28 @@ onBeforeUnmount(() => {
     background: transparent;
     color: var(--text-dim, #9aa6bd);
     text-decoration: none;
+    cursor: pointer;
     transition:
         color 0.2s ease,
         background-color 0.2s ease;
 }
 
-.imas-nav__favorites .fa-heart {
+.imas-nav__favorites .fa-heart,
+.imas-nav__search .fa-search {
     font-size: 16px;
     line-height: 1;
 }
 
 .imas-nav__favorites:hover,
-.imas-nav__favorites.is-active {
+.imas-nav__favorites.is-active,
+.imas-nav__search:hover {
     color: var(--brand-gold, #d9a800);
     background: rgba(217, 168, 0, 0.12);
+}
+
+.imas-nav__search:focus-visible {
+    outline: none;
+    box-shadow: var(--ring);
 }
 
 :deep(.imas-nav__lang-trigger.show-lang) {
@@ -1222,7 +1250,7 @@ html[dir="rtl"] :deep(.imas-nav__account-trigger--rtl.header-user-name) {
     padding-inline: 14px !important;
     font-size: 13px !important;
     font-weight: 500 !important;
-    text-transform: none !important;
+    text-transform: capitalize !important;
     text-align: start !important;
     transition:
         color 0.2s ease,
@@ -1404,16 +1432,9 @@ html[dir="rtl"] :deep(.imas-nav__account-trigger--rtl.header-user-name) {
         gap: 0 !important;
     }
 
-    :deep(.imas-nav__lang .lang-wrap) {
-        position: relative !important;
-    }
-
     :deep(.imas-nav__lang .lang-tooltip) {
-        position: absolute !important;
-        top: calc(100% + 8px) !important;
-        inset-inline-end: 0;
-        inset-inline-start: auto;
-        z-index: 10005;
+        margin: 0 !important;
+        padding: 8px 0 !important;
     }
 
     :deep(.show-lang-trigger-inner strong) {
@@ -1438,16 +1459,35 @@ html[dir="rtl"] :deep(.imas-nav__account-trigger--rtl.header-user-name) {
         border-color: var(--border-strong, rgba(217, 168, 0, 0.35));
         background: var(--surface-2, #16264a);
     }
+
+    .header-user-menu.user-menu.active > ul.imas-user-menu-dropdown,
+    .lang-wrap.lang-wrap--open :deep(.lang-tooltip) {
+        z-index: 10010 !important;
+    }
 }
 
 .header-user-menu.user-menu {
     padding: 0 !important;
 }
 
-.header-user-menu.user-menu {
-    padding-left: 15px !important;
+@media (min-width: 1025px) {
+    .header-user-menu.user-menu {
+        padding-left: 15px !important;
+    }
 }
 .show-lang span strong {
     padding-left: 0 !important;
+}
+</style>
+
+<style>
+/* mmenu drawer clones #navigation outside the scoped tree (≤1024px) */
+@media (max-width: 1024px) {
+    .mm-menu .mm-listview > li > a,
+    .mm-menu .mm-listview > li > span,
+    .mm-menu .mm-listview a:not(.mm-next),
+    .mm-menu .mm-listview .imas-auth-nav-link {
+        text-transform: capitalize !important;
+    }
 }
 </style>

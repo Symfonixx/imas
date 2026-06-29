@@ -111,6 +111,7 @@
                     :filters="filters"
                     :sort="sort"
                     :districts="districts"
+                    :areas="areas"
                     :property-types="propertyTypes"
                     :recent-properties="recentProperties"
                     :featured-properties="featuredProperties"
@@ -139,6 +140,7 @@ const props = defineProps({
     sort: { type: String, required: true },
     propertyTypes: { type: Array, default: () => [] },
     districts: { type: Array, default: () => [] },
+    areas: { type: Array, default: () => [] },
     recentProperties: { type: Array, default: () => [] },
     featuredProperties: { type: Array, default: () => [] },
 });

@@ -17,6 +17,7 @@ final class PropertyListingCardSerializer
         return [
             'id' => $property->id,
             'project_code' => $property->project_code,
+            'slug' => $property->project_code,
             'title' => $property->title,
             'project_name' => $property->project_name,
             'overview' => $property->overview,

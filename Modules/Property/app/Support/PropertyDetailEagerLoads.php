@@ -14,6 +14,7 @@ final class PropertyDetailEagerLoads
         return [
             ...PropertyCardEagerLoads::relations(),
             'slides:id,property_id,image,position',
+            'similarProperties' => fn ($query) => $query->with(PropertyCardEagerLoads::relations()),
         ];
     }
 }

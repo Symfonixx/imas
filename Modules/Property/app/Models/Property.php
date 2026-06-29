@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\Property\Database\Factories\PropertyFactory;
 use Modules\User\Enums\CmsStatus;
@@ -96,6 +97,16 @@ class Property extends Model
     public function favorites(): HasMany
     {
         return $this->hasMany(UserFavoriteProperty::class, 'property_id');
+    }
+
+    public function similarProperties(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            self::class,
+            'property_similar_properties',
+            'property_id',
+            'similar_property_id'
+        )->withPivot('sort_order')->orderByPivot('sort_order');
     }
 
     /**

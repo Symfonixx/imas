@@ -67,6 +67,18 @@
     }
 
     $catalogItems = $projectUnitTypesCatalog ?? [];
+
+    $selectedSimilarPropertyIds = collect(old('similar_property_ids'))
+        ->map(fn ($id) => (int) $id)
+        ->filter(fn ($id) => $id > 0)
+        ->values()
+        ->all();
+
+    if ($selectedSimilarPropertyIds === [] && $isEdit) {
+        $selectedSimilarPropertyIds = $property->similarProperties->pluck('id')->map(fn ($id) => (int) $id)->all();
+    }
+
+    $currentPropertyId = $isEdit ? (int) $property->id : null;
 @endphp
 
 <div class="card card-flush mb-7">
@@ -306,6 +318,25 @@
         <x-admin.form-group label="Youtube link" name="youtube_video_url">
             <input type="url" name="youtube_video_url" class="form-control form-control-solid"
                    value="{{ old('youtube_video_url', optional($property)->youtube_video_url) }}"/>
+        </x-admin.form-group>
+
+        <x-admin.form-group label="Similar properties" name="similar_property_ids"
+                            helper="Choose up to 12 related projects to show on the property page. Leave empty to show properties of the same type automatically.">
+            <select name="similar_property_ids[]" id="similar_property_ids"
+                    class="form-select form-select-solid"
+                    data-control="select2"
+                    data-placeholder="{{ __('Select similar properties') }}"
+                    data-allow-clear="true"
+                    multiple="multiple">
+                @foreach(($propertiesForSimilar ?? []) as $similarOption)
+                    @if($currentPropertyId === null || (int) $similarOption['id'] !== $currentPropertyId)
+                        <option value="{{ $similarOption['id'] }}"
+                            @selected(in_array((int) $similarOption['id'], $selectedSimilarPropertyIds, true))>
+                            {{ $similarOption['label'] }}
+                        </option>
+                    @endif
+                @endforeach
+            </select>
         </x-admin.form-group>
 
         <x-admin.form-group label="Add photos" name="slides"
@@ -691,7 +722,7 @@
             });
 
             if (window.jQuery && window.jQuery.fn.select2) {
-                window.jQuery('#property_type_id, select[name="status"]').select2();
+                window.jQuery('#property_type_id, select[name="status"], #similar_property_ids').select2();
             }
             initLocationCascade();
 

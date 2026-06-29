@@ -365,9 +365,9 @@ Author: Hadi Hilal
 
                     <!--begin::Logo image-->
                     <a href="#">
-                        <img alt="Logo" src="{{asset('images/logo.png')}}"
+                        <img alt="{{ __('Admin Logo') }}" src="{{ $adminLogoUrl }}"
                              class="h-75px app-sidebar-logo-default"/>
-                        <img alt="Logo" src="{{asset('images/logo.png')}}"
+                        <img alt="{{ __('Admin Logo') }}" src="{{ $adminLogoUrl }}"
                              class="h-30px app-sidebar-logo-minimize"/>
                     </a>
                     <!--end::Logo image-->

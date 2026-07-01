@@ -8,7 +8,7 @@
             </h4>
             <div class="imas-contact-sidebar-actions">
                 <button
-                    v-if="!isSoldOut"
+                    v-if="canToggleFavorite"
                     type="button"
                     class="imas-contact-favorite__toggle"
                     :class="{ 'is-favorited': localFavorited }"
@@ -139,13 +139,6 @@
                     </li>
                 </ul>
                 <div
-                    v-if="showSuccessFlash"
-                    class="alert alert-success text-start"
-                    role="status"
-                >
-                    {{ trans("contact_us.message_sent") }}
-                </div>
-                <div
                     class="agent-contact-form-sidebar imas-property-show-contact__form"
                 >
                     <h4
@@ -184,10 +177,14 @@ const props = defineProps({
     defaultSubject: { type: String, default: "" },
     defaultMessage: { type: String, default: "" },
     hideFormSubject: { type: Boolean, default: false },
-    propertyId: { type: Number, required: true },
+    propertyId: { type: Number, default: null },
     isFavorited: { type: Boolean, default: false },
     isSoldOut: { type: Boolean, default: false },
 });
+
+const canToggleFavorite = computed(
+    () => props.propertyId != null && !props.isSoldOut,
+);
 
 const effectiveDefaultSubject = computed(() => {
     if (!props.hideFormSubject) {
@@ -228,10 +225,6 @@ const isRtl = computed(() => {
     }
     return (page.props.locale || "en") === "ar";
 });
-
-const showSuccessFlash = computed(() =>
-    Boolean((page.props.flash ?? {}).contact_sent),
-);
 
 const globals = computed(() => page.props.globals ?? {});
 const settings = computed(() => page.props.settings ?? {});
@@ -365,7 +358,7 @@ async function onFavoriteClick(e) {
     e.preventDefault();
     e.stopPropagation();
 
-    if (props.isSoldOut) {
+    if (props.isSoldOut || props.propertyId == null) {
         return;
     }
 

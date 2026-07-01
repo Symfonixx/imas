@@ -224,9 +224,10 @@ function goNext() {
 }
 
 .imas-gallery-counter {
-    position: absolute;
+    // position: absolute;
     inset-inline-start: 12px;
-    bottom: 12px;
+    // bottom: 12px;
+    margin-top: 10px;
     z-index: 40;
     display: inline-flex;
     align-items: center;

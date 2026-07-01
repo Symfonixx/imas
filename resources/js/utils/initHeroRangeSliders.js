@@ -1,10 +1,38 @@
 let jqueryUiPromise = null;
 
-const DEFAULT_PRICE_STEP = 500_000;
-
 function snapToStep(value, min, max, step) {
     const snapped = min + Math.round((Number(value) - min) / step) * step;
     return Math.min(max, Math.max(min, snapped));
+}
+
+/**
+ * Pick a human-friendly price step from catalog min/max (1/2/5 × 10^n ladder).
+ * Large ranges use more target stops so steps stay at sensible increments (e.g. 500k for ~10M span).
+ */
+export function resolvePriceStep(min, max, targetSteps) {
+    const range = Number(max) - Number(min);
+    if (!Number.isFinite(range) || range <= 0) {
+        return 1;
+    }
+
+    const steps =
+        targetSteps ??
+        (range >= 5_000_000 ? 21 : 10);
+
+    const raw = range / steps;
+    const magnitude = 10 ** Math.floor(Math.log10(raw));
+    const normalized = raw / magnitude;
+
+    let factor = 10;
+    if (normalized <= 1) {
+        factor = 1;
+    } else if (normalized <= 2) {
+        factor = 2;
+    } else if (normalized <= 5) {
+        factor = 5;
+    }
+
+    return Math.max(1, Math.round(factor * magnitude));
 }
 
 /**
@@ -88,7 +116,7 @@ function initAreaSlider(
 
 function initPriceSlider(
     $slider,
-    { min, max, unit, values, step = DEFAULT_PRICE_STEP, onChange },
+    { min, max, unit, values, step, onChange },
 ) {
     if (!$slider.length) {
         return;
@@ -106,7 +134,10 @@ function initPriceSlider(
     const dataMin = Number(min);
     const dataMax = Number(max);
     const dataUnit = unit || "$";
-    const dataStep = Number(step) || DEFAULT_PRICE_STEP;
+    const dataStep =
+        step != null && Number(step) > 0
+            ? Number(step)
+            : resolvePriceStep(dataMin, dataMax);
 
     const format = (n) =>
         dataUnit +
@@ -152,7 +183,7 @@ export function initHeroRangeSliders({
     priceMin = 0,
     priceMax = 600000,
     priceUnit = "$",
-    priceStep = DEFAULT_PRICE_STEP,
+    priceStep = null,
     initialArea = null,
     initialPrice = null,
     onAreaChange,

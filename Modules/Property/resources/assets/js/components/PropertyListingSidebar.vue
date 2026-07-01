@@ -38,12 +38,20 @@
                     <div class="tab-pane fade show active">
                         <div class="rld-main-search">
                             <div class="row imas-listing-property-search__fields">
+                                <div class="rld-single-select imas-listing-city-cell">
+                                    <LocationCityPicker
+                                        v-model="searchCityIds"
+                                        layout="sidebar"
+                                        :cities="cities"
+                                        name="location_id[]"
+                                    />
+                                </div>
                                 <div class="rld-single-select imas-listing-location-cell">
                                     <LocationAreaPicker
                                         v-model="searchLocationIds"
                                         layout="sidebar"
-                                        :districts="districts"
-                                        :areas="areas"
+                                        :districts="filteredDistricts"
+                                        :areas="filteredAreas"
                                         name="location_id[]"
                                     />
                                 </div>
@@ -195,6 +203,9 @@ import {
 import { propertyStartPrice } from "../utils/propertyPrice.js";
 import FeaturedPropertiesSidebar from "./FeaturedPropertiesSidebar.vue";
 import LocationAreaPicker from "@/components/Global/LocationAreaPicker.vue";
+import LocationCityPicker from "@/components/Global/LocationCityPicker.vue";
+import { useLocationSearchFilters } from "@/composables/useLocationSearchFilters.js";
+import { splitLocationIds } from "@/utils/locationSearchFilters.js";
 
 const LISTING_AREA_SELECTOR = "#imas-listing-area-range";
 const LISTING_PRICE_SELECTOR = "#imas-listing-price-range";
@@ -203,6 +214,7 @@ const props = defineProps({
     searchAction: { type: String, required: true },
     filters: { type: Object, required: true },
     sort: { type: String, required: true },
+    cities: { type: Array, default: () => [] },
     districts: { type: Array, default: () => [] },
     areas: { type: Array, default: () => [] },
     propertyTypes: { type: Array, default: () => [] },
@@ -213,10 +225,20 @@ const props = defineProps({
 const page = usePage();
 
 const searchPropertyTypeId = ref("");
-const searchLocationIds = ref([]);
 const searchUnitTypeId = ref("");
 const rangesDirty = ref(false);
 const slidersReady = ref(false);
+
+const {
+    searchCityIds,
+    searchLocationIds,
+    filteredDistricts,
+    filteredAreas,
+} = useLocationSearchFilters(
+    () => props.cities,
+    () => props.districts,
+    () => props.areas,
+);
 
 const propertySearch = computed(
     () =>
@@ -260,15 +282,25 @@ function locale() {
 
 function syncFromFilters(f) {
     const locationIds = f.location_id;
+    let rawIds = [];
+
     if (Array.isArray(locationIds)) {
-        searchLocationIds.value = locationIds
+        rawIds = locationIds
             .filter((id) => id != null && id !== "")
             .map((id) => String(id));
     } else if (locationIds != null && locationIds !== "") {
-        searchLocationIds.value = [String(locationIds)];
-    } else {
-        searchLocationIds.value = [];
+        rawIds = [String(locationIds)];
     }
+
+    const { cityIds, districtAreaIds } = splitLocationIds(
+        rawIds,
+        props.cities,
+        props.districts,
+        props.areas,
+    );
+
+    searchLocationIds.value = districtAreaIds;
+    searchCityIds.value = cityIds;
     searchPropertyTypeId.value =
         f.property_type_id != null && f.property_type_id !== ""
             ? String(f.property_type_id)
@@ -442,12 +474,15 @@ onBeforeUnmount(() => {
     overflow: visible;
 }
 
+.imas-listing-property-search :deep(.imas-listing-city-cell),
 .imas-listing-property-search :deep(.imas-listing-location-cell) {
     overflow: visible !important;
     position: relative;
     z-index: 1;
 }
 
+.imas-listing-property-search
+    :deep(.imas-listing-city-cell .imas-loc-picker.is-open),
 .imas-listing-property-search
     :deep(.imas-listing-location-cell .imas-loc-picker.is-open) {
     z-index: 1100;
@@ -494,6 +529,7 @@ onBeforeUnmount(() => {
 }
 
 .imas-listing-property-search :deep(.rld-single-select),
+.imas-listing-property-search :deep(.imas-listing-city-cell),
 .imas-listing-property-search :deep(.imas-listing-location-cell),
 .imas-listing-property-search :deep(.imas-listing-range-panel),
 .imas-listing-property-search :deep(.imas-listing-property-search__submit) {

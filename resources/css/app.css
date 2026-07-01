@@ -377,7 +377,7 @@ h6,
 .team .sec-title h2 {
     font-family: var(--font-body) !important;
     letter-spacing: var(--letter-spacing-heading) !important;
-    text-transform: uppercase !important;
+    text-transform: capitalize !important;
     color: var(--text) !important;
 }
 
@@ -2791,6 +2791,7 @@ html[dir="rtl"] .mm-menu .mm-listview .imas-auth-nav-link {
     justify-content: center;
     color: var(--text);
     margin: 0;
+    text-transform: capitalize;
 }
 
 /* Arabic / RTL: one shaping run — no per-letter spans or wide tracking */
@@ -2799,6 +2800,7 @@ html[dir="rtl"] .imas-inner-page-heading-hero__title {
     letter-spacing: normal;
     display: block;
     text-align: center;
+    text-transform: none;
 }
 
 .imas-inner-page-heading-hero__title-text {
@@ -4491,6 +4493,11 @@ html[dir="rtl"] .imas-featured-properties-sidebar__badge--price {
 .imas-property-show-page {
     background: var(--bg);
     color: var(--text);
+    overflow-x: visible;
+}
+
+.imas-property-show-page.imas-property-listings {
+    overflow-x: visible;
 }
 
 .imas-property-show-page section.single-proper,
@@ -4644,6 +4651,14 @@ html[dir="rtl"] .imas-featured-properties-sidebar__badge--price {
         position: relative;
         align-self: stretch;
     }
+
+    .imas-property-show-page .imas-property-show__contact-sticky {
+        position: sticky;
+        top: var(--imas-sticky-top, 6.5rem);
+        z-index: 5;
+        align-self: flex-start;
+        width: 100%;
+    }
 }
 
 .imas-property-show-page .imas-blog-v2-sidebar__recent-item {
@@ -4694,6 +4709,14 @@ html[dir="rtl"] .imas-featured-properties-sidebar__badge--price {
     .imas-tc-page-root .imas-tc-page__sidebar-col {
         position: relative;
         align-self: stretch;
+    }
+
+    .imas-tc-page-root .imas-tc-page__contact-sticky {
+        position: sticky;
+        top: var(--imas-sticky-top, 6.5rem);
+        z-index: 5;
+        align-self: flex-start;
+        width: 100%;
     }
 }
 

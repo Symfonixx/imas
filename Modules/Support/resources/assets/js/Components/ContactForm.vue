@@ -156,7 +156,7 @@
             >
                 {{
                     variant === "sidebar"
-                        ? trans("property_show.request_inquiry")
+                        ? trans("property_show.connect_with_us_today")
                         : trans("contact_us.submit")
                 }}
             </button>

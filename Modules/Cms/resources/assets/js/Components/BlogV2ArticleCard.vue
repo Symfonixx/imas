@@ -5,9 +5,14 @@
         :class="{ 'is-visible': isVisible }"
         :style="staggerStyle"
     >
-        <a :href="article.url" class="imas-blog-v2-card__thumb">
+        <a
+            :href="article.url"
+            class="imas-blog-v2-card__link"
+            :aria-label="article.title"
+        />
+        <div class="imas-blog-v2-card__thumb">
             <img :src="article.image" :alt="article.title" loading="lazy" />
-        </a>
+        </div>
         <span
             v-if="categoryName"
             class="imas-blog-show__category-label imas-blog-v2-card__category-label"
@@ -18,11 +23,9 @@
             class="imas-blog-v2-card__body"
             :class="{ 'imas-blog-v2-card__body--has-category': categoryName }"
         >
-            <a :href="article.url">
-                <h3 class="imas-blog-v2-card__title text-md font-semibold text-start">
-                    {{ article.title }}
-                </h3>
-            </a>
+            <h3 class="imas-blog-v2-card__title text-md font-semibold text-start">
+                {{ article.title }}
+            </h3>
             <div class="imas-blog-v2-card__meta text-md text-dim">
                 <span v-if="article.date">{{ article.date }}</span>
                 <span
@@ -49,9 +52,9 @@
                 <span class="imas-blog-v2-card__cta-text">{{
                     readMoreLabel
                 }}</span>
-                <a :href="article.url" class="imas-blog-v2-card__pill">
+                <span class="imas-blog-v2-card__pill">
                     {{ readArticleLabel }}
-                </a>
+                </span>
             </div>
         </div>
     </article>

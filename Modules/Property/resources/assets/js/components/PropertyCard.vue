@@ -244,11 +244,12 @@ function formatMoney(amount) {
         return "—";
     }
 
-    return new Intl.NumberFormat(locale.value, {
-        style: "currency",
-        currency: "USD",
+    const formatted = new Intl.NumberFormat(locale.value, {
+        minimumFractionDigits: 0,
         maximumFractionDigits: 0,
     }).format(n);
+
+    return `$${formatted}`;
 }
 
 const priceAmount = computed(() =>

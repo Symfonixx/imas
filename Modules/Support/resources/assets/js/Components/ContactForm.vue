@@ -95,6 +95,7 @@
                 <div :class="pairColClass">
                     <div class="form-group">
                         <PhoneCountryInput
+                            class="phon_num_input"
                             v-model="form.mobile"
                             input-id="imas-contact-mobile"
                             :placeholder="
@@ -143,24 +144,24 @@
                     {{ form.errors.message }}
                 </div>
             </div>
-           <div class="d-flex justify-content-start">
-            <button
-                type="submit"
-                class="btn btn-primary imas-contact-page__submit"
-                :class="
-                    variant === 'sidebar'
-                        ? 'multiple-send-message w-100'
-                        : 'btn-lg'
-                "
-                :disabled="form.processing"
-            >
-                {{
-                    variant === "sidebar"
-                        ? trans("property_show.connect_with_us_today")
-                        : trans("contact_us.submit")
-                }}
-            </button>
-           </div>
+            <div class="d-flex justify-content-start">
+                <button
+                    type="submit"
+                    class="btn btn-primary imas-contact-page__submit"
+                    :class="
+                        variant === 'sidebar'
+                            ? 'multiple-send-message w-100'
+                            : 'btn-lg'
+                    "
+                    :disabled="form.processing"
+                >
+                    {{
+                        variant === "sidebar"
+                            ? trans("property_show.connect_with_us_today")
+                            : trans("contact_us.submit")
+                    }}
+                </button>
+            </div>
         </form>
     </div>
 </template>
@@ -370,7 +371,9 @@ function submit() {
     margin-bottom: 12px;
 }
 
-input{
+input {
     height: 48px !important;
 }
+
+
 </style>

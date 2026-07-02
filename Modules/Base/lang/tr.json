@@ -17,7 +17,7 @@
         "back_to_login":" Girişe dön",
         "reset_hint":"Şifre sıfırlama e-postanızdaki bağlantıyı kullanın. Bağlantı bir jeton içerir. Giriş sekmesindeki “Şifremi unuttum” ile yeni bir bağlantı isteyebilirsiniz. E-postadan bu sayfaya geldiyseniz, jeton otomatik yüklenebilir.",
         "country_calling_code":"Ülke kodu",
-        "mobile_national_placeholder":"Yerel numara (ülke kodu olmadan)",
+        "mobile_national_placeholder":"Telefon (Kod olmadan)",
         "mobile_invalid_length":"Geçerli bir cep numarası girin (ülke kodu dahil toplam 8–15 rakam).",
         "country_code_search_placeholder":"Koda veya ülkeye göre ara…",
         "country_code_search_empty":"Aramanızla eşleşen ülke yok.",
@@ -313,7 +313,7 @@
         "connect_with_us_today":"Bize Ulaşın Bugün",
         "default_inquiry_message":"Bu mülkle ilgileniyorum",
         "similar_properties":"Benzer mülkler",
-        "unit_types_title":"Mülkler",
+        "unit_types_title":"Proje Detayları",
         "project_id":"Proje Kodu",
         "project_location":"Konum",
         "col_rooms":"Oda ve salon sayısı",
@@ -335,7 +335,7 @@
         "description":"Gayrimenkul ve yatırım müşterilerimizin samimi yorumlarını okuyun."
     },
     "articles":{
-        "title":"Son gönderiler",
+        "title":"Bloglar ve Haberler",
         "description":"Son gönderilerimizden haberdar olun.",
         "read_more":"Devamını oku..."
     },

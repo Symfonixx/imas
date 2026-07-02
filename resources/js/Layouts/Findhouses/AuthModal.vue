@@ -1911,7 +1911,7 @@ const logoUrl = computed(() => {
     width: 1rem !important;
    
     height: 1rem !important;
-    margin: 0 0.35rem 0 0 !important;
+    margin: 0 0.35rem 0 0.35rem !important;
     padding: 0;
     border: 1px solid var(--border) !important;
     border-radius: 3px;

@@ -323,6 +323,10 @@ onBeforeUnmount(() => {
     text-align: start;
 }
 
+.imas-hero-property-search :deep(.dropdown-filter span) {
+    text-align: start;
+}
+
 /* Match theme spacing between hero search fields (.single-select has margin-right: 15px) */
 @media (max-width: 991.98px) {
     .imas-hero-property-search :deep(.imas-hero-city-cell),
@@ -394,7 +398,7 @@ onBeforeUnmount(() => {
         font-size: 11px !important;
         width: 47% !important;
         max-width: 47% !important;
-        margin-top: 0.5rem !important;
+        margin-top: 1rem !important;
         line-height: 1.3 !important;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -403,15 +407,15 @@ onBeforeUnmount(() => {
 
     .imas-hero-property-search
         :deep(.imas-hero-advanced-panel input.first-slider-value) {
-        float: left;
-        margin-left: 0 !important;
+        float: inline-start;
+        margin-inline-start: 0 !important;
         text-align: start;
     }
 
     .imas-hero-property-search
         :deep(.imas-hero-advanced-panel input.second-slider-value) {
-        float: right;
-        margin-right: 0 !important;
+        float: inline-end;
+        margin-inline-end: 0 !important;
         text-align: end;
     }
 
@@ -430,6 +434,7 @@ onBeforeUnmount(() => {
         :deep(.imas-hero-advanced-panel .ui-slider-horizontal) {
         width: calc(100% - 8px) !important;
         margin-inline: 4px !important;
+        margin-bottom: 1rem !important;
     }
 }
 
@@ -454,6 +459,18 @@ onBeforeUnmount(() => {
     color: var(--text) !important;
     border: 0 !important;
     box-shadow: none !important;
+}
+
+.imas-hero-property-search
+    :deep(.imas-hero-advanced-panel input.first-slider-value) {
+    float: inline-start !important;
+    text-align: start;
+}
+
+.imas-hero-property-search
+    :deep(.imas-hero-advanced-panel input.second-slider-value) {
+    float: inline-end !important;
+    text-align: end;
 }
 
 .hp-6 .dropdown-filter span::after {
@@ -572,17 +589,6 @@ onBeforeUnmount(() => {
 .imas-hero-property-search :deep(#imas-hero-price-range .first-slider-value),
 .imas-hero-property-search :deep(#imas-hero-price-range .second-slider-value) {
     background: transparent !important;
-}
-
-html[dir="rtl"]
-    .imas-hero-property-search
-    :deep(#imas-hero-area-range .first-slider-value) {
-    text-align: end !important;
-}
-html[dir="rtl"]
-    .imas-hero-property-search
-    :deep(#imas-hero-price-range .first-slider-value) {
-    text-align: end !important;
 }
 
 .hp-6 .dropdown-filter span {

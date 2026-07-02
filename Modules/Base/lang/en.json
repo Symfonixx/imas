@@ -17,7 +17,7 @@
         "back_to_login":"Back to sign in",
         "reset_hint":"Open the link from your reset email (it includes a token), or request a new link from “Forgot password” on the sign-in tab. If you opened this page from your email, your token may load automatically.",
         "country_calling_code":"Country code",
-        "mobile_national_placeholder":"National number (no country code)",
+        "mobile_national_placeholder":"Phone (Without Code)",
         "mobile_invalid_length":"Enter a valid mobile number (8–15 digits total, including country code).",
         "country_code_search_placeholder":"Search by code or country…",
         "country_code_search_empty":"No countries match your search.",
@@ -334,7 +334,7 @@
         "description":"Read honest reviews from our real estate and investment clients."
     },
     "articles":{
-        "title":"Articles & Tips",
+        "title":"Blogs & News",
         "description":"Stay up to date with the latest news and insights from our experts.",
         "read_more":"Read more..."
     },

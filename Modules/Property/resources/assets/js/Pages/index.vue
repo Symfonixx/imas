@@ -110,6 +110,7 @@
                     :search-action="propertyIndexUrl"
                     :filters="filters"
                     :sort="sort"
+                    :cities="cities"
                     :districts="districts"
                     :areas="areas"
                     :property-types="propertyTypes"
@@ -139,6 +140,7 @@ const props = defineProps({
     filters: { type: Object, required: true },
     sort: { type: String, required: true },
     propertyTypes: { type: Array, default: () => [] },
+    cities: { type: Array, default: () => [] },
     districts: { type: Array, default: () => [] },
     areas: { type: Array, default: () => [] },
     recentProperties: { type: Array, default: () => [] },

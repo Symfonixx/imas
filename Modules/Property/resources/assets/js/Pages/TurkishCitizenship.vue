@@ -232,7 +232,7 @@ const titleAccent = computed(() =>
 const pageHeadingTitle = computed(() => {
     const t = pickSeoString(
         props.turkishCitizenship.meta_title,
-        "turkish_citizenship_meta_title",
+        "Turkish Citizenship",
     );
     return t !== "" ? t : sectionLabel.value;
 });

@@ -96,8 +96,8 @@ const props = defineProps({
     bannerImageUrl: { type: String, default: "" },
     /** YouTube iframe HTML, watch URL, or embed URL for a muted autoplay hero background. */
     bannerVideoEmbed: { type: String, default: "" },
-    /** Letter-by-letter title uses uppercase (Latin blog-v2 style only). */
-    uppercaseTitle: { type: Boolean, default: true },
+    /** Title casing for Latin letter-by-letter / compact hero (connected scripts stay unchanged). */
+    capitalizeTitle: { type: Boolean, default: true },
 });
 
 const page = usePage();
@@ -106,6 +106,15 @@ const heroVideoIframeRef = ref(null);
 const prefersCompactHeroTitle = ref(false);
 
 let compactTitleMq = null;
+
+function capitalizeHeroTitle(text) {
+    const locale = String(page.props.locale ?? "en");
+    return String(text || "")
+        .toLocaleLowerCase(locale)
+        .replace(/(\p{L})(\p{L}*)/gu, (_, first, rest) =>
+            first.toLocaleUpperCase(locale) + rest,
+        );
+}
 
 function usesConnectedScript(text) {
     return CONNECTED_SCRIPT_RE.test(String(text || ""));
@@ -131,11 +140,11 @@ const displayTitle = computed(() => {
     if (titleUsesConnectedTitle.value) {
         return titleUsesConnectedScript.value
             ? raw
-            : props.uppercaseTitle
-              ? raw.toUpperCase()
+            : props.capitalizeTitle
+              ? capitalizeHeroTitle(raw)
               : raw;
     }
-    return props.uppercaseTitle ? raw.toUpperCase() : raw;
+    return props.capitalizeTitle ? capitalizeHeroTitle(raw) : raw;
 });
 
 const titleLetters = computed(() => displayTitle.value.split(""));

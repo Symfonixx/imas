@@ -64,5 +64,6 @@
     "Last Login": "Last Login",
     "My Profile": "My Profile",
     "No data available in table": "No data available in table",
-      "RegisterNote":"Sign up To Save , Explore & Revisit your Favorite Properties"
+    "LoginNote": "Sign In To Save , Explore & Revisit your Favorite Properties",
+    "RegisterNote": "Sign up To Save , Explore & Revisit your Favorite Properties"
 }

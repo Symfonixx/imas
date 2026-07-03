@@ -89,7 +89,7 @@ const blogHeadingItems = computed(() => {
         /* Ziggy may be unavailable */
     }
     rows.push({
-        title: trans("contact_us.title"),
+        title: trans("navBar.Contact us"),
         href: null,
     });
     return rows;

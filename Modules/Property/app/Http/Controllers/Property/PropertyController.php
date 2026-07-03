@@ -87,13 +87,25 @@ class PropertyController extends Controller
             ->values()
             ->all();
 
+        $cities = Location::query()
+            ->where('type', LocationType::City)
+            ->orderBy('id')
+            ->get(['id', 'name'])
+            ->map(static fn (Location $city) => [
+                'id' => $city->id,
+                'name' => $city->name,
+            ])
+            ->values()
+            ->all();
+
         $districts = Location::query()
             ->where('type', LocationType::District)
             ->orderBy('id')
-            ->get(['id', 'name'])
+            ->get(['id', 'name', 'parent_id'])
             ->map(static fn (Location $district) => [
                 'id' => $district->id,
                 'name' => $district->name,
+                'parent_id' => $district->parent_id,
             ])
             ->values()
             ->all();
@@ -101,10 +113,11 @@ class PropertyController extends Controller
         $areas = Location::query()
             ->where('type', LocationType::Area)
             ->orderBy('id')
-            ->get(['id', 'name'])
+            ->get(['id', 'name', 'parent_id'])
             ->map(static fn (Location $area) => [
                 'id' => $area->id,
                 'name' => $area->name,
+                'parent_id' => $area->parent_id,
             ])
             ->values()
             ->all();
@@ -140,6 +153,7 @@ class PropertyController extends Controller
             'filters' => $filters,
             'sort' => $sort,
             'propertyTypes' => $propertyTypes,
+            'cities' => $cities,
             'districts' => $districts,
             'areas' => $areas,
             'recentProperties' => $recentProperties,

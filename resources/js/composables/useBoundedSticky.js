@@ -16,65 +16,48 @@ function getStickOffset(extraGap = 16) {
     return Math.round(rect.bottom + extraGap);
 }
 
+function clearInlinePosition(target) {
+    target.style.position = "";
+    target.style.top = "";
+    target.style.bottom = "";
+    target.style.left = "";
+    target.style.right = "";
+    target.style.width = "";
+    target.style.maxWidth = "";
+    target.style.zIndex = "";
+    target.style.transform = "";
+    target.style.insetInlineStart = "";
+}
+
 /**
- * Pins `targetRef` while scrolling through `boundaryRef`, then releases at the boundary bottom.
+ * Keeps a sidebar contact panel stuck while scrolling its parent column.
+ * Uses CSS `position: sticky` (direction-safe for RTL/LTR) and only updates
+ * `--imas-sticky-top` for the pinned header offset.
  */
 export function useBoundedSticky({
-    boundaryRef,
-    columnRef,
+    boundaryRef: _boundaryRef,
+    columnRef: _columnRef,
     targetRef,
     minWidth = 992,
 }) {
     let raf = 0;
     let resizeObserver = null;
 
-    function resetTargetStyles(target) {
-        target.style.position = "";
-        target.style.top = "";
-        target.style.bottom = "";
-        target.style.left = "";
-        target.style.width = "";
-        target.style.zIndex = "";
-    }
-
     function update() {
-        const boundary = boundaryRef.value;
-        const column = columnRef.value;
         const target = targetRef.value;
 
-        if (!boundary || !column || !target) {
+        if (!target) {
             return;
         }
 
         if (window.innerWidth < minWidth) {
-            resetTargetStyles(target);
+            target.style.removeProperty("--imas-sticky-top");
+            clearInlinePosition(target);
             return;
         }
 
-        const stick = getStickOffset();
-        const boundaryRect = boundary.getBoundingClientRect();
-        const columnRect = column.getBoundingClientRect();
-        const targetHeight = target.offsetHeight;
-
-        if (columnRect.top > stick) {
-            resetTargetStyles(target);
-            return;
-        }
-
-        if (boundaryRect.bottom <= stick + targetHeight) {
-            resetTargetStyles(target);
-            target.style.position = "absolute";
-            target.style.bottom = "0";
-            target.style.width = "100%";
-            target.style.zIndex = "5";
-            return;
-        }
-
-        target.style.position = "fixed";
-        target.style.top = `${stick}px`;
-        target.style.left = `${columnRect.left}px`;
-        target.style.width = `${columnRect.width}px`;
-        target.style.zIndex = "5";
+        target.style.setProperty("--imas-sticky-top", `${getStickOffset()}px`);
+        clearInlinePosition(target);
     }
 
     function scheduleUpdate() {
@@ -88,9 +71,6 @@ export function useBoundedSticky({
 
         if (typeof ResizeObserver !== "undefined") {
             resizeObserver = new ResizeObserver(scheduleUpdate);
-            if (boundaryRef.value) {
-                resizeObserver.observe(boundaryRef.value);
-            }
             if (targetRef.value) {
                 resizeObserver.observe(targetRef.value);
             }
@@ -109,7 +89,8 @@ export function useBoundedSticky({
 
         const target = targetRef.value;
         if (target) {
-            resetTargetStyles(target);
+            target.style.removeProperty("--imas-sticky-top");
+            clearInlinePosition(target);
         }
     });
 }

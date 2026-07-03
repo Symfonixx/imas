@@ -64,5 +64,6 @@
     "Last Login": "Son giriş",
     "My Profile": "Profilim",
     "No data available in table": "Tabloda veri bulunmuyor",
-    "RegisterNote":"Favorilerinizi kaydetmek ve tekrar görüntülemek için kayıt olun."
+    "LoginNote": "Favorilerinizi kaydetmek, keşfetmek ve tekrar görüntülemek için giriş yapın.",
+    "RegisterNote": "Favorilerinizi kaydetmek, keşfetmek ve tekrar görüntülemek için kayıt olun."
 }

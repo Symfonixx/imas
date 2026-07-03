@@ -29,7 +29,7 @@
                         />
                     </div>
                     <h3 class="text-center">
-                        {{ trans("RegisterNote") }}
+                        {{ authNoteText }}
                         <!-- <span
                             class="imas-auth-modal__brand"
                             v-html="welcomeBrandHtml"
@@ -887,6 +887,12 @@ function trans(key) {
 
 const authSubview = ref(null);
 const activeMainTab = ref("login");
+
+const authNoteText = computed(() =>
+    activeMainTab.value === "register"
+        ? trans("RegisterNote")
+        : trans("LoginNote"),
+);
 const resetToken = ref("");
 const seo = computed(() => page.props.globals.seo || {});
 const appName = computed(() => String(seo.value.main_title || ""));

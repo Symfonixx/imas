@@ -49,13 +49,25 @@ class HomeController extends Controller
             ->values()
             ->all();
 
+        $cities = Location::query()
+            ->where('type', LocationType::City)
+            ->orderBy('id')
+            ->get(['id', 'name'])
+            ->map(static fn (Location $city) => [
+                'id' => $city->id,
+                'name' => $city->name,
+            ])
+            ->values()
+            ->all();
+
         $districts = Location::query()
             ->where('type', LocationType::Municipality)
             ->orderBy('id')
-            ->get(['id', 'name'])
+            ->get(['id', 'name', 'parent_id'])
             ->map(static fn (Location $district) => [
                 'id' => $district->id,
                 'name' => $district->name,
+                'parent_id' => $district->parent_id,
             ])
             ->values()
             ->all();
@@ -63,10 +75,11 @@ class HomeController extends Controller
         $areas = Location::query()
             ->where('type', LocationType::Area)
             ->orderBy('id')
-            ->get(['id', 'name'])
+            ->get(['id', 'name', 'parent_id'])
             ->map(static fn (Location $area) => [
                 'id' => $area->id,
                 'name' => $area->name,
+                'parent_id' => $area->parent_id,
             ])
             ->values()
             ->all();
@@ -170,6 +183,7 @@ class HomeController extends Controller
             'welcomeSubtitle' => 'Browse curated listings and discover properties that match your goals.',
             'slides' => $slides,
             'propertyTypes' => $propertyTypes,
+            'cities' => $cities,
             'districts' => $districts,
             'areas' => $areas,
             'featuredProperties' => $featuredProperties,

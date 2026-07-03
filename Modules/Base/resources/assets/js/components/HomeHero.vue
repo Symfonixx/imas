@@ -2,18 +2,25 @@
     <section
         id="hero-area"
         class="parallax-searchs home15 overlay thome-6 thome-1"
-        :class="{'imas-hero-slider': slides.length > 0}"
+        :class="{ 'imas-hero-slider': slides.length > 0 }"
         data-stellar-background-ratio="0.5"
     >
-        <div v-if="slides.length > 0" class="imas-hero-slider__layers" aria-hidden="true">
+        <div
+            v-if="slides.length > 0"
+            class="imas-hero-slider__layers"
+            aria-hidden="true"
+        >
             <div
                 v-for="(slide, index) in slides"
                 :key="slide.id"
                 class="imas-hero-slider__slide"
-                :class="{ 'imas-hero-slider__slide--active': index === activeSlideIndex }"
+                :class="{
+                    'imas-hero-slider__slide--active':
+                        index === activeSlideIndex,
+                }"
                 :style="{ backgroundImage: `url(${slide.image})` }"
             />
-            <div class="imas-hero-slider__scrim"/>
+            <div class="imas-hero-slider__scrim" />
         </div>
 
         <div class="hero-main">
@@ -24,15 +31,23 @@
                             <div class="imas-hero-copy">
                                 <div ref="heroCopyRef" class="welcome-text">
                                     <template v-if="useStaticHeroCopy">
-                                        <h1 class="h1 imas-hero-title imas-hero-title--static">
+                                        <h1
+                                            class="h1 imas-hero-title imas-hero-title--static"
+                                        >
                                             {{ heroTitle }}
                                         </h1>
-                                        <p ref="heroSubtitleRef" class="mt-4 imas-hero-subtitle">
+                                        <p
+                                            ref="heroSubtitleRef"
+                                            class="mt-4 imas-hero-subtitle"
+                                        >
                                             {{ heroSubtitle }}
                                         </p>
                                     </template>
                                     <template v-else>
-                                        <h1 class="h1 imas-hero-title" :aria-label="heroTitle">
+                                        <h1
+                                            class="h1 imas-hero-title"
+                                            :aria-label="heroTitle"
+                                        >
                                             <component
                                                 :is="heroTitleTag"
                                                 v-bind="heroTitleAttrs"
@@ -42,25 +57,32 @@
                                                     v-if="titleParts.lead"
                                                     ref="titleLeadRef"
                                                     class="imas-hero-title-lead"
-                                                >{{ titleParts.lead }}</span>
+                                                    >{{ titleParts.lead }}</span
+                                                >
                                                 <span
                                                     v-if="titleParts.lead"
                                                     class="imas-hero-title-gap"
                                                     aria-hidden="true"
-                                                >&nbsp;</span>
+                                                    >&nbsp;</span
+                                                >
                                                 <span
                                                     ref="titleTypedRef"
                                                     class="imas-hero-title-typed"
                                                 >
-                                                    {{ displayedTypedText }}<span
+                                                    {{ displayedTypedText
+                                                    }}<span
                                                         v-if="showTypeCursor"
                                                         class="imas-hero-type-cursor"
                                                         aria-hidden="true"
-                                                    >|</span>
+                                                        >|</span
+                                                    >
                                                 </span>
                                             </component>
                                         </h1>
-                                        <p ref="heroSubtitleRef" class="mt-4 imas-hero-subtitle">
+                                        <p
+                                            ref="heroSubtitleRef"
+                                            class="mt-4 imas-hero-subtitle"
+                                        >
                                             {{ heroSubtitle }}
                                         </p>
                                     </template>
@@ -76,30 +98,42 @@
                                     </a>
                                 </div>
 
-                                <div v-if="slides.length > 1" class="imas-hero-dots" role="tablist" aria-label="Slides">
+                                <div
+                                    v-if="slides.length > 1"
+                                    class="imas-hero-dots"
+                                    role="tablist"
+                                    aria-label="Slides"
+                                >
                                     <button
                                         v-for="(slide, index) in slides"
                                         :key="slide.id"
                                         type="button"
                                         class="imas-hero-dot"
-                                        :class="{ 'imas-hero-dot--active': index === activeSlideIndex }"
-                                        :aria-selected="index === activeSlideIndex"
+                                        :class="{
+                                            'imas-hero-dot--active':
+                                                index === activeSlideIndex,
+                                        }"
+                                        :aria-selected="
+                                            index === activeSlideIndex
+                                        "
                                         @click="goToSlide(index)"
                                     />
                                 </div>
                             </div>
-
-                            <div ref="heroFilterRef" class="imas-hero-filter">
-                                <HomeHeroPropertySearch
-                                    :action="propertyIndexUrl"
-                                    :purpose="purpose"
-                                    :property-types="propertyTypes"
-                                    :districts="districts"
-                                    :areas="areas"
-                                />
-                            </div>
                         </div>
                     </div>
+                </div>
+            </div>
+            <div class="imas-hero-filter-shell">
+                <div ref="heroFilterRef" class="imas-hero-filter">
+                    <HomeHeroPropertySearch
+                        :action="propertyIndexUrl"
+                        :purpose="purpose"
+                        :property-types="propertyTypes"
+                        :cities="cities"
+                        :districts="districts"
+                        :areas="areas"
+                    />
                 </div>
             </div>
         </div>
@@ -107,22 +141,30 @@
 </template>
 
 <script setup>
-import {computed, nextTick, onBeforeUnmount, onMounted, ref, watch} from 'vue';
-import {usePage} from '@inertiajs/vue3';
-import {useGsap} from '@/composables/useGsap';
-import {createGsapContext, prefersReducedMotion} from '@/plugins/gsap';
-import HomeHeroPropertySearch from './HomeHeroPropertySearch.vue';
+import {
+    computed,
+    nextTick,
+    onBeforeUnmount,
+    onMounted,
+    ref,
+    watch,
+} from "vue";
+import { usePage } from "@inertiajs/vue3";
+import { useGsap } from "@/composables/useGsap";
+import { createGsapContext, prefersReducedMotion } from "@/plugins/gsap";
+import HomeHeroPropertySearch from "./HomeHeroPropertySearch.vue";
 
 const props = defineProps({
-    welcomeTitle: {type: String, required: true},
-    welcomeSubtitle: {type: String, required: true},
-    slides: {type: Array, default: () => []},
-    propertyTypes: {type: Array, default: () => []},
-    districts: {type: Array, default: () => []},
-    areas: {type: Array, default: () => []},
+    welcomeTitle: { type: String, required: true },
+    welcomeSubtitle: { type: String, required: true },
+    slides: { type: Array, default: () => [] },
+    propertyTypes: { type: Array, default: () => [] },
+    cities: { type: Array, default: () => [] },
+    districts: { type: Array, default: () => [] },
+    areas: { type: Array, default: () => [] },
 });
 
-const purpose = ref('sale');
+const purpose = ref("sale");
 
 const activeSlideIndex = ref(0);
 const heroCopyRef = ref(null);
@@ -131,17 +173,17 @@ const titleTypedRef = ref(null);
 const heroSubtitleRef = ref(null);
 const heroActionRef = ref(null);
 const heroFilterRef = ref(null);
-const displayedTypedText = ref('');
+const displayedTypedText = ref("");
 const showTypeCursor = ref(false);
-const MOBILE_HERO_MQ = '(max-width: 767.98px)';
+const MOBILE_HERO_MQ = "(max-width: 767.98px)";
 
 const useStaticHeroCopy = ref(
-    typeof window !== 'undefined' && window.matchMedia(MOBILE_HERO_MQ).matches,
+    typeof window !== "undefined" && window.matchMedia(MOBILE_HERO_MQ).matches,
 );
 
 let mobileHeroMq = null;
 
-const {gsap, context} = useGsap();
+const { gsap, context } = useGsap();
 let slideTimer = null;
 let heroAnimToken = 0;
 /** @type {import('gsap').Context | null} */
@@ -165,43 +207,45 @@ function pickTranslation(key, fallback) {
 
 const slides = computed(() => props.slides || []);
 
-const activeSlide = computed(() => slides.value[activeSlideIndex.value] ?? null);
+const activeSlide = computed(
+    () => slides.value[activeSlideIndex.value] ?? null,
+);
 
 const activeSlideLink = computed(() => {
     const link = activeSlide.value?.link;
-    if (typeof link === 'string' && link.trim() !== '') {
+    if (typeof link === "string" && link.trim() !== "") {
         return link.trim();
     }
 
-    return '';
+    return "";
 });
 
 const actionLabel = computed(() =>
-    pickTranslation('turkishCitizenship.discover_more', 'Discover More'),
+    pickTranslation("turkishCitizenship.discover_more", "Discover More"),
 );
 
 function pickSlideText(value, fallback) {
-    if (typeof value !== 'string') {
+    if (typeof value !== "string") {
         return fallback;
     }
     const trimmed = value.trim();
 
-    return trimmed !== '' ? trimmed : fallback;
+    return trimmed !== "" ? trimmed : fallback;
 }
 
 const heroTitle = computed(() =>
     slides.value.length > 0
         ? pickSlideText(activeSlide.value?.title, props.welcomeTitle)
-        : props.welcomeTitle
+        : props.welcomeTitle,
 );
 
 const heroSubtitle = computed(() =>
     slides.value.length > 0
         ? pickSlideText(activeSlide.value?.description, props.welcomeSubtitle)
-        : props.welcomeSubtitle
+        : props.welcomeSubtitle,
 );
 
-const heroTitleTag = computed(() => 'span');
+const heroTitleTag = computed(() => "span");
 
 const heroTitleAttrs = computed(() => ({}));
 
@@ -210,28 +254,28 @@ const heroTitleAttrs = computed(() => ({}));
  * @returns {{ lead: string, typed: string }}
  */
 function splitTitleForTypewriter(title) {
-    const words = String(title || '')
+    const words = String(title || "")
         .trim()
         .split(/\s+/u)
         .filter(Boolean);
 
     if (words.length === 0) {
-        return {lead: '', typed: ''};
+        return { lead: "", typed: "" };
     }
 
     if (words.length <= 2) {
-        return {lead: '', typed: words.join(' ')};
+        return { lead: "", typed: words.join(" ") };
     }
 
     return {
-        lead: words.slice(0, -2).join(' '),
-        typed: words.slice(-2).join(' '),
+        lead: words.slice(0, -2).join(" "),
+        typed: words.slice(-2).join(" "),
     };
 }
 
 const titleParts = computed(() => splitTitleForTypewriter(heroTitle.value));
 
-const propertyIndexUrl = computed(() => route('property.index'));
+const propertyIndexUrl = computed(() => route("property.index"));
 
 function updateStaticHeroCopy() {
     useStaticHeroCopy.value = window.matchMedia(MOBILE_HERO_MQ).matches;
@@ -244,7 +288,7 @@ function killHeroCopyTweens() {
     }
 
     gsap.killTweensOf(root);
-    gsap.killTweensOf(root.querySelectorAll('*'));
+    gsap.killTweensOf(root.querySelectorAll("*"));
 }
 
 function setHeroCopyVisible() {
@@ -254,10 +298,10 @@ function setHeroCopyVisible() {
     }
 
     const targets = [
-        root.querySelector('.imas-hero-title'),
-        root.querySelector('.imas-hero-subtitle'),
+        root.querySelector(".imas-hero-title"),
+        root.querySelector(".imas-hero-subtitle"),
         ...root.querySelectorAll(
-            '.imas-hero-title-lead, .imas-hero-title-typed, .imas-hero-title-link, .imas-hero-action',
+            ".imas-hero-title-lead, .imas-hero-title-typed, .imas-hero-title-link, .imas-hero-action",
         ),
         titleLeadRef.value,
         titleTypedRef.value,
@@ -268,7 +312,11 @@ function setHeroCopyVisible() {
     gsap.killTweensOf(targets);
 
     if (targets.length) {
-        gsap.set(targets, {opacity: 1, y: 0, clearProps: 'opacity,transform'});
+        gsap.set(targets, {
+            opacity: 1,
+            y: 0,
+            clearProps: "opacity,transform",
+        });
     }
 }
 
@@ -299,22 +347,22 @@ function playHeroSearchEnterAnimation() {
     searchEnterHasPlayed = true;
 
     if (prefersReducedMotion()) {
-        gsap.set(filterEl, {opacity: 1, scale: 1});
+        gsap.set(filterEl, { opacity: 1, scale: 1 });
         return;
     }
 
     heroSearchCtx = createGsapContext(() => {
         gsap.fromTo(
             filterEl,
-            {opacity: 0, scale: 0.5},
-            {opacity: 1, scale: 1, duration: 2.75, ease: 'power2.out'},
+            { opacity: 0, scale: 0.5 },
+            { opacity: 1, scale: 1, duration: 2.75, ease: "power2.out" },
         );
     }, heroFilterRef);
 }
 
 function playHeroCopyAnimation() {
     const token = ++heroAnimToken;
-    const {lead, typed} = titleParts.value;
+    const { lead, typed } = titleParts.value;
 
     if (prefersReducedMotion() || useStaticHeroCopy.value) {
         displayedTypedText.value = typed;
@@ -324,7 +372,7 @@ function playHeroCopyAnimation() {
         return;
     }
 
-    displayedTypedText.value = '';
+    displayedTypedText.value = "";
     showTypeCursor.value = false;
 
     const leadEl = titleLeadRef.value;
@@ -334,7 +382,7 @@ function playHeroCopyAnimation() {
 
     context(() => {
         const tl = gsap.timeline({
-            defaults: {ease: 'power2.out'},
+            defaults: { ease: "power2.out" },
             onComplete: () => {
                 if (token !== heroAnimToken) {
                     return;
@@ -345,23 +393,23 @@ function playHeroCopyAnimation() {
         });
 
         if (subEl) {
-            gsap.set(subEl, {opacity: 0, y: -20});
+            gsap.set(subEl, { opacity: 0, y: -20 });
         }
 
         if (actionEl) {
-            gsap.set(actionEl, {opacity: 0, y: 12});
+            gsap.set(actionEl, { opacity: 0, y: 12 });
         }
 
         if (leadEl && lead) {
-            gsap.set(leadEl, {opacity: 0, y: -20});
+            gsap.set(leadEl, { opacity: 0, y: -20 });
             tl.fromTo(
                 leadEl,
-                {opacity: 0, y: -20},
-                {opacity: 1, y: 0, duration: 1.15},
+                { opacity: 0, y: -20 },
+                { opacity: 1, y: 0, duration: 1.15 },
                 0,
             );
         } else if (typedEl && !lead) {
-            gsap.set(typedEl, {opacity: 0, y: -20});
+            gsap.set(typedEl, { opacity: 0, y: -20 });
         }
 
         const typeStart = lead ? 0.65 : 0;
@@ -371,8 +419,8 @@ function playHeroCopyAnimation() {
         if (!lead && typedEl && chars.length) {
             tl.fromTo(
                 typedEl,
-                {opacity: 0, y: -20},
-                {opacity: 1, y: 0, duration: 0.85},
+                { opacity: 0, y: -20 },
+                { opacity: 1, y: 0, duration: 0.85 },
                 typeStart,
             );
         }
@@ -423,8 +471,8 @@ function playHeroCopyAnimation() {
         if (actionEl) {
             tl.fromTo(
                 actionEl,
-                {opacity: 0, y: 12},
-                {opacity: 1, y: 0, duration: 0.85},
+                { opacity: 0, y: 12 },
+                { opacity: 1, y: 0, duration: 0.85 },
                 afterType + 0.08,
             );
         }
@@ -432,12 +480,11 @@ function playHeroCopyAnimation() {
         if (subEl) {
             tl.fromTo(
                 subEl,
-                {opacity: 0, y: -20},
-                {opacity: 1, y: 0, duration: 1.1},
+                { opacity: 0, y: -20 },
+                { opacity: 1, y: 0, duration: 1.1 },
                 afterType + (actionEl ? 0.28 : 0.18),
             );
         }
-
     }, heroCopyRef);
 }
 
@@ -463,11 +510,15 @@ function stopSlideAutoplay() {
     }
 }
 
-watch(slides, () => {
-    activeSlideIndex.value = 0;
-    startSlideAutoplay();
-    nextTick(() => playHeroCopyAnimation());
-}, {deep: true});
+watch(
+    slides,
+    () => {
+        activeSlideIndex.value = 0;
+        startSlideAutoplay();
+        nextTick(() => playHeroCopyAnimation());
+    },
+    { deep: true },
+);
 
 watch(activeSlideIndex, () => {
     nextTick(() => playHeroCopyAnimation());
@@ -476,7 +527,7 @@ watch(activeSlideIndex, () => {
 onMounted(() => {
     updateStaticHeroCopy();
     mobileHeroMq = window.matchMedia(MOBILE_HERO_MQ);
-    mobileHeroMq.addEventListener('change', onMobileHeroMqChange);
+    mobileHeroMq.addEventListener("change", onMobileHeroMqChange);
 
     startSlideAutoplay();
     nextTick(() => {
@@ -486,7 +537,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-    mobileHeroMq?.removeEventListener('change', onMobileHeroMqChange);
+    mobileHeroMq?.removeEventListener("change", onMobileHeroMqChange);
     mobileHeroMq = null;
     killHeroCopyTweens();
     stopSlideAutoplay();
@@ -513,15 +564,19 @@ onBeforeUnmount(() => {
 }
 
 .imas-hero-slider .hero-main {
+    position: relative;
+    z-index: 2;
     flex: 1 1 auto;
     display: flex;
     flex-direction: column;
+    overflow: visible;
 }
 
 .imas-hero-slider .hero-main .container {
     flex: 1 1 auto;
     display: flex;
     flex-direction: column;
+    overflow: visible;
 }
 
 /* Only the outer hero grid is a column stack; the property search bar uses its own flex row. */
@@ -532,7 +587,7 @@ onBeforeUnmount(() => {
     min-height: 0;
 }
 
-.imas-hero-slider .hero-main > .container > .row > [class*='col-'] {
+.imas-hero-slider .hero-main > .container > .row > [class*="col-"] {
     flex: 1 1 auto;
     display: flex;
     flex-direction: column;
@@ -543,16 +598,20 @@ onBeforeUnmount(() => {
     flex: 1 1 auto;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: center;
     min-height: 0;
     padding-top: 120px !important;
-    padding-bottom: 32px !important;
+    padding-bottom: 1.5rem !important;
 }
 
 @media (min-width: 992px) {
     .imas-hero-slider .hero-inner {
         padding-top: 160px !important;
-        padding-bottom: 40px !important;
+        padding-bottom: 2rem !important;
+    }
+
+    .imas-hero-filter-shell {
+        padding-bottom: 2.5rem;
     }
 }
 
@@ -567,13 +626,30 @@ onBeforeUnmount(() => {
     padding-bottom: 1rem;
 }
 
+.imas-hero-filter-shell {
+    flex: 0 0 auto;
+    width: min(1420px, calc(100vw - 2rem));
+    max-width: 1420px;
+    margin-inline: auto;
+    padding-inline: 1rem;
+    padding-bottom: 1.5rem;
+    box-sizing: border-box;
+}
+
 .imas-hero-filter {
     flex: 0 0 auto;
     width: 100%;
     max-width: 100%;
-    padding-top: 1rem;
+    padding-top: 0.75rem;
     transform-origin: center center;
     will-change: transform, opacity;
+}
+
+@media (min-width: 992px) {
+    .imas-hero-filter {
+        display: flex;
+        justify-content: center;
+    }
 }
 
 .imas-hero-slider__layers {
@@ -598,16 +674,8 @@ onBeforeUnmount(() => {
 .imas-hero-slider__scrim {
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-        rgba(10, 21, 38, 0.7),
-        rgba(10, 21, 38, 0.85)
-    );
+    background: linear-gradient(rgba(10, 21, 38, 0.7), rgba(10, 21, 38, 0.85));
     pointer-events: none;
-}
-
-.hero-main {
-    position: relative;
-    z-index: 2;
 }
 
 .welcome-text {
@@ -713,7 +781,9 @@ onBeforeUnmount(() => {
     background: rgba(255, 255, 255, 0.4);
     padding: 0;
     cursor: pointer;
-    transition: width 0.2s ease, background 0.2s ease;
+    transition:
+        width 0.2s ease,
+        background 0.2s ease;
 }
 
 .imas-hero-dot--active {
@@ -798,6 +868,11 @@ onBeforeUnmount(() => {
         gap: 0.75rem;
         padding-top: 88px !important;
         padding-bottom: 20px !important;
+    }
+
+    .imas-hero-slider .imas-hero-filter-shell {
+        padding-inline: 1.25rem;
+        padding-bottom: 1.25rem;
     }
 
     .imas-hero-slider .imas-hero-filter {

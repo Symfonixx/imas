@@ -99,20 +99,20 @@
                                                 <div
                                                     class="listing-title-bar text-start"
                                                 >
-                                                    <h3>{{ displayTitle }}</h3>
-                                                    <div
-                                                        v-if="
+                                                <div
+                                                    v-if="
+                                                        property.project_code
+                                                    "
+                                                    class="mt-0"
+                                                >
+                                                    <span
+                                                        class="listing-address"
+                                                        >{{ trans("property_show.project_id") }}: {{
                                                             property.project_code
-                                                        "
-                                                        class="mt-0"
+                                                        }}</span
                                                     >
-                                                        <span
-                                                            class="listing-address"
-                                                            >{{
-                                                                property.project_code
-                                                            }}</span
-                                                        >
-                                                    </div>
+                                                </div>
+                                                    <h3>{{ displayTitle }}</h3>
                                                     <div
                                                         v-if="addressLine"
                                                         class="mt-0"

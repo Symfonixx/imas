@@ -122,7 +122,7 @@
     "Home": "Home",
     "Buy Real Estate": "Buy real estate",
     "Turkish Citizenship": "Turkish citizenship",
-    "suitable_properties_for_turkish_citizenship_by_citizenship_program": "Suitable properties for Turkish citizenship by Citizenship Program",
+    "suitable_properties_for_turkish_citizenship_by_citizenship_program": "Suitable properties for Turkish citizenship by Citizenship Programme",
     "by_citizenship_program": "by Citizenship Program",
     "Contact us": "Contact us",
     "Pages": "Pages",
@@ -135,6 +135,8 @@
     "Location": "Location",
     "Municipalities": "Municipalities",
     "Areas": "Areas",
+    "Cities": "Cities",
+    "No results found": "No results found",
     "selected": "selected",
     "Clear": "Clear",
     "Search Now": "Search now",
@@ -300,7 +302,7 @@
         "description":"Overview",
         "details":"Property Details",
         "why_to_buy":"Why To Buy",
-        "facilities":"Facilities",
+        "facilities":"Facilities & Location Specifications",
         "property_video":"Property Video",
         "location":"Location",
         "contact_info":"Contact info",
@@ -309,6 +311,7 @@
         "link_copied":"Link copied",
         "share_email":"Email",
         "request_inquiry":"Request inquiry",
+        "connect_with_us_today":"Connect with us Today",
         "default_inquiry_message":"I'm interested in this property",
         "similar_properties":"Similar properties",
         "unit_types_title":"Featured",
@@ -329,7 +332,7 @@
         "description":"We provide full service at every step."
     },
     "testimonials":{
-        "title":"Our Client testimonials",
+        "title":"Our Clients Testimonials",
         "description":"Read honest reviews from our real estate and investment clients."
     },
     "articles":{
@@ -383,12 +386,12 @@
         "All Rights Reserved":"All Rights Reserved."
     },
     "contact_us":{
-        "title":"Contact With Us",
+        "title":"Connect With Us Today",
         "our_location":"Our location",
         "contact_details":"Contact Details",
         "head_office_prefix":"",
         "head_office_suffix":"Head Office",
-        "Please_find_below_contact_details_and_contact_us_today":"Please find below contact details and contact with us today!",
+        "Please_find_below_contact_details_and_contact_us_today":"Please find below contact details and connect with us today!",
         "first_name":"First name",
         "last_name":"Last name",
         "email":"Email",

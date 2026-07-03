@@ -10,7 +10,9 @@
                     rel="noopener noreferrer"
                 >
                     <i class="fa fa-phone" aria-hidden="true"></i>
-                    <span>{{ phoneDisplay }}</span>
+                    <span class="imas-top-bar__phone" dir="ltr">{{
+                        phoneDisplay
+                    }}</span>
                 </a>
                 <a
                     v-if="emailDisplay"
@@ -199,6 +201,11 @@ function trans(key) {
 .imas-top-bar__link i {
     font-size: 0.85rem;
     opacity: 0.9;
+}
+
+.imas-top-bar__phone {
+    direction: ltr;
+    unicode-bidi: isolate;
 }
 
 .imas-top-bar__separator {

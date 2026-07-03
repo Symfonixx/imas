@@ -17,6 +17,15 @@ export function useLocationPickerPanel(layout) {
     const open = ref(false);
     const useMobilePanel = ref(false);
     const panelStyle = ref({});
+    /**
+     * Gate `<Teleport to="body">` until after mount (`v-if="mounted"`). Inertia's
+     * Vue SSR does not emit teleport-to-body content into the server HTML, so
+     * rendering the teleport during SSR / initial hydration causes a node
+     * mismatch. Staying `false` through SSR and the first client render makes both
+     * emit a single placeholder comment; the panel is created and teleported to
+     * <body> only after hydration completes.
+     */
+    const mounted = ref(false);
     let mobileMq = null;
 
     function isRtlDocument() {
@@ -169,6 +178,8 @@ export function useLocationPickerPanel(layout) {
     }
 
     onMounted(() => {
+        mounted.value = true;
+
         document.addEventListener("click", onOutsideClick, true);
         document.addEventListener("keydown", onKeydown);
         window.addEventListener("resize", onViewportChange);
@@ -202,6 +213,7 @@ export function useLocationPickerPanel(layout) {
         open,
         useMobilePanel,
         panelStyle,
+        mounted,
         toggle,
         close,
         schedulePanelPositionUpdate,

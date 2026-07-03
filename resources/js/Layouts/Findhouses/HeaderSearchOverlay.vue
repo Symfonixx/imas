@@ -1,5 +1,5 @@
 <template>
-    <Teleport to="body">
+    <Teleport v-if="mounted" to="body">
         <Transition name="imas-header-search-fade">
             <div
                 v-if="modelValue"
@@ -74,7 +74,7 @@
 </template>
 
 <script setup>
-import { computed, nextTick, onBeforeUnmount, ref, watch } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { Link, router, usePage } from "@inertiajs/vue3";
 import { localizedRoute } from "@/utils/localizedRoute.js";
 
@@ -158,6 +158,16 @@ watch(
         }
     },
 );
+
+/**
+ * Gate `<Teleport to="body">` until after mount so Inertia SSR (which drops
+ * teleport-to-body content) and the client's first render stay identical.
+ */
+const mounted = ref(false);
+
+onMounted(() => {
+    mounted.value = true;
+});
 
 onBeforeUnmount(() => {
     lockBodyScroll(false);

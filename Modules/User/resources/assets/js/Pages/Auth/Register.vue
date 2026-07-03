@@ -1,7 +1,7 @@
 <template>
-    <head>
-        <title>{{trans("Register")}} | {{appName}}</title>
-    </head>
+    <Head :title="`${trans('Register')} | ${appName}`">
+        <meta head-key="robots" name="robots" content="noindex, nofollow" />
+    </Head>
 
     <app-layout>
         <div class="container mt-5">
@@ -120,13 +120,13 @@
 
 <script>
 import {computed} from 'vue';
-import {usePage, Link, useForm} from '@inertiajs/vue3';
+import {Head, usePage, Link, useForm} from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/App.vue';
 import PhoneCountryInput from '@/components/Global/PhoneCountryInput.vue';
 
 export default {
     components: {
-        AppLayout, Link, PhoneCountryInput
+        AppLayout, Link, PhoneCountryInput, Head
     },
     props: {
         errors: Object

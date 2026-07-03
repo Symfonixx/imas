@@ -33,6 +33,8 @@ class ContactUsController extends Controller
             'email' => $validated['email'],
             'mobile' => $validated['mobile'] ?? null,
             'subject' => $validated['subject'] ?? null,
+            'source_url' => $validated['source_url'] ?? null,
+            'source_page' => $validated['source_page'] ?? null,
             'message' => $validated['message'],
         ]);
 

@@ -99,7 +99,7 @@ class PropertyController extends Controller
             ->all();
 
         $districts = Location::query()
-            ->where('type', LocationType::District)
+            ->where('type', LocationType::Municipality)
             ->orderBy('id')
             ->get(['id', 'name', 'parent_id'])
             ->map(static fn (Location $district) => [

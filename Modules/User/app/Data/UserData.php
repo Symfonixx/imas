@@ -2,6 +2,7 @@
 
 namespace Modules\User\app\Data;
 
+use Modules\User\Support\EmailValidation;
 use Spatie\LaravelData\Attributes\Validation\Email;
 use Spatie\LaravelData\Attributes\Validation\Max;
 use Spatie\LaravelData\Attributes\Validation\Min;
@@ -16,7 +17,7 @@ class UserData extends Data
         #[StringType, Min(3), Max(50)]
         public string $name,
 
-        #[Email, Max(255)]
+        #[Email, Max(255), Regex(EmailValidation::PATTERN)]
         public string $email,
 
         #[Regex('/^[0-9]{8,15}$/')]

@@ -1,4 +1,7 @@
-@php($fh = asset('theme/findhouses'))
+@php
+    $fh = asset('theme/findhouses');
+    $feedSiteName = trim((string) (\Modules\Base\Models\Seo::get('website_name') ?: config('app.name')));
+@endphp
 <!DOCTYPE html>
 <html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
 <head>
@@ -11,6 +14,7 @@
     <link rel="shortcut icon" href="{{ asset('images/favicon/favicon.ico') }}"/>
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/favicon/apple-touch-icon.png') }}"/>
     <link rel="manifest" href="{{ asset('images/favicon/site.webmanifest') }}"/>
+    <link rel="alternate" type="application/rss+xml" title="{{ $feedSiteName }} Blog" href="{{ url('/feed.xml') }}">
 
     {{-- Brand font (public/fonts/Avenir_LT_Std_55_Roman.otf) — asset() so URL works in dev + subfolder deploys --}}
     <link rel="preload" href="{{ asset('fonts/Avenir_LT_Std_55_Roman.otf') }}" as="font" type="font/otf" crossorigin="anonymous">
@@ -56,6 +60,6 @@
 <script src="{{ $fh }}/js/tether.min.js"></script>
 <script src="{{ $fh }}/js/bootstrap.min.js"></script>
 <script src="{{ $fh }}/js/mmenu.min.js"></script>
-<script src="{{ $fh }}/js/mmenu.js"></script>
+{{-- Theme mmenu.js clones #header/#navigation on DOM ready and breaks Vue SSR hydration; mobile menu is initialized in UserNavbar.vue --}}
 </body>
 </html>

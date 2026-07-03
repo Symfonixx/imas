@@ -3,6 +3,7 @@
 namespace Modules\Cms\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Modules\Base\Services\SitemapService;
 use Spatie\Translatable\HasTranslations;
 
 class Page extends Model
@@ -10,6 +11,14 @@ class Page extends Model
     use HasTranslations;
 
     public $translatable = ['title', 'content', 'meta_title', 'meta_description', 'meta_keywords'];
+
+    protected static function booted(): void
+    {
+        $forget = static fn () => app(SitemapService::class)->forgetCache();
+
+        static::saved($forget);
+        static::deleted($forget);
+    }
 
     protected $appends = ['image_link', 'meta_image_link'];
 

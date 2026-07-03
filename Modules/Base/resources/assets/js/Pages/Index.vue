@@ -66,6 +66,18 @@
             name="twitter:image"
             :content="ogImage"
         />
+        <script
+            v-if="organizationJsonLd"
+            head-key="jsonld-organization"
+            type="application/ld+json"
+            v-text="organizationJsonLd"
+        />
+        <script
+            v-if="websiteJsonLd"
+            head-key="jsonld-website"
+            type="application/ld+json"
+            v-text="websiteJsonLd"
+        />
     </Head>
 
     <AppLayout>
@@ -116,6 +128,11 @@ import HomeServices from "../components/HomeServices.vue";
 import HomeTestimonials from "../components/HomeTestimonials.vue";
 import HomeArticlesSection from "../components/HomeArticlesSection.vue";
 import HomeHero from "../components/HomeHero.vue";
+import {
+    buildOrganizationSchema,
+    buildWebsiteSchema,
+    collectSocialUrls,
+} from "@/utils/structuredData.js";
 const page = usePage();
 
 const globals = computed(() => page.props.globals ?? {});
@@ -177,6 +194,58 @@ const ogUrl = computed(() => canonicalUrl.value);
 const twitterCard = computed(() =>
     ogImage.value ? "summary_large_image" : "summary",
 );
+
+const organizationSchema = computed(() => {
+    const contact = globals.value.contact ?? {};
+    const logo =
+        media.value.white_logo ||
+        media.value.black_logo ||
+        media.value.meta_img ||
+        "";
+
+    return buildOrganizationSchema({
+        name: page.props.appName,
+        url: canonicalUrl.value,
+        description: metaDescription.value,
+        logo,
+        email: contact.email,
+        phone: contact.phone,
+        address: contact.address,
+        sameAs: collectSocialUrls(globals.value.social),
+    });
+});
+
+const organizationJsonLd = computed(() => {
+    const schema = organizationSchema.value;
+    return schema ? JSON.stringify(schema) : "";
+});
+
+const propertySearchUrl = computed(() => {
+    if (typeof route !== "function" || !route().has?.("property.index")) {
+        return "";
+    }
+    try {
+        const base = route("property.index");
+        const sep = base.includes("?") ? "&" : "?";
+        return `${base}${sep}q={search_term_string}`;
+    } catch {
+        return "";
+    }
+});
+
+const websiteSchema = computed(() =>
+    buildWebsiteSchema({
+        name: page.props.appName,
+        url: canonicalUrl.value,
+        description: metaDescription.value,
+        searchUrlTemplate: propertySearchUrl.value,
+    }),
+);
+
+const websiteJsonLd = computed(() => {
+    const schema = websiteSchema.value;
+    return schema ? JSON.stringify(schema) : "";
+});
 
 function trans(key) {
     return page.props.translations[key] || key;

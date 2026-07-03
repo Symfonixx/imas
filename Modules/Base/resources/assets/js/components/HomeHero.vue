@@ -177,9 +177,8 @@ const displayedTypedText = ref("");
 const showTypeCursor = ref(false);
 const MOBILE_HERO_MQ = "(max-width: 767.98px)";
 
-const useStaticHeroCopy = ref(
-    typeof window !== "undefined" && window.matchMedia(MOBILE_HERO_MQ).matches,
-);
+// SSR and the client's first paint must match; viewport is synced in onMounted.
+const useStaticHeroCopy = ref(false);
 
 let mobileHeroMq = null;
 
@@ -278,6 +277,10 @@ const titleParts = computed(() => splitTitleForTypewriter(heroTitle.value));
 const propertyIndexUrl = computed(() => route("property.index"));
 
 function updateStaticHeroCopy() {
+    if (typeof window === "undefined" || !window.matchMedia) {
+        useStaticHeroCopy.value = false;
+        return;
+    }
     useStaticHeroCopy.value = window.matchMedia(MOBILE_HERO_MQ).matches;
 }
 

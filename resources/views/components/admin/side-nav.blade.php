@@ -311,7 +311,7 @@
                     <span class="menu-bullet">
                         <span class="bullet bullet-dot"></span>
                     </span>
-                    <span class="menu-title">{{ __('Contacts') }}</span>
+                    <span class="menu-title">{{ __('Leads') }}</span>
                 </a>
             </div>
         </div>

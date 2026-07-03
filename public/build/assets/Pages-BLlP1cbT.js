@@ -1,1 +1,0 @@
-import{G as e,I as t,f as n}from"./app-Bi1CcCqj.js";var r={};function i(n,r){return e(),t(`div`)}var a=n(r,[[`render`,i]]);export{a as default};

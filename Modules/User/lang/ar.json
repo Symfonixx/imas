@@ -65,5 +65,9 @@
     "My Profile": "ملفي الشخصي",
     "No data available in table": "لا توجد بيانات متاحة في الجدول",
     "LoginNote": "سجّل الدخول لحفظ عقاراتك المفضلة واستكشافها والعودة إليها في أي وقت.",
-    "RegisterNote": "سجّل حسابًا لحفظ عقاراتك المفضلة واستكشافها والعودة إليها في أي وقت."
+    "RegisterNote": "سجّل حسابًا لحفظ عقاراتك المفضلة واستكشافها والعودة إليها في أي وقت.",
+    "Please enter an email address.": "يرجى إدخال عنوان بريد إلكتروني.",
+    "Please enter a valid email address.": "يرجى إدخال عنوان بريد إلكتروني صالح.",
+    "This email is already registered.": "هذا البريد الإلكتروني مسجّل بالفعل.",
+    "Email may not be greater than 255 characters.": "يجب ألا يتجاوز البريد الإلكتروني 255 حرفًا."
 }

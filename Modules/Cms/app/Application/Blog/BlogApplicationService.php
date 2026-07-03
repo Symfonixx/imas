@@ -6,6 +6,8 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Modules\Cms\Application\Blog\Commands\UpsertBlogCommand;
 use Modules\Cms\Application\Shared\Queries\ContentListQuery;
 use Modules\Cms\Application\Shared\Support\ContentPayloadBuilder;
+use Modules\Base\Services\RssService;
+use Modules\Base\Services\SitemapService;
 use Modules\Cms\Models\Blog;
 use Modules\Cms\Models\BlogCategory;
 use Modules\Cms\Repositories\Blog\BlogRepository;
@@ -80,5 +82,7 @@ class BlogApplicationService
     private function clearCache(): void
     {
         cache()->forget('blogs');
+        app(SitemapService::class)->forgetCache();
+        app(RssService::class)->forgetCache();
     }
 }

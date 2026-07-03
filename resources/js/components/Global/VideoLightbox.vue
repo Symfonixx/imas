@@ -1,5 +1,5 @@
 <template>
-    <Teleport to="body">
+    <Teleport v-if="mounted" to="body">
         <Transition name="imas-video-lightbox-fade">
             <div
                 v-if="modelValue"
@@ -57,7 +57,7 @@
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, watch } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { usePage } from "@inertiajs/vue3";
 import {
     resolveVideoPlayback,
@@ -110,6 +110,16 @@ watch(
         lockBodyScroll(open);
     },
 );
+
+/**
+ * Gate `<Teleport to="body">` until after mount so Inertia SSR (which drops
+ * teleport-to-body content) and the client's first render stay identical.
+ */
+const mounted = ref(false);
+
+onMounted(() => {
+    mounted.value = true;
+});
 
 onBeforeUnmount(() => {
     lockBodyScroll(false);

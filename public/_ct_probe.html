@@ -1,0 +1,18 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>CT Probe</title></head>
+<body>
+<pre id="out">loading...</pre>
+<script>
+fetch('/sitemap.xml?probe=' + Date.now(), { cache: 'no-store' })
+  .then(async (r) => {
+    const body = await r.text();
+    let hdrs = '';
+    for (const [k, v] of r.headers.entries()) { hdrs += k + ': ' + v + '\n'; }
+    document.getElementById('out').textContent =
+      'status: ' + r.status + '\n' +
+      '--- ALL HEADERS ---\n' + hdrs +
+      '--- first 120 bytes ---\n' + body.slice(0, 120);
+  })
+  .catch((e) => { document.getElementById('out').textContent = 'ERR: ' + e; });
+</script>
+</body></html>

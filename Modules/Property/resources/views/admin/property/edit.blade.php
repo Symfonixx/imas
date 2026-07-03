@@ -2,7 +2,7 @@
 
 @section('js')
     @include('base::shared._tinymce', [
-        'tinymceSelector' => '#tinymce-overview, #tinymce-facilities, #tinymce-content',
+        'tinymceSelector' => '#tinymce-overview, #tinymce-why-to-buy, #tinymce-facilities, #tinymce-content',
         'tinymceHeight' => 400,
     ])
 @endsection

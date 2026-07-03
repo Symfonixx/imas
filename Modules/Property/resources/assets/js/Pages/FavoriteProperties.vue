@@ -47,6 +47,7 @@
                         <PropertyShowContactSidebar
                             :contact-store-url="contactStoreUrl"
                             :default-subject="inquirySubject"
+                            :source-page="inquirySubject"
                         />
                     </div>
                 </aside>

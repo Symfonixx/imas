@@ -268,8 +268,10 @@
         </div>
 
         <x-admin.form-group label="Why to buy this property" name="why_to_buy" required translatable>
-            <textarea class="form-control form-control-solid" name="why_to_buy"
-                      rows="6">{{ old('why_to_buy', optional($property)->why_to_buy) }}</textarea>
+            <textarea id="tinymce-why-to-buy"
+                      class="form-control form-control-solid tinymce-editor"
+                      name="why_to_buy"
+                      rows="6">{!! old('why_to_buy', optional($property)->why_to_buy) !!}</textarea>
         </x-admin.form-group>
 
         <x-admin.form-group label="Facilities" name="facilities" translatable>

@@ -66,6 +66,12 @@
             name="twitter:image"
             :content="ogImage"
         />
+        <script
+            v-if="articleJsonLd"
+            head-key="jsonld-article"
+            type="application/ld+json"
+            v-text="articleJsonLd"
+        />
     </Head>
 
     <AppLayout>
@@ -156,6 +162,7 @@ import InnerPageHeadingHero from "@/components/global/InnerPageHeadingHero.vue";
 import { useScrollReveal } from "@/composables/useScrollReveal";
 import { blogIndexLocalizedUrl } from "../utils/blogLocalizedRoute.js";
 import { localizedRoute } from "@/utils/localizedRoute.js";
+import { buildArticleSchema } from "@/utils/structuredData.js";
 
 const props = defineProps({
     title: { type: String, required: true },
@@ -276,8 +283,12 @@ const ogImage = computed(() => {
         return u.trim();
     }
     const fallback = props.blog.image;
-    return typeof fallback === "string" && fallback.trim() !== ""
-        ? fallback.trim()
+    if (typeof fallback === "string" && fallback.trim() !== "") {
+        return fallback.trim();
+    }
+    const siteFallback = media.value.meta_img;
+    return typeof siteFallback === "string" && siteFallback.trim() !== ""
+        ? siteFallback.trim()
         : "";
 });
 
@@ -286,4 +297,27 @@ const ogUrl = computed(() => canonicalUrl.value);
 const twitterCard = computed(() =>
     ogImage.value ? "summary_large_image" : "summary",
 );
+
+const articleSchema = computed(() => {
+    const publisherLogo =
+        media.value.white_logo ||
+        media.value.black_logo ||
+        media.value.meta_img ||
+        "";
+
+    return buildArticleSchema({
+        headline: plainText(String(meta.value.title || props.blog.title)),
+        description: metaDescription.value,
+        image: ogImage.value,
+        datePublished: props.blog.created_at,
+        url: canonicalUrl.value,
+        publisherName: page.props.appName,
+        publisherLogo,
+    });
+});
+
+const articleJsonLd = computed(() => {
+    const schema = articleSchema.value;
+    return schema ? JSON.stringify(schema) : "";
+});
 </script>

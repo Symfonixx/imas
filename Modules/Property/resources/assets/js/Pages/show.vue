@@ -66,6 +66,24 @@
             name="twitter:image"
             :content="ogImage"
         />
+        <script
+            v-if="realEstateListingJsonLd"
+            head-key="jsonld-real-estate-listing"
+            type="application/ld+json"
+            v-text="realEstateListingJsonLd"
+        />
+        <script
+            v-if="breadcrumbJsonLd"
+            head-key="jsonld-breadcrumb"
+            type="application/ld+json"
+            v-text="breadcrumbJsonLd"
+        />
+        <script
+            v-if="customSchemaJsonLd"
+            head-key="jsonld-custom"
+            type="application/ld+json"
+            v-text="customSchemaJsonLd"
+        />
     </Head>
 
     <AppLayout>
@@ -353,6 +371,7 @@
                                 <PropertyShowContactSidebar
                                     :contact-store-url="contactStoreUrl"
                                     :default-subject="canonicalUrl"
+                                    :source-page="displayTitle"
                                     :default-message="
                                         trans(
                                             'property_show.default_inquiry_message',
@@ -408,6 +427,13 @@ import RecentPropertiesSidebar from "../components/RecentPropertiesSidebar.vue";
 import { localizedField } from "../utils/propertyLocalized.js";
 import { propertyLocationLine } from "../utils/propertyLocation.js";
 import { propertyStartPrice } from "../utils/propertyPrice.js";
+import {
+    buildBreadcrumbSchema,
+    buildRealEstateListingSchema,
+    filterSchemaImages,
+    stripHtml,
+} from "@/utils/structuredData.js";
+import { localizedLocationName } from "../utils/propertyLocation.js";
 
 const props = defineProps({
     property: { type: Object, required: true },
@@ -578,7 +604,13 @@ const metaKeywords = computed(() => {
 
 const ogTitle = computed(() => documentTitle.value);
 const ogDescription = computed(() => metaDescription.value);
-const ogImage = computed(() => props.property.thumbnail_url || "");
+const ogImage = computed(() => {
+    const candidates = filterSchemaImages([
+        props.property.thumbnail_url,
+        media.value.meta_img,
+    ]);
+    return candidates.length > 0 ? candidates[0].trim() : "";
+});
 const canonicalUrl = computed(() => {
     try {
         if (typeof route === "function" && route().has?.("property.show")) {
@@ -596,6 +628,72 @@ const ogUrl = computed(() => canonicalUrl.value);
 const twitterCard = computed(() =>
     ogImage.value ? "summary_large_image" : "summary",
 );
+
+const realEstateListingSchema = computed(() => {
+    const loc = props.property.location;
+    const slideImages = (props.property.slides ?? [])
+        .map((slide) => slide?.image_url)
+        .filter(Boolean);
+
+    return buildRealEstateListingSchema({
+        name: displayTitle.value,
+        description: metaDescription.value || stripHtml(overviewHtml.value),
+        url: canonicalUrl.value,
+        images: [props.property.thumbnail_url, ...slideImages],
+        datePosted: props.property.created_at,
+        dateModified: props.property.updated_at,
+        price: propertyStartPrice(props.property),
+        isSoldOut: Boolean(props.property.is_sold_out),
+        addressLocality: localizedLocationName(loc?.area?.name, locale.value)
+            || localizedLocationName(loc?.district?.name, locale.value),
+        addressRegion: localizedLocationName(loc?.city?.name, locale.value),
+        latitude: props.property.lat,
+        longitude: props.property.lng,
+        minArea: props.property.min_area,
+        maxArea: props.property.max_area,
+        propertyType: propertyTypeLabel.value,
+    });
+});
+
+const realEstateListingJsonLd = computed(() => {
+    const schema = realEstateListingSchema.value;
+    return schema ? JSON.stringify(schema) : "";
+});
+
+const breadcrumbJsonLd = computed(() => {
+    const crumbs = propertyHeadingItems.value.map((item, index, arr) => ({
+        name: item.title,
+        url:
+            index === arr.length - 1
+                ? canonicalUrl.value
+                : item.href || undefined,
+    }));
+    const schema = buildBreadcrumbSchema(crumbs);
+    return schema ? JSON.stringify(schema) : "";
+});
+
+/**
+ * Admin-provided custom JSON-LD (Property → SEO → schema). Rendered only when it
+ * is valid JSON so a malformed textarea value never breaks the page head.
+ */
+const customSchemaJsonLd = computed(() => {
+    const raw = meta.value.schema;
+    if (raw && typeof raw === "object") {
+        try {
+            return JSON.stringify(raw);
+        } catch {
+            return "";
+        }
+    }
+    if (typeof raw === "string" && raw.trim() !== "") {
+        try {
+            return JSON.stringify(JSON.parse(raw));
+        } catch {
+            return "";
+        }
+    }
+    return "";
+});
 
 const pageRef = ref(null);
 const propertyContentRowRef = ref(null);

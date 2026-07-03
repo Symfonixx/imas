@@ -195,6 +195,10 @@ const props = defineProps({
         type: String,
         default: "",
     },
+    sourcePage: {
+        type: String,
+        default: "",
+    },
 });
 
 const page = usePage();
@@ -247,6 +251,8 @@ const form = useForm({
     email: "",
     mobile: "",
     subject: props.defaultSubject ?? "",
+    source_url: "",
+    source_page: props.sourcePage ?? "",
     message: props.defaultMessage ?? "",
 });
 
@@ -272,6 +278,15 @@ function applyDefaultMessage(value) {
 
 watch(() => props.defaultMessage, applyDefaultMessage, { immediate: true });
 
+function applySourcePage(value) {
+    if (typeof value !== "string" || value.trim() === "") {
+        return;
+    }
+    form.source_page = value;
+}
+
+watch(() => props.sourcePage, applySourcePage, { immediate: true });
+
 watch(
     () => props.hideSubject,
     (hidden) => {
@@ -295,6 +310,12 @@ function submit() {
     if (!url) {
         return;
     }
+    if (typeof window !== "undefined") {
+        form.source_url = window.location.href;
+    }
+    if (!form.source_page && props.sourcePage) {
+        form.source_page = props.sourcePage;
+    }
     form.post(url, {
         preserveScroll: true,
         onSuccess: () => {
@@ -303,6 +324,7 @@ function submit() {
             form.reset();
             form.subject = subject;
             form.message = message;
+            form.source_page = props.sourcePage ?? "";
             form.clearErrors();
             showSuccessAlert();
         },

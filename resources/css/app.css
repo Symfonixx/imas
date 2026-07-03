@@ -4993,6 +4993,93 @@ html[dir="rtl"] .imas-property-show-page .imas-property-show-panel .imas-rich-co
     }
 }
 
+/* Contact page — FAQ accordion */
+.imas-contact-page .imas-contact-faq {
+    margin-top: 0.25rem;
+    background: var(--surface) !important;
+}
+
+.imas-contact-page .imas-contact-faq__title {
+    margin-bottom: 0.65rem;
+}
+
+.imas-contact-page .imas-contact-faq__subtitle {
+    margin-bottom: 1.25rem;
+}
+
+.imas-contact-page .imas-contact-faq__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.imas-contact-page .imas-contact-faq__list > li {
+    border-bottom: 1px solid var(--divider);
+}
+
+.imas-contact-page .imas-contact-faq__list > li:last-child {
+    border-bottom: none;
+}
+
+.imas-contact-page .imas-contact-faq__trigger {
+    display: block;
+    width: 100%;
+    margin: 0;
+    padding: 1rem 2.25rem 1rem 0;
+    border: 0;
+    background: transparent;
+    color: var(--text);
+    font-size: var(--text-md);
+    font-weight: 600;
+    line-height: 1.4;
+    text-align: start;
+    cursor: pointer;
+    position: relative;
+}
+
+.imas-contact-page .imas-contact-faq__trigger::after {
+    content: "+";
+    position: absolute;
+    top: 50%;
+    inset-inline-end: 0.15rem;
+    transform: translateY(-50%);
+    color: var(--brand-gold);
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.imas-contact-page .imas-contact-faq__list > li.active .imas-contact-faq__trigger {
+    color: var(--brand-gold);
+}
+
+.imas-contact-page .imas-contact-faq__list > li.active .imas-contact-faq__trigger::after {
+    content: "−";
+}
+
+.imas-contact-page .imas-contact-faq__trigger:hover,
+.imas-contact-page .imas-contact-faq__trigger:focus-visible {
+    color: var(--brand-gold);
+    outline: none;
+    box-shadow: var(--ring);
+}
+
+.imas-contact-page .imas-contact-faq__content {
+    display: none;
+    padding: 0 0 1rem;
+    color: var(--text-dim);
+}
+
+.imas-contact-page .imas-contact-faq__list > li.active .imas-contact-faq__content {
+    display: block;
+}
+
+.imas-contact-page .imas-contact-faq__content p {
+    margin: 0;
+    font-size: var(--text-card-excerpt);
+    line-height: 1.55;
+}
+
 .capitalize-text {
     text-transform: capitalize; /* Capitalizes every word */
 }

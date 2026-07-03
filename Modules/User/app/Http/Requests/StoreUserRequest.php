@@ -3,6 +3,7 @@
 namespace Modules\User\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Modules\User\Support\EmailValidation;
 
 class StoreUserRequest extends FormRequest
 {
@@ -14,10 +15,27 @@ class StoreUserRequest extends FormRequest
         return [
             'img' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:1048',
             'name' => 'required|min:3',
-            'email' => 'required|email|unique:users,email',
+            'email' => EmailValidation::rules(uniqueOnUsersTable: true),
             'mobile' => ['required', 'string', 'regex:/^[0-9]{8,15}$/', 'unique:users,mobile'],
             'password' => 'required|min:6',
         ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return EmailValidation::messages();
+    }
+
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('email')) {
+            $this->merge([
+                'email' => strtolower(trim((string) $this->input('email'))),
+            ]);
+        }
     }
 
     /**

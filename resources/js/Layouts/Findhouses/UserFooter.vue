@@ -44,14 +44,15 @@
                                             ><i class="fa fa-phone"></i
                                         ></span>
                                         <p class="in-p in-p--phone" dir="ltr">
-                                            <a
-                                                v-if="phoneDisplay && phoneHref"
-                                                :href="phoneHref"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                            >
-                                                {{ phoneDisplay }}
-                                            </a>
+                                            <span v-if="phoneDisplay && phoneHref" class="in-p-link-wrap">
+                                                <a
+                                                    :href="phoneHref"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                >
+                                                    {{ phoneDisplay }}
+                                                </a>
+                                            </span>
                                             <template v-else-if="phoneDisplay">{{
                                                 phoneDisplay
                                             }}</template>
@@ -288,7 +289,7 @@ const websiteName = computed(
 );
 const websiteSlogan = "MOST ACCURATE SOLUTIONS";
 
-const year = new Date().getFullYear();
+const year = computed(() => new Date().getFullYear());
 
 const developedByPrefix = computed(() => {
     const full = trans("Developed By Symfonix");
@@ -373,7 +374,7 @@ const footerSocialLinks = computed(() => {
 });
 
 function trans(key) {
-    return page.props.translations[key] || key;
+    return page.props.translations?.[key] ?? key;
 }
 
 function clearSubscriptionSuccessTimer() {

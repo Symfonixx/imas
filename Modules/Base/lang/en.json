@@ -226,6 +226,10 @@
     "Staff": "Staff",
     "Support Hub": "Support hub",
     "Contacts": "Contacts",
+    "Leads": "Leads",
+    "Search In Leads": "Search in leads",
+    "Project / Page": "Project / page",
+    "Date / Time": "Date / time",
     "Newsletter Subscribers": "Newsletter subscribers",
     "Users": "Users",
 
@@ -402,7 +406,33 @@
         "message_sent":"Thank you for your trust. We're committed to serving you with the best possible experience.",
         "send_failed":"Something went wrong. Please try again.",
         "map_not_configured":"Map is not configured yet.",
-        "follow_us":"Follow us"
+        "follow_us":"Follow us",
+        "faq":{
+            "title":"Frequently Asked Questions",
+            "subtitle":"Quick answers about buying property and working with Imas Global.",
+            "items":[
+                {
+                    "question":"How do I schedule a property viewing?",
+                    "answer":"Use the contact form on any listing, call our office, or send us a message here. We confirm availability with the seller and share the meeting point and time."
+                },
+                {
+                    "question":"Can foreigners buy property in Turkey?",
+                    "answer":"Yes. Eligible foreign buyers can purchase real estate in Turkey subject to local regulations. Our advisors guide you through eligibility, documentation, and registration."
+                },
+                {
+                    "question":"What documents are required to buy property?",
+                    "answer":"Typically you need a valid passport, tax number, and proof of funds. If you finance the purchase, your lender may request additional paperwork. We provide a checklist tailored to your case."
+                },
+                {
+                    "question":"How long does the purchase process take?",
+                    "answer":"Timelines vary with financing and due diligence, but most transactions complete within four to eight weeks after an accepted offer. Cash purchases can move faster."
+                },
+                {
+                    "question":"Do you assist with Turkish citizenship by investment?",
+                    "answer":"Yes. We help you identify qualifying projects and coordinate with legal partners for citizenship applications linked to eligible property investments."
+                }
+            ]
+        }
     },
     "floating_whatsapp":{
         "aria_label":"Contact us on WhatsApp"

@@ -153,6 +153,7 @@
                         :hide-subject="hideFormSubject"
                         :default-subject="effectiveDefaultSubject"
                         :default-message="defaultMessage"
+                        :source-page="effectiveSourcePage"
                     />
                 </div>
             </div>
@@ -176,6 +177,7 @@ const props = defineProps({
     contactStoreUrl: { type: String, required: true },
     defaultSubject: { type: String, default: "" },
     defaultMessage: { type: String, default: "" },
+    sourcePage: { type: String, default: "" },
     hideFormSubject: { type: Boolean, default: false },
     propertyId: { type: Number, default: null },
     isFavorited: { type: Boolean, default: false },
@@ -191,6 +193,16 @@ const effectiveDefaultSubject = computed(() => {
         return props.defaultSubject;
     }
     return shareUrl.value || props.defaultSubject;
+});
+
+const effectiveSourcePage = computed(() => {
+    if (props.sourcePage) {
+        return props.sourcePage;
+    }
+    if (!props.hideFormSubject) {
+        return props.defaultSubject;
+    }
+    return "";
 });
 
 const page = usePage();

@@ -1,20 +1,20 @@
-@section('title' , __('Contacts'))
+@section('title' , __('Leads'))
 
 @section('toolbar')
     @php
         $breadcrumbItems = [
             ['label' => 'Dashboard', 'url' => route('admin.dashboard.index')],
-            ['label' => 'Contacts'],
+            ['label' => 'Leads'],
         ];
     @endphp
-    <x-admin.breadcrumb :pageTitle="__('Contacts')" :breadcrumbItems="$breadcrumbItems"/>
+    <x-admin.breadcrumb :pageTitle="__('Leads')" :breadcrumbItems="$breadcrumbItems"/>
     <div class="d-flex align-items-center gap-2 gap-lg-3"></div>
 @endsection
 @section('js')
 
 @endsection
 <x-admin-layout>
-    <x-admin.table :model="$model" search="Search In Contacts"
+    <x-admin.table :model="$model" search="Search In Leads"
                    :formUrl="route('admin.contact_forms.deleteMulti')">
         <!--begin::Table head-->
         <thead>
@@ -26,50 +26,60 @@
                 </div>
             </th>
 
-            <th>{{__('Details')}}</th>
-            <th>{{__('Ip Address')}}</th>
-            <th>{{__('Subject')}}</th>
-            <th>{{__('Message')}}</th>
-            <th>{{__('Created At')}}</th>
+            <th>{{ __('ID') }}</th>
+            <th>{{ __('Name') }}</th>
+            <th>{{ __('Phone') }}</th>
+            <th>{{ __('URL') }}</th>
+            <th>{{ __('Project / Page') }}</th>
+            <th>{{ __('Message') }}</th>
+            <th>{{ __('Date / Time') }}</th>
         </tr>
         </thead>
         <!--end::Table head-->
         <!--begin::Table body-->
         <tbody class="text-gray-600 fw-semibold">
-        @foreach($model as $contact)
+        @foreach($model as $lead)
             <tr>
                 <td>
                     <div class="form-check form-check-sm form-check-custom form-check-solid">
-                        <input class="form-check-input" type="checkbox" name="ids[]" value="{{$contact->id}}"/>
+                        <input class="form-check-input" type="checkbox" name="ids[]" value="{{ $lead->id }}"/>
                     </div>
                 </td>
 
+                <td>{{ $lead->id }}</td>
+
                 <td>
-                    <div class="d-flex flex-column">
-                        <span class="text-gray-800 mb-1">
-                            {{$contact->name}}
-                        </span>
-                        <a class="text-hover-primary text-gray-500" target="_blank"
-                           href="tel:{{$contact->mobile}}">{{$contact->mobile}}</a>
-                        <a class="text-hover-primary text-gray-500" target="_blank"
-                           href="mailto:{{$contact->email}}">{{$contact->email}}</a>
-                    </div>
+                    <span class="text-gray-800">{{ $lead->name }}</span>
                 </td>
 
                 <td>
-                    <a href="https://whatismyipaddress.com/ip/{{$contact->ip_address}}" target="_blank">
-                        {{$contact->ip_address}}
-                    </a>
+                    @if($lead->mobile)
+                        <a class="text-hover-primary text-gray-600" target="_blank"
+                           href="tel:{{ $lead->mobile }}">{{ $lead->mobile }}</a>
+                    @else
+                        <span class="text-muted">—</span>
+                    @endif
+                </td>
+
+                <td class="text-break" style="max-width: 220px;">
+                    @if($lead->display_source_url)
+                        <a class="text-hover-primary text-gray-600" target="_blank" rel="noopener noreferrer"
+                           href="{{ $lead->display_source_url }}">{{ $lead->display_source_url }}</a>
+                    @else
+                        <span class="text-muted">—</span>
+                    @endif
                 </td>
 
                 <td>
-                    {{$contact->subject}}
+                    {{ $lead->display_source_page ?: '—' }}
                 </td>
-                <td>
-                    {{$contact->message}}
+
+                <td class="text-break" style="max-width: 280px;">
+                    {{ $lead->message }}
                 </td>
-                <td>
-                    {{$contact->created_at}}
+
+                <td class="text-nowrap">
+                    {{ $lead->created_at?->format('Y-m-d H:i') }}
                 </td>
             </tr>
         @endforeach
@@ -78,5 +88,3 @@
     </x-admin.table>
     <!--end::Card-->
 </x-admin-layout>
-
-

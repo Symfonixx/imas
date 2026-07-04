@@ -79,7 +79,7 @@
                                 </li>
                             </ul>
                         </li>
-                        <li v-if="!auth" class="imas-mmenu-only">
+                        <li v-if="!auth && mounted" class="imas-mmenu-only">
                             <a
                                 href="#"
                                 class="imas-auth-nav-link"
@@ -87,7 +87,7 @@
                                 >{{ trans("Login") }}</a
                             >
                         </li>
-                        <li v-if="!auth" class="imas-mmenu-only">
+                        <li v-if="!auth && mounted" class="imas-mmenu-only">
                             <a
                                 href="#"
                                 class="imas-auth-nav-link"
@@ -188,7 +188,7 @@
                             <i class="fa fa-search" aria-hidden="true"></i>
                         </button>
                         <Link
-                            v-if="auth"
+                            v-if="auth && mounted"
                             :href="favoritesHref"
                             class="imas-nav__favorites imas-header-action"
                             :class="{ 'is-active': favoritesNavActive }"
@@ -200,79 +200,78 @@
                             <i class="fa fa-heart" aria-hidden="true"></i>
                         </Link>
                         <div
-                            v-if="auth"
+                            v-if="mounted"
                             ref="userMenuWrapRef"
                             class="header-user-menu user-menu add UserMenu imas-header-action"
                             :class="{ active: userMenuOpen }"
                         >
-                            <div
-                                class="header-user-name imas-nav__account-trigger"
-                                :class="{
-                                    'imas-nav__account-trigger--rtl': isRtl,
-                                }"
-                                role="button"
-                                tabindex="0"
-                                :aria-expanded="userMenuOpen"
-                                aria-haspopup="true"
-                                :aria-label="trans('Account menu')"
-                                @click.stop="toggleUserMenu"
-                                @keydown.enter.prevent="toggleUserMenu"
-                                @keydown.space.prevent="toggleUserMenu"
-                            >
-                                <span class="imas-nav__avatar">
-                                    <img :src="auth.avatar" alt="" />
-                                </span>
-                                <span
-                                    class="imas-nav__account-text imas-nav__desktop-only"
+                            <template v-if="auth">
+                                <div
+                                    class="header-user-name imas-nav__account-trigger"
+                                    :class="{
+                                        'imas-nav__account-trigger--rtl': isRtl,
+                                    }"
+                                    role="button"
+                                    tabindex="0"
+                                    :aria-expanded="userMenuOpen"
+                                    aria-haspopup="true"
+                                    :aria-label="trans('Account menu')"
+                                    @click.stop="toggleUserMenu"
+                                    @keydown.enter.prevent="toggleUserMenu"
+                                    @keydown.space.prevent="toggleUserMenu"
                                 >
-                                    {{ accountGreeting }}
-                                </span>
-                                <i
-                                    class="fa fa-caret-down imas-nav__account-caret imas-nav__desktop-only"
-                                    aria-hidden="true"
-                                ></i>
-                            </div>
-                            <ul class="imas-user-menu-dropdown text-start">
-                                <li v-if="isAdmin">
-                                    <Link
-                                        class="imas-user-menu-dropdown__item"
-                                        :href="route('admin.dashboard.index')"
-                                        @click="userMenuOpen = false"
+                                    <span class="imas-nav__avatar">
+                                        <img :src="auth.avatar" alt="" />
+                                    </span>
+                                    <span
+                                        class="imas-nav__account-text imas-nav__desktop-only"
                                     >
-                                        {{ trans("Dashboard") }}
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link
-                                        class="imas-user-menu-dropdown__item"
-                                        :href="profileHref"
-                                        @click="userMenuOpen = false"
-                                    >
-                                        {{ trans("global.profile") }}
-                                    </Link>
-                                </li>
-                                <li>
-                                    <button
-                                        type="button"
-                                        class="imas-user-menu-dropdown__item dropdown-logout"
-                                        @click="logout"
-                                    >
-                                        {{ trans("global.LogOut") }}
-                                    </button>
-                                </li>
-                            </ul>
-                        </div>
+                                        {{ accountGreeting }}
+                                    </span>
+                                    <i
+                                        class="fa fa-caret-down imas-nav__account-caret imas-nav__desktop-only"
+                                        aria-hidden="true"
+                                    ></i>
+                                </div>
+                                <ul class="imas-user-menu-dropdown text-start">
+                                    <li v-if="isAdmin">
+                                        <Link
+                                            class="imas-user-menu-dropdown__item"
+                                            :href="route('admin.dashboard.index')"
+                                            @click="userMenuOpen = false"
+                                        >
+                                            {{ trans("Dashboard") }}
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link
+                                            class="imas-user-menu-dropdown__item"
+                                            :href="profileHref"
+                                            @click="userMenuOpen = false"
+                                        >
+                                            {{ trans("global.profile") }}
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <button
+                                            type="button"
+                                            class="imas-user-menu-dropdown__item dropdown-logout"
+                                            @click="logout"
+                                        >
+                                            {{ trans("global.LogOut") }}
+                                        </button>
+                                    </li>
+                                </ul>
+                            </template>
 
-                        <div
-                            v-else
-                            class="imas-nav__sign-in imas-header-action"
-                        >
-                            <a
-                                href="#"
-                                class="imas-nav__sign-in-link show-reg-form modal-open"
-                                data-open-auth="login"
-                                >{{ trans("Sign In") }}</a
-                            >
+                            <div v-else class="imas-nav__sign-in imas-header-action">
+                                <a
+                                    href="#"
+                                    class="imas-nav__sign-in-link show-reg-form modal-open"
+                                    data-open-auth="login"
+                                    >{{ trans("Sign In") }}</a
+                                >
+                            </div>
                         </div>
                     </div>
 
@@ -341,6 +340,15 @@ const authModalOpen = ref(false);
 const authStartTab = ref("login");
 const searchModalOpen = ref(false);
 
+/**
+ * Client-only reveal flag. Stays `false` during SSR *and* the initial client
+ * hydration render so both trees match, then flips to `true` after mount to show
+ * elements that must only exist in the browser (mmenu auth links, favorites,
+ * user menu). Avoids the "server rendered Comment / expected li" hydration
+ * mismatch caused by calling `isBrowser()` directly in `v-if`.
+ */
+const mounted = ref(false);
+
 function openSearchModal() {
     authModalOpen.value = false;
     searchModalOpen.value = true;
@@ -391,9 +399,13 @@ let scrollPinAnimToken = 0;
 let onScrollPinnedBound = null;
 let onResizePinnedBound = null;
 
-const websiteName = computed(
-    () => page.props.globals.seo.website_name.toUpperCase() || "",
-);
+const websiteName = computed(() => {
+    const name =
+        page.props.globals?.seo?.website_name ||
+        page.props.appName ||
+        "";
+    return String(name).toUpperCase();
+});
 const websiteSlogan = "MOST ACCURATE SOLUTIONS";
 const themeUrl = computed(() => page.props.theme_url || "");
 const auth = computed(() => page.props.auth);
@@ -505,7 +517,7 @@ const localeBadge = computed(() => {
 });
 
 function trans(key) {
-    return page.props.translations[key] || key;
+    return page.props.translations?.[key] ?? key;
 }
 
 function isDesktopNavViewport() {
@@ -951,6 +963,8 @@ watch(
 );
 
 onMounted(() => {
+    mounted.value = true;
+
     document.addEventListener(IMAS_OPEN_AUTH_EVENT, onImasOpenAuthEvent);
     document.addEventListener("click", closeHeaderDropdownsOnOutsideClick);
     document.addEventListener("click", onDelegatedOpenAuth, true);

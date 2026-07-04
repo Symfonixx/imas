@@ -147,7 +147,7 @@ const topSocialLinks = computed(() => {
 });
 
 function trans(key) {
-    return page.props.translations[key] || key;
+    return page.props.translations?.[key] ?? key;
 }
 </script>
 

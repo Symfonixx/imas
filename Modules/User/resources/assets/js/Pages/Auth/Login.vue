@@ -1,8 +1,7 @@
     <template>
-        <head>
-            <title>{{trans("Login")}} | {{appName}}</title>
-
-        </head>
+        <Head :title="`${trans('Login')} | ${appName}`">
+            <meta head-key="robots" name="robots" content="noindex, nofollow" />
+        </Head>
 
         <app-layout>
             <div class="container mt-5">
@@ -71,12 +70,12 @@
 
     <script>
     import {computed} from 'vue';
-    import {usePage, Link, useForm} from '@inertiajs/vue3';
+    import {Head, usePage, Link, useForm} from '@inertiajs/vue3';
     import AppLayout from '@/Layouts/App.vue';
 
     export default {
         components: {
-            AppLayout, Link
+            AppLayout, Link, Head
         },
         props: {
             errors: Object

@@ -297,16 +297,16 @@ Author: Hadi Hilal
                                         </div>
                                         <!--end::Menu item-->
                                         <!--begin::Menu item-->
-                                        {{--                                        <div class="menu-item px-3">--}}
-                                        {{--                                            <a class="menu-link d-flex px-5 {{ app()->getLocale()  === 'tr' ? 'active' : ''}}"--}}
-                                        {{--                                               rel="alternate" hreflang="en"--}}
-                                        {{--                                               href="{{url('/locale/tr') }}">--}}
-                                        {{--													<span class="symbol symbol-20px me-4">--}}
-                                        {{--														<img class="rounded-1"--}}
-                                        {{--                                                             src="{{asset('images/langs/tr.png')}}"--}}
-                                        {{--                                                             alt="united-states"/>--}}
-                                        {{--													</span>TR</a>--}}
-                                        {{--                                        </div>--}}
+                                        <div class="menu-item px-3">
+                                            <a class="menu-link d-flex px-5 {{ app()->getLocale()  === 'tr' ? 'active' : ''}}"
+                                               rel="alternate" hreflang="tr"
+                                               href="{{ LaravelLocalization::getLocalizedURL('tr') }}">
+													<span class="symbol symbol-20px me-4">
+														<img class="rounded-1"
+                                                             src="{{asset('images/langs/tr.png')}}"
+                                                             alt="turkey"/>
+													</span>TR</a>
+                                        </div>
                                         <!--end::Menu item-->
 
                                     </div>
@@ -365,9 +365,9 @@ Author: Hadi Hilal
 
                     <!--begin::Logo image-->
                     <a href="#">
-                        <img alt="Logo" src="{{asset('images/logo.png')}}"
+                        <img alt="{{ __('Admin Logo') }}" src="{{ $adminLogoUrl }}"
                              class="h-75px app-sidebar-logo-default"/>
-                        <img alt="Logo" src="{{asset('images/logo.png')}}"
+                        <img alt="{{ __('Admin Logo') }}" src="{{ $adminLogoUrl }}"
                              class="h-30px app-sidebar-logo-minimize"/>
                     </a>
                     <!--end::Logo image-->

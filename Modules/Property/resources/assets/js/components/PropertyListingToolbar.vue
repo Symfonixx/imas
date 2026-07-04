@@ -61,6 +61,7 @@ import {
     onBeforeUnmount,
     onMounted,
     ref,
+    useId,
 } from "vue";
 import { router, usePage } from "@inertiajs/vue3";
 import { localizedRoute } from "@/utils/localizedRoute.js";
@@ -73,7 +74,7 @@ const props = defineProps({
 
 const page = usePage();
 const activeLocale = computed(() => page.props.locale || "en");
-const sortToggleId = `property-sort-${Math.random().toString(36).slice(2, 9)}`;
+const sortToggleId = `property-sort-${useId()}`;
 
 const sortMenuOpen = ref(false);
 const sortRootRef = ref(null);

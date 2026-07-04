@@ -35,27 +35,19 @@
                         </div>
 
                         <div class="col-md-12 mb-7">
-                            <label for="email" class="required form-label">{{__('Email')}}</label>
-                            <input type="email" id="email"
-                                   class="form-control form-control-solid @error('email') is-invalid @enderror"
-                                   name="email" value="{{ old('email') }}" required>
-                            @error('email')
-                            <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                            @enderror
+                            <x-admin.email-input
+                                input-id="email_user_create"
+                                :value="old('email')"
+                                :required="true"
+                            />
                         </div>
 
                         <div class="col-md-12 mb-7">
-                            <label for="mobile" class="required form-label">{{__('Mobile')}}</label>
-                            <input type="number" id="mobile"
-                                   class="form-control form-control-solid @error('mobile') is-invalid @enderror"
-                                   name="mobile" value="{{ old('mobile') }}" required>
-                            @error('mobile')
-                            <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                            @enderror
+                            <x-admin.phone-country-input
+                                input-id="mobile_user_create"
+                                :value="old('mobile')"
+                                :required="true"
+                            />
                         </div>
 
                         <div class="col-md-12 mb-7">

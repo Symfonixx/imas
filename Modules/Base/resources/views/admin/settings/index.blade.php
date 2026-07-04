@@ -41,6 +41,16 @@
             <!--end::Col-->
             <!--begin::Col-->
             <div class="col-xl-3 mb-5">
+                <div class="fs-6 fw-bold mt-2 mb-5">{{ __('Admin Logo') }}</div>
+                <x-admin.image-input
+                    name="imgs[admin_logo]"
+                    :preview="$settings->get('admin_logo') ? asset('storage/' . $settings->get('admin_logo')) : asset('images/logo.png')"
+                    mediaInputName="imgs_media[admin_logo]"/>
+                <div class="form-text">{{ __('Used in the admin panel sidebar navigation.') }}</div>
+            </div>
+            <!--end::Col-->
+            <!--begin::Col-->
+            <div class="col-xl-3 mb-5">
                 <div class="fs-6 fw-bold mt-2 mb-5">{{__('Meta Image')}}</div>
                 <x-admin.image-input
                     name="imgs[meta_img]"

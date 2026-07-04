@@ -18,6 +18,7 @@ class StaffController extends Controller
     {
         $this->setActive('hr');
         $this->setActive('staffs');
+        $this->withCountries();
     }
 
     public function index()

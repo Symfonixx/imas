@@ -26,7 +26,7 @@
             ></i>
         </button>
 
-        <Teleport to="body">
+        <Teleport v-if="mounted" to="body">
             <div
                 v-show="open"
                 ref="panelRef"
@@ -129,6 +129,7 @@ const {
     open,
     useMobilePanel,
     panelStyle,
+    mounted,
     toggle,
 } = useLocationPickerPanel(() => props.layout);
 
@@ -176,7 +177,7 @@ function handleToggle() {
 </script>
 
 <style lang="scss" scoped>
-@import "./location-picker.scss";
+@use "./location-picker.scss";
 
 .imas-loc-picker__column-head--static {
     cursor: default;

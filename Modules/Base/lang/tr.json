@@ -77,6 +77,8 @@
     "Social Media": "Sosyal medya",
     "TikTok": "TikTok",
     "Dark Logo": "Koyu logo",
+    "Admin Logo": "Yönetim paneli logosu",
+    "Used in the admin panel sidebar navigation.": "Yönetim paneli kenar çubuğu navigasyonunda kullanılır.",
     "Transparent Logo": "Şeffaf logo",
     "Meta Image": "Meta görseli",
     "Countries": "Ülkeler",
@@ -224,6 +226,10 @@
     "Staff": "Personel",
     "Support Hub": "Destek merkezi",
     "Contacts": "İletişim kayıtları",
+    "Leads": "Potansiyel müşteriler",
+    "Search In Leads": "Potansiyel müşterilerde ara",
+    "Project / Page": "Proje / sayfa",
+    "Date / Time": "Tarih / saat",
     "Newsletter Subscribers": "Bülten aboneleri",
     "Users": "Kullanıcılar",
 
@@ -401,7 +407,33 @@
         "message_sent":"Güveniniz için teşekkür ederiz. Size en iyi hizmeti sunmak için buradayız.",
         "send_failed":"Bir sorun oluştu. Lütfen tekrar deneyin.",
         "map_not_configured":"Harita henüz yapılandırılmadı.",
-        "follow_us":"Bizi takip edin"
+        "follow_us":"Bizi takip edin",
+        "faq":{
+            "title":"Sıkça Sorulan Sorular",
+            "subtitle":"Gayrimenkul satın alma ve Imas Global ile çalışma hakkında hızlı yanıtlar.",
+            "items":[
+                {
+                    "question":"Bir mülkü görmek için nasıl randevu alırım?",
+                    "answer":"İlandaki iletişim formunu kullanın, ofisimizi arayın veya bu sayfadan mesaj gönderin. Satıcıyla uygunluğu teyit eder ve buluşma yerini paylaşırız."
+                },
+                {
+                    "question":"Yabancılar Türkiye'de mülk satın alabilir mi?",
+                    "answer":"Evet. Uygun yabancı alıcılar yerel düzenlemelere tabi olarak Türkiye'de gayrimenkul satın alabilir. Danışmanlarımız uygunluk, belgeler ve tescil sürecinde size rehberlik eder."
+                },
+                {
+                    "question":"Mülk satın almak için hangi belgeler gerekir?",
+                    "answer":"Genellikle geçerli pasaport, vergi numarası ve fon kanıtı gerekir. Kredi kullanırsanız banka ek belgeler isteyebilir. Durumunuza özel bir kontrol listesi sunarız."
+                },
+                {
+                    "question":"Satın alma süreci ne kadar sürer?",
+                    "answer":"Finansman ve hukuki incelemeye göre değişir; çoğu işlem kabul edilen tekliften sonra dört ila sekiz hafta içinde tamamlanır. Nakit alımlar daha hızlı ilerler."
+                },
+                {
+                    "question":"Yatırım yoluyla Türk vatandaşlığında yardımcı oluyor musunuz?",
+                    "answer":"Evet. Uygun projeleri belirlemenize yardımcı olur ve uygun gayrimenkul yatırımlarına bağlı vatandaşlık başvuruları için hukuk ortaklarımızla koordinasyon sağlarız."
+                }
+            ]
+        }
     },
     "floating_whatsapp":{
         "aria_label":"WhatsApp üzerinden bize ulaşın"

@@ -113,4 +113,23 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Markdown Mail Settings
+    |--------------------------------------------------------------------------
+    |
+    | Branded markdown mail (all Mailables + Notifications using MailMessage)
+    | renders with the IMas navy/gold theme. Component overrides live in
+    | resources/views/vendor/mail and take precedence over framework defaults.
+    |
+    */
+
+    'markdown' => [
+        'theme' => 'imas',
+
+        'paths' => [
+            resource_path('views/vendor/mail'),
+        ],
+    ],
+
 ];

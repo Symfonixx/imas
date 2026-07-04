@@ -1,5 +1,12 @@
 @section('title', __('Add property'))
 
+@section('js')
+    @include('base::shared._tinymce', [
+        'tinymceSelector' => '#tinymce-overview, #tinymce-why-to-buy, #tinymce-facilities, #tinymce-content',
+        'tinymceHeight' => 400,
+    ])
+@endsection
+
 @section('toolbar')
     @php
         $breadcrumbItems = [

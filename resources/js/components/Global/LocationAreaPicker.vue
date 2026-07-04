@@ -1,4 +1,4 @@
-﻿<template>
+<template>
     <div
         ref="rootRef"
         class="imas-loc-picker"
@@ -26,7 +26,7 @@
             ></i>
         </button>
 
-        <Teleport to="body">
+        <Teleport v-if="mounted" to="body">
             <div
                 v-show="open"
                 ref="panelRef"
@@ -210,6 +210,7 @@ const {
     open,
     useMobilePanel,
     panelStyle,
+    mounted,
     toggle,
     schedulePanelPositionUpdate,
 } = useLocationPickerPanel(() => props.layout);
@@ -307,5 +308,5 @@ watch(
 </script>
 
 <style lang="scss" scoped>
-@import "./location-picker.scss";
+@use "./location-picker.scss";
 </style>

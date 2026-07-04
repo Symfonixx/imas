@@ -4,19 +4,17 @@ namespace Modules\Cms\Repositories\BlogCategory;
 
 use App\Http\Middleware\HandleInertiaRequests;
 use Config;
-use Exception;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
-use Log;
+use Modules\Cms\Application\Shared\Support\ContentPayloadBuilder;
 use Modules\Cms\Models\BlogCategory;
-use Modules\Core\Support\AdminImageInput;
 use Modules\Core\Traits\ExceptionHandlerTrait;
-use Modules\Core\Traits\FileTrait;
 
 class BlogCategoryModelRepository implements BlogCategoryRepository
 {
-    use ExceptionHandlerTrait, FileTrait;
+    use ExceptionHandlerTrait;
+
+    public function __construct(private readonly ContentPayloadBuilder $payloadBuilder) {}
 
     public function all(array $columns = ['*']): LengthAwarePaginator
     {
@@ -43,45 +41,19 @@ class BlogCategoryModelRepository implements BlogCategoryRepository
         ?BlogCategory $category = null,
         bool $updateTranslations = true
     ): array {
-        $locale = app()->getLocale();
-        $transName = $category?->getTranslations('name') ?? [];
+        $payload = $this->payloadBuilder->build(
+            data: $data,
+            uploadPath: 'cms/blog-categories',
+            translatableFields: (new BlogCategory)->translatable,
+            imageFields: ['meta_image'],
+            existingMedia: $category ? ['meta_image' => $category->meta_image] : [],
+            entity: $category,
+            updateTranslations: $updateTranslations
+        );
 
-        $sourceName = is_array($data['name'])
-            ? ($data['name'][$locale] ?? reset($data['name']) ?: '')
-            : $data['name'];
-
-        $transName[$locale] = $sourceName;
-
-        if (is_array($data['name'])) {
-            foreach ($data['name'] as $lang => $name) {
-                if ($name) {
-                    $transName[$lang] = $name;
-                }
-            }
-        }
-
-        if ($updateTranslations) {
-            foreach (otherLangs() as $lang) {
-                try {
-                    $transName[$lang] = autoGoogleTranslator($lang, $sourceName);
-                } catch (Exception $e) {
-                    Log::error($e->getMessage());
-                }
-            }
-        }
-
-        $metaImage = $data['meta_image'] ?? null;
-        if ($metaImage instanceof UploadedFile) {
-            $metaImage = $this->upload($metaImage, 'cms/blog-categories', $data['slug'] ?? null, $category?->meta_image);
-        } elseif ($metaImage === AdminImageInput::REMOVED) {
-            $metaImage = null;
-        } elseif ($metaImage === '' || $metaImage === null) {
-            $metaImage = $category?->meta_image;
-        }
-
-        return array_merge($data, [
-            'name' => $transName,
-            'meta_image' => $metaImage,
+        return array_merge($payload, [
+            'slug' => $data['slug'] ?? $category?->slug,
+            'add_to_navbar' => (bool) ($data['add_to_navbar'] ?? false),
         ]);
     }
 
@@ -100,7 +72,6 @@ class BlogCategoryModelRepository implements BlogCategoryRepository
     public function deleteMulti(array $ids): ?bool
     {
         return $this->execute(function () use ($ids) {
-            // If BlogCategory ever has images/files, delete them here (structure for extensibility)
             BlogCategory::destroy($ids);
             $this->clearSharedBlogCategoriesCache();
             session()->flushMessage(true);

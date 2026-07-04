@@ -4630,6 +4630,46 @@ html[dir="rtl"] .imas-featured-properties-sidebar__badge--price {
     margin-bottom: 0.35rem;
 }
 
+.imas-property-show-page .imas-property-show-panel .imas-rich-content :is(p, ul, ol) {
+    margin-bottom: 1rem;
+}
+
+.imas-property-show-page .imas-property-show-panel .imas-rich-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.imas-property-show-page .imas-property-show-panel .imas-rich-content table {
+    width: 100%;
+    margin-bottom: 1rem;
+    border-collapse: collapse;
+}
+
+.imas-property-show-page .imas-property-show-panel .imas-rich-content :is(th, td) {
+    padding: 0.65rem 0.85rem;
+    border: 1px solid var(--divider);
+    vertical-align: top;
+}
+
+.imas-property-show-page .imas-property-show-panel .imas-rich-content th {
+    background: var(--surface-2);
+    font-weight: 600;
+}
+
+.imas-property-show-page .imas-property-show-panel .imas-rich-content blockquote {
+    margin: 1.25rem 0;
+    padding: 1rem 1.25rem;
+    border-inline-start: 3px solid var(--brand-gold);
+    background: var(--surface-2);
+    color: var(--text-dim);
+    border-radius: 0 8px 8px 0;
+}
+
+html[dir="rtl"] .imas-property-show-page .imas-property-show-panel .imas-rich-content blockquote {
+    border-radius: 8px 0 0 8px;
+}
+
 .imas-property-show-page .listing-details-sliders.mb-30,
 .imas-property-show-page .property-location,
 .imas-property-show-page .wprt-image-video.w50.pro.imas-property-video {
@@ -4970,6 +5010,93 @@ html[dir="rtl"] .imas-featured-properties-sidebar__badge--price {
     .imas-contact-page .imas-contact-page__panel--details {
         margin-top: 0.5rem;
     }
+}
+
+/* Contact page — FAQ accordion */
+.imas-contact-page .imas-contact-faq {
+    margin-top: 0.25rem;
+    background: var(--surface) !important;
+}
+
+.imas-contact-page .imas-contact-faq__title {
+    margin-bottom: 0.65rem;
+}
+
+.imas-contact-page .imas-contact-faq__subtitle {
+    margin-bottom: 1.25rem;
+}
+
+.imas-contact-page .imas-contact-faq__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.imas-contact-page .imas-contact-faq__list > li {
+    border-bottom: 1px solid var(--divider);
+}
+
+.imas-contact-page .imas-contact-faq__list > li:last-child {
+    border-bottom: none;
+}
+
+.imas-contact-page .imas-contact-faq__trigger {
+    display: block;
+    width: 100%;
+    margin: 0;
+    padding: 1rem 2.25rem 1rem 0;
+    border: 0;
+    background: transparent;
+    color: var(--text);
+    font-size: var(--text-md);
+    font-weight: 600;
+    line-height: 1.4;
+    text-align: start;
+    cursor: pointer;
+    position: relative;
+}
+
+.imas-contact-page .imas-contact-faq__trigger::after {
+    content: "+";
+    position: absolute;
+    top: 50%;
+    inset-inline-end: 0.15rem;
+    transform: translateY(-50%);
+    color: var(--brand-gold);
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.imas-contact-page .imas-contact-faq__list > li.active .imas-contact-faq__trigger {
+    color: var(--brand-gold);
+}
+
+.imas-contact-page .imas-contact-faq__list > li.active .imas-contact-faq__trigger::after {
+    content: "−";
+}
+
+.imas-contact-page .imas-contact-faq__trigger:hover,
+.imas-contact-page .imas-contact-faq__trigger:focus-visible {
+    color: var(--brand-gold);
+    outline: none;
+    box-shadow: var(--ring);
+}
+
+.imas-contact-page .imas-contact-faq__content {
+    display: none;
+    padding: 0 0 1rem;
+    color: var(--text-dim);
+}
+
+.imas-contact-page .imas-contact-faq__list > li.active .imas-contact-faq__content {
+    display: block;
+}
+
+.imas-contact-page .imas-contact-faq__content p {
+    margin: 0;
+    font-size: var(--text-card-excerpt);
+    line-height: 1.55;
 }
 
 .capitalize-text {

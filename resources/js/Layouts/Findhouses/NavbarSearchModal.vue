@@ -1,5 +1,5 @@
 <template>
-    <Teleport to="body">
+    <Teleport v-if="mounted" to="body">
         <div
             v-if="open"
             class="imas-navbar-search"
@@ -121,7 +121,7 @@ const logoUrl = computed(() => {
 });
 
 function trans(key) {
-    return page.props.translations[key] || key;
+    return page.props.translations?.[key] ?? key;
 }
 
 function close() {
@@ -285,7 +285,16 @@ watch(
     },
 );
 
+/**
+ * Gate `<Teleport to="body">` until after mount. Inertia's Vue SSR does not emit
+ * teleport-to-body content into the server HTML, so an active teleport during
+ * hydration is matched against `<div id="app">` and warns. Rendering a plain
+ * comment placeholder until mounted keeps server/client identical.
+ */
+const mounted = ref(false);
+
 onMounted(() => {
+    mounted.value = true;
     document.addEventListener("keydown", onKeydown);
 });
 

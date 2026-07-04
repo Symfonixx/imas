@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Modules\Core\Http\Requests\DeleteMultiRequest;
 use Modules\Core\Support\AdminImageInput;
 use Modules\Property\Enums\LocationType;
@@ -63,6 +64,7 @@ class PropertyController extends Controller
             if (array_key_exists('unit_types', $validated)) {
                 $this->syncUnitTypes($property, $validated['unit_types']);
             }
+            $this->syncSimilarProperties($property, $validated['similar_property_ids'] ?? []);
             DB::commit();
         } catch (Throwable $e) {
             DB::rollBack();
@@ -76,7 +78,7 @@ class PropertyController extends Controller
     public function edit(Property $property)
     {
         $this->setActive('projects');
-        $property->load(['slides', 'unitTypes', 'location.parent.parent']);
+        $property->load(['slides', 'unitTypes', 'similarProperties', 'location.parent.parent']);
 
         return view('property::admin.property.edit', array_merge(
             $this->formShared(),
@@ -108,6 +110,8 @@ class PropertyController extends Controller
             } elseif (array_key_exists('unit_types', $validated)) {
                 $this->syncUnitTypes($property, $validated['unit_types']);
             }
+
+            $this->syncSimilarProperties($property, $validated['similar_property_ids'] ?? []);
         });
 
         return redirect()->route('admin.properties.index');
@@ -191,11 +195,21 @@ class PropertyController extends Controller
             ])
             ->values();
 
+        $propertiesForSimilar = Property::query()
+            ->orderByDesc('updated_at')
+            ->get(['id', 'project_code', 'title', 'project_name'])
+            ->map(fn (Property $row): array => [
+                'id' => $row->id,
+                'label' => $this->propertyOptionLabel($row),
+            ])
+            ->values();
+
         return [
             'property' => null,
             'propertyTypes' => $propertyTypes,
             'cities' => $cities,
             'projectUnitTypesCatalog' => $projectUnitTypesCatalog,
+            'propertiesForSimilar' => $propertiesForSimilar,
             'statuses' => CmsStatus::cases(),
         ];
     }
@@ -215,14 +229,15 @@ class PropertyController extends Controller
             $unitTypeIdRules[] = Rule::exists('unit_types', 'id')->where('property_id', $property->id);
         }
 
-        return $request->validate([
+        $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'project_name' => ['nullable', 'string', 'max:255'],
             'project_code' => ['required', 'string', 'max:128', $uniqueProjectCode],
             'overview' => ['required', 'string'],
             'thumbnail' => [$property === null ? 'required' : 'nullable', 'image', 'max:4096'],
             'thumbnail_media_path' => ['nullable', 'string'],
-            'location_id' => ['required', 'integer', Rule::exists('locations', 'id')->where('type', LocationType::Area->value)],
+            'district_id' => ['required', 'integer', Rule::exists('locations', 'id')->where('type', LocationType::Municipality->value)],
+            'area_id' => ['nullable', 'integer', Rule::exists('locations', 'id')->where('type', LocationType::Area->value)],
             'property_type_id' => ['required', 'integer', 'exists:property_types,id'],
             'is_sold_out' => ['nullable', 'boolean'],
             'is_recommended' => ['nullable', 'boolean'],
@@ -252,7 +267,41 @@ class PropertyController extends Controller
             'unit_types.*.min_area' => ['nullable', 'numeric', 'min:0'],
             'unit_types.*.max_area' => ['nullable', 'numeric', 'min:0'],
             'unit_types.*.price' => ['nullable', 'numeric', 'min:0'],
+            'similar_property_ids' => ['nullable', 'array', 'max:12'],
+            'similar_property_ids.*' => ['integer', 'distinct', 'exists:properties,id'],
         ]);
+
+        if (! empty($validated['area_id'])) {
+            $area = Location::query()->find((int) $validated['area_id']);
+            if ($area === null || (int) $area->parent_id !== (int) $validated['district_id']) {
+                throw ValidationException::withMessages([
+                    'area_id' => __('Invalid area selection.'),
+                ]);
+            }
+        }
+
+        $validated['location_id'] = $this->resolveLocationId($validated);
+
+        if ($property !== null && ! empty($validated['similar_property_ids'])) {
+            $validated['similar_property_ids'] = array_values(array_filter(
+                array_map('intval', $validated['similar_property_ids']),
+                fn (int $id): bool => $id !== $property->id
+            ));
+        }
+
+        return $validated;
+    }
+
+    /**
+     * @param  array<string, mixed>  $validated
+     */
+    private function resolveLocationId(array $validated): int
+    {
+        if (! empty($validated['area_id'])) {
+            return (int) $validated['area_id'];
+        }
+
+        return (int) $validated['district_id'];
     }
 
     /**
@@ -432,6 +481,36 @@ class PropertyController extends Controller
         }
 
         return (float) $value;
+    }
+
+    /**
+     * @param  list<int>  $similarPropertyIds
+     */
+    private function syncSimilarProperties(Property $property, array $similarPropertyIds): void
+    {
+        $syncData = [];
+
+        foreach (array_values(array_unique(array_map('intval', $similarPropertyIds))) as $index => $similarPropertyId) {
+            if ($similarPropertyId <= 0 || $similarPropertyId === $property->id) {
+                continue;
+            }
+
+            $syncData[$similarPropertyId] = ['sort_order' => $index];
+        }
+
+        $property->similarProperties()->sync($syncData);
+    }
+
+    private function propertyOptionLabel(Property $property): string
+    {
+        $title = $this->translatedName($property->project_name ?: $property->title);
+        $code = trim((string) $property->project_code);
+
+        if ($code !== '' && $title !== '') {
+            return "{$title} ({$code})";
+        }
+
+        return $title !== '' ? $title : $code;
     }
 
     private function syncSlides(Property $property, Request $request): void

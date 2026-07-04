@@ -128,7 +128,7 @@ import { blogIndexLocalizedUrl } from "../utils/blogLocalizedRoute.js";
 import { localizedRoute } from "@/utils/localizedRoute.js";
 
 const props = defineProps({
- 
+    title: { type: String, required: true },
     blogs: { type: Object, required: true },
     recentBlogs: { type: Array, default: () => [] },
     categories: { type: Array, default: () => [] },

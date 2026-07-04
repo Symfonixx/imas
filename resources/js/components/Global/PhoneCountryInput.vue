@@ -277,15 +277,61 @@ function syncModelValue() {
     emit("update:modelValue", buildMobilePayload());
 }
 
+function parseMobileWithCountries(fullMobile, list) {
+    const digits = digitsOnly(fullMobile);
+    if (!digits) {
+        return { countryId: null, national: "" };
+    }
+
+    const sorted = [...list].sort(
+        (a, b) =>
+            digitsOnly(b.phone_code).length - digitsOnly(a.phone_code).length,
+    );
+
+    for (const country of sorted) {
+        const code = digitsOnly(country.phone_code);
+        if (code && digits.startsWith(code)) {
+            return {
+                countryId: country.id,
+                national: digits.slice(code.length),
+            };
+        }
+    }
+
+    return { countryId: null, national: digits };
+}
+
+function applyIncomingMobile(value) {
+    const incoming = digitsOnly(value);
+    const current = buildMobilePayload();
+    if (incoming && incoming === current) {
+        return;
+    }
+
+    if (!incoming) {
+        mobileLocal.value = "";
+        return;
+    }
+
+    const parsed = parseMobileWithCountries(incoming, countriesWithPhone.value);
+    if (parsed.countryId != null) {
+        countryId.value = parsed.countryId;
+        mobileLocal.value = parsed.national;
+        return;
+    }
+
+    pickDefaultCountry();
+    mobileLocal.value = parsed.national;
+}
+
 watch([mobileLocal, countryId], syncModelValue);
 
 watch(
     () => props.modelValue,
     (value) => {
-        if (!value) {
-            mobileLocal.value = "";
-        }
+        applyIncomingMobile(value);
     },
+    { immediate: true },
 );
 
 function selectCountry(id) {

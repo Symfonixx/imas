@@ -65,5 +65,9 @@
     "My Profile": "Profilim",
     "No data available in table": "Tabloda veri bulunmuyor",
     "LoginNote": "Favorilerinizi kaydetmek, keşfetmek ve tekrar görüntülemek için giriş yapın.",
-    "RegisterNote": "Favorilerinizi kaydetmek, keşfetmek ve tekrar görüntülemek için kayıt olun."
+    "RegisterNote": "Favorilerinizi kaydetmek, keşfetmek ve tekrar görüntülemek için kayıt olun.",
+    "Please enter an email address.": "Lütfen bir e-posta adresi girin.",
+    "Please enter a valid email address.": "Lütfen geçerli bir e-posta adresi girin.",
+    "This email is already registered.": "Bu e-posta adresi zaten kayıtlı.",
+    "Email may not be greater than 255 characters.": "E-posta 255 karakterden uzun olamaz."
 }

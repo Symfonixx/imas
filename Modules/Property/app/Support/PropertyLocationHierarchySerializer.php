@@ -8,16 +8,38 @@ use Modules\Property\Models\Location;
 final class PropertyLocationHierarchySerializer
 {
     /**
-     * Resolve city, district, and area from the property's area location.
+     * Resolve city, district, and area from the property location (area or municipality).
      *
      * @return array{city: ?array{id: int, name: mixed, type: string}, district: ?array{id: int, name: mixed, type: string}, area: ?array{id: int, name: mixed, type: string}}|null
      */
-    public static function toArray(?Location $areaLocation): ?array
+    public static function toArray(?Location $storedLocation): ?array
     {
-        if ($areaLocation === null) {
+        if ($storedLocation === null) {
             return null;
         }
 
+        $type = self::typeValue($storedLocation);
+
+        if ($type === LocationType::Area->value) {
+            return self::fromArea($storedLocation);
+        }
+
+        if ($type === LocationType::Municipality->value) {
+            return self::fromMunicipality($storedLocation);
+        }
+
+        return [
+            'city' => self::node($storedLocation),
+            'district' => null,
+            'area' => null,
+        ];
+    }
+
+    /**
+     * @return array{city: ?array{id: int, name: mixed, type: string}, district: ?array{id: int, name: mixed, type: string}, area: array{id: int, name: mixed, type: string}}
+     */
+    private static function fromArea(Location $areaLocation): array
+    {
         $area = self::node($areaLocation);
         $district = null;
         $city = null;
@@ -25,7 +47,7 @@ final class PropertyLocationHierarchySerializer
         $parent = self::relatedParent($areaLocation);
 
         if ($parent !== null) {
-            if (self::typeValue($parent) === LocationType::District->value) {
+            if (self::typeValue($parent) === LocationType::Municipality->value) {
                 $district = self::node($parent);
                 $cityParent = self::relatedParent($parent);
                 if ($cityParent !== null && self::typeValue($cityParent) === LocationType::City->value) {
@@ -40,6 +62,26 @@ final class PropertyLocationHierarchySerializer
             'city' => $city,
             'district' => $district,
             'area' => $area,
+        ];
+    }
+
+    /**
+     * @return array{city: ?array{id: int, name: mixed, type: string}, district: array{id: int, name: mixed, type: string}, area: null}
+     */
+    private static function fromMunicipality(Location $municipalityLocation): array
+    {
+        $district = self::node($municipalityLocation);
+        $city = null;
+        $parent = self::relatedParent($municipalityLocation);
+
+        if ($parent !== null && self::typeValue($parent) === LocationType::City->value) {
+            $city = self::node($parent);
+        }
+
+        return [
+            'city' => $city,
+            'district' => $district,
+            'area' => null,
         ];
     }
 

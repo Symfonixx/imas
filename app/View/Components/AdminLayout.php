@@ -5,6 +5,7 @@ namespace App\View\Components;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
+use Modules\Base\Repositories\Settings\SettingsRepository;
 
 class AdminLayout extends Component
 {
@@ -13,7 +14,7 @@ class AdminLayout extends Component
     /**
      * Create a new component instance.
      */
-    public function __construct()
+    public function __construct(private readonly SettingsRepository $settingsRepository)
     {
         $this->user = auth()->user();
     }
@@ -23,6 +24,14 @@ class AdminLayout extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.admin-layout', ['user' => $this->user]);
+        $adminLogoPath = trim((string) ($this->settingsRepository->get('admin_logo') ?? ''));
+        $adminLogoUrl = $adminLogoPath !== ''
+            ? asset('storage/'.$adminLogoPath)
+            : asset('images/logo.png');
+
+        return view('components.admin-layout', [
+            'user' => $this->user,
+            'adminLogoUrl' => $adminLogoUrl,
+        ]);
     }
 }

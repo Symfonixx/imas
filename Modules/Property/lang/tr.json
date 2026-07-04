@@ -1,0 +1,13 @@
+{
+    "A city with this name already exists.": "Bu isimde bir şehir zaten mevcut.",
+    "A municipality with this name already exists in this city.": "Bu şehirde bu isimde bir belediye zaten mevcut.",
+    "An area with this name already exists in this municipality.": "Bu belediyede bu isimde bir alan zaten mevcut.",
+    "A location with this name already exists at this level.": "Bu seviyede bu isimde bir konum zaten mevcut.",
+    "District": "Belediye",
+    "district": "Belediye",
+    "Municipality": "Belediye",
+    "Select district": "Belediye seçin",
+    "Select municipality": "Belediye seçin",
+    "The district field is required when area is not selected.": "Alan seçilmediğinde belediye alanı zorunludur.",
+    "The area field is required when district is not selected.": "Belediye seçilmediğinde alan zorunludur."
+}

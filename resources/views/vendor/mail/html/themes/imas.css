@@ -1,0 +1,342 @@
+/* IMas branded mail theme — navy/gold dark design.
+   Uses literal hex values because email clients + the CSS inliner do not
+   resolve CSS custom properties (see .cursor/rules/DARK_THEME_SPEC.mdc). */
+
+/* Base */
+
+body,
+body *:not(html):not(style):not(br):not(tr):not(code) {
+    box-sizing: border-box;
+    font-family: "Avenir LT Std", "Avenir Next", "Helvetica Neue", -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif,
+        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+    position: relative;
+}
+
+body {
+    -webkit-text-size-adjust: none;
+    background-color: #0a1526;
+    color: #c9d2e2;
+    height: 100%;
+    line-height: 1.55;
+    margin: 0;
+    padding: 0;
+    width: 100% !important;
+}
+
+p,
+ul,
+ol,
+blockquote {
+    line-height: 1.55;
+    text-align: start;
+}
+
+a {
+    color: #d9a800;
+}
+
+a img {
+    border: none;
+}
+
+/* Typography */
+
+h1 {
+    color: #eef2f8;
+    font-size: 22px;
+    font-weight: bold;
+    margin-top: 0;
+    text-align: start;
+}
+
+h2 {
+    color: #eef2f8;
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 0;
+    text-align: start;
+}
+
+h3 {
+    color: #eef2f8;
+    font-size: 15px;
+    font-weight: bold;
+    margin-top: 0;
+    text-align: start;
+}
+
+p {
+    color: #c9d2e2;
+    font-size: 15px;
+    line-height: 1.6em;
+    margin-top: 0;
+    text-align: start;
+}
+
+p.sub {
+    font-size: 12px;
+}
+
+img {
+    max-width: 100%;
+}
+
+/* Layout */
+
+.wrapper {
+    -premailer-cellpadding: 0;
+    -premailer-cellspacing: 0;
+    -premailer-width: 100%;
+    background-color: #0a1526;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+.content {
+    -premailer-cellpadding: 0;
+    -premailer-cellspacing: 0;
+    -premailer-width: 100%;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+/* Header */
+
+.header {
+    padding: 28px 0 22px;
+    text-align: center;
+}
+
+.header a {
+    color: #eef2f8;
+    font-size: 20px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.header-name {
+    color: #d9a800;
+    font-size: 22px;
+    font-weight: bold;
+    letter-spacing: 0.4px;
+}
+
+/* Logo */
+
+.logo {
+    height: auto;
+    max-height: 56px;
+    max-width: 220px;
+    width: auto;
+    margin: 6px auto;
+}
+
+/* Body */
+
+.body {
+    -premailer-cellpadding: 0;
+    -premailer-cellspacing: 0;
+    -premailer-width: 100%;
+    background-color: #0a1526;
+    border-bottom: 1px solid #0a1526;
+    border-top: 1px solid #0a1526;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+.inner-body {
+    -premailer-cellpadding: 0;
+    -premailer-cellspacing: 0;
+    -premailer-width: 570px;
+    background-color: #101d36;
+    border-color: rgba(217, 168, 0, 0.18);
+    border-style: solid;
+    border-radius: 10px;
+    border-width: 1px;
+    border-top: 3px solid #d9a800;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5);
+    margin: 0 auto;
+    padding: 0;
+    width: 570px;
+}
+
+.inner-body a {
+    word-break: break-all;
+}
+
+/* Subcopy */
+
+.subcopy {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    margin-top: 25px;
+    padding-top: 25px;
+}
+
+.subcopy p {
+    color: #9aa6bd;
+    font-size: 13px;
+}
+
+/* Footer */
+
+.footer {
+    -premailer-cellpadding: 0;
+    -premailer-cellspacing: 0;
+    -premailer-width: 570px;
+    margin: 0 auto;
+    padding: 0;
+    text-align: center;
+    width: 570px;
+}
+
+.footer p {
+    color: #9aa6bd;
+    font-size: 12px;
+    text-align: center;
+    line-height: 1.7em;
+}
+
+.footer a {
+    color: #d9a800;
+    text-decoration: none;
+}
+
+.footer-brand {
+    color: #eef2f8;
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 0.3px;
+}
+
+.footer-tagline {
+    color: #9aa6bd;
+    font-size: 12px;
+}
+
+.footer-contact {
+    color: #c9d2e2;
+    font-size: 12px;
+}
+
+.footer-legal {
+    color: #6b7896;
+    font-size: 11px;
+}
+
+/* Tables */
+
+.table table {
+    -premailer-cellpadding: 0;
+    -premailer-cellspacing: 0;
+    -premailer-width: 100%;
+    margin: 30px auto;
+    width: 100%;
+}
+
+.table th {
+    color: #eef2f8;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    margin: 0;
+    padding-bottom: 8px;
+}
+
+.table td {
+    color: #c9d2e2;
+    font-size: 15px;
+    line-height: 18px;
+    margin: 0;
+    padding: 10px 0;
+}
+
+.content-cell {
+    max-width: 100vw;
+    padding: 36px;
+}
+
+/* Buttons */
+
+.action {
+    -premailer-cellpadding: 0;
+    -premailer-cellspacing: 0;
+    -premailer-width: 100%;
+    margin: 30px auto;
+    padding: 0;
+    text-align: center;
+    width: 100%;
+    float: unset;
+}
+
+.button {
+    -webkit-text-size-adjust: none;
+    border-radius: 6px;
+    color: #1a1100;
+    display: inline-block;
+    font-weight: bold;
+    overflow: hidden;
+    text-decoration: none;
+}
+
+.button-blue,
+.button-primary {
+    background-color: #d9a800;
+    border-bottom: 10px solid #d9a800;
+    border-left: 20px solid #d9a800;
+    border-right: 20px solid #d9a800;
+    border-top: 10px solid #d9a800;
+    color: #1a1100;
+}
+
+.button-green,
+.button-success {
+    background-color: #22c55e;
+    border-bottom: 10px solid #22c55e;
+    border-left: 20px solid #22c55e;
+    border-right: 20px solid #22c55e;
+    border-top: 10px solid #22c55e;
+    color: #ffffff;
+}
+
+.button-red,
+.button-error {
+    background-color: #e23b3b;
+    border-bottom: 10px solid #e23b3b;
+    border-left: 20px solid #e23b3b;
+    border-right: 20px solid #e23b3b;
+    border-top: 10px solid #e23b3b;
+    color: #ffffff;
+}
+
+/* Panels */
+
+.panel {
+    border-left: #d9a800 solid 4px;
+    margin: 21px 0;
+}
+
+.panel-content {
+    background-color: #16264a;
+    color: #c9d2e2;
+    padding: 16px;
+}
+
+.panel-content p {
+    color: #c9d2e2;
+}
+
+.panel-item {
+    padding: 0;
+}
+
+.panel-item p:last-of-type {
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+/* Utilities */
+
+.break-all {
+    word-break: break-all;
+}

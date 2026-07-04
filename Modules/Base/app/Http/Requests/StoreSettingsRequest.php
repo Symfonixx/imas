@@ -27,6 +27,7 @@ class StoreSettingsRequest extends FormRequest
         return [
             'imgs.white_logo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
             'imgs.black_logo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+            'imgs.admin_logo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
             'imgs.meta_img' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:4096', 'dimensions:min_width=600,min_height=600'],
             'imgs.contact_us_banner' => $pageBannerRules,
             'imgs.blog_show_banner' => $pageBannerRules,

@@ -99,7 +99,7 @@ class PropertyController extends Controller
             ->all();
 
         $districts = Location::query()
-            ->where('type', LocationType::District)
+            ->where('type', LocationType::Municipality)
             ->orderBy('id')
             ->get(['id', 'name', 'parent_id'])
             ->map(static fn (Location $district) => [
@@ -250,6 +250,27 @@ class PropertyController extends Controller
      */
     private function similarProperties(Property $property, ?int $userId): array
     {
+        $manualSimilarIds = $property->similarProperties
+            ->pluck('id')
+            ->map(fn ($id) => (int) $id)
+            ->values()
+            ->all();
+
+        if ($manualSimilarIds !== []) {
+            $properties = Property::query()
+                ->whereIn('id', $manualSimilarIds)
+                ->where('status', CmsStatus::PUBLISHED)
+                ->with(PropertyCardEagerLoads::relations())
+                ->withFavoriteStateForUser($userId)
+                ->get()
+                ->sortBy(fn (Property $row) => array_search($row->id, $manualSimilarIds, true))
+                ->values();
+
+            return $properties
+                ->map(fn (Property $row) => PropertyListingCardSerializer::toArray($row))
+                ->all();
+        }
+
         if ($property->property_type_id === null) {
             return [];
         }

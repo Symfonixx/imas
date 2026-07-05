@@ -1,0 +1,1 @@
+import{F as e,W as t,p as n}from"./app-Beqp6LPz.js";var r={};function i(n,r){return t(),e(`div`)}var a=n(r,[[`render`,i]]);export{a as default};

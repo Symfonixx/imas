@@ -1227,15 +1227,15 @@ function resolveInertiaPage(name) {
 	const modules = name.split("::");
 	if (modules.length > 1) return resolvePageComponent(`../../Modules/${modules[0]}/resources/assets/js/Pages/${modules[1]}.vue`, /* @__PURE__ */ Object.assign({
 		"../../Modules/Base/resources/assets/js/Pages/AboutUs.vue": () => import("./assets/AboutUs-DxLru4ZN.js"),
-		"../../Modules/Base/resources/assets/js/Pages/Index.vue": () => import("./assets/Index-CGg2W4Qc.js"),
+		"../../Modules/Base/resources/assets/js/Pages/Index.vue": () => import("./assets/Index-DyOqZ-Um.js"),
 		"../../Modules/Cms/resources/assets/js/Pages/Index.vue": () => import("./assets/Index-B2CGCARx.js"),
 		"../../Modules/Cms/resources/assets/js/Pages/PageShow.vue": () => import("./assets/PageShow-Cyp0muP4.js"),
-		"../../Modules/Cms/resources/assets/js/Pages/Show.vue": () => import("./assets/Show-C-W93xHZ.js"),
+		"../../Modules/Cms/resources/assets/js/Pages/Show.vue": () => import("./assets/Show-DhyvF6gJ.js"),
 		"../../Modules/Corporate/resources/assets/js/Pages/index.vue": () => import("./assets/Pages-6Qdrt7Vg.js"),
 		"../../Modules/Property/resources/assets/js/Pages/FavoriteProperties.vue": () => import("./assets/FavoriteProperties-aKhVR6tB.js"),
 		"../../Modules/Property/resources/assets/js/Pages/TurkishCitizenship.vue": () => import("./assets/TurkishCitizenship-D7eFYavW.js"),
 		"../../Modules/Property/resources/assets/js/Pages/index.vue": () => import("./assets/Pages-CQlIo40n.js"),
-		"../../Modules/Property/resources/assets/js/Pages/show.vue": () => import("./assets/show-B-U9BeNw.js"),
+		"../../Modules/Property/resources/assets/js/Pages/show.vue": () => import("./assets/show-CivoMMe4.js"),
 		"../../Modules/Support/resources/assets/js/Pages/ContactUs.vue": () => import("./assets/ContactUs-BQ9mh0I0.js"),
 		"../../Modules/User/resources/assets/js/Pages/Auth/ForgotPassword.vue": () => import("./assets/ForgotPassword-DW4PN7Bn.js"),
 		"../../Modules/User/resources/assets/js/Pages/Auth/Login.vue": () => import("./assets/Login-Bz7pijXn.js"),

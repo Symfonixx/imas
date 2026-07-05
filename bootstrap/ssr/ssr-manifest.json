@@ -250,15 +250,15 @@
   "Modules/Property/resources/assets/js/utils/propertyPrice.js": [],
   "Modules/Property/resources/assets/js/utils/propertyUnitType.js": [],
   "Modules/Support/resources/assets/js/Components/ContactDetails.vue": [
-    "/build/assets/ContactUs-BQ9mh0I0.js",
+    "/build/assets/ContactUs-BEilsEgK.js",
     "/build/assets/ContactUs-Y2ffzoY3.css"
   ],
   "Modules/Support/resources/assets/js/Components/ContactDetails.vue?vue&type=style&index=0&scoped=8035b963&lang.css": [
-    "/build/assets/ContactUs-BQ9mh0I0.js",
+    "/build/assets/ContactUs-BEilsEgK.js",
     "/build/assets/ContactUs-Y2ffzoY3.css"
   ],
   "Modules/Support/resources/assets/js/Components/ContactFaq.vue": [
-    "/build/assets/ContactUs-BQ9mh0I0.js",
+    "/build/assets/ContactUs-BEilsEgK.js",
     "/build/assets/ContactUs-Y2ffzoY3.css"
   ],
   "Modules/Support/resources/assets/js/Components/ContactForm.vue": [
@@ -270,7 +270,7 @@
     "/build/assets/ContactForm-D6W572Pq.css"
   ],
   "Modules/Support/resources/assets/js/Pages/ContactUs.vue": [
-    "/build/assets/ContactUs-BQ9mh0I0.js",
+    "/build/assets/ContactUs-BEilsEgK.js",
     "/build/assets/ContactUs-Y2ffzoY3.css"
   ],
   "Modules/User/resources/assets/js/Pages/Auth/ForgotPassword.vue": [

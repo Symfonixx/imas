@@ -1236,7 +1236,7 @@ function resolveInertiaPage(name) {
 		"../../Modules/Property/resources/assets/js/Pages/TurkishCitizenship.vue": () => import("./assets/TurkishCitizenship-D7eFYavW.js"),
 		"../../Modules/Property/resources/assets/js/Pages/index.vue": () => import("./assets/Pages-CQlIo40n.js"),
 		"../../Modules/Property/resources/assets/js/Pages/show.vue": () => import("./assets/show-CivoMMe4.js"),
-		"../../Modules/Support/resources/assets/js/Pages/ContactUs.vue": () => import("./assets/ContactUs-BQ9mh0I0.js"),
+		"../../Modules/Support/resources/assets/js/Pages/ContactUs.vue": () => import("./assets/ContactUs-BEilsEgK.js"),
 		"../../Modules/User/resources/assets/js/Pages/Auth/ForgotPassword.vue": () => import("./assets/ForgotPassword-DW4PN7Bn.js"),
 		"../../Modules/User/resources/assets/js/Pages/Auth/Login.vue": () => import("./assets/Login-Bz7pijXn.js"),
 		"../../Modules/User/resources/assets/js/Pages/Auth/Register.vue": () => import("./assets/Register-C0wKtw_S.js"),

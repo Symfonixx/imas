@@ -66,12 +66,7 @@
             name="twitter:image"
             :content="ogImage"
         />
-        <script
-            v-if="articleJsonLd"
-            head-key="jsonld-article"
-            type="application/ld+json"
-            v-text="articleJsonLd"
-        />
+        <JsonLdScript head-key="jsonld-article" :content="articleJsonLd" />
     </Head>
 
     <AppLayout>
@@ -157,6 +152,7 @@
 import { computed, ref } from "vue";
 import { Head, usePage } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/App.vue";
+import JsonLdScript from "@/components/Seo/JsonLdScript.vue";
 import BlogListingSidebar from "../Components/BlogListingSidebar.vue";
 import InnerPageHeadingHero from "@/components/global/InnerPageHeadingHero.vue";
 import { useScrollReveal } from "@/composables/useScrollReveal";

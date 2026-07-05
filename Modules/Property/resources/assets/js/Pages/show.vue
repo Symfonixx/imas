@@ -66,24 +66,15 @@
             name="twitter:image"
             :content="ogImage"
         />
-        <script
-            v-if="realEstateListingJsonLd"
+        <JsonLdScript
             head-key="jsonld-real-estate-listing"
-            type="application/ld+json"
-            v-text="realEstateListingJsonLd"
+            :content="realEstateListingJsonLd"
         />
-        <script
-            v-if="breadcrumbJsonLd"
+        <JsonLdScript
             head-key="jsonld-breadcrumb"
-            type="application/ld+json"
-            v-text="breadcrumbJsonLd"
+            :content="breadcrumbJsonLd"
         />
-        <script
-            v-if="customSchemaJsonLd"
-            head-key="jsonld-custom"
-            type="application/ld+json"
-            v-text="customSchemaJsonLd"
-        />
+        <JsonLdScript head-key="jsonld-custom" :content="customSchemaJsonLd" />
     </Head>
 
     <AppLayout>
@@ -412,6 +403,7 @@
 import { computed, ref } from "vue";
 import { Head, usePage } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/App.vue";
+import JsonLdScript from "@/components/Seo/JsonLdScript.vue";
 import InnerPageHeadingHero from "@/components/global/InnerPageHeadingHero.vue";
 import { useScrollReveal } from "@/composables/useScrollReveal";
 import { useBoundedSticky } from "@/composables/useBoundedSticky";

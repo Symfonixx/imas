@@ -66,18 +66,11 @@
             name="twitter:image"
             :content="ogImage"
         />
-        <script
-            v-if="organizationJsonLd"
+        <JsonLdScript
             head-key="jsonld-organization"
-            type="application/ld+json"
-            v-text="organizationJsonLd"
+            :content="organizationJsonLd"
         />
-        <script
-            v-if="websiteJsonLd"
-            head-key="jsonld-website"
-            type="application/ld+json"
-            v-text="websiteJsonLd"
-        />
+        <JsonLdScript head-key="jsonld-website" :content="websiteJsonLd" />
     </Head>
 
     <AppLayout>
@@ -120,6 +113,7 @@
 import { computed } from "vue";
 import { Head, usePage } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/App.vue";
+import JsonLdScript from "@/components/Seo/JsonLdScript.vue";
 import FeaturedPropertiesSection from "../components/FeaturedPropertiesSection.vue";
 import TurkishCitizenshipOverview from "../components/TurkishCitizenshipOverview.vue";
 import HomeAboutus from "../components/HomeAboutus.vue";

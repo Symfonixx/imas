@@ -1,1 +1,0 @@
-import{F as e,W as t,p as n}from"./app-DlFsvJy0.js";var r={};function i(n,r){return t(),e(`div`)}var a=n(r,[[`render`,i]]);export{a as default};

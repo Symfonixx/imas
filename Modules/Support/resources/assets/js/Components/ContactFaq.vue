@@ -1,34 +1,50 @@
 <template>
     <section
         v-if="items.length"
-        class="imas-contact-faq faq service-details imas-contact-page__panel"
+        class="imas-contact-faq imas-contact-page__panel imas-contact-page__panel--faq"
         aria-labelledby="imas-contact-faq-title"
     >
-        <h3
-            id="imas-contact-faq-title"
-            class="imas-contact-page__heading imas-contact-faq__title"
-        >
-            {{ title }}
-        </h3>
-        <p v-if="subtitle" class="imas-contact-faq__subtitle text-dim text-card-excerpt">
-            {{ subtitle }}
-        </p>
-        <ul class="accordion accordion-1 one-open imas-contact-faq__list">
+        <header class="imas-contact-faq__header text-start">
+            <h3
+                id="imas-contact-faq-title"
+                class="imas-contact-page__heading imas-contact-faq__title text-xl font-semibold text-start"
+            >
+                {{ title }}
+            </h3>
+            <p
+                v-if="subtitle"
+                class="imas-contact-faq__subtitle text-card-excerpt text-dim text-start"
+            >
+                {{ subtitle }}
+            </p>
+        </header>
+        <ul class="imas-contact-faq__list">
             <li
                 v-for="(item, index) in items"
                 :key="index"
-                :class="{ active: openIndex === index }"
+                class="imas-contact-faq__item"
+                :class="{ 'imas-contact-faq__item--open': openIndex === index }"
             >
-                <button
-                    type="button"
-                    class="title imas-contact-faq__trigger"
-                    :aria-expanded="openIndex === index"
-                    @click="toggle(index)"
-                >
-                    <span>{{ item.question }}</span>
-                </button>
-                <div class="content imas-contact-faq__content">
-                    <p>{{ item.answer }}</p>
+                <div class="imas-contact-faq__item-inner">
+                    <button
+                        type="button"
+                        class="imas-contact-faq__trigger"
+                        :aria-expanded="openIndex === index"
+                        :aria-controls="`imas-contact-faq-panel-${index}`"
+                        @click="toggle(index, $event)"
+                    >
+                        <span class="imas-contact-faq__question text-start">{{ item.question }}</span>
+                        <span class="imas-contact-faq__icon" aria-hidden="true" />
+                    </button>
+                    <div
+                        :id="`imas-contact-faq-panel-${index}`"
+                        class="imas-contact-faq__content"
+                        :hidden="openIndex !== index"
+                    >
+                        <p class="imas-contact-faq__answer text-card-excerpt text-dim text-start">
+                            {{ item.answer }}
+                        </p>
+                    </div>
                 </div>
             </li>
         </ul>
@@ -40,7 +56,7 @@ import { computed, ref } from "vue";
 import { usePage } from "@inertiajs/vue3";
 
 const page = usePage();
-const openIndex = ref(0);
+const openIndex = ref(-1);
 
 function trans(key) {
     return page.props.translations[key] ?? key;
@@ -68,7 +84,8 @@ const items = computed(() => {
     );
 });
 
-function toggle(index) {
+function toggle(index, event) {
     openIndex.value = openIndex.value === index ? -1 : index;
+    event?.currentTarget?.blur();
 }
 </script>

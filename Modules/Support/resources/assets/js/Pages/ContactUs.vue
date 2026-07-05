@@ -94,8 +94,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12">
-                        <ContactFaq />
+                    <div class="row g-4 imas-contact-page__faq-row">
+                        <div class="col-12">
+                            <ContactFaq />
+                        </div>
                     </div>
                 </div>
             </section>

@@ -72,16 +72,7 @@
                                         </p>
                                     </div>
                                 </li>
-                                <li class="contact-line">
-                                    <div class="info">
-                                        <!-- <span class="ic" aria-hidden="true"
-                                            ><i class="fa fa-map-marker"></i
-                                        ></span> -->
-                                        <p class="in-p">
-                                            {{ trans("navBar.footer_location") }}
-                                        </p>
-                                    </div>
-                                </li>
+                              
                             </ul>
                         </div>
                     </div>

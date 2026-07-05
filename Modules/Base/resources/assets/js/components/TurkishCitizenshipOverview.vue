@@ -50,9 +50,11 @@
 import { computed, nextTick, ref, watch } from "vue";
 import { usePage } from "@inertiajs/vue3";
 import { useGsap } from "@/composables/useGsap";
+import { localizedRoute } from "@/utils/localizedRoute.js";
 import TurkishCitizenshipSplitTitle from "./TurkishCitizenshipSplitTitle.vue";
 
 const page = usePage();
+const activeLocale = computed(() => page.props.locale || "en");
 
 function trans(key) {
     return page.props.translations[key] || key;
@@ -147,19 +149,14 @@ const discoverLabel = computed(() =>
     pickTranslation("turkishCitizenship.discover_more", "Discover More"),
 );
 
-const citizenshipHref = computed(() => {
-    try {
-        if (
-            typeof route === "function" &&
-            route().has?.("turkish-citizenship")
-        ) {
-            return route("turkish-citizenship");
-        }
-    } catch {
-        /* ignore */
-    }
-    return "/turkish-citizenship";
-});
+const citizenshipHref = computed(() =>
+    localizedRoute(
+        "turkish-citizenship",
+        {},
+        activeLocale.value,
+        "/turkish-citizenship",
+    ),
+);
 
 const sectionRef = ref(null);
 const panelRef = ref(null);

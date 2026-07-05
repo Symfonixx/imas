@@ -16863,14 +16863,14 @@ div.datedropper.my-style.picker-lkd .pick-submit {
 }
 
 .sidebar-widget .author__contact li span i {
-    width: 40px;
-    height: 40px;
-    line-height: 40px;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
     text-align: center;
     background-color: #fff;
     color: #d9a800;
     border-radius: 50%;
-    font-size: 18px;
+    font-size: 13px;
     margin-right: 10px;
     -webkit-transition: all 0.3s;
     transition: all 0.3s;

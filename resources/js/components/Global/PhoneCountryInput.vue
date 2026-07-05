@@ -394,7 +394,7 @@ function trans(key) {
     position: relative;
     flex: 0 0 auto;
     align-self: stretch;
-    min-width: 6.75rem;
+    min-width: 5.5rem;
     max-width: 46%;
     margin: 0;
 }

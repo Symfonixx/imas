@@ -26,9 +26,9 @@ export function propertyLocationLine(location, locale = "en") {
     }
 
     const parts = [
-        localizedLocationName(location.area?.name, locale),
-        localizedLocationName(location.district?.name, locale),
         localizedLocationName(location.city?.name, locale),
+        localizedLocationName(location.district?.name, locale),
+        localizedLocationName(location.area?.name, locale),
     ].filter(Boolean);
 
     return parts.join(", ");

@@ -287,7 +287,7 @@
         "unit_types_aria":"Mülk birim tipleri"
     },
     "listing_page":{
-        "find_your_house":"Evinizi Bulun",
+        "find_your_house":"Doğru mülkle bulun",
         "enter_keyword":"Anahtar Kelime Girin…",
         "location":"Konum",
         "all_locations":"Tüm Konumlar",
@@ -306,7 +306,7 @@
         "gallery":"Galeri",
         "description":"Genel Bakış",
         "details":"Mülk Detayları",
-        "why_to_buy":"Neden Almalısınız",
+        "why_to_buy":"Neden Bu Mülkle Almalısınız",
         "facilities":"Olanaklar & Konum Özellikleri",
         "property_video":"Mülk Videosu",
         "location":"Konum",
@@ -322,9 +322,9 @@
         "unit_types_title":"Proje Detayları",
         "project_id":"Proje Kodu",
         "project_location":"Konum",
-        "col_rooms":"Oda ve salon sayısı",
-        "col_area":"Alan başlangıcı",
-        "col_price":"Fiyat başlangıcı",
+        "col_rooms":"Birim Tipi",
+        "col_area":"Alan Aralığı",
+        "col_price":"Başlangıç Fiyatı",
         "for_sale":"Satılık",
         "sold_out":"Satıldı",
         "inquiry_subject":":title hakkında bilgi",
@@ -341,7 +341,7 @@
         "description":"Gayrimenkul ve yatırım müşterilerimizin samimi yorumlarını okuyun."
     },
     "articles":{
-        "title":"Bloglar ve Haberler",
+        "title":"Son Eklenen Bloglar ve Haberler",
         "description":"Son gönderilerimizden haberdar olun.",
         "read_more":"Devamını oku..."
     },

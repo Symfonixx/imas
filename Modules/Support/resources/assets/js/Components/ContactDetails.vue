@@ -17,13 +17,13 @@
                     {{ headOfficePrefix }}
                 </template>
                 <span class="imas-contact-page__head-office-brand">IMAS GLOBAL</span>
-                <template v-if="headOfficeSuffix">
+                <!-- <template v-if="headOfficeSuffix">
                     {{ " " }}{{ headOfficeSuffix }}
-                </template>
+                </template> -->
             </p>
-            <p class="imas-contact-page__head-office-location mb-0">
+            <!-- <p class="imas-contact-page__head-office-location mb-0">
                 {{ trans("navBar.footer_location") }}
-            </p>
+            </p> -->
         </div>
 
         <ul>

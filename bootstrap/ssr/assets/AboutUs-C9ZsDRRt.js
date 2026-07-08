@@ -1,0 +1,505 @@
+import { computed, mergeProps, unref, withCtx, openBlock, createBlock, createCommentVNode, createVNode, toDisplayString, useSSRContext, ref } from "vue";
+import { ssrRenderAttrs, ssrInterpolate, ssrRenderList, ssrRenderComponent, ssrRenderAttr, ssrRenderClass } from "vue/server-renderer";
+import { usePage, Link, Head } from "@inertiajs/vue3";
+import { l as localizedRoute, _ as _sfc_main$3 } from "./App-BMYoBaMl.js";
+import { u as useScrollReveal } from "./useScrollReveal-YWJCn0zA.js";
+import { _ as _sfc_main$4 } from "./InnerPageHeadingHero-CEyYr1UI.js";
+import { _ as _sfc_main$2 } from "./FeaturedPropertiesSidebar-CGqAPeiJ.js";
+import { _ as _export_sfc } from "../ssr.js";
+import "gsap";
+import "gsap/ScrollTrigger";
+import "@inertiajs/vue3/server";
+import "@vue/server-renderer";
+const _sfc_main$1 = {
+  __name: "AboutUsQuickLinksSidebar",
+  __ssrInlineRender: true,
+  props: {
+    featuredProperties: { type: Array, default: () => [] }
+  },
+  setup(__props) {
+    const props = __props;
+    const page = usePage();
+    const globals = computed(() => page.props.globals ?? {});
+    const media = computed(() => globals.value.media ?? {});
+    const activeLocale = computed(() => page.props.locale || "en");
+    function trans(key) {
+      return page.props.translations[key] || key;
+    }
+    const featuredPropertiesHeading = computed(
+      () => trans("aboutUs.featured_properties")
+    );
+    const showSidebar = computed(
+      () => quickLinks.value.length > 0 || props.featuredProperties.length > 0
+    );
+    function resolveMediaBanner(url) {
+      if (typeof url !== "string" || url.trim() === "") {
+        return "";
+      }
+      const trimmed = url.trim();
+      if (/\/default\.jpg(?:\?.*)?$/i.test(trimmed)) {
+        return "";
+      }
+      return trimmed;
+    }
+    function mediaFallback() {
+      const meta = media.value.meta_img;
+      return typeof meta === "string" && meta.trim() !== "" ? meta.trim() : "";
+    }
+    function resolveRouteUrl(name, fallbackPath) {
+      var _a, _b;
+      try {
+        if (typeof route === "function" && ((_b = (_a = route()).has) == null ? void 0 : _b.call(_a, name))) {
+          return route(name);
+        }
+      } catch {
+      }
+      return localizedRoute(name, {}, activeLocale.value, fallbackPath);
+    }
+    const quickLinks = computed(() => {
+      const fallback = mediaFallback();
+      const rows = [
+        {
+          id: "turkish-citizenship",
+          title: trans("navBar.Turkish Citizenship"),
+          url: resolveRouteUrl(
+            "turkish-citizenship",
+            "/turkish-citizenship"
+          ),
+          image: resolveMediaBanner(media.value.turkish_citizenship_banner) || fallback
+        },
+        {
+          id: "blog",
+          title: trans("navBar.Blogs"),
+          url: resolveRouteUrl("blog.index", "/blog"),
+          image: resolveMediaBanner(media.value.blog_show_banner) || fallback
+        }
+      ];
+      return rows.filter((row) => row.url);
+    });
+    return (_ctx, _push, _parent, _attrs) => {
+      if (showSidebar.value) {
+        _push(`<aside${ssrRenderAttrs(mergeProps({ class: "imas-blog-v2-sidebar imas-about-page__quick-links" }, _attrs))}>`);
+        if (quickLinks.value.length) {
+          _push(`<div class="imas-blog-v2-sidebar__box"><h4 class="imas-blog-v2-sidebar__heading">${ssrInterpolate(trans("aboutUs.explore_more"))}</h4><div class="imas-blog-v2-sidebar__recent"><!--[-->`);
+          ssrRenderList(quickLinks.value, (link) => {
+            _push(ssrRenderComponent(unref(Link), {
+              key: link.id,
+              href: link.url,
+              class: "imas-blog-v2-sidebar__recent-item"
+            }, {
+              default: withCtx((_, _push2, _parent2, _scopeId) => {
+                if (_push2) {
+                  if (link.image) {
+                    _push2(`<img${ssrRenderAttr("src", link.image)}${ssrRenderAttr("alt", link.title)} loading="lazy"${_scopeId}>`);
+                  } else {
+                    _push2(`<!---->`);
+                  }
+                  _push2(`<div${_scopeId}><div class="imas-blog-v2-sidebar__recent-title"${_scopeId}>${ssrInterpolate(link.title)}</div></div>`);
+                } else {
+                  return [
+                    link.image ? (openBlock(), createBlock("img", {
+                      key: 0,
+                      src: link.image,
+                      alt: link.title,
+                      loading: "lazy"
+                    }, null, 8, ["src", "alt"])) : createCommentVNode("", true),
+                    createVNode("div", null, [
+                      createVNode("div", { class: "imas-blog-v2-sidebar__recent-title" }, toDisplayString(link.title), 1)
+                    ])
+                  ];
+                }
+              }),
+              _: 2
+            }, _parent));
+          });
+          _push(`<!--]--></div></div>`);
+        } else {
+          _push(`<!---->`);
+        }
+        if (__props.featuredProperties.length > 0) {
+          _push(ssrRenderComponent(_sfc_main$2, {
+            "featured-properties": __props.featuredProperties,
+            heading: featuredPropertiesHeading.value
+          }, null, _parent));
+        } else {
+          _push(`<!---->`);
+        }
+        _push(`</aside>`);
+      } else {
+        _push(`<!---->`);
+      }
+    };
+  }
+};
+const _sfc_setup$1 = _sfc_main$1.setup;
+_sfc_main$1.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("Modules/Base/resources/assets/js/components/AboutUsQuickLinksSidebar.vue");
+  return _sfc_setup$1 ? _sfc_setup$1(props, ctx) : void 0;
+};
+const _sfc_main = {
+  __name: "AboutUs",
+  __ssrInlineRender: true,
+  props: {
+    aboutUs: {
+      type: Object,
+      required: true
+    },
+    featuredProperties: {
+      type: Array,
+      default: () => []
+    }
+  },
+  setup(__props) {
+    const props = __props;
+    const page = usePage();
+    const pageRef = ref(null);
+    useScrollReveal(pageRef, { variant: "propertyListings" });
+    const globals = computed(() => page.props.globals ?? {});
+    const seo = computed(() => globals.value.seo ?? {});
+    const media = computed(() => globals.value.media ?? {});
+    const contentHtml = computed(() => props.aboutUs.content ?? "");
+    const heroYoutubeEmbed = computed(() => {
+      const raw = props.aboutUs.youtube_embed ?? "";
+      return typeof raw === "string" ? raw.trim() : "";
+    });
+    function pickSeoString(fromProps, ...globalKeys) {
+      const p = fromProps;
+      if (typeof p === "string" && p.trim() !== "") {
+        return p.trim();
+      }
+      const s = seo.value;
+      for (const key of globalKeys) {
+        const v = s[key];
+        if (typeof v === "string" && v.trim() !== "") {
+          return v.trim();
+        }
+      }
+      return "";
+    }
+    function trans(key) {
+      return page.props.translations[key] || key;
+    }
+    const sectionLabel = computed(() => trans("about_us.title"));
+    const pageHeadingTitle = computed(() => {
+      const t = pickSeoString(props.aboutUs.meta_title, "about_us_meta_title");
+      return t !== "" ? t : sectionLabel.value;
+    });
+    const headingItems = computed(() => {
+      var _a, _b;
+      const rows = [];
+      try {
+        if (typeof route === "function" && ((_b = (_a = route()).has) == null ? void 0 : _b.call(_a, "home"))) {
+          rows.push({
+            title: trans("navBar.Home"),
+            href: route("home")
+          });
+        }
+      } catch {
+      }
+      rows.push({
+        title: sectionLabel.value,
+        href: null
+      });
+      return rows;
+    });
+    const heroBannerUrl = computed(() => {
+      const url = media.value.about_us_banner;
+      if (typeof url !== "string" || url.trim() === "") {
+        return "";
+      }
+      const trimmed = url.trim();
+      if (/\/default\.jpg(?:\?.*)?$/i.test(trimmed)) {
+        return "";
+      }
+      return trimmed;
+    });
+    const documentTitle = computed(() => {
+      const t = pickSeoString(props.aboutUs.meta_title, "about_us_meta_title");
+      if (t !== "") {
+        return `${t} | ${page.props.appName}`;
+      }
+      return `${sectionLabel.value} | ${page.props.appName}`;
+    });
+    const metaDescription = computed(
+      () => pickSeoString(
+        props.aboutUs.meta_description,
+        "about_us_meta_description",
+        "site_meta_description",
+        "website_desc"
+      )
+    );
+    const metaKeywords = computed(
+      () => pickSeoString(
+        props.aboutUs.meta_keywords,
+        "about_us_meta_keywords",
+        "site_meta_keywords",
+        "website_keywords"
+      )
+    );
+    const ogTitle = computed(() => {
+      const t = pickSeoString(props.aboutUs.meta_title, "about_us_meta_title");
+      return t !== "" ? t : sectionLabel.value;
+    });
+    const ogDescription = computed(() => metaDescription.value);
+    const ogImage = computed(() => {
+      const banner = media.value.about_us_banner;
+      if (typeof banner === "string" && banner.trim() !== "") {
+        const trimmed = banner.trim();
+        if (!/\/default\.jpg(?:\?.*)?$/i.test(trimmed)) {
+          return trimmed;
+        }
+      }
+      const fallback = media.value.meta_img;
+      return typeof fallback === "string" && fallback.trim() !== "" ? fallback.trim() : "";
+    });
+    const canonicalUrl = computed(() => {
+      var _a, _b;
+      if (typeof route !== "function" || !((_b = (_a = route()).has) == null ? void 0 : _b.call(_a, "about-us"))) {
+        return "";
+      }
+      try {
+        return route("about-us");
+      } catch {
+        return "";
+      }
+    });
+    const ogUrl = computed(() => canonicalUrl.value);
+    const twitterCard = computed(
+      () => ogImage.value ? "summary_large_image" : "summary"
+    );
+    const hasQuickLinks = computed(() => {
+      var _a, _b, _c, _d;
+      try {
+        return typeof route === "function" && ((_b = (_a = route()).has) == null ? void 0 : _b.call(_a, "turkish-citizenship")) || typeof route === "function" && ((_d = (_c = route()).has) == null ? void 0 : _d.call(_c, "blog.index"));
+      } catch {
+        return true;
+      }
+    });
+    const hasSidebar = computed(
+      () => hasQuickLinks.value || props.featuredProperties.length > 0
+    );
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(`<!--[-->`);
+      _push(ssrRenderComponent(unref(Head), { title: documentTitle.value }, {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            if (metaDescription.value) {
+              _push2(`<meta head-key="description" name="description"${ssrRenderAttr("content", metaDescription.value)} data-v-391dbf4f${_scopeId}>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            if (metaKeywords.value) {
+              _push2(`<meta head-key="keywords" name="keywords"${ssrRenderAttr("content", metaKeywords.value)} data-v-391dbf4f${_scopeId}>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            if (canonicalUrl.value) {
+              _push2(`<link head-key="canonical" rel="canonical"${ssrRenderAttr("href", canonicalUrl.value)} data-v-391dbf4f${_scopeId}>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            if (ogTitle.value) {
+              _push2(`<meta head-key="og:title" property="og:title"${ssrRenderAttr("content", ogTitle.value)} data-v-391dbf4f${_scopeId}>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            if (ogDescription.value) {
+              _push2(`<meta head-key="og:description" property="og:description"${ssrRenderAttr("content", ogDescription.value)} data-v-391dbf4f${_scopeId}>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            if (ogImage.value) {
+              _push2(`<meta head-key="og:image" property="og:image"${ssrRenderAttr("content", ogImage.value)} data-v-391dbf4f${_scopeId}>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            _push2(`<meta head-key="og:type" property="og:type" content="website" data-v-391dbf4f${_scopeId}>`);
+            if (ogUrl.value) {
+              _push2(`<meta head-key="og:url" property="og:url"${ssrRenderAttr("content", ogUrl.value)} data-v-391dbf4f${_scopeId}>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            _push2(`<meta head-key="twitter:card" name="twitter:card"${ssrRenderAttr("content", twitterCard.value)} data-v-391dbf4f${_scopeId}>`);
+            if (ogTitle.value) {
+              _push2(`<meta head-key="twitter:title" name="twitter:title"${ssrRenderAttr("content", ogTitle.value)} data-v-391dbf4f${_scopeId}>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            if (ogDescription.value) {
+              _push2(`<meta head-key="twitter:description" name="twitter:description"${ssrRenderAttr("content", ogDescription.value)} data-v-391dbf4f${_scopeId}>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            if (ogImage.value) {
+              _push2(`<meta head-key="twitter:image" name="twitter:image"${ssrRenderAttr("content", ogImage.value)} data-v-391dbf4f${_scopeId}>`);
+            } else {
+              _push2(`<!---->`);
+            }
+          } else {
+            return [
+              metaDescription.value ? (openBlock(), createBlock("meta", {
+                key: 0,
+                "head-key": "description",
+                name: "description",
+                content: metaDescription.value
+              }, null, 8, ["content"])) : createCommentVNode("", true),
+              metaKeywords.value ? (openBlock(), createBlock("meta", {
+                key: 1,
+                "head-key": "keywords",
+                name: "keywords",
+                content: metaKeywords.value
+              }, null, 8, ["content"])) : createCommentVNode("", true),
+              canonicalUrl.value ? (openBlock(), createBlock("link", {
+                key: 2,
+                "head-key": "canonical",
+                rel: "canonical",
+                href: canonicalUrl.value
+              }, null, 8, ["href"])) : createCommentVNode("", true),
+              ogTitle.value ? (openBlock(), createBlock("meta", {
+                key: 3,
+                "head-key": "og:title",
+                property: "og:title",
+                content: ogTitle.value
+              }, null, 8, ["content"])) : createCommentVNode("", true),
+              ogDescription.value ? (openBlock(), createBlock("meta", {
+                key: 4,
+                "head-key": "og:description",
+                property: "og:description",
+                content: ogDescription.value
+              }, null, 8, ["content"])) : createCommentVNode("", true),
+              ogImage.value ? (openBlock(), createBlock("meta", {
+                key: 5,
+                "head-key": "og:image",
+                property: "og:image",
+                content: ogImage.value
+              }, null, 8, ["content"])) : createCommentVNode("", true),
+              createVNode("meta", {
+                "head-key": "og:type",
+                property: "og:type",
+                content: "website"
+              }),
+              ogUrl.value ? (openBlock(), createBlock("meta", {
+                key: 6,
+                "head-key": "og:url",
+                property: "og:url",
+                content: ogUrl.value
+              }, null, 8, ["content"])) : createCommentVNode("", true),
+              createVNode("meta", {
+                "head-key": "twitter:card",
+                name: "twitter:card",
+                content: twitterCard.value
+              }, null, 8, ["content"]),
+              ogTitle.value ? (openBlock(), createBlock("meta", {
+                key: 7,
+                "head-key": "twitter:title",
+                name: "twitter:title",
+                content: ogTitle.value
+              }, null, 8, ["content"])) : createCommentVNode("", true),
+              ogDescription.value ? (openBlock(), createBlock("meta", {
+                key: 8,
+                "head-key": "twitter:description",
+                name: "twitter:description",
+                content: ogDescription.value
+              }, null, 8, ["content"])) : createCommentVNode("", true),
+              ogImage.value ? (openBlock(), createBlock("meta", {
+                key: 9,
+                "head-key": "twitter:image",
+                name: "twitter:image",
+                content: ogImage.value
+              }, null, 8, ["content"])) : createCommentVNode("", true)
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+      _push(ssrRenderComponent(_sfc_main$3, null, {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(`<div class="inner-pages imas-about-page" data-v-391dbf4f${_scopeId}>`);
+            _push2(ssrRenderComponent(_sfc_main$4, {
+              "page-title": pageHeadingTitle.value,
+              items: headingItems.value,
+              "banner-image-url": heroBannerUrl.value,
+              "banner-video-embed": heroYoutubeEmbed.value
+            }, null, _parent2, _scopeId));
+            _push2(`<main class="${ssrRenderClass([{
+              "imas-about-page__page--with-sidebar": hasSidebar.value
+            }, "imas-about-page__page imas-blog-v2__page container"])}" data-v-391dbf4f${_scopeId}><section class="imas-about-page__main" data-v-391dbf4f${_scopeId}>`);
+            if (contentHtml.value) {
+              _push2(`<article class="imas-blog-show imas-cms-page-show" data-v-391dbf4f${_scopeId}><div class="imas-blog-show__content" data-v-391dbf4f${_scopeId}><div class="imas-blog-show-body imas-cms-page-show__body text-base text-start" data-v-391dbf4f${_scopeId}>${contentHtml.value ?? ""}</div></div></article>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            if (!contentHtml.value) {
+              _push2(`<p class="imas-about-page__empty text-muted text-base" data-v-391dbf4f${_scopeId}>${ssrInterpolate(trans("about_us.no_content"))}</p>`);
+            } else {
+              _push2(`<!---->`);
+            }
+            _push2(`</section>`);
+            if (hasSidebar.value) {
+              _push2(ssrRenderComponent(_sfc_main$1, { "featured-properties": __props.featuredProperties }, null, _parent2, _scopeId));
+            } else {
+              _push2(`<!---->`);
+            }
+            _push2(`</main></div>`);
+          } else {
+            return [
+              createVNode("div", {
+                ref_key: "pageRef",
+                ref: pageRef,
+                class: "inner-pages imas-about-page"
+              }, [
+                createVNode(_sfc_main$4, {
+                  "page-title": pageHeadingTitle.value,
+                  items: headingItems.value,
+                  "banner-image-url": heroBannerUrl.value,
+                  "banner-video-embed": heroYoutubeEmbed.value
+                }, null, 8, ["page-title", "items", "banner-image-url", "banner-video-embed"]),
+                createVNode("main", {
+                  class: ["imas-about-page__page imas-blog-v2__page container", {
+                    "imas-about-page__page--with-sidebar": hasSidebar.value
+                  }]
+                }, [
+                  createVNode("section", { class: "imas-about-page__main" }, [
+                    contentHtml.value ? (openBlock(), createBlock("article", {
+                      key: 0,
+                      class: "imas-blog-show imas-cms-page-show"
+                    }, [
+                      createVNode("div", { class: "imas-blog-show__content" }, [
+                        createVNode("div", {
+                          class: "imas-blog-show-body imas-cms-page-show__body text-base text-start",
+                          innerHTML: contentHtml.value
+                        }, null, 8, ["innerHTML"])
+                      ])
+                    ])) : createCommentVNode("", true),
+                    !contentHtml.value ? (openBlock(), createBlock("p", {
+                      key: 1,
+                      class: "imas-about-page__empty text-muted text-base"
+                    }, toDisplayString(trans("about_us.no_content")), 1)) : createCommentVNode("", true)
+                  ]),
+                  hasSidebar.value ? (openBlock(), createBlock(_sfc_main$1, {
+                    key: 0,
+                    "featured-properties": __props.featuredProperties
+                  }, null, 8, ["featured-properties"])) : createCommentVNode("", true)
+                ], 2)
+              ], 512)
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+      _push(`<!--]-->`);
+    };
+  }
+};
+const _sfc_setup = _sfc_main.setup;
+_sfc_main.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("Modules/Base/resources/assets/js/Pages/AboutUs.vue");
+  return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
+};
+const AboutUs = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-391dbf4f"]]);
+export {
+  AboutUs as default
+};

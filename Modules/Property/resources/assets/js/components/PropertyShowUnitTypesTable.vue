@@ -22,6 +22,15 @@
                     {{ projectLocation }}
                 </dd>
             </div>
+            <div v-if="propertyType" class="imas-unit-types-table__meta-item">
+                <dt class="imas-unit-types-table__meta-label">
+                    {{ propertyTypeLabel }}
+                </dt>
+                <dd class="imas-unit-types-table__meta-value">
+                    {{ propertyType }}
+                </dd>
+            </div>
+
         </dl>
         <div class="table-responsive">
             <table class="table imas-unit-types-table__grid mb-0">
@@ -60,6 +69,8 @@ defineProps({
     projectIdLabel: { type: String, default: "" },
     projectLocation: { type: String, default: "" },
     projectLocationLabel: { type: String, default: "" },
+    propertyType: { type: String, default: "" },
+    propertyTypeLabel: { type: String, default: "" },
 });
 
 const page = usePage();

@@ -450,11 +450,17 @@ onBeforeUnmount(() => {
 .f-col p,
 .f-col li,
 .imas-blog-footer .netabout p,
-.imas-blog-footer .contactus .in-p,
+.imas-blog-footer .contactus .in-p {
+    font-size: 13.5px;
+    line-height: 1.85;
+    color: var(--text-dim, #9aa6bd) !important;
+}
+
 .imas-blog-footer .newsletters p {
     font-size: 13.5px;
     line-height: 1.85;
     color: var(--text-dim, #9aa6bd) !important;
+    text-transform: capitalize;
 }
 
 .imas-blog-footer .navigation h3,
@@ -604,6 +610,7 @@ onBeforeUnmount(() => {
         color 0.2s ease,
         padding 0.2s ease;
     color: var(--text-dim, #9aa6bd) !important;
+    text-transform: capitalize;
 }
 
 .nav-footer .links a:hover,

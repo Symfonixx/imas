@@ -13,25 +13,10 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // Standalone auth pages disabled — front-office uses AuthModal (Find Houses layout).
-        // Fortify view routes are off (config/fortify.php views => false); POST routes remain for the modal.
-
-        // Fortify::loginView(function () {
-        //     return Inertia::render('User::Auth/Login');
-        // });
-
-        // Fortify::registerView(function () {
-        //     return Inertia::render('User::Auth/Register');
-        // });
-
-        // Fortify::requestPasswordResetLinkView(function () {
-        //     return Inertia::render('User::Auth/ForgotPassword');
-        // });
-
-        // Fortify::resetPasswordView(function () {
-        //     return Inertia::render('User::Auth/ResetPassword');
-        // });
-
+        // Login / register stay in AuthModal (Find Houses). Fortify views => false so
+        // Fortify does not register GET login/register. Password-reset GET shells are
+        // registered in Modules/User/routes/web.php and open AuthModal from those pages.
+        // Fortify POST routes (password.email, password.update) remain for the modal.
     }
 
     /**

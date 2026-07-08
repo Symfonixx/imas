@@ -4,35 +4,30 @@
     </Head>
 
     <app-layout>
-        <div class="container mt-5">
+        <div class="container mt-5 mb-5">
             <div class="row justify-content-center">
                 <div class="col-md-6">
-                    <div class="card">
+                    <div class="card imas-auth-page-card">
                         <div class="card-header text-center">
-                            <h3>{{ trans("Forgot Password") }}</h3>
+                            <h3 class="text-md font-semibold mb-0">
+                                {{ trans("Forgot Password") }}
+                            </h3>
                         </div>
-                        <div class="card-body">
-                            <form @submit.prevent="form.post(route('password.email'))">
-                                <div class="mb-3">
-                                    <label class="form-label" for="email">{{ trans("Email") }}</label>
-                                    <input
-                                        id="email"
-                                        v-model="form.email"
-                                        autofocus
-                                        class="form-control"
-                                        required
-                                        type="email"
-                                    />
-                                    <span v-if="errors.email" class="invalid-feedback d-block">{{ errors.email }}</span>
-                                </div>
-
-
-                                <button class="btn btn-primary w-100" type="submit">
-
-                                    {{ trans("Send Email Verification") }}
-                                </button>
-                            </form>
-
+                        <div class="card-body text-center">
+                            <p class="text-sm text-dim mb-3">
+                                {{
+                                    trans(
+                                        "auth_modal.forgot_page_opening",
+                                    )
+                                }}
+                            </p>
+                            <button
+                                type="button"
+                                class="btn btn-primary"
+                                @click="openForgotModal"
+                            >
+                                {{ trans("Forgot Password") }}
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -41,35 +36,60 @@
     </app-layout>
 </template>
 
+<script setup>
+import { computed, onMounted } from "vue";
+import { Head, usePage } from "@inertiajs/vue3";
+import AppLayout from "@/Layouts/App.vue";
+import { useOpenAuthModal } from "@/composables/useOpenAuthModal";
 
-<script>
-import {computed} from 'vue';
-import {Head, usePage, Link, useForm} from '@inertiajs/vue3';
-import AppLayout from '@/Layouts/App.vue';
-
-export default {
-    components: {
-        AppLayout, Link, Head
+defineProps({
+    errors: {
+        type: Object,
+        default: () => ({}),
     },
-    props: {
-        errors: Object
-    },
-    setup() {
-        const page = usePage();
+});
 
-        const appName = computed(() => page.props.appName)
-        const trans = (key) => page.props.translations[key] || key;
+const page = usePage();
+const { openAuthModal } = useOpenAuthModal();
 
-        const form = useForm({
-            email: '',
-        });
+const appName = computed(() => page.props.appName);
+const trans = (key) => page.props.translations?.[key] || key;
 
-        return {form, appName, trans};
-    }
+function openForgotModal() {
+    openAuthModal("forgot");
 }
 
+onMounted(() => {
+    openForgotModal();
+    window.setTimeout(openForgotModal, 50);
+});
 </script>
 
 <style scoped>
-/* Add styles specific to the Index page here */
+.imas-auth-page-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: var(--shadow-sm);
+    color: var(--text);
+}
+
+.imas-auth-page-card .card-header {
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--divider);
+    color: var(--text);
+}
+
+.imas-auth-page-card .btn-primary {
+    background: var(--brand-gold);
+    border-color: var(--brand-gold);
+    color: var(--text-on-gold);
+    font-weight: 600;
+}
+
+.imas-auth-page-card .btn-primary:hover {
+    background: var(--brand-gold-hover);
+    border-color: var(--brand-gold-hover);
+    color: var(--text-on-gold);
+}
 </style>

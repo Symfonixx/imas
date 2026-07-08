@@ -23,7 +23,9 @@
         "country_code_search_empty":"No countries match your search.",
         "agree_terms_prefix":"By Creating an Account, You Agree on Imas Global's",
         "terms_and_conditions":"terms and conditions",
-        "terms_required":"Please accept the terms."
+        "terms_required":"Please accept the terms.",
+        "forgot_page_opening":"Opening password recovery… You can also use the button below if the dialog does not appear.",
+        "reset_page_opening":"Opening the reset password form… You can also use the button below if the dialog does not appear."
     },
     "Name": "Name",
     "Language": "Language",

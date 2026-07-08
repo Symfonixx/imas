@@ -355,9 +355,16 @@ function openSearchModal() {
     mmenuApi?.close?.();
 }
 
+function normalizeAuthTab(tab) {
+    if (tab === "register" || tab === "reset" || tab === "forgot") {
+        return tab;
+    }
+    return "login";
+}
+
 function openAuthModal(tab = "login") {
     searchModalOpen.value = false;
-    authStartTab.value = tab === "register" || tab === "reset" ? tab : "login";
+    authStartTab.value = normalizeAuthTab(tab);
     authModalOpen.value = true;
     mmenuApi?.close?.();
 }
@@ -369,14 +376,42 @@ function onDelegatedOpenAuth(e) {
         return;
     }
     e.preventDefault();
-    const tab = el.getAttribute("data-open-auth") || "login";
-    openAuthModal(tab === "register" || tab === "reset" ? tab : "login");
+    openAuthModal(el.getAttribute("data-open-auth") || "login");
 }
 
 function onImasOpenAuthEvent(e) {
-    const tab = e.detail?.tab || "login";
-    openAuthModal(tab === "register" || tab === "reset" ? tab : "login");
+    openAuthModal(e.detail?.tab || "login");
 }
+
+/** Open auth modal when landing from email links or Fortify flash after reset. */
+function openAuthFromCurrentContext() {
+    const path = window.location.pathname || "";
+    if (/\/reset-password\//.test(path)) {
+        openAuthModal("reset");
+        return;
+    }
+    if (/\/forgot-password\/?$/.test(path)) {
+        openAuthModal("forgot");
+        return;
+    }
+    if (page.props.flash?.status && !authModalOpen.value) {
+        openAuthModal("login");
+    }
+}
+
+watch(
+    () => page.props.flash?.status,
+    (status, prev) => {
+        if (!status || status === prev || authModalOpen.value) {
+            return;
+        }
+        const path = window.location.pathname || "";
+        if (/\/reset-password\//.test(path) || /\/forgot-password\/?$/.test(path)) {
+            return;
+        }
+        openAuthModal("login");
+    },
+);
 
 const langMenuOpen = ref(false);
 const langWrapRef = ref(null);
@@ -973,6 +1008,7 @@ onMounted(() => {
         initScrollPinnedHeader();
         initMobileMenuMmenu();
         playNavbarEnterAnimation();
+        openAuthFromCurrentContext();
     });
 
     const $ = window.jQuery;

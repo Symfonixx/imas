@@ -49,6 +49,13 @@
                                 trans("auth_modal.back_to_login")
                             }}</span>
                         </a>
+                        <p
+                            v-if="authStatusMessage"
+                            class="imas-auth-modal__status"
+                            role="status"
+                        >
+                            {{ authStatusMessage }}
+                        </p>
                         <form
                             @submit.prevent="submitForgot"
                             class="forgot-password-form"
@@ -85,6 +92,13 @@
 
                     <!-- Login | Register | Reset tabs -->
                     <div v-else id="tabs-container">
+                        <p
+                            v-if="authStatusMessage && activeMainTab === 'login'"
+                            class="imas-auth-modal__status"
+                            role="status"
+                        >
+                            {{ authStatusMessage }}
+                        </p>
                         <ul class="tabs-menu">
                             <li :class="{ current: activeMainTab === 'login' }">
                                 <a
@@ -104,13 +118,16 @@
                                     >{{ trans("Register") }}</a
                                 >
                             </li>
-                            <!-- <li :class="{ current: activeMainTab === 'reset' }">
+                            <li
+                                v-if="activeMainTab === 'reset' || resetToken"
+                                :class="{ current: activeMainTab === 'reset' }"
+                            >
                                 <a
                                     href="#tab-imas-reset"
                                     @click.prevent="activeMainTab = 'reset'"
                                     >{{ trans("Reset Password") }}</a
                                 >
-                            </li> -->
+                            </li>
                         </ul>
                         <div class="tab">
                             <div
@@ -885,11 +902,23 @@ function trans(key) {
 const authSubview = ref(null);
 const activeMainTab = ref("login");
 
-const authNoteText = computed(() =>
-    activeMainTab.value === "register"
-        ? trans("RegisterNote")
-        : trans("LoginNote"),
+const authNoteText = computed(() => {
+    if (authSubview.value === "forgot") {
+        return trans("Forgot Password");
+    }
+    if (activeMainTab.value === "register") {
+        return trans("RegisterNote");
+    }
+    if (activeMainTab.value === "reset") {
+        return trans("Reset Password");
+    }
+    return trans("LoginNote");
+});
+
+const authStatusMessage = computed(
+    () => page.props.flash?.status || "",
 );
+
 const resetToken = ref("");
 const seo = computed(() => page.props.globals.seo || {});
 const appName = computed(() => String(seo.value.main_title || ""));
@@ -1164,8 +1193,8 @@ function resetAllForms() {
 }
 
 watch(
-    () => props.open,
-    (isOpen) => {
+    () => [props.open, props.startTab],
+    ([isOpen]) => {
         document.documentElement.classList.toggle("hid-body", !!isOpen);
         document.body.classList.toggle("hid-body", !!isOpen);
         if (!isOpen) {
@@ -1174,14 +1203,19 @@ watch(
             registerCountrySearchQuery.value = "";
             return;
         }
-        authSubview.value = null;
         const start = props.startTab;
-        if (start === "register") {
-            activeMainTab.value = "register";
-        } else if (start === "reset") {
-            activeMainTab.value = "reset";
-        } else {
+        if (start === "forgot") {
+            authSubview.value = "forgot";
             activeMainTab.value = "login";
+        } else {
+            authSubview.value = null;
+            if (start === "register") {
+                activeMainTab.value = "register";
+            } else if (start === "reset") {
+                activeMainTab.value = "reset";
+            } else {
+                activeMainTab.value = "login";
+            }
         }
         syncResetFromUrl();
     },
@@ -1233,7 +1267,8 @@ function submitForgot() {
     forgotForm.post(route("password.email"), {
         preserveScroll: true,
         onSuccess: () => {
-            authSubview.value = null;
+            // Stay on forgot so flash.status (“We have emailed…”) is visible.
+            authSubview.value = "forgot";
             activeMainTab.value = "login";
         },
     });
@@ -1248,6 +1283,7 @@ function submitReset() {
         onSuccess: () => {
             closeModal();
             resetAllForms();
+            // Fortify redirects home with flash.status; navbar opens login.
         },
     });
 }
@@ -1900,6 +1936,18 @@ const logoUrl = computed(() => {
     color: var(--text-dim);
     font-size: var(--text-sm);
     margin-bottom: 0.5rem;
+}
+
+.imas-auth-modal__status {
+    color: var(--success);
+    font-size: var(--text-sm);
+    line-height: 1.5;
+    margin: 0 0 1rem;
+    padding: 0.65rem 0.85rem;
+    background: color-mix(in srgb, var(--success) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--success) 35%, transparent);
+    border-radius: 6px;
+    text-align: start;
 }
 
 .imas-auth-field-error {

@@ -4,65 +4,30 @@
     </Head>
 
     <app-layout>
-        <div class="container mt-5">
+        <div class="container mt-5 mb-5">
             <div class="row justify-content-center">
                 <div class="col-md-6">
-                    <div class="card">
+                    <div class="card imas-auth-page-card">
                         <div class="card-header text-center">
-                            <h3>{{ trans("Reset Password") }}</h3>
+                            <h3 class="text-md font-semibold mb-0">
+                                {{ trans("Reset Password") }}
+                            </h3>
                         </div>
-                        <div class="card-body">
-                            <form @submit.prevent="form.post(route('password.update'))">
-                                <input :value="token" name="token" type="hidden">
-                                <div class="mb-3">
-                                    <label class="form-label" for="email">{{ trans("Email") }}</label>
-                                    <input
-                                        id="email"
-                                        v-model="form.email"
-                                        autofocus
-                                        class="form-control"
-                                        required
-                                        type="email"
-                                    />
-                                    <span v-if="errors.email" class="invalid-feedback d-block">{{ errors.email }}</span>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label" for="password">{{ trans("Password") }}</label>
-                                    <input
-                                        id="password"
-                                        v-model="form.password"
-                                        class="form-control"
-                                        required
-                                        type="password"
-                                    />
-                                    <span v-if="errors.password"
-                                          class="invalid-feedback d-block">{{ errors.password }}</span>
-
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label"
-                                           for="password_confirmation">{{ trans("Confirm Password") }}</label>
-                                    <input
-                                        id="password_confirmation"
-                                        v-model="form.password_confirmation"
-                                        class="form-control"
-                                        required
-                                        type="password_confirmation"
-                                    />
-                                    <span v-if="errors.password_confirmation"
-                                          class="invalid-feedback d-block">{{ errors.password_confirmation }}</span>
-
-                                </div>
-
-
-                                <button class="btn btn-primary w-100" type="submit">
-
-                                    {{ trans("Reset Password") }}
-                                </button>
-                            </form>
-
+                        <div class="card-body text-center">
+                            <p class="text-sm text-dim mb-3">
+                                {{
+                                    trans(
+                                        "auth_modal.reset_page_opening",
+                                    )
+                                }}
+                            </p>
+                            <button
+                                type="button"
+                                class="btn btn-primary"
+                                @click="openResetModal"
+                            >
+                                {{ trans("Reset Password") }}
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -71,38 +36,70 @@
     </app-layout>
 </template>
 
+<script setup>
+import { computed, onMounted } from "vue";
+import { Head, usePage } from "@inertiajs/vue3";
+import AppLayout from "@/Layouts/App.vue";
+import { useOpenAuthModal } from "@/composables/useOpenAuthModal";
 
-<script>
-import {computed} from 'vue';
-import {Head, usePage, Link, useForm} from '@inertiajs/vue3';
-import AppLayout from '@/Layouts/App.vue';
-
-export default {
-    components: {
-        AppLayout, Link, Head
+defineProps({
+    email: {
+        type: String,
+        default: "",
     },
-    props: {
-        errors: Object
+    token: {
+        type: String,
+        default: "",
     },
-    setup() {
-        const page = usePage();
+    errors: {
+        type: Object,
+        default: () => ({}),
+    },
+});
 
-        const appName = computed(() => page.props.appName)
-        const trans = (key) => page.props.translations[key] || key;
-        const params = new URLSearchParams(window.location.search);
-        const form = useForm({
-            email: '',
-            password: '',
-            remember: false,
-            token: params.get('token') || ''
-        });
+const page = usePage();
+const { openAuthModal } = useOpenAuthModal();
 
-        return {form, appName, trans};
-    }
+const appName = computed(() => page.props.appName);
+const trans = (key) => page.props.translations?.[key] || key;
+
+function openResetModal() {
+    openAuthModal("reset");
 }
 
+onMounted(() => {
+    // Navbar may still be mounting listeners on first paint; path-based open
+    // in UserNavbar is the primary path. Retry shortly for Inertia revisits.
+    openResetModal();
+    window.setTimeout(openResetModal, 50);
+});
 </script>
 
 <style scoped>
-/* Add styles specific to the Index page here */
+.imas-auth-page-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: var(--shadow-sm);
+    color: var(--text);
+}
+
+.imas-auth-page-card .card-header {
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--divider);
+    color: var(--text);
+}
+
+.imas-auth-page-card .btn-primary {
+    background: var(--brand-gold);
+    border-color: var(--brand-gold);
+    color: var(--text-on-gold);
+    font-weight: 600;
+}
+
+.imas-auth-page-card .btn-primary:hover {
+    background: var(--brand-gold-hover);
+    border-color: var(--brand-gold-hover);
+    color: var(--text-on-gold);
+}
 </style>

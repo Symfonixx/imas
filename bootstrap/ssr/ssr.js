@@ -653,15 +653,15 @@ var M = { install: function(t, e) {
 /** Dispatched on `document`; handled by `UserNavbar` to open `AuthModal`. */
 var IMAS_OPEN_AUTH_EVENT = "imas:open-auth";
 /**
-* Open the front-office sign-in / register modal from anywhere in the app.
+* Open the front-office sign-in / register / forgot / reset modal from anywhere.
 * Requires `UserNavbar` (or another listener) to be mounted.
 *
-* @param {"login" | "register" | "reset"} [tab]
+* @param {"login" | "register" | "forgot" | "reset"} [tab]
 */
 function useOpenAuthModal() {
 	function openAuthModal(tab = "login") {
 		if (typeof document === "undefined") return;
-		const normalized = tab === "register" || tab === "reset" ? tab : "login";
+		const normalized = tab === "register" || tab === "reset" || tab === "forgot" ? tab : "login";
 		document.dispatchEvent(new CustomEvent(IMAS_OPEN_AUTH_EVENT, {
 			detail: { tab: normalized },
 			bubbles: true
@@ -1226,21 +1226,21 @@ async function resolvePageComponent(path, pages) {
 function resolveInertiaPage(name) {
 	const modules = name.split("::");
 	if (modules.length > 1) return resolvePageComponent(`../../Modules/${modules[0]}/resources/assets/js/Pages/${modules[1]}.vue`, /* @__PURE__ */ Object.assign({
-		"../../Modules/Base/resources/assets/js/Pages/AboutUs.vue": () => import("./assets/AboutUs-DxLru4ZN.js"),
-		"../../Modules/Base/resources/assets/js/Pages/Index.vue": () => import("./assets/Index-DyOqZ-Um.js"),
-		"../../Modules/Cms/resources/assets/js/Pages/Index.vue": () => import("./assets/Index-B2CGCARx.js"),
-		"../../Modules/Cms/resources/assets/js/Pages/PageShow.vue": () => import("./assets/PageShow-Cyp0muP4.js"),
-		"../../Modules/Cms/resources/assets/js/Pages/Show.vue": () => import("./assets/Show-DhyvF6gJ.js"),
+		"../../Modules/Base/resources/assets/js/Pages/AboutUs.vue": () => import("./assets/AboutUs-_JsiVwSn.js"),
+		"../../Modules/Base/resources/assets/js/Pages/Index.vue": () => import("./assets/Index-tBmodIIO.js"),
+		"../../Modules/Cms/resources/assets/js/Pages/Index.vue": () => import("./assets/Index-C3oyWldo.js"),
+		"../../Modules/Cms/resources/assets/js/Pages/PageShow.vue": () => import("./assets/PageShow-D8I28Sb6.js"),
+		"../../Modules/Cms/resources/assets/js/Pages/Show.vue": () => import("./assets/Show-8IdrE2tg.js"),
 		"../../Modules/Corporate/resources/assets/js/Pages/index.vue": () => import("./assets/Pages-6Qdrt7Vg.js"),
-		"../../Modules/Property/resources/assets/js/Pages/FavoriteProperties.vue": () => import("./assets/FavoriteProperties-aKhVR6tB.js"),
-		"../../Modules/Property/resources/assets/js/Pages/TurkishCitizenship.vue": () => import("./assets/TurkishCitizenship-D7eFYavW.js"),
-		"../../Modules/Property/resources/assets/js/Pages/index.vue": () => import("./assets/Pages-CQlIo40n.js"),
-		"../../Modules/Property/resources/assets/js/Pages/show.vue": () => import("./assets/show-CivoMMe4.js"),
-		"../../Modules/Support/resources/assets/js/Pages/ContactUs.vue": () => import("./assets/ContactUs-BEilsEgK.js"),
-		"../../Modules/User/resources/assets/js/Pages/Auth/ForgotPassword.vue": () => import("./assets/ForgotPassword-DW4PN7Bn.js"),
-		"../../Modules/User/resources/assets/js/Pages/Auth/Login.vue": () => import("./assets/Login-Bz7pijXn.js"),
-		"../../Modules/User/resources/assets/js/Pages/Auth/Register.vue": () => import("./assets/Register-C0wKtw_S.js"),
-		"../../Modules/User/resources/assets/js/Pages/Auth/ResetPassword.vue": () => import("./assets/ResetPassword-C4-Z20Hd.js")
+		"../../Modules/Property/resources/assets/js/Pages/FavoriteProperties.vue": () => import("./assets/FavoriteProperties-CAI8lLeg.js"),
+		"../../Modules/Property/resources/assets/js/Pages/TurkishCitizenship.vue": () => import("./assets/TurkishCitizenship-CewijGsb.js"),
+		"../../Modules/Property/resources/assets/js/Pages/index.vue": () => import("./assets/Pages-CLStaZmA.js"),
+		"../../Modules/Property/resources/assets/js/Pages/show.vue": () => import("./assets/show-jUiyF02z.js"),
+		"../../Modules/Support/resources/assets/js/Pages/ContactUs.vue": () => import("./assets/ContactUs-ZbcSjat_.js"),
+		"../../Modules/User/resources/assets/js/Pages/Auth/ForgotPassword.vue": () => import("./assets/ForgotPassword-CEcje-DC.js"),
+		"../../Modules/User/resources/assets/js/Pages/Auth/Login.vue": () => import("./assets/Login-CORWao2Y.js"),
+		"../../Modules/User/resources/assets/js/Pages/Auth/Register.vue": () => import("./assets/Register-BpvplpFk.js"),
+		"../../Modules/User/resources/assets/js/Pages/Auth/ResetPassword.vue": () => import("./assets/ResetPassword-HgqA9iRh.js")
 	}));
 	return resolvePageComponent(`./Pages/${name}.vue`, /* @__PURE__ */ Object.assign({}));
 }

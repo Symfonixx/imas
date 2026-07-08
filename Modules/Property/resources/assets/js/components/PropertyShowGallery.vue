@@ -62,13 +62,21 @@
             </template>
         </div>
 
-        <div v-if="images.length > 1" class="imas-gallery-thumbs-outer">
+        <div
+            v-if="images.length > 1"
+            ref="thumbsViewportRef"
+            class="imas-gallery-thumbs-outer"
+            role="region"
+            tabindex="0"
+            :aria-label="thumbsRegionLabel"
+        >
             <ul
                 class="carousel-indicators smail-listing list-inline imas-gallery-thumbs"
             >
                 <li
                     v-for="(image, index) in images"
                     :key="'thumb-' + image.key"
+                    :ref="(el) => setThumbRef(el, index)"
                     class="list-inline-item imas-gallery-thumbs__item"
                     :class="{ active: index === activeIndex }"
                 >
@@ -79,7 +87,7 @@
                         :aria-current="
                             index === activeIndex ? 'true' : undefined
                         "
-                        @click.prevent="activeIndex = index"
+                        @click.prevent="selectThumb(index)"
                     >
                         <span class="imas-gallery-thumb__frame">
                             <img
@@ -97,7 +105,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
+import { computed, nextTick, ref, watch } from "vue";
 import { usePage } from "@inertiajs/vue3";
 
 const props = defineProps({
@@ -110,6 +118,8 @@ const props = defineProps({
 
 const page = usePage();
 const activeIndex = ref(0);
+const thumbsViewportRef = ref(null);
+const thumbItemRefs = ref([]);
 
 const carouselId = computed(() => `listingDetailsSlider-${props.propertyId}`);
 
@@ -118,6 +128,11 @@ const previousLabel = computed(
 );
 const nextLabel = computed(
     () => page.props.translations?.["global.next"] || "Next",
+);
+const thumbsRegionLabel = computed(
+    () =>
+        page.props.translations?.["property_show.gallery_thumbnails"] ||
+        "Gallery thumbnails",
 );
 
 const images = computed(() => {
@@ -154,6 +169,29 @@ const images = computed(() => {
     return rows;
 });
 
+function setThumbRef(el, index) {
+    if (el) {
+        thumbItemRefs.value[index] = el;
+    }
+}
+
+async function scrollActiveThumbIntoView() {
+    await nextTick();
+    const thumbEl = thumbItemRefs.value[activeIndex.value];
+    if (!thumbEl) {
+        return;
+    }
+    thumbEl.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "center",
+    });
+}
+
+function selectThumb(index) {
+    activeIndex.value = index;
+}
+
 function goPrev() {
     const n = images.value.length;
     if (n <= 1) {
@@ -169,6 +207,23 @@ function goNext() {
     }
     activeIndex.value = (activeIndex.value + 1) % n;
 }
+
+watch(
+    () => images.value.length,
+    (length) => {
+        if (length === 0) {
+            activeIndex.value = 0;
+            return;
+        }
+        if (activeIndex.value >= length) {
+            activeIndex.value = length - 1;
+        }
+    },
+);
+
+watch(activeIndex, () => {
+    scrollActiveThumbIntoView();
+});
 </script>
 
 <style scoped lang="scss">
@@ -269,21 +324,28 @@ function goNext() {
     width: 100%;
     max-width: 100%;
     margin-top: 15px;
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
+    direction: ltr;
+    unicode-bidi: isolate;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x;
+    overscroll-behavior-x: contain;
 }
 
 .imas-gallery-thumbs {
     display: flex;
     flex-wrap: nowrap;
     align-items: flex-start;
-    width: 100%;
-    max-width: 100%;
+    width: max-content;
+    max-width: none;
     margin: 0;
     padding: 0;
-    overflow: hidden;
     white-space: nowrap;
 }
 
+.imas-property-gallery :deep(.smail-listing .list-inline-item),
 .imas-property-gallery :deep(.imas-gallery-thumbs .list-inline-item),
 .imas-property-gallery :deep(.carousel-indicators > li) {
     width: auto !important;

@@ -243,6 +243,12 @@
                                     >
                                         <PropertyShowUnitTypesTable
                                             :unit-types="property.unit_types"
+                                            :property-type="propertyTypeLabel"
+                                            :property-type-label="
+                                                trans(
+                                                    'Property type',
+                                                )
+                                            "
                                             :title="
                                                 trans(
                                                     'property_show.unit_types_title',

@@ -3063,13 +3063,13 @@ html[dir="rtl"] .imas-inner-page-heading-hero__title {
 }
 
 .imas-blog-v2-card__excerpt {
-    margin: 0;
+    margin: 0 0 4px;
     line-height: 1.65;
 }
 
 .imas-blog-v2-card__cta-wrap {
-    height: 34px;
-    margin-top: 14px;
+    height: 42px;
+    margin-top: 22px;
     position: relative;
     overflow: hidden;
 }
@@ -3127,7 +3127,7 @@ html[dir="rtl"] .imas-blog-v2-card__pill {
 
 .imas-blog-v2-card:hover .imas-blog-v2-card__cta-text {
     opacity: 0;
-    transform: translateY(-8px);
+    transform: translateY(-4px);
 }
 
 .imas-blog-v2-card:hover .imas-blog-v2-card__pill {

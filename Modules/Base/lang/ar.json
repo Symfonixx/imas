@@ -273,7 +273,7 @@
         "start_price":"السعر الأدنى",
         "featured_properties":"العقارات الموصى بها لك اليوم",
         "we_provide_full_service_at_every_step":"نقدم خدمة كاملة في كل خطوة.",
-        "title":"العقارات الأحدث",
+        "title":"اطلع على احدث العقارات المضافة الى منصتنا",
         "featured":"مميز",
         "sold_out":"مباع",
         "favorite_error":"تعذّر تحديث المفضّلة. يُرجى المحاولة مرة أخرى.",
@@ -290,7 +290,7 @@
         "unit_types_aria":"أنواع وحدات العقار"
     },
     "listing_page":{
-        "find_your_house":"ابحث عن منزلك",
+        "find_your_house":"ابحث عن العقار المناسب لك",
         "enter_keyword":"أدخل كلمة البحث…",
         "location":"الموقع",
         "all_locations":"كل المواقع",
@@ -309,7 +309,7 @@
         "gallery":"المعرض",
         "description":"نظرة عامة",
         "details":"تفاصيل العقار",
-        "why_to_buy":"لماذا تشتري",
+        "why_to_buy":"لماذا تشتري هذا العقار",
         "facilities":"المرافق و مواصفات الموقع",
         "property_video":"فيديو العقار",
         "location":"الموقع",
@@ -325,9 +325,9 @@
         "unit_types_title":"تفاصيل المشروع",
         "project_id":"الكود",
         "project_location":"الموقع ",
-        "col_rooms":"عدد الغرف وغرف المعيشة",
-        "col_area":"المساحات تبدأ من",
-        "col_price":"الأسعار تبدأ من",
+        "col_rooms":"نوع الوحدة",
+        "col_area":"المساحات المدى",
+        "col_price":"السعر الابتدائي",
         "for_sale":"للبيع",
         "sold_out":"مباع",
         "inquiry_subject":"استفسار عن :title",
@@ -344,7 +344,7 @@
         "description":"اقرأ تقييمات صادقة من عملائنا في مجال العقارات والاستثمار."
     },
     "articles":{
-        "title":"المدونات والأخبار",
+        "title":"آخر المدونات والأخبار",
         "description":"ابق على اطلاع على أحدث الأخبار والرؤى من خبرائنا.",
         "read_more":"اقرأ المزيد..."
     },

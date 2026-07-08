@@ -30,10 +30,7 @@
                     </div>
                     <h3 class="text-center">
                         {{ authNoteText }}
-                        <!-- <span
-                            class="imas-auth-modal__brand"
-                            v-html="welcomeBrandHtml"
-                        ></span> -->
+                        
                     </h3>
 
                     <!-- Recover password (theme: lost password flow)  / forgot password -->
@@ -195,7 +192,7 @@
                                             class="log-submit-btn"
                                             :disabled="loginForm.processing"
                                         >
-                                            <span>{{ trans("Sign In") }}</span>
+                                            <span>{{ trans("Login") }}</span>
                                         </button>
                                         <div class="clearfix"></div>
                                         <div class="filter-tags">
@@ -1640,7 +1637,7 @@ const logoUrl = computed(() => {
 
 .imas-auth-terms__error {
     display: block;
-    text-align: start !important;   
+    text-align: start !important;
     width: 100%;
     margin: 0.35rem 0 0;
     padding-inline-start: 1.35rem;
@@ -1918,7 +1915,7 @@ const logoUrl = computed(() => {
     input[type="checkbox"],
 .imas-auth-modal.login-and-register-form .remember-me-checkbox {
     width: 1rem !important;
-   
+
     height: 1rem !important;
     margin: 0 0.35rem 0 0.35rem !important;
     padding: 0;
@@ -1934,18 +1931,15 @@ const logoUrl = computed(() => {
     .filter-tags
     input[type="checkbox"]:checked::after {
     color: var(--brand-gold);
-
-
 }
 
 .app_logo {
-    width:60px;
-    height:60px;
+    width: 60px;
+    height: 60px;
     margin: 0 auto;
     margin-bottom: 1rem;
 }
-.app_logo 
-img {
+.app_logo img {
     width: 100px;
     height: 100px;
     object-fit: contain;

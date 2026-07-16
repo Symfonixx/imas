@@ -200,7 +200,7 @@ import {
     initHeroRangeSliders,
     loadJqueryUi,
 } from "@/utils/initHeroRangeSliders.js";
-import { propertyStartPrice } from "../utils/propertyPrice.js";
+import { formatPropertyMoney, propertyStartPrice } from "../utils/propertyPrice.js";
 import FeaturedPropertiesSidebar from "./FeaturedPropertiesSidebar.vue";
 import LocationAreaPicker from "@/components/Global/LocationAreaPicker.vue";
 import LocationCityPicker from "@/components/Global/LocationCityPicker.vue";
@@ -433,15 +433,7 @@ function displayTitle(p) {
 }
 
 function formatMoney(amount) {
-    const n = Number(amount);
-    if (!Number.isFinite(n)) {
-        return "—";
-    }
-    return new Intl.NumberFormat(locale(), {
-        style: "currency",
-        currency: "USD",
-        maximumFractionDigits: 0,
-    }).format(n);
+    return formatPropertyMoney(amount, locale());
 }
 
 onMounted(async () => {

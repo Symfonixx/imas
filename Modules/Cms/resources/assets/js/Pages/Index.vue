@@ -92,8 +92,8 @@
                         />
                     </div>
                     <p
-                        v-else
-                        class="imas-blog-v2__empty text-dim"
+                    v-else
+                        class="imas-blog-v2__empty text-dim text-start"
                     >
                         {{ trans("blogs.no_posts") }}
                     </p>

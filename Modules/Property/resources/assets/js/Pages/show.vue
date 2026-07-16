@@ -424,7 +424,7 @@ import FeaturedPropertiesSidebar from "../components/FeaturedPropertiesSidebar.v
 import RecentPropertiesSidebar from "../components/RecentPropertiesSidebar.vue";
 import { localizedField } from "../utils/propertyLocalized.js";
 import { propertyLocationLine } from "../utils/propertyLocation.js";
-import { propertyStartPrice } from "../utils/propertyPrice.js";
+import { formatPropertyMoney, propertyStartPrice } from "../utils/propertyPrice.js";
 import {
     buildBreadcrumbSchema,
     buildRealEstateListingSchema,
@@ -522,15 +522,7 @@ const propertyTypeLabel = computed(() => {
 });
 
 function formatMoney(amount) {
-    const n = Number(amount);
-    if (!Number.isFinite(n)) {
-        return "—";
-    }
-    return new Intl.NumberFormat(locale.value, {
-        style: "currency",
-        currency: "USD",
-        maximumFractionDigits: 0,
-    }).format(n);
+    return formatPropertyMoney(amount, locale.value);
 }
 
 const pricePrefix = computed(() => trans("properties.start_price"));

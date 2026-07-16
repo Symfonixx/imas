@@ -137,7 +137,7 @@
     "Location": "Konum",
     "Municipalities": "Belediyeler",
     "Areas": "Bölgeler",
-    "Cities": "Şehirler",
+    "Cities": "Şehir",
     "No results found": "Sonuç bulunamadı",
     "selected": "seçildi",
     "Clear": "Temizle",
@@ -145,7 +145,7 @@
     "Advanced Search": "Gelişmiş arama",
     "Area Size": "Alan büyüklüğü",
     "Price Range": "Fiyat aralığı",
-    "Unit Types": "Birim tipleri",
+    "Unit Types": "Birim tipi",
     "Logs & Bugs": "Günlükler ve hatalar",
     "Log Code": "Günlük kodu",
     "Log title": "Günlük başlığı",
@@ -438,7 +438,7 @@
         }
     },
     "floating_whatsapp":{
-        "aria_label":"WhatsApp üzerinden bize ulaşın"
+        "aria_label":"WhatsApp"
     },
     "floating_contact":{
         "menu_title":"Favori kanalınızdan bize ulaşın",

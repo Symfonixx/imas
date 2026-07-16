@@ -66,6 +66,7 @@
             v-if="images.length > 1"
             ref="thumbsViewportRef"
             class="imas-gallery-thumbs-outer"
+            :dir="thumbsDir"
             role="region"
             tabindex="0"
             :aria-label="thumbsRegionLabel"
@@ -123,6 +124,14 @@ const thumbItemRefs = ref([]);
 
 const carouselId = computed(() => `listingDetailsSlider-${props.propertyId}`);
 
+const isRtl = computed(() => {
+    const dir = String(page.props.text_direction ?? "");
+    const locale = String(page.props.locale ?? "");
+    return dir === "rtl" || locale === "ar";
+});
+
+const thumbsDir = computed(() => (isRtl.value ? "rtl" : "ltr"));
+
 const previousLabel = computed(
     () => page.props.translations?.["global.previous"] || "Previous",
 );
@@ -142,26 +151,24 @@ const images = computed(() => {
     const isPlaceholderThumb =
         thumb === "" || thumb.includes("/images/blank.png");
 
+    if (thumb && !isPlaceholderThumb) {
+        seen.add(thumb);
+        rows.push({
+            key: "thumbnail",
+            url: thumb,
+            alt: props.alt,
+        });
+    }
+
     for (const slide of props.slides ?? []) {
         const url = slide?.image_url;
         if (typeof url !== "string" || url === "" || seen.has(url)) {
-            continue;
-        }
-        if (thumb && url === thumb) {
             continue;
         }
         seen.add(url);
         rows.push({
             key: `slide-${slide.id ?? rows.length}`,
             url,
-            alt: props.alt,
-        });
-    }
-
-    if (rows.length === 0 && thumb && !isPlaceholderThumb) {
-        rows.push({
-            key: "thumbnail",
-            url: thumb,
             alt: props.alt,
         });
     }
@@ -175,17 +182,63 @@ function setThumbRef(el, index) {
     }
 }
 
+function prefersReducedMotion() {
+    return (
+        typeof window !== "undefined" &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    );
+}
+
+function scrollBehavior() {
+    return prefersReducedMotion() ? "auto" : "smooth";
+}
+
+/**
+ * Scroll the thumb strip using getBoundingClientRect + scrollBy so LTR and RTL
+ * (including negative scrollLeft browsers) stay in sync with the active image.
+ */
 async function scrollActiveThumbIntoView() {
     await nextTick();
+    const viewport = thumbsViewportRef.value;
+    if (!viewport) {
+        return;
+    }
+
     const thumbEl = thumbItemRefs.value[activeIndex.value];
     if (!thumbEl) {
         return;
     }
-    thumbEl.scrollIntoView({
-        behavior: "smooth",
-        block: "nearest",
-        inline: "center",
-    });
+
+    const behavior = scrollBehavior();
+    const vpRect = viewport.getBoundingClientRect();
+    const thumbRect = thumbEl.getBoundingClientRect();
+    const pad = 2;
+
+    if (activeIndex.value === 0) {
+        // Align first thumb to the inline-start edge (left in LTR, right in RTL).
+        const delta = isRtl.value
+            ? thumbRect.right - vpRect.right
+            : thumbRect.left - vpRect.left;
+        if (Math.abs(delta) > pad) {
+            viewport.scrollBy({ left: delta, behavior });
+        }
+        return;
+    }
+
+    if (thumbRect.left < vpRect.left - pad) {
+        viewport.scrollBy({
+            left: thumbRect.left - vpRect.left,
+            behavior,
+        });
+        return;
+    }
+
+    if (thumbRect.right > vpRect.right + pad) {
+        viewport.scrollBy({
+            left: thumbRect.right - vpRect.right,
+            behavior,
+        });
+    }
 }
 
 function selectThumb(index) {
@@ -209,8 +262,10 @@ function goNext() {
 }
 
 watch(
-    () => images.value.length,
-    (length) => {
+    () => images.value.map((image) => image.key).join("|"),
+    () => {
+        thumbItemRefs.value = [];
+        const length = images.value.length;
         if (length === 0) {
             activeIndex.value = 0;
             return;
@@ -326,7 +381,6 @@ watch(activeIndex, () => {
     margin-top: 15px;
     overflow-x: auto;
     overflow-y: hidden;
-    direction: ltr;
     unicode-bidi: isolate;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
@@ -338,11 +392,19 @@ watch(activeIndex, () => {
     display: flex;
     flex-wrap: nowrap;
     align-items: flex-start;
-    width: max-content;
+    width: max-content !important;
     max-width: none;
-    margin: 0;
+    margin: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
     padding: 0;
     white-space: nowrap;
+}
+
+.imas-property-gallery.listing-details-sliders :deep(.list-inline.imas-gallery-thumbs) {
+    width: max-content !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
 }
 
 .imas-property-gallery :deep(.smail-listing .list-inline-item),
@@ -415,16 +477,24 @@ watch(activeIndex, () => {
         height: 64px;
     }
 }
-.fa-angle-right:before,.fa-angle-left:before{
-color:#fff;    
+.fa-angle-right:before,
+.fa-angle-left:before {
+    color: #fff;
 }
+
+/* Mirror chevrons in RTL so arrow direction matches swapped prev/next handlers.
+   Parent show.vue already mirrors control positions (left↔right). */
+html[dir="rtl"] .imas-property-gallery .imas-gallery-control .fa {
+    transform: rotate(180deg);
+}
+
 .blog .blog-pots .imas-gallery-control .fa {
     margin: 6px 35% !important;
 }
 html[dir="rtl"] .blog .blog-pots .imas-gallery-control .fa {
     transform: rotate(180deg);
 }
- h5:after{
+h5:after {
     margin-bottom: 0 !important;
 }
 </style>

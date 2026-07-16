@@ -8,13 +8,13 @@
             {{ resultsLabel }}
         </p>
         <div class="imas-property-listings-toolbar__sort">
-            <label
+            <!-- <label
                 class="imas-property-listings-toolbar__sort-label text-dim"
                 :for="sortToggleId"
             >
                 <i class="fas fa-align-left" aria-hidden="true"></i>
                 {{ trans("listing_page.sort_by") }}:
-            </label>
+            </label> -->
             <button
                 :id="sortToggleId"
                 type="button"

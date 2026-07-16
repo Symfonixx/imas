@@ -3763,7 +3763,7 @@ html[dir="rtl"] .imas-about-page .imas-blog-v2-sidebar__recent-item:hover img {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: space-between;
+    /* justify-content: space-between; */
     gap: 16px 24px;
     margin-bottom: 28px;
     padding-bottom: 20px;
@@ -4257,10 +4257,19 @@ html[dir="rtl"] .imas-about-page .imas-blog-v2-sidebar__recent-item:hover img {
     z-index: 2;
     display: flex;
     flex-wrap: wrap;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
     gap: 8px;
     pointer-events: none;
+}
+
+.imas-featured-properties-sidebar__badges-end {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    max-width: min(55%, 12rem);
 }
 
 .imas-featured-properties-sidebar__badge {
@@ -4283,6 +4292,18 @@ html[dir="rtl"] .imas-about-page .imas-blog-v2-sidebar__recent-item:hover img {
     color: var(--text-on-gold);
     direction: ltr;
     unicode-bidi: isolate;
+}
+
+.imas-featured-properties-sidebar__badge--type {
+    background: var(--brand-gold);
+    color: var(--text-on-gold);
+    letter-spacing: 0.5px;
+}
+
+.imas-featured-properties-sidebar__card--sold-out
+    .imas-featured-properties-sidebar__badge--type {
+    background: color-mix(in srgb, var(--text-dim) 12%, transparent);
+    color: var(--text-dim);
 }
 
 .imas-featured-properties-sidebar__badge--status {
@@ -4963,8 +4984,12 @@ html[dir="rtl"] .imas-property-show-page .imas-property-show-panel .imas-rich-co
 
 .imas-contact-page .call-info .info p {
     margin: 0;
-    margin-inline-start: 1.25rem;
+    
     font-weight: 400;
+}
+
+html[dir="ltr"] .imas-contact-page .call-info .info p {
+    margin-inline-start: 1.25rem;
 }
 
 .imas-contact-page .imas-contact-page__social-title {

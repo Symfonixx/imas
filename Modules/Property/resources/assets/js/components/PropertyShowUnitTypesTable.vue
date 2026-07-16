@@ -58,6 +58,7 @@
 
 <script setup>
 import { usePage } from "@inertiajs/vue3";
+import { formatPropertyMoney } from "../utils/propertyPrice.js";
 
 defineProps({
     unitTypes: { type: Array, default: () => [] },
@@ -105,16 +106,7 @@ function formatNumber(value) {
 }
 
 function formatPrice(amount) {
-    const n = Number(amount);
-    if (!Number.isFinite(n)) {
-        return "—";
-    }
-
-    return new Intl.NumberFormat(locale(), {
-        style: "currency",
-        currency: "USD",
-        maximumFractionDigits: 0,
-    }).format(n);
+    return formatPropertyMoney(amount, locale());
 }
 </script>
 

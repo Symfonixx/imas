@@ -16,7 +16,25 @@
                     {{ menuTitle }}
                 </p>
                 <ul class="imas-floating-contact__list">
-                    <li v-if="messengerHref">
+                    <li v-if="whatsappHref">
+                        <a
+                            :href="whatsappHref"
+                            class="imas-floating-contact__item"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <span
+                                class="imas-floating-contact__icon imas-floating-contact__icon--whatsapp"
+                                aria-hidden="true"
+                            >
+                                <i class="fa fa-whatsapp"></i>
+                            </span>
+                            <span class="imas-floating-contact__label text-sm font-medium">{{
+                                labelWhatsApp
+                            }}</span>
+                        </a>
+                    </li>
+                    <!-- <li v-if="messengerHref">
                         <a
                             :href="messengerHref"
                             class="imas-floating-contact__item"
@@ -33,7 +51,7 @@
                                 labelMessenger
                             }}</span>
                         </a>
-                    </li>
+                    </li> -->
                     <li v-if="gmailHref">
                         <a
                             :href="gmailHref"
@@ -82,7 +100,7 @@
         >
             <i
                 class="fa"
-                :class="isOpen ? 'fa-times' : 'fa-phone'"
+                :class="isOpen ? 'fa-times' : 'fa-comment'"
                 aria-hidden="true"
             ></i>
         </button>
@@ -93,6 +111,7 @@
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { usePage } from "@inertiajs/vue3";
 import { buildGmailComposeUrl } from "@/utils/gmailUrl.js";
+import { resolveWhatsAppContactHref } from "@/utils/whatsappUrl.js";
 
 const MESSENGER_URL =
     "https://m.me/61584547460936";
@@ -127,6 +146,15 @@ const contactEmail = computed(() => {
     ).trim();
 });
 
+const whatsappHref = computed(() => {
+    const social = globals.value.social ?? {};
+
+    return resolveWhatsAppContactHref({
+        whatsapp: social.whatsapp,
+        phone: contactPhone.value,
+    });
+});
+
 const messengerHref = computed(() => MESSENGER_URL);
 
 const gmailHref = computed(() => buildGmailComposeUrl(contactEmail.value));
@@ -138,7 +166,13 @@ const phoneHref = computed(() => {
 });
 
 const hasAnyChannel = computed(
-    () => Boolean(messengerHref.value || gmailHref.value || phoneHref.value),
+    () =>
+        Boolean(
+            whatsappHref.value ||
+                messengerHref.value ||
+                gmailHref.value ||
+                phoneHref.value,
+        ),
 );
 
 const menuTitle = computed(
@@ -149,6 +183,10 @@ const menuTitle = computed(
 
 const labelMessenger = computed(
     () => trans("floating_contact.messenger") || "Messenger chat",
+);
+
+const labelWhatsApp = computed(
+    () => trans("floating_whatsapp.aria_label") || "Contact us on WhatsApp",
 );
 
 const labelGmail = computed(
@@ -325,6 +363,10 @@ onBeforeUnmount(() => {
 
 .imas-floating-contact__icon--messenger {
     color: var(--info);
+}
+
+.imas-floating-contact__icon--whatsapp {
+    color: var(--success);
 }
 
 .imas-floating-contact__icon--gmail {

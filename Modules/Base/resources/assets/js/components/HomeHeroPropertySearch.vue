@@ -445,9 +445,12 @@ onBeforeUnmount(() => {
 
 .imas-hero-property-search
     :deep(.imas-hero-advanced-panel .range-slider label) {
+    display: block;
+    width: 100%;
     color: var(--text) !important;
     font-size: 0.95rem;
     margin-bottom: 1rem;
+    text-align: center !important;
 }
 
 .imas-hero-property-search

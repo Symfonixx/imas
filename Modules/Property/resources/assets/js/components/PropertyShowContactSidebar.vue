@@ -603,6 +603,7 @@ onBeforeUnmount(() => {
     flex: 1;
     min-width: 0;
     text-align: start;
+    margin-top: 3px;
 }
 
 .imas-property-show-contact
@@ -620,6 +621,7 @@ onBeforeUnmount(() => {
     color: inherit;
     text-decoration: none;
     transition: color 0.3s ease;
+  
 }
 
 .imas-property-show-contact .imas-contact-list__link:hover {

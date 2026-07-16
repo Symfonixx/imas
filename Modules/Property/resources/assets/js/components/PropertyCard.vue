@@ -129,7 +129,7 @@ import {
     localizedLocationName,
     propertyLocationLine,
 } from "../utils/propertyLocation.js";
-import { propertyStartPrice } from "../utils/propertyPrice.js";
+import { formatPropertyMoney, propertyStartPrice } from "../utils/propertyPrice.js";
 import PropertyCardUnitTypesBar from "./PropertyCardUnitTypesBar.vue";
 
 const props = defineProps({
@@ -239,17 +239,7 @@ const overviewText = computed(() =>
 );
 
 function formatMoney(amount) {
-    const n = Number(amount);
-    if (!Number.isFinite(n)) {
-        return "—";
-    }
-
-    const formatted = new Intl.NumberFormat(locale.value, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
-    }).format(n);
-
-    return `$${formatted}`;
+    return formatPropertyMoney(amount, locale.value);
 }
 
 const priceAmount = computed(() =>

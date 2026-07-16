@@ -39,7 +39,6 @@
         <UserFooter :nav-links="navLinks" />
         <ClientOnly>
             <FloatingContactButton />
-            <FloatingWhatsAppButton />
         </ClientOnly>
     </div>
 </template>
@@ -51,7 +50,6 @@ import UserNavbar from "@/Layouts/Findhouses/UserNavbar.vue";
 import UserTopBar from "@/Layouts/Findhouses/UserTopBar.vue";
 import UserFooter from "@/Layouts/Findhouses/UserFooter.vue";
 import FloatingContactButton from "@/components/Global/FloatingContactButton.vue";
-import FloatingWhatsAppButton from "@/components/Global/FloatingWhatsAppButton.vue";
 import { cmsPageUrl } from "@/utils/cmsPageUrl.js";
 import { localizedRoute } from "@/utils/localizedRoute.js";
 import { syncZiggy } from "@/utils/syncZiggy.js";

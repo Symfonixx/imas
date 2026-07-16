@@ -35,7 +35,7 @@
 
 <script setup>
 import { usePage } from "@inertiajs/vue3";
-import { propertyStartPrice } from "../utils/propertyPrice.js";
+import { formatPropertyMoney, propertyStartPrice } from "../utils/propertyPrice.js";
 
 defineProps({
     recentProperties: { type: Array, default: () => [] },
@@ -84,14 +84,6 @@ function displayTitle(p) {
 }
 
 function formatMoney(amount) {
-    const n = Number(amount);
-    if (!Number.isFinite(n)) {
-        return "—";
-    }
-    return new Intl.NumberFormat(locale(), {
-        style: "currency",
-        currency: "USD",
-        maximumFractionDigits: 0,
-    }).format(n);
+    return formatPropertyMoney(amount, locale());
 }
 </script>

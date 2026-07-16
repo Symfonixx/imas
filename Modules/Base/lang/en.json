@@ -137,7 +137,7 @@
     "Location": "Location",
     "Municipalities": "Municipalities",
     "Areas": "Areas",
-    "Cities": "Cities",
+    "Cities": "City",
     "No results found": "No results found",
     "selected": "Selected",
     "Clear": "Clear",
@@ -145,7 +145,7 @@
     "Advanced Search": "Advanced Search",
     "Area Size": "Area Size",
     "Price Range": "Price Range",
-    "Unit Types": "Unit Types",
+    "Unit Types": "Unit Type",
     "Logs & Bugs": "Logs & bugs",
     "Log Code": "Log code",
     "Log title": "Log title",
@@ -437,7 +437,7 @@
         }
     },
     "floating_whatsapp":{
-        "aria_label":"Contact us on WhatsApp"
+        "aria_label":"WhatsApp"
     },
     "floating_contact":{
         "menu_title":"Talk to us on your favorite channel",

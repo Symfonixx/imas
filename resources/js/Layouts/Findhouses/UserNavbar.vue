@@ -243,7 +243,7 @@
                                             {{ trans("Dashboard") }}
                                         </Link>
                                     </li>
-                                    <li>
+                                    <li v-if="isAdmin">
                                         <Link
                                             class="imas-user-menu-dropdown__item"
                                             :href="profileHref"

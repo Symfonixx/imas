@@ -70,12 +70,22 @@
                                 >
                                     {{ formatMoney(propertyStartPrice(p)) }}
                                 </span>
-                                <span
-                                    v-if="isSoldOut(p)"
-                                    class="imas-featured-properties-sidebar__badge imas-featured-properties-sidebar__badge--sold-out imas-sold-out-badge imas-badge--danger"
+                                <div
+                                    class="imas-featured-properties-sidebar__badges-end"
                                 >
-                                    {{ trans("properties.sold_out") }}
-                                </span>
+                                    <span
+                                        v-if="propertyTypeLabel(p)"
+                                        class="imas-featured-properties-sidebar__badge imas-featured-properties-sidebar__badge--type"
+                                    >
+                                        {{ propertyTypeLabel(p) }}
+                                    </span>
+                                    <span
+                                        v-if="isSoldOut(p)"
+                                        class="imas-featured-properties-sidebar__badge imas-featured-properties-sidebar__badge--sold-out imas-sold-out-badge imas-badge--danger"
+                                    >
+                                        {{ trans("properties.sold_out") }}
+                                    </span>
+                                </div>
                             </div>
                             <div
                                 class="imas-featured-properties-sidebar__overlay"
@@ -129,7 +139,11 @@ import {
 } from "vue";
 import { usePage } from "@inertiajs/vue3";
 import { propertyLocationLine } from "../utils/propertyLocation.js";
-import { propertyStartPrice } from "../utils/propertyPrice.js";
+import { localizedField } from "../utils/propertyLocalized.js";
+import {
+    formatPropertyMoney,
+    propertyStartPrice,
+} from "../utils/propertyPrice.js";
 
 const props = defineProps({
     featuredProperties: { type: Array, default: () => [] },
@@ -144,9 +158,7 @@ const navRef = ref(null);
 const prevArrowRef = ref(null);
 const nextArrowRef = ref(null);
 
-const showCarouselArrows = computed(
-    () => props.featuredProperties.length > 1,
-);
+const showCarouselArrows = computed(() => props.featuredProperties.length > 1);
 
 const slickIsRtl = computed(
     () => String(page.props.text_direction || "") === "rtl",
@@ -194,6 +206,14 @@ function locationLine(p) {
     return propertyLocationLine(p.location, locale());
 }
 
+function propertyTypeLabel(p) {
+    const type = p?.property_type;
+    if (!type) {
+        return "";
+    }
+    return localizedField(type.name, locale());
+}
+
 function isSoldOut(p) {
     return Boolean(p.is_sold_out);
 }
@@ -203,15 +223,7 @@ function soldOutCardLabel(p) {
 }
 
 function formatMoney(amount) {
-    const n = Number(amount);
-    if (!Number.isFinite(n)) {
-        return "—";
-    }
-    return new Intl.NumberFormat(locale(), {
-        style: "currency",
-        currency: "USD",
-        maximumFractionDigits: 0,
-    }).format(n);
+    return formatPropertyMoney(amount, locale());
 }
 
 function statRows(p) {

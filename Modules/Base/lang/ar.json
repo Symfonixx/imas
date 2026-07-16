@@ -127,7 +127,7 @@
     "Location": "الموقع",
     "Municipalities": "البلديات",
     "Areas": "المناطق",
-    "Cities": "المدن",
+    "Cities": "المدينة",
     "No results found": "لا توجد نتائج",
     "selected": "محدد",
     "Clear": "مسح",
@@ -135,7 +135,7 @@
     "Advanced Search": "بحث متقدم",
     "Area Size": "مساحة العقار",
     "Price Range": "نطاق السعر",
-    "Unit Types": "أنواع الوحدات",
+    "Unit Types": "نوع الوحدة",
     "Logs & Bugs": "السجلات والأخطاء",
     "Log Code": "رمز السجل",
     "Log title": "عنوان السجل",
@@ -237,7 +237,7 @@
     "Newsletter Subscribers": "مشتركو النشرة الإخبارية",
     "Users": "المستخدمون",
     "Turkish Citizenship": "الجنسية التركية"  ,
-    "suitable_properties_for_turkish_citizenship_by_citizenship_program": "عقارات مناسبة للحصول على الجنسية التركية من خلال برنامج الجنسية",
+    "suitable_properties_for_turkish_citizenship_by_citizenship_program": "عقارات مناسبة للحصول على الجنسية التركية من خلال برنامج الاستثمار",
     "by_citizenship_program": "من خلال برنامج الجنسية",
     "Choose from library": "اختر من المكتبة",
     "Attachment Details": "تفاصيل المرفق",
@@ -287,8 +287,8 @@
         "favorite_properties_empty":"لم تحفظ أي عقارات في المفضّلة بعد.",
         "favorite_properties_count":":count عقار محفوظ",
         "price_from":"من",
-        "unit_types_count_one":"نوع واحد",
-        "unit_types_count":":count أنواع",
+        "unit_types_count_one":"نمط",
+        "unit_types_count":":count أنماط",
         "unit_types_aria":"أنواع وحدات العقار"
     },
     "listing_page":{
@@ -328,8 +328,8 @@
         "project_id":"الكود",
         "project_location":"الموقع ",
         "col_rooms":"نوع الوحدة",
-        "col_area":"المساحات المدى",
-        "col_price":"السعر الابتدائي",
+        "col_area":"مساحة العقار",
+        "col_price":"الاسعار تبدأ من",
         "for_sale":"للبيع",
         "sold_out":"مباع",
         "inquiry_subject":"استفسار عن :title",
@@ -379,7 +379,7 @@
         "Buy Real Estate":"شراء العقارات",
         "Blogs":"المدونات",
         "Turkish Citizenship":"الجنسية التركية",
-        "Contact us":"اتصل بنا",
+        "Contact us":"تواصل معنا",
         "Pages":"الصفحات",
         "News & Laws":"الأخبار والقوانين",
         "Property Management":"إدارة العقارات",
@@ -442,13 +442,13 @@
         }
     },
     "floating_whatsapp":{
-        "aria_label":"تواصل معنا عبر واتساب"
+        "aria_label":" واتساب"
     },
     "floating_contact":{
         "menu_title":"تحدث معنا عبر قناتك المفضلة",
         "menu_aria":"قنوات التواصل",
         "messenger":"محادثة ماسنجر",
-        "gmail":"جيميل",
+        "gmail":"ايميل",
         "direct_call":"اتصال مباشر",
         "aria_open":"فتح قائمة التواصل",
         "aria_close":"إغلاق قائمة التواصل"

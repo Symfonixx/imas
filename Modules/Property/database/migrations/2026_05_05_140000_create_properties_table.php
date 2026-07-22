@@ -12,13 +12,15 @@ return new class extends Migration
             $table->id();
             $table->string('thumbnail')->nullable();
             $table->string('project_code', 128)->unique();
+            $table->string('url_key', 191)->unique();
             $table->json('title');
             $table->json('project_name');
-            $table->json('overview');
+            $table->json('overview')->nullable();
 
             $table->foreignId('location_id')
+                ->nullable()
                 ->constrained('locations')
-                ->cascadeOnDelete();
+                ->nullOnDelete();
 
             $table->foreignId('property_type_id')
                 ->nullable()
@@ -34,9 +36,8 @@ return new class extends Migration
             $table->boolean('is_citizenship_eligible')->default(false);
             $table->boolean('is_featured')->default(false);
 
-            $table->json('why_to_buy');
-            $table->json('facilities')->nullable();
-            $table->json('content');
+            $table->json('why_to_buy')->nullable();
+            $table->json('content')->nullable();
             $table->string('youtube_video_url')->nullable();
             $table->decimal('lat', 10, 7)->nullable();
             $table->decimal('lng', 10, 7)->nullable();

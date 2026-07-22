@@ -38,7 +38,9 @@ class BaseServiceProvider extends ServiceProvider
      */
     protected function registerCommands(): void
     {
-        // $this->commands([]);
+        $this->commands([
+            \Modules\Base\Console\ImportExistingMediaCommand::class,
+        ]);
     }
 
     /**

@@ -212,6 +212,10 @@
                                             :thumbnail-url="
                                                 property.thumbnail_url
                                             "
+                                            :thumbnail-alt="
+                                                property.thumbnail_alt ||
+                                                displayTitle
+                                            "
                                             :alt="displayTitle"
                                             :title="
                                                 trans('property_show.gallery')
@@ -295,24 +299,6 @@
                                             v-html="whyToBuyHtml"
                                         />
                                     </div>
-
-                                    <div
-                                        v-if="facilitiesHtml"
-                                        data-imas-reveal
-                                        class="blog-info details mb-30 text-start imas-property-show-panel"
-                                    >
-                                        <h5 class="imas-section-title mb-4">
-                                            {{
-                                                trans(
-                                                    "property_show.facilities",
-                                                )
-                                            }}
-                                        </h5>
-                                        <div
-                                            class="imas-rich-content text-md"
-                                            v-html="facilitiesHtml"
-                                        />
-                                    </div>
                                 </div>
                             </div>
                             <div
@@ -330,15 +316,18 @@
                             </div>
 
                             <div
-                                v-if="property.youtube_video_url"
+                                v-for="(videoUrl, videoIndex) in propertyVideos"
+                                :key="`property-video-${videoIndex}-${videoUrl}`"
                                 data-imas-reveal
                             >
                                 <PropertyShowVideo
-                                    :video-url="property.youtube_video_url"
+                                    :video-url="videoUrl"
                                     :poster-url="property.thumbnail_url"
                                     :poster-alt="displayTitle"
                                     :title="
-                                        trans('property_show.property_video')
+                                        propertyVideos.length > 1
+                                            ? `${trans('property_show.property_video')} ${videoIndex + 1}`
+                                            : trans('property_show.property_video')
                                     "
                                 />
                             </div>
@@ -452,6 +441,15 @@ function trans(key) {
     return page.props.translations[key] || key;
 }
 
+const propertyVideos = computed(() => {
+    const videos = [
+        props.property.youtube_video_url,
+        ...(Array.isArray(props.property.videos) ? props.property.videos : []),
+    ];
+
+    return [...new Set(videos.filter((url) => typeof url === "string" && url.trim() !== ""))];
+});
+
 const displayTitle = computed(() => {
     const fromTitle = localizedField(props.property.title, locale.value);
     if (fromTitle) {
@@ -544,9 +542,6 @@ const contentHtml = computed(() =>
 const whyToBuyHtml = computed(() =>
     localizedField(props.property.why_to_buy, locale.value),
 );
-const facilitiesHtml = computed(() =>
-    localizedField(props.property.facilities, locale.value),
-);
 
 function hasValidCoordinate(value) {
     if (value === null || value === undefined || value === "") {
@@ -604,7 +599,10 @@ const ogImage = computed(() => {
 const canonicalUrl = computed(() => {
     try {
         if (typeof route === "function" && route().has?.("property.show")) {
-            const slug = props.property.project_code || props.property.slug;
+            const slug =
+                props.property.url_key ||
+                props.property.slug ||
+                props.property.project_code;
             if (slug) {
                 return route("property.show", slug);
             }

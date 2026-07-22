@@ -84,7 +84,7 @@ class TeamController extends Controller
                 ? (string) $request->input('position')
                 : null,
             'link' => $request->filled('link') ? (string) $request->input('link') : null,
-            'avatar' => AdminImageInput::resolveFileOrMediaPath($request, 'img', 'img_media_path'),
+            'avatar' => AdminImageInput::resolveMediaPathOnly($request, 'img', 'img_media_path'),
             'rank' => (int) $request->input('rank', 0),
             'status' => $request->has('publish') ? CmsStatus::PUBLISHED : CmsStatus::ARCHIVED,
         ];

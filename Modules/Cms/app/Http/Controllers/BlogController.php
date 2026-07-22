@@ -146,6 +146,7 @@ class BlogController extends Controller
     private function serializeBlog(Blog $blog): array
     {
         $description = (string) ($blog->description ?? '');
+        $media = app(\Modules\Base\Support\Media\MediaAssetResolver::class)->resolve($blog->image);
 
         return [
             'id' => $blog->id,
@@ -153,7 +154,9 @@ class BlogController extends Controller
             'slug' => $blog->slug,
             'description' => $blog->description,
             'excerpt' => Str::limit(strip_tags($description), 150),
-            'image' => $blog->image_link,
+            'image' => $media['url'] ?? $blog->image_link,
+            'image_alt' => $media['alt_text'] ?: (string) $blog->title,
+            'image_title' => $media['title'] ?? null,
             'featured' => (bool) $blog->featured,
             'visits' => (int) $blog->visits,
             'created_at' => $blog->created_at?->toIso8601String(),
@@ -185,6 +188,9 @@ class BlogController extends Controller
         if ($metaDescription === null || trim(strip_tags((string) $metaDescription)) === '') {
             $metaDescription = Str::limit(strip_tags($description), 160);
         }
+        $resolver = app(\Modules\Base\Support\Media\MediaAssetResolver::class);
+        $imageMedia = $resolver->resolve($blog->image);
+        $metaMedia = $resolver->resolve($blog->meta_image);
 
         return [
             'id' => $blog->id,
@@ -193,13 +199,15 @@ class BlogController extends Controller
             'description' => $blog->description,
             'content' => $blog->content,
             'excerpt' => Str::limit(strip_tags($description), 150),
-            'image' => $blog->image_link,
-            'meta_image' => $blog->meta_image_link,
+            'image' => $imageMedia['url'] ?? $blog->image_link,
+            'image_alt' => $imageMedia['alt_text'] ?: (string) $blog->title,
+            'image_title' => $imageMedia['title'] ?? null,
+            'meta_image' => $metaMedia['url'] ?? $blog->meta_image_link,
             'meta' => [
                 'title' => $metaTitle,
                 'description' => $metaDescription,
                 'keywords' => $blog->meta_keywords,
-                'image' => $blog->meta_image_link,
+                'image' => $metaMedia['url'] ?? $blog->meta_image_link,
                 'canonical_url' => LaravelLocalization::localizeUrl('/blog/'.$blog->slug),
             ],
             'featured' => (bool) $blog->featured,

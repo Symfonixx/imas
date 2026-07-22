@@ -14,7 +14,7 @@
             </h2>
         </div>
     </div>
-    <div class="card-body pt-0">
+    <div class="card-body pt-3">
         <p class="text-muted fs-7 mb-5">
             {{ __('Set the publishing state and visibility of this content.') }}
         </p>
@@ -51,7 +51,7 @@
                 </h2>
             </div>
         </div>
-        <div class="card-body pt-0">
+        <div class="card-body pt-3">
             <div class="form-check form-check-custom form-check-solid">
                 <input class="form-check-input"
                        type="checkbox"

@@ -3,6 +3,7 @@
 namespace Modules\Base\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Modules\Base\Support\Media\LibraryImageRule;
 
 class StoreSettingsRequest extends FormRequest
 {
@@ -16,22 +17,19 @@ class StoreSettingsRequest extends FormRequest
      */
     public function rules(): array
     {
-        $pageBannerRules = [
-            'nullable',
-            'image',
-            'mimes:jpeg,png,jpg,webp',
-            'max:4096',
-            'dimensions:min_width=1920,min_height=600',
-        ];
+        $mediaPath = ['nullable', new LibraryImageRule];
 
         return [
-            'imgs.white_logo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
-            'imgs.black_logo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
-            'imgs.admin_logo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
-            'imgs.meta_img' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:4096', 'dimensions:min_width=600,min_height=600'],
-            'imgs.contact_us_banner' => $pageBannerRules,
-            'imgs.blog_show_banner' => $pageBannerRules,
-            'imgs.property_show_banner' => $pageBannerRules,
+            'imgs_media' => ['nullable', 'array'],
+            'imgs_media.white_logo' => $mediaPath,
+            'imgs_media.black_logo' => $mediaPath,
+            'imgs_media.admin_logo' => $mediaPath,
+            'imgs_media.meta_img' => $mediaPath,
+            'imgs_media.contact_us_banner' => $mediaPath,
+            'imgs_media.blog_show_banner' => $mediaPath,
+            'imgs_media.property_show_banner' => $mediaPath,
+            'imgs_remove' => ['nullable', 'array'],
+            'imgs_remove.*' => ['nullable'],
             'data.phone' => ['nullable', 'string', 'max:50'],
             'data.email' => ['nullable', 'string', 'email', 'max:255'],
             'data.address' => ['nullable', 'string', 'max:500'],
@@ -45,18 +43,25 @@ class StoreSettingsRequest extends FormRequest
         ];
     }
 
-    /**
-     * @return array<string, string>
-     */
-    public function messages(): array
+    protected function prepareForValidation(): void
     {
-        return [
-            'imgs.contact_us_banner.dimensions' => __('The contact us banner must be at least 1920×600 pixels.'),
-            'imgs.contact_us_banner.max' => __('The contact us banner may not be greater than 4 MB.'),
-            'imgs.blog_show_banner.dimensions' => __('The blog details banner must be at least 1920×600 pixels.'),
-            'imgs.blog_show_banner.max' => __('The blog details banner may not be greater than 4 MB.'),
-            'imgs.property_show_banner.dimensions' => __('The property listings banner must be at least 1920×600 pixels.'),
-            'imgs.property_show_banner.max' => __('The property listings banner may not be greater than 4 MB.'),
-        ];
+        $media = $this->input('imgs_media', []);
+        if (! is_array($media)) {
+            return;
+        }
+
+        $cleaned = [];
+        foreach ($media as $key => $path) {
+            if (! is_string($path)) {
+                $cleaned[$key] = null;
+
+                continue;
+            }
+
+            $path = trim($path);
+            $cleaned[$key] = ($path === '' || strcasecmp($path, 'null') === 0) ? null : $path;
+        }
+
+        $this->merge(['imgs_media' => $cleaned]);
     }
 }

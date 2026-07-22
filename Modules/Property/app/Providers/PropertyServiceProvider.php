@@ -6,8 +6,14 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Modules\Property\Repositories\Location\LocationModelRepository;
 use Modules\Property\Repositories\Location\LocationRepository;
+use Modules\Property\Repositories\PropertyAttribute\PropertyAttributeModelRepository;
+use Modules\Property\Repositories\PropertyAttribute\PropertyAttributeRepository;
+use Modules\Property\Repositories\PropertyAttributeGroup\PropertyAttributeGroupModelRepository;
+use Modules\Property\Repositories\PropertyAttributeGroup\PropertyAttributeGroupRepository;
 use Modules\Property\Repositories\PropertyType\PropertyTypeModelRepository;
 use Modules\Property\Repositories\PropertyType\PropertyTypeRepository;
+use Modules\Property\Repositories\SlideCategory\SlideCategoryModelRepository;
+use Modules\Property\Repositories\SlideCategory\SlideCategoryRepository;
 use Nwidart\Modules\Traits\PathNamespace;
 
 class PropertyServiceProvider extends ServiceProvider
@@ -39,7 +45,10 @@ class PropertyServiceProvider extends ServiceProvider
         $this->app->register(EventServiceProvider::class);
         $this->app->register(RouteServiceProvider::class);
         $this->app->bind(LocationRepository::class, LocationModelRepository::class);
+        $this->app->bind(PropertyAttributeRepository::class, PropertyAttributeModelRepository::class);
+        $this->app->bind(PropertyAttributeGroupRepository::class, PropertyAttributeGroupModelRepository::class);
         $this->app->bind(PropertyTypeRepository::class, PropertyTypeModelRepository::class);
+        $this->app->bind(SlideCategoryRepository::class, SlideCategoryModelRepository::class);
     }
 
     /**

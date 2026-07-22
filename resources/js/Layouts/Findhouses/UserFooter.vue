@@ -215,13 +215,13 @@
                     {{ trans("navBar.All Rights Reserved") }}
                 </p>
                 <p class="imas-second-footer__developer">
-                    <span>{{ developedByPrefix }}</span>
+                    <span>{{ trans("Developed By Symfonix") }}</span>
                     <a
                         href="https://symfonix.io/"
                         target="_blank"
                         rel="noopener noreferrer"
                         class="imas-second-footer__developer-link"
-                        >Symfonix</a
+                        >{{ trans("Go to website") }}</a
                     >
                 </p>
             </div>
@@ -281,11 +281,6 @@ const websiteName = computed(
 const websiteSlogan = "MOST ACCURATE SOLUTIONS";
 
 const year = computed(() => new Date().getFullYear());
-
-const developedByPrefix = computed(() => {
-    const full = trans("Developed By Symfonix");
-    return full.replace(/\s*Symfonix\s*$/i, "").trim() || "Developed by";
-});
 
 const tagline = computed(() => settings.value.tagline || page.props.appName);
 const fallbackAddress = "95 South Park Avenue, USA";

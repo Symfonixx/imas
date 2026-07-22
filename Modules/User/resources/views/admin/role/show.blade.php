@@ -314,7 +314,7 @@
                 </div>
                 <!--end::Card header-->
                 <!--begin::Card body-->
-                <div class="card-body pt-0">
+                <div class="card-body pt-3">
                     <!--begin::Permissions-->
                     <div class="d-flex flex-column text-gray-600">
                         @foreach($role->permissions as $permission)
@@ -535,7 +535,7 @@
                 </div>
                 <!--end::Card header-->
                 <!--begin::Card body-->
-                <div class="card-body pt-0">
+                <div class="card-body pt-3">
                     <form method="post" id="delete_all_users"
                           action="{{route('admin.roles.remove_users_from_role')}}">
                         @csrf
@@ -638,7 +638,7 @@
 
                     <input type="hidden" value="{{$role->id}}" name="role_id">
                     <!--begin::Card body-->
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         <select class="form-select form-select-solid" data-control="select2" name="user_ids[]" required
                                 data-placeholder="{{__('Please Choose One')}}" data-allow-clear="true"
                                 multiple="multiple">

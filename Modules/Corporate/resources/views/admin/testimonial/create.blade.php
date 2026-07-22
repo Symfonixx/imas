@@ -25,7 +25,7 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         <x-admin.form-group label="Name" name="name" required translatable>
                             <input type="text" name="name" class="form-control form-control-solid"
                                    value="{{ old('name') }}" placeholder="{{ __('Name') }}"/>
@@ -69,7 +69,7 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         <x-admin.toggle-switch
                             name="publish"
                             label="Active"
@@ -92,7 +92,7 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         <x-admin.form-group label="Rank" name="rank" required>
                             <input type="number" min="0" name="rank" class="form-control form-control-solid"
                                    value="{{ old('rank', 0) }}"/>

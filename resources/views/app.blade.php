@@ -1,6 +1,7 @@
 @php
     $fh = asset('theme/findhouses');
     $feedSiteName = trim((string) (\Modules\Base\Models\Seo::get('website_name') ?: config('app.name')));
+    $settings = \Modules\Base\Models\Settings::pluck('value', 'key');
 @endphp
 <!DOCTYPE html>
 <html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
@@ -51,6 +52,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @routes
     @inertiaHead
+     {!! $settings->get('header_scripts') !!}
 </head>
 <body class="imas-theme-dark homepage-9 hp-6 homepage-1 mh">
 @inertia
@@ -61,5 +63,6 @@
 <script src="{{ $fh }}/js/bootstrap.min.js"></script>
 <script src="{{ $fh }}/js/mmenu.min.js"></script>
 {{-- Theme mmenu.js clones #header/#navigation on DOM ready and breaks Vue SSR hydration; mobile menu is initialized in UserNavbar.vue --}}
+ {!! $settings->get('footer_scripts') !!}
 </body>
 </html>

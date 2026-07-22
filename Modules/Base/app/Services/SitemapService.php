@@ -159,9 +159,9 @@ class SitemapService
         return Property::query()
             ->where('status', CmsStatus::PUBLISHED)
             ->orderByDesc('updated_at')
-            ->get(['project_code', 'updated_at'])
+            ->get(['url_key', 'updated_at'])
             ->map(static fn (Property $property): array => [
-                'path' => '/property/'.$property->project_code,
+                'path' => '/property/'.$property->url_key,
                 'changefreq' => 'weekly',
                 'priority' => '0.8',
                 'lastmod' => $property->updated_at,

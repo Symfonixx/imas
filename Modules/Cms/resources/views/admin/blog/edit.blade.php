@@ -45,7 +45,7 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         {{-- Title --}}
                         <x-admin.form-group label="Title" name="title" required translatable>
                             <input type="text"
@@ -65,7 +65,7 @@
                         {{-- Featured Image --}}
                         <x-admin.form-group label="Featured Image"
                                             helper="Recommended dimensions: 900px × 600px.">
-                            <x-admin.image-input name="img" :preview="$blog->image_link"/>
+                            <x-admin.image-input name="img" :preview="$blog->image_link" :mediaPath="$blog->image"/>
                         </x-admin.form-group>
 
                         {{-- Short Description --}}
@@ -100,6 +100,7 @@
                     'metaDescription' => old('meta_description', $blog->meta_description),
                     'metaKeywords' => old('meta_keywords', $blog->meta_keywords),
                     'metaImagePreview' => $blog->meta_image_link,
+                    'metaImagePath' => $blog->meta_image,
                     'titleSource' => '#title',
                     'descSource' => '#meta_description',
                     'slugSource' => '#slug',
@@ -127,7 +128,7 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         <x-admin.form-group label="Category" name="category_id" required>
                             <select name="category_id" id="category_id"
                                     class="form-select form-select-solid" required>
@@ -150,12 +151,6 @@
         </div>
 
         {{-- Footer --}}
-        <div class="d-flex justify-content-end py-6">
-            <a href="{{ route('admin.blogs.index') }}"
-               class="btn btn-light btn-active-light-primary me-3">{{ __('Discard') }}</a>
-            <button type="submit" class="btn btn-primary" id="submit">
-                <span class="indicator-label">{{ __('Save Changes') }}</span>
-            </button>
-        </div>
+        <x-admin.form-actions :discard-url="route('admin.blogs.index')"/>
     </form>
 </x-admin-layout>

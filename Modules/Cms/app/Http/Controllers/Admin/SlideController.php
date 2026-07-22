@@ -5,7 +5,6 @@ namespace Modules\Cms\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 use Modules\Cms\Application\Shared\Queries\ContentListQuery;
 use Modules\Cms\Application\Slide\Commands\UpsertSlideCommand;
 use Modules\Cms\Application\Slide\SlideApplicationService;
@@ -42,7 +41,7 @@ class SlideController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $payload = $this->preparePayload($request);
-        $this->assertImagePresentForStore($payload['image'] ?? null);
+        AdminImageInput::assertPresent($payload['image'] ?? null);
 
         $data = SlideData::validate($payload);
 
@@ -76,18 +75,6 @@ class SlideController extends Controller
     }
 
     /**
-     * @param  mixed  $image
-     */
-    private function assertImagePresentForStore($image): void
-    {
-        if ($image === null || $image === '' || $image === AdminImageInput::REMOVED) {
-            throw ValidationException::withMessages([
-                'img' => __('validation.required', ['attribute' => __('Image')]),
-            ]);
-        }
-    }
-
-    /**
      * @return array<string, mixed>
      */
     private function preparePayload(Request $request): array
@@ -100,7 +87,7 @@ class SlideController extends Controller
             'link' => $link !== null && trim((string) $link) !== '' ? trim((string) $link) : null,
             'rank' => (int) $request->input('rank', 0),
             'status' => $request->has('publish') ? CmsStatus::PUBLISHED : CmsStatus::ARCHIVED,
-            'image' => AdminImageInput::resolveFileOrMediaPath($request, 'img', 'img_media_path'),
+            'image' => AdminImageInput::resolveMediaPathOnly($request, 'img', 'img_media_path'),
         ];
     }
 }

@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\Property\Http\Controllers\PropertyController;
 use Modules\Property\Http\Controllers\Property\PropertyController as PropertyPropertyController;
+use Modules\Property\Http\Controllers\PropertyController;
 use Modules\Property\Http\Controllers\TurkishCitizenshipController;
 
 /*
@@ -24,7 +24,7 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('/property', [PropertyPropertyController::class, 'index'])->name('property.index');
-Route::get('/property/{property:project_code}', [PropertyPropertyController::class, 'show'])->name('property.show');
+Route::get('/property/{property:url_key}', [PropertyPropertyController::class, 'show'])->name('property.show');
 
 Route::get('/turkish-citizenship', TurkishCitizenshipController::class)
     ->name('turkish-citizenship');

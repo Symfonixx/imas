@@ -80,12 +80,13 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         <x-admin.form-group label="Turkish Citizenship Banner"
                                             helper="Recommended dimensions: 1920px × 600px.">
                             <x-admin.image-input
                                 name="imgs[turkish_citizenship_banner]"
                                 :preview="asset('storage/' . $settings->get('turkish_citizenship_banner', 'default.jpg'))"
+                                :mediaPath="$settings->get('turkish_citizenship_banner')"
                                 mediaInputName="imgs_media[turkish_citizenship_banner]"/>
                         </x-admin.form-group>
                     </div>
@@ -100,7 +101,7 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         <x-admin.form-group label="Content" name="data.turkish_citizenship_content" required translatable>
                             <textarea name="data[turkish_citizenship_content]"
                                       id="tinymce"
@@ -128,7 +129,7 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         <div class="mb-7">
                             <label class="form-label fw-semibold fs-6">
                                 {{ __('Search engine listing preview') }}
@@ -210,7 +211,7 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         <div class="form-check form-check-custom form-check-solid">
                             <input class="form-check-input"
                                    type="checkbox"

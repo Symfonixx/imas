@@ -43,7 +43,7 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         <x-admin.form-group label="Title" name="title" required translatable>
                             <input type="text"
                                    id="title"
@@ -60,7 +60,7 @@
 
                         <x-admin.form-group label="Featured Image"
                                             helper="Recommended dimensions: 900px × 600px.">
-                            <x-admin.image-input name="img" :preview="$corporateService->image_link"/>
+                            <x-admin.image-input name="img" :preview="$corporateService->image_link" :mediaPath="$corporateService->image"/>
                         </x-admin.form-group>
 
                         <x-admin.seo-field
@@ -92,6 +92,7 @@
                     'metaDescription' => old('meta_description', $corporateService->meta_description),
                     'metaKeywords' => old('meta_keywords', $corporateService->meta_keywords),
                     'metaImagePreview' => $corporateService->meta_image_link,
+                    'metaImagePath' => $corporateService->meta_image,
                     'titleSource' => '#title',
                     'descSource' => '#meta_description',
                     'slugSource' => '#slug',

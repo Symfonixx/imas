@@ -19,7 +19,7 @@
                 <div class="fs-6 fw-bold mt-2 mb-3">{{__('Image')}}</div>
             </div>
             <div class="col-xl-9 fv-row">
-                <x-admin.image-input name="img" :preview="$user->avatar"/>
+                <x-admin.image-input name="img" :preview="$user->avatar" :libraryOnly="false"/>
                 <div class="form-text">{{__('Allowed file types: png, jpg, jpeg, webp')}}</div>
             </div>
         </div>

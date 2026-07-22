@@ -28,7 +28,7 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         <x-admin.form-group label="Name" name="name" required translatable>
                             <input type="text"
                                    id="name"
@@ -49,7 +49,7 @@
 
                         <x-admin.form-group label="Avatar" name="img"
                                             helper="{{ __('Optional. A default image is used when empty.') }}">
-                            <x-admin.image-input name="img" :preview="$team->avatar_link"/>
+                            <x-admin.image-input name="img" :preview="$team->avatar_link" :mediaPath="$team->avatar"/>
                         </x-admin.form-group>
 
                         <x-admin.form-group label="Link" name="link"
@@ -81,7 +81,7 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         <x-admin.form-group label="Rank" name="rank" required>
                             <input type="number"
                                    min="0"

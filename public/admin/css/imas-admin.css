@@ -1,0 +1,1218 @@
+/**
+ * IMas admin — tables & forms polish
+ * Loaded after Metronic style.bundle.css
+ */
+
+:root {
+    --imas-admin-navy: #1a2a4a;
+    --imas-admin-gold: #d9a800;
+    --imas-admin-gold-soft: rgba(217, 168, 0, 0.12);
+    --imas-admin-border: #e4e6ef;
+    --imas-admin-surface: #f9f9fb;
+    --imas-admin-row-hover: #f4f6fa;
+    --imas-admin-radius: 0.75rem;
+    --imas-admin-focus: 0 0 0 0.2rem rgba(26, 42, 74, 0.12);
+}
+
+/* -------------------------------------------------------------------------
+   Cards (index tables + form sections)
+   ------------------------------------------------------------------------- */
+
+.app-content .card.card-flush,
+.app-content .imas-admin-table,
+.app-content .imas-admin-form-card {
+    border: 1px solid var(--imas-admin-border);
+    border-radius: var(--imas-admin-radius);
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+    overflow: hidden;
+}
+
+.app-content .card.card-flush .card-header,
+.imas-admin-table .card-header,
+.imas-admin-form-card .card-header {
+    min-height: 56px;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--imas-admin-border) !important;
+    background: #fff;
+}
+
+.app-content .card.card-flush .card-title h2,
+.imas-admin-form-card .card-title,
+.imas-admin-form-card .card-title h2 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--imas-admin-navy);
+    margin: 0;
+    letter-spacing: -0.01em;
+}
+
+.app-content .card.card-flush .card-body,
+.imas-admin-form-card .card-body {
+    padding-top: 1.25rem;
+}
+
+/* -------------------------------------------------------------------------
+   Index tables
+   ------------------------------------------------------------------------- */
+
+.imas-admin-table .card-header {
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.imas-admin-table .imas-admin-table__search {
+    min-width: min(100%, 280px);
+}
+
+.imas-admin-table .imas-admin-table__search .form-control {
+    border: 1px solid var(--imas-admin-border);
+    background: var(--imas-admin-surface);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.imas-admin-table .imas-admin-table__search .form-control:focus {
+    background: #fff;
+    border-color: var(--imas-admin-navy);
+    box-shadow: var(--imas-admin-focus);
+}
+
+.imas-admin-table .imas-admin-table__toolbar-selected {
+    background: var(--imas-admin-gold-soft);
+    border: 1px solid rgba(217, 168, 0, 0.28);
+    border-radius: 0.5rem;
+    padding: 0.35rem 0.65rem;
+}
+
+.imas-admin-table .card-body {
+    padding: 0;
+}
+
+.imas-admin-table__scroll {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.imas-admin-table table.dataTable,
+.imas-admin-table table.table {
+    margin: 0 !important;
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100% !important;
+}
+
+.imas-admin-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: var(--imas-admin-surface) !important;
+    color: #5e6278 !important;
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--imas-admin-border) !important;
+    padding: 0.85rem 1rem !important;
+    vertical-align: middle;
+}
+
+.imas-admin-table tbody td {
+    padding: 0.9rem 1rem !important;
+    vertical-align: middle !important;
+    border-bottom: 1px solid #eef0f6 !important;
+    color: #3f4254;
+}
+
+.imas-admin-table tbody tr {
+    transition: background-color 0.12s ease;
+}
+
+.imas-admin-table tbody tr:hover {
+    background: var(--imas-admin-row-hover) !important;
+}
+
+.imas-admin-table tbody tr:last-child td {
+    border-bottom: 0 !important;
+}
+
+.imas-admin-table tbody td .badge {
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.imas-admin-table tbody td code {
+    font-size: 0.8rem;
+    padding: 0.15rem 0.4rem;
+    border-radius: 0.35rem;
+    background: var(--imas-admin-surface);
+    color: var(--imas-admin-navy);
+}
+
+.imas-admin-table tbody td .btn-icon {
+    width: 2.15rem;
+    height: 2.15rem;
+    border: 1px solid var(--imas-admin-border);
+    border-radius: 0.5rem;
+}
+
+.imas-admin-table tbody td .btn-icon:hover {
+    border-color: rgba(26, 42, 74, 0.35);
+    background: #fff !important;
+}
+
+.imas-admin-table .card-footer {
+    border-top: 1px solid var(--imas-admin-border);
+    background: #fff;
+    padding: 0.85rem 1.25rem;
+}
+
+.imas-admin-table__empty {
+    padding: 2.75rem 1.5rem;
+    text-align: center;
+    color: #7e8299;
+}
+
+.imas-admin-table__empty-icon {
+    width: 3.25rem;
+    height: 3.25rem;
+    margin: 0 auto 0.85rem;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    background: var(--imas-admin-surface);
+    color: var(--imas-admin-navy);
+    font-size: 1.25rem;
+}
+
+.imas-admin-table .dataTables_empty {
+    display: none !important;
+}
+
+/* DataTables chrome cleanup inside our wrapper */
+.imas-admin-table .dataTables_wrapper .row:first-child,
+.imas-admin-table .dataTables_filter,
+.imas-admin-table .dataTables_length {
+    display: none !important;
+}
+
+.imas-admin-table table.dataTable > thead > tr > th:before,
+.imas-admin-table table.dataTable > thead > tr > th:after,
+.imas-admin-table table.dataTable > thead > tr > td:before,
+.imas-admin-table table.dataTable > thead > tr > td:after {
+    opacity: 0.35;
+}
+
+/* -------------------------------------------------------------------------
+   Forms
+   ------------------------------------------------------------------------- */
+
+.imas-admin-form-group {
+    margin-bottom: 1.35rem;
+}
+
+.imas-admin-form-group:last-child {
+    margin-bottom: 0;
+}
+
+.imas-admin-form-group > .form-label {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 0.45rem;
+    color: #3f4254;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.imas-admin-form-group .imas-admin-required {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.05rem;
+    height: 1.05rem;
+    padding: 0 0.28rem;
+    border-radius: 0.3rem;
+    background: rgba(241, 65, 108, 0.1);
+    color: #f1416c;
+    font-size: 0.72rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.imas-admin-form-group .imas-admin-translatable {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 0.35rem;
+    background: rgba(26, 42, 74, 0.08);
+    color: var(--imas-admin-navy);
+    font-size: 0.75rem;
+}
+
+.imas-admin-form-group .form-text {
+    margin-top: 0.4rem;
+    font-size: 0.78rem;
+    line-height: 1.45;
+    color: #7e8299;
+}
+
+.imas-admin-form-group .imas-admin-field-error {
+    margin-top: 0.4rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #f1416c;
+}
+
+.imas-admin-form-group.is-invalid .form-control,
+.imas-admin-form-group.is-invalid .form-select,
+.imas-admin-form-group.is-invalid .form-control-solid,
+.imas-admin-form-group.is-invalid .form-select-solid {
+    border-color: #f1416c !important;
+    background-image: none;
+}
+
+.app-content .form-control.form-control-solid,
+.app-content .form-select.form-select-solid {
+    border: 1px solid var(--imas-admin-border);
+    background-color: var(--imas-admin-surface);
+    color: #181c32;
+    min-height: 44px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.app-content textarea.form-control.form-control-solid {
+    min-height: 110px;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+}
+
+.app-content .form-control.form-control-solid:hover,
+.app-content .form-select.form-select-solid:hover {
+    background-color: #f3f4f8;
+}
+
+.app-content .form-control.form-control-solid:focus,
+.app-content .form-select.form-select-solid:focus {
+    background-color: #fff;
+    border-color: var(--imas-admin-navy);
+    box-shadow: var(--imas-admin-focus);
+}
+
+.app-content .form-control.form-control-solid::placeholder {
+    color: #a1a5b7;
+}
+
+.app-content .form-control:disabled,
+.app-content .form-control[readonly],
+.app-content .form-select:disabled {
+    opacity: 0.75;
+    cursor: not-allowed;
+}
+
+/* Sticky form action bar (explicit component + common legacy footers) */
+.imas-admin-form-actions,
+.app-content form > .d-flex.justify-content-end.py-6,
+.app-content form .d-flex.justify-content-end.py-6:last-child,
+.imas-admin-form-card__footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 20;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem 1rem;
+    margin-top: 1rem;
+    padding: 0.85rem 1.15rem;
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid var(--imas-admin-border);
+    border-radius: var(--imas-admin-radius);
+    box-shadow: 0 -10px 28px rgba(16, 24, 40, 0.08);
+    backdrop-filter: blur(10px);
+    overflow: hidden;
+}
+
+.imas-admin-form-actions::before,
+.app-content form > .d-flex.justify-content-end.py-6::before,
+.app-content form .d-flex.justify-content-end.py-6:last-child::before,
+.imas-admin-form-card__footer::before {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    height: 2px;
+    border-radius: var(--imas-admin-radius) var(--imas-admin-radius) 0 0;
+    background: linear-gradient(90deg, var(--imas-admin-navy), var(--imas-admin-gold));
+}
+
+.imas-admin-form-actions__meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-width: 0;
+    color: #7e8299;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.imas-admin-form-actions__dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    flex-shrink: 0;
+    border-radius: 999px;
+    background: var(--imas-admin-gold);
+    box-shadow: 0 0 0 3px rgba(217, 168, 0, 0.18);
+}
+
+.imas-admin-form-actions__hint {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.imas-admin-form-actions__btns {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.55rem;
+    margin-inline-start: auto;
+}
+
+.imas-admin-form-actions .btn,
+.app-content form > .d-flex.justify-content-end.py-6 .btn,
+.app-content form .d-flex.justify-content-end.py-6:last-child .btn,
+.imas-admin-form-card__footer .btn {
+    min-width: 7.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    font-weight: 600;
+    border-radius: 0.55rem;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.imas-admin-form-actions__discard,
+.imas-admin-form-card__footer .imas-admin-form-actions__discard {
+    border: 1px solid var(--imas-admin-border) !important;
+    background: #fff !important;
+    color: #5e6278 !important;
+}
+
+.imas-admin-form-actions__discard:hover,
+.imas-admin-form-card__footer .imas-admin-form-actions__discard:hover {
+    border-color: rgba(26, 42, 74, 0.28) !important;
+    color: var(--imas-admin-navy) !important;
+    background: var(--imas-admin-surface) !important;
+}
+
+.imas-admin-form-actions__save,
+.imas-admin-form-card__footer .imas-admin-form-actions__save {
+    box-shadow: 0 4px 12px rgba(26, 42, 74, 0.22);
+}
+
+.imas-admin-form-actions__save:hover,
+.imas-admin-form-card__footer .imas-admin-form-actions__save:hover {
+    box-shadow: 0 6px 16px rgba(26, 42, 74, 0.28);
+}
+
+.imas-admin-form-actions .btn i,
+.imas-admin-form-card__footer .btn i {
+    font-size: 0.95rem;
+    line-height: 1;
+}
+
+.imas-admin-form-card .card-footer,
+.imas-admin-form-card__footer {
+    border-top: 0;
+    background: rgba(255, 255, 255, 0.94);
+}
+
+/* Legacy footers: push buttons to the end when no meta block exists */
+.app-content form > .d-flex.justify-content-end.py-6,
+.app-content form .d-flex.justify-content-end.py-6:last-child {
+    justify-content: flex-end;
+}
+
+/* Admin page footer */
+.imas-admin-footer {
+    margin-top: auto;
+    border-top: 1px solid var(--imas-admin-border);
+    background: linear-gradient(180deg, #fbfbfd 0%, #f5f6fa 100%);
+}
+
+.imas-admin-footer__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem 1.25rem;
+    padding-block: 0.95rem;
+}
+
+.imas-admin-footer__copy {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem 0.65rem;
+    color: #7e8299;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.imas-admin-footer__year {
+    color: var(--imas-admin-navy);
+    font-weight: 700;
+}
+
+.imas-admin-footer__sep {
+    width: 3px;
+    height: 3px;
+    border-radius: 999px;
+    background: rgba(26, 42, 74, 0.28);
+}
+
+.imas-admin-footer__link {
+    color: #5e6278;
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.imas-admin-footer__link:hover {
+    color: var(--imas-admin-navy);
+}
+
+.imas-admin-footer__actions {
+    display: inline-flex;
+    align-items: center;
+}
+
+.imas-admin-footer__site-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.8rem;
+    border: 1px solid var(--imas-admin-border);
+    border-radius: 999px;
+    background: #fff;
+    color: var(--imas-admin-navy);
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.imas-admin-footer__site-btn:hover {
+    background: var(--imas-admin-navy);
+    border-color: var(--imas-admin-navy);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(26, 42, 74, 0.18);
+}
+
+.imas-admin-footer__site-btn i {
+    font-size: 0.8rem;
+}
+
+/* Switch rows in aside settings feel denser & clearer */
+.app-content .form-check.form-switch .form-check-label {
+    color: #3f4254;
+    font-weight: 600;
+}
+
+/* Primary CTA tinted toward brand navy (keeps Metronic shapes) */
+.app-content .btn.btn-primary {
+    background-color: var(--imas-admin-navy);
+    border-color: var(--imas-admin-navy);
+}
+
+.app-content .btn.btn-primary:hover,
+.app-content .btn.btn-primary:focus,
+.app-content .btn.btn-primary:active {
+    background-color: #0f1b33;
+    border-color: #0f1b33;
+}
+
+.app-content .btn.btn-light-primary {
+    color: var(--imas-admin-navy);
+    background-color: rgba(26, 42, 74, 0.08);
+}
+
+.app-content .btn.btn-light-primary:hover {
+    color: #fff;
+    background-color: var(--imas-admin-navy);
+}
+
+/* Toolbar “Add” buttons */
+.app-toolbar .btn.btn-primary {
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.08);
+}
+
+/* Responsive */
+@media (max-width: 767.98px) {
+    .imas-admin-table .imas-admin-table__search {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .imas-admin-table .imas-admin-table__search .form-control {
+        width: 100% !important;
+    }
+
+    .imas-admin-form-actions,
+    .app-content form > .d-flex.justify-content-end.py-6,
+    .app-content form .d-flex.justify-content-end.py-6:last-child,
+    .imas-admin-form-card__footer {
+        justify-content: stretch;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .imas-admin-form-actions__hint {
+        white-space: normal;
+    }
+
+    .imas-admin-form-actions__btns {
+        width: 100%;
+    }
+
+    .imas-admin-form-actions .btn,
+    .app-content form > .d-flex.justify-content-end.py-6 .btn,
+    .app-content form .d-flex.justify-content-end.py-6:last-child .btn,
+    .imas-admin-form-card__footer .btn {
+        flex: 1 1 auto;
+    }
+
+    .imas-admin-footer__inner {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .imas-admin-table thead th,
+    .imas-admin-table tbody td {
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }
+}
+
+/* RTL */
+[dir="rtl"] .imas-admin-table .imas-admin-table__search .ki-magnifier {
+    left: auto;
+    right: 1.25rem;
+}
+
+[dir="rtl"] .imas-admin-table .imas-admin-table__search .form-control {
+    padding-left: 0.75rem !important;
+    padding-right: 3rem !important;
+}
+
+/* =========================================================================
+   Sidebar — search, icons, motion
+   ========================================================================= */
+
+#kt_app_sidebar.app-sidebar {
+    border-inline-end: 1px solid rgba(217, 168, 0, 0.12);
+}
+
+#kt_app_sidebar .app-sidebar-logo {
+    position: relative;
+}
+
+#kt_app_sidebar .app-sidebar-logo::after {
+    content: "";
+    position: absolute;
+    inset-inline: 1.25rem;
+    bottom: 0;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(217, 168, 0, 0.35),
+        transparent
+    );
+    opacity: 0.8;
+}
+
+/* Search */
+.imas-admin-sidebar-search {
+    flex-shrink: 0;
+    padding-top: 0.35rem;
+}
+
+.imas-admin-sidebar-search__field {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.imas-admin-sidebar-search__icon {
+    position: absolute;
+    inset-inline-start: 0.85rem;
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 0.85rem;
+    pointer-events: none;
+    transition: color 0.15s ease;
+}
+
+.imas-admin-sidebar-search__input {
+    width: 100%;
+    min-height: 2.35rem;
+    padding-inline-start: 2.25rem !important;
+    padding-inline-end: 4.25rem !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 0.65rem !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+    color: #eef2f8 !important;
+    font-size: 0.82rem !important;
+    box-shadow: none !important;
+    transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.imas-admin-sidebar-search__input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.imas-admin-sidebar-search__input:hover {
+    background: rgba(255, 255, 255, 0.09) !important;
+    border-color: rgba(217, 168, 0, 0.28) !important;
+}
+
+.imas-admin-sidebar-search__input:focus {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(217, 168, 0, 0.55) !important;
+    box-shadow: 0 0 0 3px rgba(217, 168, 0,.18) !important;
+}
+
+.imas-admin-sidebar-search__field:focus-within .imas-admin-sidebar-search__icon {
+    color: var(--imas-admin-gold);
+}
+
+.imas-admin-sidebar-search__clear {
+    position: absolute;
+    inset-inline-end: 2.65rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.35rem;
+    height: 1.35rem;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.65rem;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.imas-admin-sidebar-search__clear:hover {
+    background: rgba(217, 168, 0, 0.25);
+    color: #fff;
+}
+
+.imas-admin-sidebar-search__kbd {
+    position: absolute;
+    inset-inline-end: 0.55rem;
+    padding: 0.12rem 0.35rem;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 0.35rem;
+    background: rgba(0, 0, 0, 0.25);
+    color: rgba(255, 255, 255, 0.45);
+    font-family: inherit;
+    font-size: 0.62rem;
+    font-weight: 600;
+    line-height: 1.2;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+.imas-admin-sidebar-search__field:focus-within .imas-admin-sidebar-search__kbd {
+    opacity: 0;
+}
+
+.imas-admin-sidebar-search__empty {
+    margin-top: 0.65rem;
+    padding: 0.65rem 0.75rem;
+    border: 1px dashed rgba(217, 168, 0, 0.28);
+    border-radius: 0.55rem;
+    background: rgba(217, 168, 0, 0.06);
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 0.75rem;
+    text-align: center;
+}
+
+/* Hide search when sidebar minimized */
+body[data-kt-app-sidebar-minimize="on"]:not([data-kt-app-sidebar-hoverable="on"]:hover) .imas-admin-sidebar-search,
+.app-sidebar-minimize .imas-admin-sidebar-search {
+    display: none !important;
+}
+
+body[data-kt-app-sidebar-minimize="on"] .imas-admin-sidebar-search {
+    display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #kt_app_sidebar .menu-link,
+    #kt_app_sidebar .menu-icon,
+    #kt_app_sidebar .menu-arrow {
+        transition: none !important;
+    }
+}
+
+/* Links & icons — color/background only (no transform/entrance animations) */
+#kt_app_sidebar .menu-link {
+    position: relative;
+    margin-block: 0.12rem;
+    border-radius: 0.6rem !important;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+#kt_app_sidebar .menu-link:hover {
+    background: rgba(255, 255, 255, 0.06) !important;
+}
+
+#kt_app_sidebar .menu-link.active,
+#kt_app_sidebar .menu-item.here > .menu-link,
+#kt_app_sidebar .menu-item.show > .menu-link:not(.menu-link--sub) {
+    background: rgba(217, 168, 0, 0.12) !important;
+}
+
+#kt_app_sidebar .menu-link.active {
+    color: var(--imas-admin-gold) !important;
+}
+
+#kt_app_sidebar .menu-link.active::before,
+#kt_app_sidebar a.menu-link.active::before {
+    content: "";
+    position: absolute;
+    inset-block: 0.45rem;
+    inset-inline-start: 0.2rem;
+    width: 3px;
+    border-radius: 999px;
+    background: var(--imas-admin-gold);
+}
+
+#kt_app_sidebar .menu-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.85rem;
+    height: 1.85rem;
+    margin-inline-end: 0.55rem !important;
+    border-radius: 0.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.72);
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+#kt_app_sidebar .menu-icon.menu-icon--sm {
+    width: 1.45rem;
+    height: 1.45rem;
+    border-radius: 0.4rem;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+#kt_app_sidebar .menu-icon i {
+    font-size: 1rem;
+    line-height: 1;
+}
+
+#kt_app_sidebar .menu-icon.menu-icon--sm i {
+    font-size: 0.9rem;
+}
+
+#kt_app_sidebar .menu-link:hover .menu-icon {
+    background: rgba(217, 168, 0, 0.16);
+    color: var(--imas-admin-gold);
+}
+
+#kt_app_sidebar .menu-link.active .menu-icon,
+#kt_app_sidebar .menu-item.show > .menu-link > .menu-icon:not(.menu-icon--sm) {
+    background: rgba(217, 168, 0, 0.2);
+    color: var(--imas-admin-gold);
+}
+
+#kt_app_sidebar .menu-link.active .menu-icon.menu-icon--sm,
+#kt_app_sidebar .menu-link:hover .menu-icon.menu-icon--sm {
+    background: transparent;
+    color: var(--imas-admin-gold);
+}
+
+#kt_app_sidebar .menu-title {
+    letter-spacing: 0.01em;
+}
+
+#kt_app_sidebar .menu-arrow {
+    transition: transform 0.15s ease;
+}
+
+#kt_app_sidebar .menu-item.show > .menu-link > .menu-arrow {
+    transform: rotate(90deg);
+}
+
+[dir="rtl"] #kt_app_sidebar .menu-item.show > .menu-link > .menu-arrow {
+    transform: rotate(-90deg);
+}
+
+#kt_app_sidebar .menu-sub .menu-link {
+    padding-inline-start: 0.65rem !important;
+}
+
+#kt_app_sidebar .menu-sub .menu-sub .menu-link {
+    padding-inline-start: 1rem !important;
+}
+
+/* Search filter states */
+body.imas-admin-sidebar-searching #kt_app_sidebar .imas-admin-search-hidden {
+    display: none !important;
+}
+
+body.imas-admin-sidebar-searching #kt_app_sidebar .imas-admin-search-match > .menu-link .menu-title,
+body.imas-admin-sidebar-searching #kt_app_sidebar .imas-admin-search-match > a.menu-link .menu-title {
+    color: #fff;
+}
+
+body.imas-admin-sidebar-searching #kt_app_sidebar .imas-admin-search-match > .menu-link,
+body.imas-admin-sidebar-searching #kt_app_sidebar .imas-admin-search-match > a.menu-link {
+    background: rgba(217, 168, 0, 0.1) !important;
+}
+
+/* Toggle button polish */
+#kt_app_sidebar_toggle {
+    border: 1px solid rgba(217, 168, 0, 0.25) !important;
+    background: var(--imas-admin-navy) !important;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+#kt_app_sidebar_toggle:hover {
+    border-color: var(--imas-admin-gold) !important;
+    box-shadow: 0 0 0 3px rgba(217, 168, 0, 0.18);
+}
+
+@media (max-width: 991.98px) {
+    .imas-admin-sidebar-search__kbd {
+        display: none;
+    }
+
+    .imas-admin-sidebar-search__input {
+        padding-inline-end: 2.5rem !important;
+    }
+
+    .imas-admin-sidebar-search__clear {
+        inset-inline-end: 0.55rem;
+    }
+}
+
+/* -------------------------------------------------------------------------
+   Media Library (WordPress-style browser)
+   ------------------------------------------------------------------------- */
+
+.imas-media-library .imas-ml-dropzone {
+    background: var(--imas-admin-surface);
+    transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.imas-media-library .imas-ml-dropzone.is-dragover {
+    border-color: var(--imas-admin-navy) !important;
+    background: rgba(26, 42, 74, 0.04);
+}
+
+.imas-media-library .imas-ml-folders {
+    max-height: 360px;
+    overflow: auto;
+}
+
+.imas-media-library .imas-ml-items--grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.85rem;
+    min-height: 280px;
+}
+
+.imas-media-library .imas-ml-grid__item {
+    position: relative;
+    border: 1px solid var(--imas-admin-border);
+    border-radius: 0.5rem;
+    background: #fff;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.imas-media-library .imas-ml-grid__item:hover {
+    border-color: rgba(26, 42, 74, 0.35);
+}
+
+.imas-media-library .imas-ml-grid__item.is-selected {
+    border-color: var(--imas-admin-navy);
+    box-shadow: 0 0 0 2px rgba(26, 42, 74, 0.18);
+}
+
+.imas-media-library .imas-ml-grid__thumb {
+    aspect-ratio: 1 / 1;
+    background: #f1f3f7;
+}
+
+.imas-media-library .imas-ml-grid__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.imas-media-library .imas-ml-grid__meta {
+    padding: 0.45rem 0.55rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--imas-admin-navy);
+}
+
+.imas-media-library .imas-ml-check {
+    position: absolute;
+    top: 0.4rem;
+    inset-inline-end: 0.4rem;
+    z-index: 2;
+    margin: 0;
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: 0.25rem;
+    padding: 0.1rem 0.15rem;
+    line-height: 1;
+}
+
+.imas-media-library .imas-ml-list__thumb {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 0.35rem;
+    border: 1px solid var(--imas-admin-border);
+}
+
+.imas-media-library .imas-ml-details__preview {
+    background: #f1f3f7;
+    border: 1px solid var(--imas-admin-border);
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.imas-media-library .imas-ml-details__preview img {
+    display: block;
+    width: 100%;
+    max-height: 220px;
+    object-fit: contain;
+    background: #fff;
+}
+
+#mediaLibraryModal .modal-dialog {
+    max-width: 1140px;
+}
+
+#mediaLibraryModal .modal-body {
+    max-height: calc(100vh - 120px);
+}
+
+#mediaLibraryModal .imas-ml-workspace .card-body {
+    max-height: 520px;
+    overflow: auto;
+}
+
+/* =========================================================================
+   Floating quick actions (FAB)
+   Opens only when hovering/focusing the + button (not empty space above).
+   ========================================================================= */
+
+.imas-admin-fab {
+    position: fixed;
+    inset-inline-end: 1.35rem;
+    bottom: 1.5rem;
+    z-index: 1050;
+    width: 3.4rem;
+    height: 3.4rem;
+}
+
+.imas-admin-fab__rail {
+    position: absolute;
+    inset-inline-end: 0;
+    bottom: calc(100% + 0.55rem);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.4rem;
+    min-width: 14.5rem;
+    max-width: min(18rem, calc(100vw - 2.5rem));
+    padding: 0.65rem;
+    border: 1px solid rgba(26, 42, 74, 0.1);
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 16px 40px rgba(16, 24, 40, 0.18);
+    backdrop-filter: blur(10px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(10px) scale(0.96);
+    transform-origin: bottom right;
+    transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s ease;
+}
+
+/* Bridge the small gap so moving from + to the menu does not close it */
+.imas-admin-fab__rail::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    top: 100%;
+    height: 0.7rem;
+}
+
+[dir="rtl"] .imas-admin-fab__rail {
+    transform-origin: bottom left;
+}
+
+.imas-admin-fab.is-open .imas-admin-fab__rail {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+}
+
+.imas-admin-fab__title {
+    padding: 0.25rem 0.55rem 0.45rem;
+    color: #7e8299;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.imas-admin-fab__item {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.55rem 0.65rem;
+    border-radius: 0.7rem;
+    color: #3f4254;
+    text-decoration: none;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+    opacity: 0;
+    transform: translateY(6px);
+}
+
+.imas-admin-fab.is-open .imas-admin-fab__item {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: calc(var(--imas-fab-i, 0) * 0.025s);
+}
+
+.imas-admin-fab__item:hover,
+.imas-admin-fab__item:focus-visible {
+    background: var(--imas-admin-surface);
+    color: var(--imas-admin-navy);
+    outline: none;
+}
+
+.imas-admin-fab__item-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.1rem;
+    height: 2.1rem;
+    flex-shrink: 0;
+    border-radius: 0.6rem;
+    font-size: 1rem;
+}
+
+.imas-admin-fab__item--navy .imas-admin-fab__item-icon {
+    background: rgba(26, 42, 74, 0.1);
+    color: var(--imas-admin-navy);
+}
+
+.imas-admin-fab__item--gold .imas-admin-fab__item-icon {
+    background: rgba(217, 168, 0, 0.14);
+    color: #b88900;
+}
+
+.imas-admin-fab__item-label {
+    font-size: 0.86rem;
+    font-weight: 600;
+    line-height: 1.25;
+}
+
+.imas-admin-fab__trigger {
+    position: relative;
+    width: 3.4rem;
+    height: 3.4rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 999px;
+    background: linear-gradient(145deg, var(--imas-admin-navy) 0%, #0f1b33 100%);
+    color: #fff;
+    box-shadow:
+        0 10px 24px rgba(26, 42, 74, 0.35),
+        0 0 0 4px rgba(217, 168, 0, 0.16);
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.imas-admin-fab__trigger:hover,
+.imas-admin-fab.is-open .imas-admin-fab__trigger {
+    transform: scale(1.05);
+    box-shadow:
+        0 14px 28px rgba(26, 42, 74, 0.4),
+        0 0 0 5px rgba(217, 168, 0, 0.22);
+}
+
+.imas-admin-fab__trigger:focus-visible {
+    outline: none;
+    box-shadow:
+        0 10px 24px rgba(26, 42, 74, 0.35),
+        0 0 0 4px rgba(217, 168, 0, 0.35);
+}
+
+.imas-admin-fab__trigger-plus,
+.imas-admin-fab__trigger-close {
+    position: absolute;
+    font-size: 1.35rem;
+    line-height: 1;
+    transition: opacity 0.15s ease, transform 0.18s ease;
+}
+
+.imas-admin-fab__trigger-close {
+    opacity: 0;
+    transform: rotate(90deg) scale(0.7);
+}
+
+.imas-admin-fab.is-open .imas-admin-fab__trigger-plus {
+    opacity: 0;
+    transform: rotate(90deg) scale(0.7);
+}
+
+.imas-admin-fab.is-open .imas-admin-fab__trigger-close {
+    opacity: 1;
+    transform: rotate(0) scale(1);
+}
+
+@media (max-width: 767.98px) {
+    .imas-admin-fab {
+        inset-inline-end: 1rem;
+        bottom: 1rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .imas-admin-fab__rail,
+    .imas-admin-fab__item,
+    .imas-admin-fab__trigger,
+    .imas-admin-fab__trigger-plus,
+    .imas-admin-fab__trigger-close {
+        transition: none !important;
+    }
+}
+
+
+

@@ -23,7 +23,7 @@
                     </h2>
                 </div>
             </div>
-            <div class="card-body pt-0">
+            <div class="card-body pt-3">
                 <x-admin.form-group label="Name" name="name" required translatable>
                     <input type="text" name="name" class="form-control form-control-solid"
                            value="{{ old('name') }}" placeholder="{{ __('e.g. 2+1') }}"/>

@@ -11,7 +11,7 @@
             :aria-label="article.title"
         />
         <div class="imas-blog-v2-card__thumb">
-            <img :src="article.image" :alt="article.title" loading="lazy" />
+            <img :src="article.image" :alt="article.image_alt || article.title" loading="lazy" />
         </div>
         <span
             v-if="categoryName"

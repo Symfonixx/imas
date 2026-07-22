@@ -27,7 +27,7 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         <x-admin.form-group label="Question" name="question" required translatable>
                             <input type="text"
                                    id="question"
@@ -58,7 +58,7 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         <x-admin.toggle-switch
                             name="publish"
                             label="Active"
@@ -81,7 +81,7 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         <x-admin.form-group label="Rank" name="rank" required>
                             <input type="number"
                                    min="0"
@@ -102,7 +102,7 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         <div class="form-check form-check-custom form-check-solid">
                             <input class="form-check-input"
                                    type="checkbox"

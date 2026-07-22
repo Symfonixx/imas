@@ -38,7 +38,8 @@
                         </div>
                         <img
                             :src="property.thumbnail_url"
-                            :alt="displayTitle"
+                            :alt="property.thumbnail_alt || displayTitle"
+                            :title="property.thumbnail_title || undefined"
                             class="img-responsive"
                         />
                     </div>
@@ -204,7 +205,9 @@ const showUrl = computed(() => {
     try {
         if (typeof route === "function" && route().has?.("property.show")) {
             const slug =
-                props.property.project_code || props.property.slug;
+                props.property.url_key ||
+                props.property.slug ||
+                props.property.project_code;
             if (slug) {
                 return route("property.show", slug);
             }
@@ -213,7 +216,10 @@ const showUrl = computed(() => {
         /* ignore */
     }
 
-    const slug = props.property.project_code || props.property.slug;
+    const slug =
+        props.property.url_key ||
+        props.property.slug ||
+        props.property.project_code;
     return slug ? `/property/${encodeURIComponent(slug)}` : "#";
 });
 

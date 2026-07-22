@@ -2,16 +2,12 @@
 
 namespace Modules\Base\Application\Settings;
 
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Modules\Base\Repositories\Settings\SettingsRepository;
 use Modules\Core\Contracts\Flash\FlashMessengerInterface;
-use Modules\Core\Traits\FileTrait;
 
 class SettingsApplicationService
 {
-    use FileTrait;
-
     public function __construct(
         private readonly SettingsRepository $settingsRepository,
         private readonly FlashMessengerInterface $flashMessenger
@@ -23,7 +19,7 @@ class SettingsApplicationService
     }
 
     /**
-     * @param  array<string, UploadedFile>  $images
+     * @param  array<string, mixed>  $images  Unused for content settings (library-only); kept for call-site compatibility.
      * @param  array<string, mixed>  $data
      * @param  array<string, string|null>  $mediaPaths
      * @param  array<string, mixed>  $removedImageKeys  Keys from admin image-input remove (value "1"); clears setting without deleting files.
@@ -36,11 +32,8 @@ class SettingsApplicationService
             }
         }
 
-        foreach ($images as $key => $file) {
-            $oldFile = $this->settingsRepository->get($key);
-            $path = $this->upload($file, 'settings', $key, $oldFile ?: null);
-            $this->settingsRepository->set($key, $path);
-        }
+        // Content settings images are library-only; ignore any uploaded files.
+        unset($images);
 
         foreach ($mediaPaths as $key => $path) {
             if (is_string($path)) {

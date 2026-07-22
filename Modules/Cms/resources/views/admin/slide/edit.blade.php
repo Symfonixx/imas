@@ -27,10 +27,10 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         <x-admin.form-group label="Image" name="img"
                                             helper="Recommended wide banner ratio for hero slides.">
-                            <x-admin.image-input name="img" :preview="$slide->image_link"/>
+                            <x-admin.image-input name="img" :preview="$slide->image_link" :mediaPath="$slide->image"/>
                         </x-admin.form-group>
 
                         <x-admin.form-group label="Main Title" name="main_title" translatable>
@@ -72,7 +72,7 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         <x-admin.toggle-switch
                             name="publish"
                             label="Active"
@@ -95,7 +95,7 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         <x-admin.form-group label="Rank" name="rank" required>
                             <input type="number"
                                    min="0"
@@ -116,7 +116,7 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         <div class="form-check form-check-custom form-check-solid">
                             <input class="form-check-input"
                                    type="checkbox"

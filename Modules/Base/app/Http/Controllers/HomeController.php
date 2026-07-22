@@ -156,12 +156,14 @@ class HomeController extends Controller
             ->get()
             ->map(static function (Blog $blog) {
                 $description = (string) ($blog->description ?? '');
+                $media = app(\Modules\Base\Support\Media\MediaAssetResolver::class)->resolve($blog->image);
 
                 return [
                     'id' => $blog->id,
                     'title' => (string) ($blog->title ?? ''),
                     'excerpt' => Str::limit(strip_tags($description), 150),
-                    'image' => $blog->image_link,
+                    'image' => $media['url'] ?? $blog->image_link,
+                    'image_alt' => $media['alt_text'] ?: (string) ($blog->title ?? ''),
                     'slug' => $blog->slug,
                     'url' => LaravelLocalization::localizeUrl('/blog/'.$blog->slug),
                     'visits' => (int) $blog->visits,

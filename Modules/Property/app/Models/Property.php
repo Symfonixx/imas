@@ -38,13 +38,13 @@ class Property extends Model
         'project_name',
         'overview',
         'why_to_buy',
-        'facilities',
         'content',
     ];
 
     protected $fillable = [
         'thumbnail',
         'project_code',
+        'url_key',
         'title',
         'project_name',
         'overview',
@@ -57,7 +57,6 @@ class Property extends Model
         'is_recommended',
         'is_citizenship_eligible',
         'why_to_buy',
-        'facilities',
         'content',
         'youtube_video_url',
         'lat',
@@ -93,9 +92,34 @@ class Property extends Model
         return $this->belongsTo(PropertyType::class, 'property_type_id');
     }
 
-    public function slides(): HasMany
+    public function attributeGroups(): BelongsToMany
     {
-        return $this->hasMany(PropertySlide::class, 'property_id')->orderBy('position');
+        return $this->belongsToMany(
+            PropertyAttributeGroup::class,
+            'property_attribute_group',
+            'property_id',
+            'attribute_group_id'
+        )->withPivot('position')
+            ->withTimestamps()
+            ->orderByPivot('position')
+            ->orderBy('property_attribute_groups.id');
+    }
+
+    public function slideCategories(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            SlideCategory::class,
+            'property_slide_category',
+            'property_id',
+            'slide_category_id'
+        )->withTimestamps()->orderBy('slide_categories.position')->orderBy('slide_categories.id');
+    }
+
+    public function slideMedia(): HasMany
+    {
+        return $this->hasMany(PropertySlideMedia::class, 'property_id')
+            ->orderBy('position')
+            ->orderBy('id');
     }
 
     public function unitTypes(): HasMany
@@ -106,6 +130,29 @@ class Property extends Model
     public function favorites(): HasMany
     {
         return $this->hasMany(UserFavoriteProperty::class, 'property_id');
+    }
+
+    public function attributeValues(): HasMany
+    {
+        return $this->hasMany(PropertyAttributeValue::class, 'property_id')->ordered();
+    }
+
+    public function attributes(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            PropertyAttribute::class,
+            'property_attribute_values',
+            'property_id',
+            'attribute_id'
+        )->withPivot([
+            'text_value',
+            'decimal_value',
+            'boolean_value',
+            'integer_value',
+            'date_value',
+            'datetime_value',
+            'json_value',
+        ])->withTimestamps();
     }
 
     public function similarProperties(): BelongsToMany
@@ -134,10 +181,10 @@ class Property extends Model
     }
 
     /**
-     * Front-office show URLs use the unique project code (admin “URL slug”).
+     * Front-office show URLs use the unique URL key.
      */
     public function getRouteKeyName(): string
     {
-        return 'project_code';
+        return 'url_key';
     }
 }

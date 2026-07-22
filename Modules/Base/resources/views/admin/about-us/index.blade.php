@@ -77,11 +77,12 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         <x-admin.form-group label="About Us Banner" helper="Recommended dimensions: 1920px × 600px.">
                             <x-admin.image-input
                                 name="imgs[about_us_banner]"
                                 :preview="asset('storage/' . $settings->get('about_us_banner', 'default.jpg'))"
+                                :mediaPath="$settings->get('about_us_banner')"
                                 mediaInputName="imgs_media[about_us_banner]"/>
                         </x-admin.form-group>
                     </div>
@@ -96,7 +97,7 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         <x-admin.form-group label="Content" name="data.about_us_content" required translatable>
                             <textarea name="data[about_us_content]"
                                       id="tinymce"
@@ -124,7 +125,7 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         <div class="mb-7">
                             <label class="form-label fw-semibold fs-6">
                                 {{ __('Search engine listing preview') }}
@@ -206,7 +207,7 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         <div class="form-check form-check-custom form-check-solid">
                             <input class="form-check-input"
                                    type="checkbox"

@@ -86,7 +86,7 @@ class TestimonialController extends Controller
                 : null,
             'quote' => (string) $request->input('quote'),
             'link' => $request->filled('link') ? (string) $request->input('link') : null,
-            'avatar' => AdminImageInput::resolveFileOrMediaPath($request, 'img', 'img_media_path'),
+            'avatar' => AdminImageInput::resolveMediaPathOnly($request, 'img', 'img_media_path'),
             'rank' => (int) $request->input('rank', 0),
             'status' => $request->has('publish') ? CmsStatus::PUBLISHED : CmsStatus::ARCHIVED,
         ];

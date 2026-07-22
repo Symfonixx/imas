@@ -113,6 +113,7 @@ const props = defineProps({
     propertyId: { type: [Number, String], required: true },
     slides: { type: Array, default: () => [] },
     thumbnailUrl: { type: String, default: "" },
+    thumbnailAlt: { type: String, default: "" },
     alt: { type: String, default: "" },
     title: { type: String, default: "Gallery" },
 });
@@ -150,13 +151,14 @@ const images = computed(() => {
     const thumb = props.thumbnailUrl?.trim() ?? "";
     const isPlaceholderThumb =
         thumb === "" || thumb.includes("/images/blank.png");
+    const fallbackAlt = props.thumbnailAlt || props.alt || "";
 
     if (thumb && !isPlaceholderThumb) {
         seen.add(thumb);
         rows.push({
             key: "thumbnail",
             url: thumb,
-            alt: props.alt,
+            alt: fallbackAlt,
         });
     }
 
@@ -169,7 +171,8 @@ const images = computed(() => {
         rows.push({
             key: `slide-${slide.id ?? rows.length}`,
             url,
-            alt: props.alt,
+            alt: slide?.alt || fallbackAlt,
+            title: slide?.title || "",
         });
     }
 

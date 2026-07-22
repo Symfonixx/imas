@@ -24,6 +24,7 @@ class PropertyFactory extends Factory
         return [
             'thumbnail' => 'properties/factory/placeholder-'.fake()->numberBetween(1, 5).'.jpg',
             'project_code' => 'TRK-FAK-'.fake()->unique()->numerify('######'),
+            'url_key' => 'property-'.fake()->unique()->numerify('######'),
             'title' => [
                 'en' => fake()->sentence(rand(3, 6)),
                 'ar' => fake('ar_SA')->sentence(rand(3, 6)),
@@ -52,11 +53,6 @@ class PropertyFactory extends Factory
                 'en' => '<p>'.fake()->paragraph().'</p>',
                 'ar' => '<p>'.fake('ar_SA')->paragraph().'</p>',
                 'tr' => '<p>'.fake()->paragraph().'</p>',
-            ],
-            'facilities' => [
-                'en' => '<ul><li>'.implode('</li><li>', fake()->words(5)).'</li></ul>',
-                'ar' => '<ul><li>'.implode('</li><li>', fake('ar_SA')->words(5)).'</li></ul>',
-                'tr' => '<ul><li>'.implode('</li><li>', fake()->words(5)).'</li></ul>',
             ],
             'content' => [
                 'en' => '<p>'.implode('</p><p>', fake()->paragraphs(3, false)).'</p>',

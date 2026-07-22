@@ -5,18 +5,32 @@
     'accept' => '.png, .jpg, .jpeg, .webp',
     'size' => '125px',
     'mediaInputName' => null,
+    'libraryOnly' => true,
+    'mediaPath' => null,
 ])
 
 @php
     $defaultPreview = asset('images/default.jpg');
     $previewUrl = $preview ?: $defaultPreview;
     $mediaField = $mediaInputName ?: $name . '_media_path';
-    $previewId = 'media-preview-' . md5($name . $size . ($preview ?? ''));
+    $previewId = 'media-preview-' . md5($name . $size . ($preview ?? '') . ($mediaPath ?? ''));
     if (preg_match('/^([^\[]+)\[([^\]]+)\]$/', $name, $m)) {
         $removeFieldName = $m[1] . '_remove[' . $m[2] . ']';
     } else {
         $removeFieldName = $name . '_remove';
     }
+    if (preg_match('/^([^\[]+)\[([^\]]+)\]$/', $mediaField, $mm)) {
+        $currentMediaPath = old($mm[1] . '.' . $mm[2], $mediaPath ?? '');
+    } else {
+        $currentMediaPath = old($mediaField, $mediaPath ?? '');
+    }
+    if (! is_string($currentMediaPath) || strcasecmp(trim($currentMediaPath), 'null') === 0) {
+        $currentMediaPath = '';
+    } else {
+        $currentMediaPath = trim($currentMediaPath);
+    }
+    $hasExistingPreview = filled($preview) || filled($currentMediaPath);
+    $pathRequired = $required && $libraryOnly && ! $hasExistingPreview;
 @endphp
 
 @once
@@ -78,24 +92,43 @@
 <div class="admin-image-input"
      data-admin-image-input="1"
      data-remove-field="{{ $removeFieldName }}"
-     data-media-field="{{ $mediaField }}">
+     data-media-field="{{ $mediaField }}"
+     data-library-only="{{ $libraryOnly ? '1' : '0' }}">
     <div class="image-input image-input-outline" data-kt-image-input="true"
          style="background-image: url('{{ $defaultPreview }}')">
         <div class="image-input-wrapper bgi-position-center"
              id="{{ $previewId }}"
-             style="width: {{ $size }}; height: {{ $size }}; background-size: cover; background-image: url('{{ $previewUrl }}')"></div>
+             @if($libraryOnly)
+                 role="button"
+                 tabindex="0"
+                 data-media-picker-target="[name='{{ $mediaField }}']"
+                 data-media-preview-target="#{{ $previewId }}"
+                 title="{{ __('Choose from library') }}"
+             @endif
+             style="width: {{ $size }}; height: {{ $size }}; background-size: cover; background-image: url('{{ $previewUrl }}');@if($libraryOnly) cursor: pointer;@endif"></div>
 
-        <label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-white shadow"
-               data-kt-image-input-action="change" data-bs-toggle="tooltip" title="{{ __('Change') }}">
-            <i class="bi bi-pencil-fill fs-7"></i>
-            <input type="file" name="{{ $name }}" accept="{{ $accept }}" @if($required) required @endif/>
-            <input type="hidden" name="{{ $removeFieldName }}" value=""/>
-        </label>
+        @if($libraryOnly)
+            <button type="button"
+                    class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-white shadow"
+                    data-media-picker-target="[name='{{ $mediaField }}']"
+                    data-media-preview-target="#{{ $previewId }}"
+                    data-bs-toggle="tooltip"
+                    title="{{ __('Change') }}">
+                <i class="bi bi-pencil-fill fs-7"></i>
+            </button>
+        @else
+            <label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-white shadow"
+                   data-kt-image-input-action="change" data-bs-toggle="tooltip" title="{{ __('Change') }}">
+                <i class="bi bi-pencil-fill fs-7"></i>
+                <input type="file" name="{{ $name }}" accept="{{ $accept }}" @if($required) required @endif/>
+                <input type="hidden" name="{{ $removeFieldName }}" value=""/>
+            </label>
 
-        <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-white shadow"
-              data-kt-image-input-action="cancel" data-bs-toggle="tooltip" title="{{ __('Cancel') }}">
-            <i class="bi bi-x fs-2"></i>
-        </span>
+            <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-white shadow"
+                  data-kt-image-input-action="cancel" data-bs-toggle="tooltip" title="{{ __('Cancel') }}">
+                <i class="bi bi-x fs-2"></i>
+            </span>
+        @endif
 
         <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-white shadow"
               data-kt-image-input-action="remove" data-bs-toggle="tooltip" title="{{ __('Remove') }}">
@@ -110,5 +143,11 @@
             <i class="bi bi-images me-1"></i>{{ __('Choose from library') }}
         </button>
     </div>
-    <input type="hidden" name="{{ $mediaField }}" value="">
+    @if($libraryOnly)
+        <input type="hidden" name="{{ $removeFieldName }}" value=""/>
+    @endif
+    <input type="hidden"
+           name="{{ $mediaField }}"
+           value="{{ $currentMediaPath }}"
+           @if($pathRequired) required @endif>
 </div>

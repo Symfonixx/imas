@@ -27,7 +27,7 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         <x-admin.form-group label="Name" name="name" required translatable>
                             <input type="text"
                                    id="name"
@@ -50,7 +50,7 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         <x-admin.form-group label="Parent" name="parent_id">
                             <select name="parent_id" class="form-select form-select-solid" data-control="select2"
                                     data-placeholder="{{ __('None (root)') }}">
@@ -85,7 +85,7 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         <div class="form-check form-check-custom form-check-solid">
                             <input class="form-check-input"
                                    type="checkbox"

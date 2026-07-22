@@ -13,21 +13,30 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use Modules\Base\Support\Media\LibraryImageRule;
 use Modules\Core\Http\Requests\DeleteMultiRequest;
 use Modules\Core\Support\AdminImageInput;
+use Modules\Property\Application\PropertyAttributeValue\PropertyAttributeFormSchemaService;
+use Modules\Property\Application\PropertyAttributeValue\PropertyAttributeValueSyncService;
+use Modules\Property\Application\SlideCategory\PropertySlideMediaSyncService;
 use Modules\Property\Enums\LocationType;
 use Modules\Property\Models\Location;
 use Modules\Property\Models\ProjectUnitType;
 use Modules\Property\Models\Property;
+use Modules\Property\Models\PropertySlideMedia;
 use Modules\Property\Models\PropertyType;
+use Modules\Property\Models\SlideCategory;
 use Modules\Property\Support\PropertyMetricsFromUnitTypes;
 use Modules\User\Enums\CmsStatus;
 use Throwable;
 
 class PropertyController extends Controller
 {
-    public function __construct()
-    {
+    public function __construct(
+        private readonly PropertyAttributeFormSchemaService $attributeFormSchema,
+        private readonly PropertyAttributeValueSyncService $attributeValueSync,
+        private readonly PropertySlideMediaSyncService $slideMediaSync,
+    ) {
         $this->setActive('properties');
         $this->setActive('property_items');
     }
@@ -46,28 +55,47 @@ class PropertyController extends Controller
     public function create()
     {
         $this->setActive('projects');
+
         return view('property::admin.property.create', $this->formShared());
     }
 
     public function store(Request $request): RedirectResponse
     {
         $validated = $this->filterEmptyUnitTypes($this->validatePayload($request));
+        $groupIds = array_map('intval', $validated['attribute_group_ids'] ?? []);
+        $this->attributeValueSync->validate($request, new Property, true, $groupIds);
+        $attributeMediaChanges = null;
+        $slideMediaChanges = null;
 
         DB::beginTransaction();
 
         try {
+            $payload = $this->buildPropertyPayload($request, $validated);
             $property = Property::query()->create(array_merge(
-                $this->buildPropertyPayload($request, $validated),
+                $payload,
                 $this->metricsFromUnitTypeRows($validated['unit_types'] ?? [])
             ));
-            $this->syncSlides($property, $request);
+            $this->syncAttributeGroups($property, $groupIds);
+            $this->syncSlideCategories($property, $validated['slide_category_ids'] ?? []);
+            $slideMediaChanges = $this->slideMediaSync->synchronize(
+                $request,
+                $property,
+                $validated['slide_category_ids'] ?? []
+            );
             if (array_key_exists('unit_types', $validated)) {
                 $this->syncUnitTypes($property, $validated['unit_types']);
             }
+            $attributeMediaChanges = $this->attributeValueSync->synchronize($request, $property, true, $groupIds);
             $this->syncSimilarProperties($property, $validated['similar_property_ids'] ?? []);
             DB::commit();
+            $attributeMediaChanges->finalize();
+            $slideMediaChanges->finalize();
         } catch (Throwable $e) {
-            DB::rollBack();
+            if (DB::transactionLevel() > 0) {
+                DB::rollBack();
+            }
+            $attributeMediaChanges?->rollback();
+            $slideMediaChanges?->rollback();
 
             throw $e;
         }
@@ -78,23 +106,28 @@ class PropertyController extends Controller
     public function edit(Property $property)
     {
         $this->setActive('projects');
-        $property->load(['slides', 'unitTypes', 'similarProperties', 'location.parent.parent']);
+        $property->load(['slideCategories', 'slideMedia', 'unitTypes', 'similarProperties', 'location.parent.parent', 'attributeGroups']);
 
-        return view('property::admin.property.edit', array_merge(
-            $this->formShared(),
-            [
-                'property' => $property,
-            ]
-        ));
+        return view('property::admin.property.edit', $this->formShared($property));
     }
 
     public function update(Request $request, Property $property): RedirectResponse
     {
-
         $validated = $this->filterEmptyUnitTypes($this->validatePayload($request, $property));
+        $groupIds = $request->boolean('attribute_group_ids_present') || array_key_exists('attribute_group_ids', $validated)
+            ? array_map('intval', $validated['attribute_group_ids'] ?? [])
+            : $property->attributeGroups()->pluck('property_attribute_groups.id')->map(fn ($id) => (int) $id)->all();
+        $this->attributeValueSync->validate($request, $property, false, $groupIds);
+        $attributeMediaChanges = null;
+        $slideMediaChanges = null;
+        $oldThumbnailPath = $property->thumbnail;
+        $finalThumbnailPath = $oldThumbnailPath;
 
-        DB::transaction(function () use ($request, $validated, $property): void {
+        DB::beginTransaction();
+
+        try {
             $payload = $this->buildPropertyPayload($request, $validated, $property);
+            $finalThumbnailPath = $payload['thumbnail'];
 
             if ($request->filled('unit_types_sync_empty')) {
                 $payload = array_merge($payload, $this->metricsFromUnitTypeRows([]));
@@ -103,7 +136,13 @@ class PropertyController extends Controller
             }
 
             $property->update($payload);
-            $this->syncSlides($property, $request);
+            $this->syncAttributeGroups($property, $groupIds);
+            $this->syncSlideCategories($property, $validated['slide_category_ids'] ?? []);
+            $slideMediaChanges = $this->slideMediaSync->synchronize(
+                $request,
+                $property,
+                $validated['slide_category_ids'] ?? []
+            );
 
             if ($request->filled('unit_types_sync_empty')) {
                 $this->syncUnitTypes($property, []);
@@ -111,8 +150,26 @@ class PropertyController extends Controller
                 $this->syncUnitTypes($property, $validated['unit_types']);
             }
 
+            $attributeMediaChanges = $this->attributeValueSync->synchronize($request, $property, false, $groupIds);
             $this->syncSimilarProperties($property, $validated['similar_property_ids'] ?? []);
-        });
+            DB::commit();
+            $attributeMediaChanges->finalize();
+            $slideMediaChanges->finalize();
+            if (is_string($oldThumbnailPath)
+                && $oldThumbnailPath !== $finalThumbnailPath
+                && ! Str::startsWith(ltrim($oldThumbnailPath, '/'), 'media-library/')
+            ) {
+                Storage::disk('public')->delete($oldThumbnailPath);
+            }
+        } catch (Throwable $e) {
+            if (DB::transactionLevel() > 0) {
+                DB::rollBack();
+            }
+            $attributeMediaChanges?->rollback();
+            $slideMediaChanges?->rollback();
+
+            throw $e;
+        }
 
         return redirect()->route('admin.properties.index');
     }
@@ -120,22 +177,33 @@ class PropertyController extends Controller
     public function deleteMulti(DeleteMultiRequest $request): RedirectResponse
     {
         $ids = array_map('intval', (array) $request->input('ids', []));
-
-        Property::query()
+        $properties = Property::query()
+            ->with('slideMedia:id,property_id,path')
             ->whereIn('id', $ids)
-            ->with('slides')
-            ->get()
-            ->each(function (Property $property): void {
-                if (! empty($property->thumbnail)) {
-                    Storage::disk('public')->delete($property->thumbnail);
-                }
+            ->get();
 
-                foreach ($property->slides as $slide) {
-                    Storage::disk('public')->delete($slide->image);
-                }
-            });
+        DB::transaction(fn () => Property::query()->whereIn('id', $ids)->delete());
 
-        Property::query()->whereIn('id', $ids)->delete();
+        $properties->each(function (Property $property): void {
+            $paths = array_filter([
+                $property->thumbnail,
+            ], fn (mixed $path): bool => is_string($path)
+                && $path !== ''
+                && ! Str::startsWith(ltrim($path, '/'), 'media-library/'));
+
+            Storage::disk('public')->delete($paths);
+
+            foreach ($property->slideMedia->pluck('path')->filter()->unique() as $slidePath) {
+                if (PropertySlideMedia::isOwnedStoragePath($slidePath)
+                    && ! PropertySlideMedia::query()->where('path', $slidePath)->exists()
+                ) {
+                    Storage::disk('public')->delete($slidePath);
+                }
+            }
+
+            Storage::disk('public')->deleteDirectory("properties/attributes/{$property->id}");
+            Storage::disk('public')->deleteDirectory("properties/slides/{$property->id}");
+        });
 
         return back();
     }
@@ -160,10 +228,43 @@ class PropertyController extends Controller
         ]);
     }
 
+    public function attributeGroupSchema(Request $request): JsonResponse
+    {
+        $groupIds = collect($request->query('group_ids', []))
+            ->when(
+                $request->filled('group_id'),
+                fn ($ids) => $ids->push($request->integer('group_id'))
+            )
+            ->map(fn ($id) => (int) $id)
+            ->filter(fn (int $id) => $id > 0)
+            ->unique()
+            ->values()
+            ->all();
+        $propertyId = $request->integer('property_id') ?: null;
+        $property = $propertyId
+            ? Property::query()->find($propertyId)
+            : null;
+
+        $groups = $this->attributeFormSchema->forGroups($groupIds, $property);
+
+        $html = view('property::admin.property.partials._attributes', [
+            'attributeGroups' => $groups,
+            'isEdit' => $property !== null,
+        ])->render();
+
+        return response()->json([
+            'html' => $html,
+            'groups' => $groups->map(fn (array $group): array => [
+                'id' => $group['id'],
+                'name' => $this->translatedName($group['name']),
+            ])->values()->all(),
+        ]);
+    }
+
     /**
      * @return array<string, mixed>
      */
-    private function formShared(): array
+    private function formShared(?Property $property = null): array
     {
         $cities = Location::query()
             ->where('type', LocationType::City->value)
@@ -195,6 +296,17 @@ class PropertyController extends Controller
             ])
             ->values();
 
+        $slideCategories = SlideCategory::query()
+            ->orderBy('position')
+            ->orderBy('id')
+            ->get(['id', 'name', 'status'])
+            ->map(fn (SlideCategory $slideCategory): array => [
+                'id' => $slideCategory->id,
+                'name' => $this->translatedName($slideCategory->name),
+                'status' => $slideCategory->status?->value ?? (string) $slideCategory->status,
+            ])
+            ->values();
+
         $propertiesForSimilar = Property::query()
             ->orderByDesc('updated_at')
             ->get(['id', 'project_code', 'title', 'project_name'])
@@ -204,13 +316,62 @@ class PropertyController extends Controller
             ])
             ->values();
 
+        $attributeGroupOptions = collect($this->attributeFormSchema->activeGroupOptions())
+            ->map(fn (array $group): array => [
+                'id' => $group['id'],
+                'name' => $this->translatedName($group['name']),
+            ])
+            ->values();
+
         return [
-            'property' => null,
+            'property' => $property,
+            'attributeGroups' => $this->attributeFormSchema->forProperty($property),
+            'attributeGroupOptions' => $attributeGroupOptions,
+            ...$this->formLocationSelection($property),
             'propertyTypes' => $propertyTypes,
             'cities' => $cities,
             'projectUnitTypesCatalog' => $projectUnitTypesCatalog,
+            'slideCategories' => $slideCategories,
             'propertiesForSimilar' => $propertiesForSimilar,
             'statuses' => CmsStatus::cases(),
+        ];
+    }
+
+    /**
+     * @return array{prefillCityId: ?int, prefillDistrictId: mixed, selectedAreaIdValue: mixed}
+     */
+    private function formLocationSelection(?Property $property): array
+    {
+        $cityId = null;
+        $districtId = old('district_id');
+        $areaId = old('area_id');
+        $location = null;
+
+        if ($districtId === null && $areaId === null && $property?->location_id) {
+            $location = $property->relationLoaded('location')
+                ? $property->location
+                : Location::query()->with(['parent.parent'])->find((int) $property->location_id);
+        } elseif ($districtId !== null || $areaId !== null) {
+            $location = Location::query()
+                ->with(['parent:id,parent_id,type', 'parent.parent:id,parent_id,type'])
+                ->find((int) ($areaId ?: $districtId));
+        }
+
+        if ($location?->type === LocationType::Area && $location->parent) {
+            $areaId ??= $location->id;
+            $districtId ??= $location->parent_id;
+            $cityId = $location->parent->type === LocationType::Municipality
+                ? $location->parent->parent_id
+                : ($location->parent->type === LocationType::City ? $location->parent->id : null);
+        } elseif ($location?->type === LocationType::Municipality) {
+            $districtId ??= $location->id;
+            $cityId = $location->parent_id;
+        }
+
+        return [
+            'prefillCityId' => $cityId === null ? null : (int) $cityId,
+            'prefillDistrictId' => $districtId,
+            'selectedAreaIdValue' => $areaId,
         ];
     }
 
@@ -220,8 +381,10 @@ class PropertyController extends Controller
     private function validatePayload(Request $request, ?Property $property = null): array
     {
         $uniqueProjectCode = Rule::unique('properties', 'project_code');
+        $uniqueUrlKey = Rule::unique('properties', 'url_key');
         if ($property !== null) {
             $uniqueProjectCode->ignore($property->id);
+            $uniqueUrlKey->ignore($property->id);
         }
 
         $unitTypeIdRules = ['nullable', 'integer'];
@@ -229,33 +392,62 @@ class PropertyController extends Controller
             $unitTypeIdRules[] = Rule::exists('unit_types', 'id')->where('property_id', $property->id);
         }
 
+        $slideMediaIdRules = ['integer', 'distinct'];
+        $slideMediaIdRules[] = $property === null
+            ? Rule::exists('property_slide_media', 'id')
+            : Rule::exists('property_slide_media', 'id')->where('property_id', $property->id);
+
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
-            'project_name' => ['nullable', 'string', 'max:255'],
+            'project_name' => ['required', 'string', 'max:255'],
             'project_code' => ['required', 'string', 'max:128', $uniqueProjectCode],
-            'overview' => ['required', 'string'],
-            'thumbnail' => [$property === null ? 'required' : 'nullable', 'image', 'max:4096'],
-            'thumbnail_media_path' => ['nullable', 'string'],
-            'district_id' => ['required', 'integer', Rule::exists('locations', 'id')->where('type', LocationType::Municipality->value)],
+            'url_key' => [
+                'required',
+                'string',
+                'max:191',
+                'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/',
+                $uniqueUrlKey,
+            ],
+            'overview' => ['nullable', 'string'],
+            'thumbnail' => ['prohibited'],
+            'thumbnail_media_path' => ['nullable', new LibraryImageRule],
+            'meta_img' => ['prohibited'],
+            'meta_img_media_path' => ['nullable', new LibraryImageRule],
+            'district_id' => ['nullable', 'integer', Rule::exists('locations', 'id')->where('type', LocationType::Municipality->value)],
             'area_id' => ['nullable', 'integer', Rule::exists('locations', 'id')->where('type', LocationType::Area->value)],
             'property_type_id' => ['required', 'integer', 'exists:property_types,id'],
+            'attribute_group_ids' => ['nullable', 'array', 'max:50'],
+            'attribute_group_ids.*' => ['integer', 'distinct', 'exists:property_attribute_groups,id'],
+            'attribute_group_ids_present' => ['nullable', 'boolean'],
             'is_sold_out' => ['nullable', 'boolean'],
             'is_recommended' => ['nullable', 'boolean'],
             'is_citizenship_eligible' => ['nullable', 'boolean'],
             'is_featured' => ['nullable', 'boolean'],
-            'why_to_buy' => ['required', 'string'],
-            'facilities' => ['nullable', 'string'],
-            'content' => ['required', 'string'],
+            'why_to_buy' => ['nullable', 'string'],
+            'content' => ['nullable', 'string'],
             'youtube_video_url' => ['nullable', 'url', 'max:255'],
             'lat' => ['nullable', 'numeric', 'between:-90,90'],
             'lng' => ['nullable', 'numeric', 'between:-180,180'],
-            'status' => ['required', Rule::in(array_map(static fn (CmsStatus $status) => $status->value, CmsStatus::cases()))],
+            'status' => ['nullable', Rule::in(array_map(static fn (CmsStatus $status) => $status->value, CmsStatus::cases()))],
             'meta_title' => ['nullable', 'string', 'max:70'],
             'meta_description' => ['nullable', 'string', 'max:255'],
             'meta_keywords' => ['nullable'],
             'meta_schema' => ['nullable', 'string'],
-            'slides' => ['nullable', 'array', 'max:20'],
-            'slides.*' => ['image', 'max:4096'],
+            'slide_category_ids' => ['nullable', 'array', 'max:20'],
+            'slide_category_ids.*' => ['integer', 'distinct', 'exists:slide_categories,id'],
+            'slide_category_ids_present' => ['nullable', 'boolean'],
+            'slide_media' => ['nullable', 'array'],
+            'slide_media.*.images' => ['prohibited'],
+            'slide_media.*.images_media_paths' => ['nullable', 'array', 'max:20'],
+            'slide_media.*.images_media_paths.*' => ['string', new LibraryImageRule],
+            'slide_media.*.videos' => ['nullable', 'array', 'max:10'],
+            'slide_media.*.videos.*' => [
+                'file',
+                'mimetypes:video/mp4,video/webm,video/quicktime',
+                'max:102400',
+            ],
+            'remove_slide_media_ids' => ['nullable', 'array'],
+            'remove_slide_media_ids.*' => $slideMediaIdRules,
             'unit_types' => ['nullable', 'array', 'max:100'],
             'unit_types.*.id' => $unitTypeIdRules,
             'unit_types.*.catalog_id' => [
@@ -272,6 +464,12 @@ class PropertyController extends Controller
         ]);
 
         if (! empty($validated['area_id'])) {
+            if (empty($validated['district_id'])) {
+                throw ValidationException::withMessages([
+                    'district_id' => __('The municipality field is required when area is selected.'),
+                ]);
+            }
+
             $area = Location::query()->find((int) $validated['area_id']);
             if ($area === null || (int) $area->parent_id !== (int) $validated['district_id']) {
                 throw ValidationException::withMessages([
@@ -281,6 +479,7 @@ class PropertyController extends Controller
         }
 
         $validated['location_id'] = $this->resolveLocationId($validated);
+        $validated['status'] = $validated['status'] ?? CmsStatus::PUBLISHED->value;
 
         if ($property !== null && ! empty($validated['similar_property_ids'])) {
             $validated['similar_property_ids'] = array_values(array_filter(
@@ -295,13 +494,17 @@ class PropertyController extends Controller
     /**
      * @param  array<string, mixed>  $validated
      */
-    private function resolveLocationId(array $validated): int
+    private function resolveLocationId(array $validated): ?int
     {
         if (! empty($validated['area_id'])) {
             return (int) $validated['area_id'];
         }
 
-        return (int) $validated['district_id'];
+        if (! empty($validated['district_id'])) {
+            return (int) $validated['district_id'];
+        }
+
+        return null;
     }
 
     /**
@@ -343,67 +546,70 @@ class PropertyController extends Controller
     {
         $autoTranslate = $property === null;
 
-        $thumbnailPath = $property?->thumbnail;
-        if (AdminImageInput::isRemoved($request, 'thumbnail')) {
+        $thumbnailResolved = AdminImageInput::resolveMediaPathOnly($request, 'thumbnail', 'thumbnail_media_path');
+        if ($thumbnailResolved === AdminImageInput::REMOVED) {
             $thumbnailPath = null;
-        } elseif ($request->hasFile('thumbnail')) {
-            if ($thumbnailPath) {
-                Storage::disk('public')->delete($thumbnailPath);
-            }
-            $thumbnailPath = $request->file('thumbnail')->store('properties/thumbnails', 'public');
-        } elseif ($request->filled('thumbnail_media_path')) {
-            $path = trim((string) $request->input('thumbnail_media_path'));
-            $thumbnailPath = strcasecmp($path, 'null') === 0 ? null : $path;
+        } elseif (is_string($thumbnailResolved)) {
+            $thumbnailPath = $thumbnailResolved;
+        } else {
+            $thumbnailPath = $property?->thumbnail;
+        }
+
+        $existingMeta = is_array($property?->metadata) ? $property->metadata : [];
+        $metaImgResolved = AdminImageInput::resolveMediaPathOnly($request, 'meta_img', 'meta_img_media_path');
+        if ($metaImgResolved === AdminImageInput::REMOVED) {
+            $metaImg = null;
+        } elseif (is_string($metaImgResolved)) {
+            $metaImg = $metaImgResolved;
+        } else {
+            $metaImg = $existingMeta['meta_img'] ?? null;
         }
 
         return [
             'thumbnail' => $thumbnailPath,
             'project_code' => $validated['project_code'],
+            'url_key' => $validated['url_key'],
             'title' => $this->buildTranslatedValue(
                 $validated['title'],
                 $property?->getTranslations('title') ?? [],
                 $autoTranslate
             ),
             'project_name' => $this->buildTranslatedValue(
-                $validated['project_name'] ?? $validated['title'],
+                $validated['project_name'],
                 $property?->getTranslations('project_name') ?? [],
                 $autoTranslate
             ),
             'overview' => $this->buildTranslatedValue(
-                $validated['overview'],
+                $validated['overview'] ?? null,
                 $property?->getTranslations('overview') ?? [],
                 $autoTranslate
             ),
-            'location_id' => (int) $validated['location_id'],
+            'location_id' => $validated['location_id'] ?? null,
             'property_type_id' => (int) $validated['property_type_id'],
             'is_sold_out' => $request->boolean('is_sold_out'),
             'is_recommended' => $request->boolean('is_recommended'),
             'is_citizenship_eligible' => $request->boolean('is_citizenship_eligible'),
             'is_featured' => $request->boolean('is_featured'),
             'why_to_buy' => $this->buildTranslatedValue(
-                $validated['why_to_buy'],
+                $validated['why_to_buy'] ?? null,
                 $property?->getTranslations('why_to_buy') ?? [],
                 $autoTranslate
             ),
-            'facilities' => $this->buildTranslatedValue(
-                $validated['facilities'] ?? null,
-                $property?->getTranslations('facilities') ?? [],
-                $autoTranslate
-            ),
             'content' => $this->buildTranslatedValue(
-                $validated['content'],
+                $validated['content'] ?? null,
                 $property?->getTranslations('content') ?? [],
                 $autoTranslate
             ),
             'youtube_video_url' => $this->normalizeYoutubeUrl($validated['youtube_video_url'] ?? null),
             'lat' => $validated['lat'] ?? null,
             'lng' => $validated['lng'] ?? null,
-            'status' => $validated['status'],
+            'status' => $validated['status'] ?? CmsStatus::PUBLISHED->value,
             'metadata' => [
                 'meta_title' => $validated['meta_title'] ?? null,
                 'meta_description' => $validated['meta_description'] ?? null,
                 'meta_keywords' => $this->normalizeKeywords($validated['meta_keywords'] ?? null),
                 'schema' => $validated['meta_schema'] ?? null,
+                'meta_img' => $metaImg,
             ],
         ];
     }
@@ -513,26 +719,30 @@ class PropertyController extends Controller
         return $title !== '' ? $title : $code;
     }
 
-    private function syncSlides(Property $property, Request $request): void
+    /**
+     * @param  list<int>  $groupIds
+     */
+    private function syncAttributeGroups(Property $property, array $groupIds): void
     {
-        if (! $request->hasFile('slides')) {
-            return;
+        $syncData = [];
+        foreach (array_values(array_unique(array_map('intval', $groupIds))) as $index => $groupId) {
+            if ($groupId <= 0) {
+                continue;
+            }
+            $syncData[$groupId] = ['position' => $index];
         }
 
-        foreach ($property->slides as $slide) {
-            Storage::disk('public')->delete($slide->image);
-        }
+        $property->attributeGroups()->sync($syncData);
+    }
 
-        $property->slides()->delete();
-
-        $slides = $request->file('slides', []);
-        foreach (array_slice($slides, 0, 20) as $index => $slideImage) {
-            $path = $slideImage->store('properties/slides', 'public');
-            $property->slides()->create([
-                'image' => $path,
-                'position' => $index,
-            ]);
-        }
+    /**
+     * @param  list<int>  $slideCategoryIds
+     */
+    private function syncSlideCategories(Property $property, array $slideCategoryIds): void
+    {
+        $property->slideCategories()->sync(
+            array_values(array_unique(array_map('intval', $slideCategoryIds)))
+        );
     }
 
     private function normalizeKeywords(mixed $keywords): array

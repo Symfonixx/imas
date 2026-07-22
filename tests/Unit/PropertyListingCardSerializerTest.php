@@ -40,6 +40,7 @@ class PropertyListingCardSerializerTest extends TestCase
 
         $property = new Property([
             'project_code' => 'PRJ-001',
+            'url_key' => 'prj-001',
             'title' => ['en' => 'Sea View'],
             'project_name' => ['en' => 'Project'],
             'overview' => ['en' => 'Overview'],
@@ -91,6 +92,8 @@ class PropertyListingCardSerializerTest extends TestCase
         $this->assertSame(10, $payload['location']['city']['id']);
         $this->assertSame(11, $payload['location']['district']['id']);
         $this->assertSame(12, $payload['location']['area']['id']);
-        $this->assertStringContainsString('/property/5', $payload['url']);
+        $this->assertSame('prj-001', $payload['slug']);
+        $this->assertSame('prj-001', $payload['url_key']);
+        $this->assertStringContainsString('/property/prj-001', $payload['url']);
     }
 }

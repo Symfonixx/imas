@@ -39,7 +39,7 @@ export function resolveVideoPlayback(raw) {
         };
     }
 
-    if (/\.(mp4|webm|ogg)(\?.*)?$/i.test(trimmed)) {
+    if (/\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(trimmed)) {
         return { type: "file", src: trimmed };
     }
 

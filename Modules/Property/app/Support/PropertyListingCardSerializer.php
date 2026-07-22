@@ -2,6 +2,7 @@
 
 namespace Modules\Property\Support;
 
+use Modules\Base\Support\Media\MediaAssetResolver;
 use Modules\Property\Models\Property;
 use Modules\Property\Models\UnitType;
 
@@ -14,10 +15,14 @@ final class PropertyListingCardSerializer
      */
     public static function toArray(Property $property): array
     {
+        $media = app(MediaAssetResolver::class)->resolve($property->thumbnail);
+        $fallbackAlt = (string) ($property->title ?: $property->project_name ?: '');
+
         return [
             'id' => $property->id,
             'project_code' => $property->project_code,
-            'slug' => $property->project_code,
+            'url_key' => $property->url_key,
+            'slug' => $property->url_key,
             'title' => $property->title,
             'project_name' => $property->project_name,
             'overview' => $property->overview,
@@ -25,9 +30,12 @@ final class PropertyListingCardSerializer
             'start_price' => self::startPrice($property),
             'min_area' => $property->min_area,
             'max_area' => $property->max_area,
-            'thumbnail_url' => $property->thumbnail
+            'thumbnail_url' => $media['url'] ?? ($property->thumbnail
                 ? asset('storage/'.$property->thumbnail)
-                : asset('images/blank.png'),
+                : asset('images/blank.png')),
+            'thumbnail_alt' => ($media['alt_text'] ?? null) ?: $fallbackAlt,
+            'thumbnail_title' => $media['title'] ?? null,
+            'thumbnail_caption' => $media['caption'] ?? null,
             'location' => PropertyLocationHierarchySerializer::toArray($property->location),
             'unit_types' => self::unitTypes($property),
             'property_type' => $property->propertyType

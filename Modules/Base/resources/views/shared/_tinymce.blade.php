@@ -14,8 +14,8 @@
         tinymce.init({
             selector: @json($tinymceSelector),
             height: {{ (int) $tinymceHeight }},
-            plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
-            toolbar: 'undo redo | blocks  fontsize | bold italic underline strikethrough | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+            plugins: 'anchor autolink charmap code codesample emoticons image link lists media searchreplace table visualblocks wordcount',
+            toolbar: 'undo redo | blocks  fontsize | bold italic underline strikethrough | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | code removeformat',
             tinycomments_mode: 'embedded',
             tinycomments_author: 'Author name',
             @if(app()->getLocale() == 'ar') language: 'ar', @endif

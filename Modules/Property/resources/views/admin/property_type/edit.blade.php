@@ -38,7 +38,7 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         <x-admin.form-group label="Name" name="name" required translatable>
                             <input type="text"
                                    id="property_type_name"
@@ -72,7 +72,7 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         <x-admin.form-group label="Icon" name="icon" required
                                             helper="{{ __('Shown to users when choosing a property type.') }}">
                             @include('property::admin.partials.bootstrap_icon_picker', [
@@ -93,7 +93,7 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         <div class="form-check form-check-custom form-check-solid">
                             <input class="form-check-input"
                                    type="checkbox"

@@ -11,7 +11,8 @@
                 <img
                     class="img-responsive"
                     :src="article.image"
-                    :alt="article.title"
+                    :alt="article.image_alt || article.title"
+                    :title="article.image_title || undefined"
                 />
             </div>
         </a>

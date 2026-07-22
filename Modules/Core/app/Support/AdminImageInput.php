@@ -6,6 +6,7 @@ namespace Modules\Core\Support;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Validation\ValidationException;
 
 /**
  * Admin Blade image-input (Metronic): map file field + optional media library path + remove flag.
@@ -54,16 +55,47 @@ final class AdminImageInput
             return $file;
         }
 
-        $path = $request->input($mediaPathInputName);
-        if (is_string($path)) {
-            $path = trim($path);
-            if ($path === '' || strcasecmp($path, 'null') === 0) {
-                return null;
-            }
+        return self::resolveMediaPath($request, $mediaPathInputName);
+    }
 
-            return $path;
+    /**
+     * Library-only resolver for content forms. Direct uploads are ignored.
+     *
+     * @return string|self::REMOVED|null
+     */
+    public static function resolveMediaPathOnly(Request $request, string $fileFieldName, string $mediaPathInputName): mixed
+    {
+        if (self::isRemoved($request, $fileFieldName)) {
+            return self::REMOVED;
         }
 
-        return null;
+        return self::resolveMediaPath($request, $mediaPathInputName);
+    }
+
+    public static function resolveMediaPath(Request $request, string $mediaPathInputName): ?string
+    {
+        $path = $request->input($mediaPathInputName);
+        if (! is_string($path)) {
+            return null;
+        }
+
+        $path = trim($path);
+        if ($path === '' || strcasecmp($path, 'null') === 0) {
+            return null;
+        }
+
+        return $path;
+    }
+
+    /**
+     * Ensure a library path is present on create forms that require an image.
+     */
+    public static function assertPresent(mixed $image, string $attribute = 'img'): void
+    {
+        if ($image === null || $image === '' || $image === self::REMOVED) {
+            throw ValidationException::withMessages([
+                $attribute => __('validation.required', ['attribute' => __('Image')]),
+            ]);
+        }
     }
 }

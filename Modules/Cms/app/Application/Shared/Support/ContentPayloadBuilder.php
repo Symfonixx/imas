@@ -8,12 +8,9 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
 use Modules\Core\Contracts\Translation\TranslatorInterface;
 use Modules\Core\Support\AdminImageInput;
-use Modules\Core\Traits\FileTrait;
 
 class ContentPayloadBuilder
 {
-    use FileTrait;
-
     /**
      * Fields that hold a comma-separated keyword list and need to be normalised
      * before being persisted. They are still translatable.
@@ -95,21 +92,22 @@ class ContentPayloadBuilder
         return (string) ($rawValue ?? '');
     }
 
-    private function resolveImagePath(UploadedFile|string|null $image, string $uploadPath, string $slug, ?string $existingImage): ?string
+    private function resolveImagePath(mixed $image, string $uploadPath, string $slug, ?string $existingImage): ?string
     {
         if ($image === AdminImageInput::REMOVED) {
             return null;
+        }
+
+        // Content images are library-only; ignore direct uploads for safety.
+        if ($image instanceof UploadedFile) {
+            return $existingImage;
         }
 
         if (is_string($image) && trim($image) !== '') {
             return $image;
         }
 
-        if (! $image) {
-            return $existingImage;
-        }
-
-        return $this->upload($image, $uploadPath, $slug, $existingImage);
+        return $existingImage;
     }
 
     private function parseKeywords(null|string|array $keywordsInput): string

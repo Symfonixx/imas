@@ -2,6 +2,8 @@
 
 namespace Modules\Property\Support;
 
+use Modules\User\Enums\CmsStatus;
+
 final class PropertyDetailEagerLoads
 {
     /**
@@ -13,7 +15,21 @@ final class PropertyDetailEagerLoads
     {
         return [
             ...PropertyCardEagerLoads::relations(),
-            'slides:id,property_id,image,position',
+            'slideMedia' => fn ($query) => $query
+                ->whereHas(
+                    'slideCategory',
+                    fn ($categoryQuery) => $categoryQuery
+                        ->where('status', CmsStatus::PUBLISHED->value)
+                )
+                ->select([
+                    'id',
+                    'property_id',
+                    'slide_category_id',
+                    'type',
+                    'path',
+                    'position',
+                ]),
+            'slideMedia.slideCategory:id,name,position,status',
             'similarProperties' => fn ($query) => $query->with(PropertyCardEagerLoads::relations()),
         ];
     }

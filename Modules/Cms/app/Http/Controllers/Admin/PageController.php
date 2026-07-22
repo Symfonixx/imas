@@ -50,7 +50,10 @@ class PageController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $data = PageData::validate($this->preparePayload($request));
+        $payload = $this->preparePayload($request);
+        AdminImageInput::assertPresent($payload['image'] ?? null);
+
+        $data = PageData::validate($payload);
 
         $this->pageService->store(UpsertPageCommand::fromValidated($data));
 
@@ -104,8 +107,8 @@ class PageController extends Controller
             'meta_title' => $request->input('meta_title'),
             'meta_description' => $request->input('meta_description'),
             'meta_keywords' => $request->input('meta_keywords'),
-            'image' => AdminImageInput::resolveFileOrMediaPath($request, 'img', 'img_media_path'),
-            'meta_image' => AdminImageInput::resolveFileOrMediaPath($request, 'meta_img', 'meta_img_media_path'),
+            'image' => AdminImageInput::resolveMediaPathOnly($request, 'img', 'img_media_path'),
+            'meta_image' => AdminImageInput::resolveMediaPathOnly($request, 'meta_img', 'meta_img_media_path'),
             'status' => $request->has('publish') ? CmsStatus::PUBLISHED : CmsStatus::ARCHIVED,
             'featured' => $request->boolean('featured'),
             'add_to_nav' => $request->boolean('add_to_nav'),

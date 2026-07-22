@@ -14,7 +14,7 @@
             </h2>
         </div>
     </div>
-    <div class="card-body pt-0">
+    <div class="card-body pt-3">
         <p class="text-muted fs-7 mb-5">
             {{ __('Choose where this page should appear in site navigation.') }}
         </p>

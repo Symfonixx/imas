@@ -17,7 +17,7 @@
             </h2>
         </div>
     </div>
-    <div class="card-body pt-0">
+    <div class="card-body pt-3">
 
         {{-- =========== Score Donut =========== --}}
         <div class="text-center mb-6" data-seo-score-summary>

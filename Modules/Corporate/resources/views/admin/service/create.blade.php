@@ -40,7 +40,7 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         <x-admin.form-group label="Title" name="title" required translatable>
                             <input type="text"
                                    id="title"

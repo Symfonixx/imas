@@ -50,7 +50,7 @@ Author: Hadi Hilal
         <link href="{{asset('admin/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css"/>
         <link href="{{asset('admin/css/style.bundle.css') }}" rel="stylesheet" type="text/css"/>
     @endif
-
+    <link href="{{ asset('admin/css/imas-admin.css') }}" rel="stylesheet" type="text/css"/>
 
     @yield('css')
 </head>
@@ -384,19 +384,47 @@ Author: Hadi Hilal
                     <!--end::Sidebar toggle-->
                 </div>
                 <!--end::Logo-->
+
+                <!--begin::Sidebar search-->
+                <div class="imas-admin-sidebar-search px-4 pb-2" id="imas_admin_sidebar_search_wrap">
+                    <label class="visually-hidden" for="imas_admin_sidebar_search">{{ __('Search menu') }}</label>
+                    <div class="imas-admin-sidebar-search__field">
+                        <i class="bi bi-search imas-admin-sidebar-search__icon" aria-hidden="true"></i>
+                        <input type="search"
+                               id="imas_admin_sidebar_search"
+                               class="form-control form-control-sm imas-admin-sidebar-search__input"
+                               placeholder="{{ __('Search menu…') }}"
+                               autocomplete="off"
+                               spellcheck="false"/>
+                        <button type="button"
+                                id="imas_admin_sidebar_search_clear"
+                                class="imas-admin-sidebar-search__clear d-none"
+                                aria-label="{{ __('Clear search') }}">
+                            <i class="bi bi-x-lg" aria-hidden="true"></i>
+                        </button>
+                        <kbd class="imas-admin-sidebar-search__kbd" title="{{ __('Shortcut') }}">⌘K</kbd>
+                    </div>
+                    <div id="imas_admin_sidebar_search_empty"
+                         class="imas-admin-sidebar-search__empty d-none"
+                         role="status">
+                        {{ __('No menu items match your search.') }}
+                    </div>
+                </div>
+                <!--end::Sidebar search-->
+
                 <!--begin::sidebar menu-->
                 <div class="app-sidebar-menu overflow-hidden flex-column-fluid">
                     <!--begin::Menu wrapper-->
                     <div id="kt_app_sidebar_menu_wrapper" class="app-sidebar-wrapper">
                         <!--begin::Scroll wrapper-->
-                        <div id="kt_app_sidebar_menu_scroll" class="scroll-y my-5 mx-3" data-kt-scroll="true"
+                        <div id="kt_app_sidebar_menu_scroll" class="scroll-y mt-2 mb-5 mx-3" data-kt-scroll="true"
                              data-kt-scroll-activate="true" data-kt-scroll-height="auto"
-                             data-kt-scroll-dependencies="#kt_app_sidebar_logo, #kt_app_sidebar_footer"
+                             data-kt-scroll-dependencies="#kt_app_sidebar_logo, #imas_admin_sidebar_search_wrap, #kt_app_sidebar_footer"
                              data-kt-scroll-wrappers="#kt_app_sidebar_menu" data-kt-scroll-offset="5px"
                              data-kt-scroll-save-state="true">
                             <!--begin::Menu-->
-                            <div class="menu menu-column menu-rounded menu-sub-indention fw-semibold fs-6"
-                                 id="#kt_app_sidebar_menu" data-kt-menu="true" data-kt-menu-expand="false">
+                            <div class="menu menu-column menu-rounded menu-sub-indention fw-semibold fs-6 imas-admin-sidebar-menu"
+                                 id="kt_app_sidebar_menu" data-kt-menu="true" data-kt-menu-expand="false">
                                 <x-admin.side-nav></x-admin.side-nav>
                             </div>
                             <!--end::Menu-->
@@ -433,23 +461,26 @@ Author: Hadi Hilal
                 </div>
                 <!--end::Content wrapper-->
                 <!--begin::Footer-->
-                <div id="kt_app_footer" class="app-footer">
+                <div id="kt_app_footer" class="app-footer imas-admin-footer">
                     <!--begin::Footer container-->
-                    <div
-                        class="app-container container-fluid d-flex flex-column flex-md-row flex-center flex-md-stack py-3">
-                        <!--begin::Copyright-->
-                        <div class="text-dark order-2 order-md-1">
-                            <span class="text-muted fw-bold me-1">{{__('All rights are reserved')}} 2026©</span>
-                            <a href="https://symfonix.io" target="_blank"
-                               class="text-gray-700 text-hover-primary">{{__('Developed By Symfonix')}} </a>
+                    <div class="app-container container-fluid imas-admin-footer__inner">
+                        <div class="imas-admin-footer__copy">
+                            <span class="imas-admin-footer__year">© {{ date('Y') }}</span>
+                            <span class="imas-admin-footer__sep" aria-hidden="true"></span>
+                            <span>{{ __('All rights are reserved') }}</span>
+                            <span class="imas-admin-footer__sep" aria-hidden="true"></span>
+                            <a href="https://symfonix.io" target="_blank" rel="noopener noreferrer"
+                               class="imas-admin-footer__link">
+                                {{ __('Developed By Symfonix') }}
+                            </a>
                         </div>
-                        <!--end::Copyright-->
-                        <!--begin::Menu-->
-                        <ul class="menu menu-gray-700 menu-hover-primary fw-bold order-1">
-                            <li class="menu-item">
-                            </li>
-                        </ul>
-                        <!--end::Menu-->
+                        <div class="imas-admin-footer__actions">
+                            <a href="{{ route('home') }}" target="_blank" rel="noopener noreferrer"
+                               class="imas-admin-footer__site-btn">
+                                <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
+                                <span>{{ __('Go to website') }}</span>
+                            </a>
+                        </div>
                     </div>
                     <!--end::Footer container-->
                 </div>
@@ -463,6 +494,7 @@ Author: Hadi Hilal
     <!--end::Page-->
     @yield('modal')
     <x-admin.media-library-modal></x-admin.media-library-modal>
+    <x-admin.quick-actions/>
 </div>
 <!--end::Root-->
 
@@ -472,6 +504,8 @@ Author: Hadi Hilal
 <script src="{{asset('admin/plugins/global/plugins.bundle.js')}}"></script>
 <script src="{{asset('admin/js/scripts.bundle.js')}}"></script>
 <script src="{{ asset('admin/plugins/custom/datatables/datatables.bundle.js') }}"></script>
+<script src="{{ asset('admin/js/imas-admin-sidebar.js') }}"></script>
+<script src="{{ asset('admin/js/imas-admin-fab.js') }}"></script>
 <!--end::Global JavaScript Bundle(used by all pages)-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/js/all.min.js"
         integrity="sha512-6sSYJqDreZRZGkJ3b+YfdhB3MzmuP9R7X1QZ6g5aIXhRvR1Y/N/P47jmnkENm7YL3oqsmI6AK+V6AD99uWDnIw=="

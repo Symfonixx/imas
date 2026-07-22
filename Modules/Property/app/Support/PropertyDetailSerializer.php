@@ -2,8 +2,9 @@
 
 namespace Modules\Property\Support;
 
+use Modules\Base\Support\Media\MediaAssetResolver;
 use Modules\Property\Models\Property;
-use Modules\Property\Models\PropertySlide;
+use Modules\Property\Models\PropertySlideMedia;
 use Modules\Property\Models\UnitType;
 
 final class PropertyDetailSerializer
@@ -16,25 +17,30 @@ final class PropertyDetailSerializer
     public static function toArray(Property $property): array
     {
         $metadata = is_array($property->metadata) ? $property->metadata : [];
+        $resolver = app(MediaAssetResolver::class);
+        $thumbnailMedia = $resolver->resolve($property->thumbnail);
+        $fallbackAlt = (string) ($property->title ?: $property->project_name ?: '');
 
         return [
             'id' => $property->id,
             'project_code' => $property->project_code,
-            'slug' => $property->project_code,
+            'url_key' => $property->url_key,
+            'slug' => $property->url_key,
             'title' => $property->title,
             'project_name' => $property->project_name,
             'overview' => $property->overview,
             'why_to_buy' => $property->why_to_buy,
-            'facilities' => $property->facilities,
             'content' => $property->content,
             'price' => $property->price,
             'start_price' => self::startPrice($property),
             'min_area' => $property->min_area,
             'max_area' => $property->max_area,
-            'thumbnail_url' => $property->thumbnail
+            'thumbnail_url' => $thumbnailMedia['url'] ?? ($property->thumbnail
                 ? asset('storage/'.$property->thumbnail)
-                : asset('images/blank.png'),
-            'slides' => self::slides($property),
+                : asset('images/blank.png')),
+            'thumbnail_alt' => ($thumbnailMedia['alt_text'] ?? null) ?: $fallbackAlt,
+            'thumbnail_title' => $thumbnailMedia['title'] ?? null,
+            'slides' => self::slides($property, $resolver, $fallbackAlt),
             'location' => PropertyLocationHierarchySerializer::toArray($property->location),
             'unit_types' => self::unitTypes($property),
             'property_type' => $property->propertyType
@@ -47,6 +53,7 @@ final class PropertyDetailSerializer
             'lat' => $property->lat,
             'lng' => $property->lng,
             'youtube_video_url' => $property->youtube_video_url,
+            'videos' => self::videos($property),
             'is_featured' => (bool) $property->is_featured,
             'is_sold_out' => (bool) $property->is_sold_out,
             'is_recommended' => (bool) $property->is_recommended,
@@ -56,6 +63,7 @@ final class PropertyDetailSerializer
                 'meta_description' => $metadata['meta_description'] ?? null,
                 'meta_keywords' => $metadata['meta_keywords'] ?? [],
                 'schema' => $metadata['schema'] ?? null,
+                'meta_img' => $metadata['meta_img'] ?? null,
             ],
             'highlights' => ListingCardHighlightBuilder::forProperty($property),
             'is_favorited' => (bool) ($property->getAttribute('is_favorited') ?? false),
@@ -74,26 +82,74 @@ final class PropertyDetailSerializer
     }
 
     /**
-     * @return list<array{id: int, position: int, image_url: string}>
+     * @return list<array{id: int, position: int, image_url: string, alt: string, title: ?string, caption: ?string}>
      */
-    private static function slides(Property $property): array
+    private static function slides(Property $property, MediaAssetResolver $resolver, string $fallbackAlt): array
     {
-        if (! $property->relationLoaded('slides')) {
+        $thumbnailPath = $property->thumbnail;
+
+        if (! $property->relationLoaded('slideMedia')) {
             return [];
         }
 
-        $thumbnailPath = $property->thumbnail;
-
-        return $property->slides
-            ->filter(static fn (PropertySlide $slide): bool => $thumbnailPath === null
-                || $slide->image !== $thumbnailPath)
-            ->map(static fn (PropertySlide $slide): array => [
-                'id' => $slide->id,
-                'position' => (int) $slide->position,
-                'image_url' => asset('storage/'.$slide->image),
-            ])
+        $paths = $property->slideMedia
+            ->where('type', PropertySlideMedia::TYPE_IMAGE)
+            ->filter(static fn (PropertySlideMedia $media): bool => $thumbnailPath === null
+                || $media->path !== $thumbnailPath)
+            ->pluck('path')
+            ->filter()
             ->values()
             ->all();
+        $resolved = $resolver->resolveMany($paths);
+
+        return $property->slideMedia
+            ->where('type', PropertySlideMedia::TYPE_IMAGE)
+            ->filter(static fn (PropertySlideMedia $media): bool => $thumbnailPath === null
+                || $media->path !== $thumbnailPath)
+            ->sortBy(self::mediaSortKey(...))
+            ->map(static function (PropertySlideMedia $media) use ($resolved, $fallbackAlt): array {
+                $meta = $resolved[$media->path] ?? null;
+
+                return [
+                    'id' => $media->id,
+                    'position' => $media->position,
+                    'image_url' => $meta['url'] ?? asset('storage/'.$media->path),
+                    'alt' => ($meta['alt_text'] ?? null) ?: $fallbackAlt,
+                    'title' => $meta['title'] ?? null,
+                    'caption' => $meta['caption'] ?? null,
+                ];
+            })
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return list<string>
+     */
+    private static function videos(Property $property): array
+    {
+        if (! $property->relationLoaded('slideMedia')) {
+            return [];
+        }
+
+        return $property->slideMedia
+            ->where('type', PropertySlideMedia::TYPE_VIDEO)
+            ->sortBy(self::mediaSortKey(...))
+            ->map(static fn (PropertySlideMedia $media): string => asset('storage/'.$media->path))
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return array{int, int, int}
+     */
+    private static function mediaSortKey(PropertySlideMedia $media): array
+    {
+        return [
+            (int) ($media->slideCategory?->position ?? PHP_INT_MAX),
+            $media->position,
+            $media->id,
+        ];
     }
 
     /**

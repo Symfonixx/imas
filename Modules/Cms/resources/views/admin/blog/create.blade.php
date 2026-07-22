@@ -42,7 +42,7 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         {{-- Title --}}
                         <x-admin.form-group label="Title" name="title" required translatable>
                             <input type="text"
@@ -130,7 +130,7 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         <x-admin.form-group label="Category" name="category_id" required>
                             <select name="category_id" id="category_id"
                                     class="form-select form-select-solid" required>
@@ -153,12 +153,6 @@
         </div>
 
         {{-- Footer --}}
-        <div class="d-flex justify-content-end py-6">
-            <a href="{{ route('admin.blogs.index') }}"
-               class="btn btn-light btn-active-light-primary me-3">{{ __('Discard') }}</a>
-            <button type="submit" class="btn btn-primary" id="submit">
-                <span class="indicator-label">{{ __('Save Changes') }}</span>
-            </button>
-        </div>
+        <x-admin.form-actions :discard-url="route('admin.blogs.index')"/>
     </form>
 </x-admin-layout>

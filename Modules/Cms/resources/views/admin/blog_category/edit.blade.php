@@ -84,7 +84,7 @@
 
                     <div class="mb-3">
                         <label class="form-label">{{ __('Meta Image') }}</label>
-                        <x-admin.image-input name="meta_img" :preview="$blogs_category->meta_image_link"/>
+                        <x-admin.image-input name="meta_img" :preview="$blogs_category->meta_image_link" :mediaPath="$blogs_category->meta_image"/>
                     </div>
 
                     <div class="mb-3">

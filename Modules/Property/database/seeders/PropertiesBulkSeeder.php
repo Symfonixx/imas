@@ -3,6 +3,7 @@
 namespace Modules\Property\Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 use Modules\Property\Models\Location;
 use Modules\Property\Models\Property;
 use Modules\Property\Models\PropertyType;
@@ -67,6 +68,12 @@ class PropertiesBulkSeeder extends Seeder
                             'project_code' => sprintf(
                                 '%s%s-%04d',
                                 self::PROJECT_CODE_PREFIX,
+                                $propertyType->slug,
+                                $index,
+                            ),
+                            'url_key' => sprintf(
+                                '%s%s-%04d',
+                                Str::slug(self::PROJECT_CODE_PREFIX),
                                 $propertyType->slug,
                                 $index,
                             ),

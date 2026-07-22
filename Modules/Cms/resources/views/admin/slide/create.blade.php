@@ -25,7 +25,7 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         <x-admin.form-group label="Image" name="img" required
                                             helper="Recommended wide banner ratio for hero slides.">
                             <x-admin.image-input name="img" required/>
@@ -70,7 +70,7 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         <x-admin.toggle-switch
                             name="publish"
                             label="Active"
@@ -93,7 +93,7 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         <x-admin.form-group label="Rank" name="rank" required>
                             <input type="number"
                                    min="0"

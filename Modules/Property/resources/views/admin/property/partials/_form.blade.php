@@ -2,53 +2,9 @@
     $isEdit = isset($property);
     $seoMeta = $isEdit ? ($property->metadata ?? []) : [];
     $defaultStatus = old('status', $isEdit ? (($property->status?->value) ?? 'Published') : 'Published');
-    $prefillCityId = null;
-    $prefillDistrictId = old('district_id');
-    $selectedAreaIdValue = old('area_id');
-
-    if ($prefillDistrictId === null && $selectedAreaIdValue === null && $isEdit && $property->location_id) {
-        $prefillLoc = \Modules\Property\Models\Location::query()
-            ->with(['parent:id,parent_id,type', 'parent.parent:id,parent_id,type'])
-            ->find((int) $property->location_id);
-
-        if ($prefillLoc) {
-            if ($prefillLoc->type === \Modules\Property\Enums\LocationType::Area) {
-                $selectedAreaIdValue = $prefillLoc->id;
-                $prefillDistrictId = $prefillLoc->parent_id;
-                $par = $prefillLoc->parent;
-                if ($par && $par->type === \Modules\Property\Enums\LocationType::Municipality) {
-                    $prefillCityId = $par->parent_id;
-                } elseif ($par && $par->type === \Modules\Property\Enums\LocationType::City) {
-                    $prefillCityId = $par->id;
-                    $prefillDistrictId = null;
-                }
-            } elseif ($prefillLoc->type === \Modules\Property\Enums\LocationType::Municipality) {
-                $prefillDistrictId = $prefillLoc->id;
-                $prefillCityId = $prefillLoc->parent_id;
-            }
-        }
-    } elseif ($prefillDistrictId !== null || $selectedAreaIdValue !== null) {
-        $resolveId = $selectedAreaIdValue ?: $prefillDistrictId;
-        if ($resolveId) {
-            $prefillLoc = \Modules\Property\Models\Location::query()
-                ->with(['parent:id,parent_id,type', 'parent.parent:id,parent_id,type'])
-                ->find((int) $resolveId);
-
-            if ($prefillLoc) {
-                if ($prefillLoc->type === \Modules\Property\Enums\LocationType::Area && $prefillLoc->parent) {
-                    if ($prefillDistrictId === null) {
-                        $prefillDistrictId = $prefillLoc->parent_id;
-                    }
-                    $par = $prefillLoc->parent;
-                    if ($par->type === \Modules\Property\Enums\LocationType::Municipality) {
-                        $prefillCityId = $par->parent_id;
-                    }
-                } elseif ($prefillLoc->type === \Modules\Property\Enums\LocationType::Municipality) {
-                    $prefillCityId = $prefillLoc->parent_id;
-                }
-            }
-        }
-    }
+    $prefillCityId = $prefillCityId ?? null;
+    $prefillDistrictId = $prefillDistrictId ?? old('district_id');
+    $selectedAreaIdValue = $selectedAreaIdValue ?? old('area_id');
 
     $rawOldUt = old('unit_types');
     if (is_array($rawOldUt) && $rawOldUt !== []) {
@@ -78,233 +34,522 @@
         $selectedSimilarPropertyIds = $property->similarProperties->pluck('id')->map(fn ($id) => (int) $id)->all();
     }
 
+    $selectedSlideCategoryIds = collect(old('slide_category_ids'))
+        ->map(fn ($id) => (int) $id)
+        ->filter(fn ($id) => $id > 0)
+        ->values()
+        ->all();
+
+    $slideCategorySelectionWasSubmitted = session()->hasOldInput('slide_category_ids_present');
+
+    if (! $slideCategorySelectionWasSubmitted && $selectedSlideCategoryIds === [] && $isEdit) {
+        $selectedSlideCategoryIds = $property->slideCategories->pluck('id')->map(fn ($id) => (int) $id)->all();
+    }
+
+    $existingSlideMediaByCategory = $isEdit
+        ? $property->slideMedia->groupBy('slide_category_id')
+        : collect();
+
+    $selectedAttributeGroupIds = collect(old('attribute_group_ids'))
+        ->map(fn ($id) => (int) $id)
+        ->filter(fn ($id) => $id > 0)
+        ->values()
+        ->all();
+
+    $attributeGroupSelectionWasSubmitted = session()->hasOldInput('attribute_group_ids_present');
+
+    if (! $attributeGroupSelectionWasSubmitted && $selectedAttributeGroupIds === [] && $isEdit) {
+        $selectedAttributeGroupIds = $property->attributeGroups->pluck('id')->map(fn ($id) => (int) $id)->all();
+    }
+
     $currentPropertyId = $isEdit ? (int) $property->id : null;
 @endphp
 
-<div class="card card-flush mb-7">
-    <div class="card-body">
-        <div class="row mb-2">
-            <div class="col-xl-12">
-                <x-admin.form-group label="Thumbnail" name="thumbnail" :required="! $isEdit"
+<div class="row gx-5 gx-xl-10">
+    <div class="col-xxl-8 col-xl-8 mb-5 mb-xl-0">
+        {{-- Identity --}}
+        <div class="card card-flush mb-7">
+            <div class="card-header">
+                <div class="card-title">
+                    <h2 class="d-flex align-items-center">
+                        <i class="bi bi-building text-primary fs-3 me-2"></i>
+                        {{ __('Identity') }}
+                    </h2>
+                </div>
+            </div>
+            <div class="card-body pt-3">
+                <x-admin.form-group label="Thumbnail" name="thumbnail"
                                     helper="Recommended dimensions: 1200px × 900px (4:3).">
                     <x-admin.image-input name="thumbnail"
-                                         :preview="$isEdit && $property->thumbnail ? asset('storage/' . $property->thumbnail) : null"/>
+                                         :preview="$isEdit && $property->thumbnail ? asset('storage/' . $property->thumbnail) : null"
+                                         :mediaPath="$isEdit ? ($property->thumbnail ?? null) : null"/>
                 </x-admin.form-group>
-            </div>
 
+                <div class="row g-5">
+                    <div class="col-md-6">
+                        <x-admin.form-group label="Project title" name="title" required translatable>
+                            <input id="title" type="text" name="title" class="form-control form-control-solid"
+                                   value="{{ old('title', optional($property)->title) }}"/>
+                        </x-admin.form-group>
+                    </div>
+                    <div class="col-md-6">
+                        <x-admin.form-group label="Project name" name="project_name" required translatable>
+                            <input id="project_name" type="text" name="project_name" class="form-control form-control-solid"
+                                   value="{{ old('project_name', optional($property)->project_name) }}"/>
+                        </x-admin.form-group>
+                    </div>
+                    <div class="col-md-6">
+                        <x-admin.form-group label="Project code" name="project_code" required
+                                            helper="{{ __('Internal inventory code. Unique per property.') }}">
+                            <input type="text" name="project_code" class="form-control form-control-solid"
+                                   value="{{ old('project_code', optional($property)->project_code) }}"/>
+                        </x-admin.form-group>
+                    </div>
+                    <div class="col-md-6">
+                        <x-admin.form-group label="URL key" name="url_key" required
+                                            helper="{{ __('Lowercase, hyphens only. Used in the property URL.') }}">
+                            <input id="url_key" type="text" name="url_key" class="form-control form-control-solid"
+                                   value="{{ old('url_key', optional($property)->url_key) }}"
+                                   pattern="[a-z0-9]+(-[a-z0-9]+)*"
+                                   maxlength="191"
+                                   placeholder="my-property-slug"/>
+                        </x-admin.form-group>
+                    </div>
+                    <div class="col-md-6">
+                        <x-admin.form-group label="Project type" name="property_type_id" required>
+                            <select name="property_type_id" id="property_type_id" class="form-select form-select-solid"
+                                    data-control="select2" data-placeholder="{{ __('Select property type') }}">
+                                <option value="">{{ __('Select property type') }}</option>
+                                @foreach($propertyTypes as $propertyType)
+                                    <option
+                                        value="{{ $propertyType['id'] }}" @selected((string) old('property_type_id', optional($property)->property_type_id ?? '') === (string) $propertyType['id'])>
+                                        {{ $propertyType['name'] }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </x-admin.form-group>
+                    </div>
+                    <div class="col-md-6">
+                        <x-admin.form-group label="Status" name="status">
+                            <select name="status" class="form-select form-select-solid" data-control="select2"
+                                    data-hide-search="true">
+                                @foreach($statuses as $status)
+                                    <option value="{{ $status->value }}" @selected($defaultStatus === $status->value)>
+                                        {{ __($status->value) }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </x-admin.form-group>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="row">
 
-            <div class="col-xl-6">
-                <x-admin.form-group label="Project type" name="property_type_id" required>
-                    <select name="property_type_id" id="property_type_id" class="form-select form-select-solid"
-                            data-control="select2" data-placeholder="{{ __('Select property type') }}">
-                        <option value="">{{ __('Select property type') }}</option>
-                        @foreach($propertyTypes as $propertyType)
-                            <option
-                                value="{{ $propertyType['id'] }}" @selected((string) old('property_type_id', optional($property)->property_type_id ?? '') === (string) $propertyType['id'])>
-                                {{ $propertyType['name'] }}
-                            </option>
-                        @endforeach
-                    </select>
-                </x-admin.form-group>
+        {{-- Location --}}
+        <div class="card card-flush mb-7">
+            <div class="card-header">
+                <div class="card-title">
+                    <h2 class="d-flex align-items-center">
+                        <i class="bi bi-geo-alt text-primary fs-3 me-2"></i>
+                        {{ __('Location') }}
+                    </h2>
+                </div>
             </div>
-
-            <div class="col-xl-6">
-
-                <x-admin.form-group label="Status" name="status" required>
-                    <select name="status" class="form-select form-select-solid" data-control="select2"
-                            data-hide-search="true">
-                        @foreach($statuses as $status)
-                            <option value="{{ $status->value }}" @selected($defaultStatus === $status->value)>
-                                {{ __($status->value) }}
-                            </option>
-                        @endforeach
-                    </select>
-                </x-admin.form-group>
+            <div class="card-body pt-3">
+                <div class="row g-5">
+                    <div class="col-md-4">
+                        <x-admin.form-group label="City" name="city_id">
+                            <select id="city_id" class="form-select form-select-solid">
+                                <option value="">{{ __('Select city') }}</option>
+                                @foreach(($cities ?? []) as $city)
+                                    <option
+                                        value="{{ $city['id'] }}" @selected((string) ($prefillCityId ?? '') === (string) $city['id'])>{{ $city['name'] }}</option>
+                                @endforeach
+                            </select>
+                        </x-admin.form-group>
+                    </div>
+                    <div class="col-md-4">
+                        <x-admin.form-group label="Municipality" name="district_id">
+                            <select id="district_id" name="district_id" class="form-select form-select-solid"
+                                @disabled(! $prefillCityId && ! old('district_id'))>
+                                <option value="">{{ __('Select municipality') }}</option>
+                            </select>
+                        </x-admin.form-group>
+                    </div>
+                    <div class="col-md-4">
+                        <x-admin.form-group label="Location" name="area_id">
+                            <select id="area_id" name="area_id" class="form-select form-select-solid"
+                                @disabled(! $prefillDistrictId && ! old('district_id'))>
+                                <option value="">{{ __('Select area') }}</option>
+                            </select>
+                        </x-admin.form-group>
+                    </div>
+                    <div class="col-md-6">
+                        <x-admin.form-group label="Latitude" name="lat">
+                            <input type="text" inputmode="decimal" name="lat" class="form-control form-control-solid"
+                                   value="{{ old('lat', optional($property)->lat) }}"/>
+                        </x-admin.form-group>
+                    </div>
+                    <div class="col-md-6">
+                        <x-admin.form-group label="Longitude" name="lng">
+                            <input type="text" inputmode="decimal" name="lng" class="form-control form-control-solid"
+                                   value="{{ old('lng', optional($property)->lng) }}"/>
+                        </x-admin.form-group>
+                    </div>
+                </div>
             </div>
+        </div>
 
-            <div class="col-xl-6">
-                <x-admin.form-group label="Project code" name="project_code" required>
-                    <input id="slug" type="text" name="project_code" class="form-control form-control-solid"
-                           value="{{ old('project_code', optional($property)->project_code) }}"/>
-                </x-admin.form-group>
+        {{-- Content --}}
+        <div class="card card-flush mb-7">
+            <div class="card-header">
+                <div class="card-title">
+                    <h2 class="d-flex align-items-center">
+                        <i class="bi bi-file-text text-primary fs-3 me-2"></i>
+                        {{ __('Content') }}
+                    </h2>
+                </div>
             </div>
-
-            <div class="col-xl-6">
-                <x-admin.form-group label="Project name" name="project_name" translatable>
-                    <input id="project_name" type="text" name="project_name" class="form-control form-control-solid"
-                           value="{{ old('project_name', optional($property)->project_name) }}"/>
-                </x-admin.form-group>
-            </div>
-
-
-            <div class="col-12">
-                <x-admin.form-group label="Project title" name="title" required translatable>
-                    <input id="title" type="text" name="title" class="form-control form-control-solid"
-                           value="{{ old('title', optional($property)->title) }}"/>
-                </x-admin.form-group>
-
-
-                <x-admin.form-group label="Overview" name="overview" required translatable>
+            <div class="card-body pt-3">
+                <x-admin.form-group label="Overview" name="overview" translatable>
                     <textarea id="tinymce-overview"
                               class="form-control form-control-solid tinymce-editor"
                               name="overview"
                               rows="8">{!! old('overview', optional($property)->overview) !!}</textarea>
                 </x-admin.form-group>
+
+                <x-admin.form-group label="Why to buy this property" name="why_to_buy" translatable>
+                    <textarea id="tinymce-why-to-buy"
+                              class="form-control form-control-solid tinymce-editor"
+                              name="why_to_buy"
+                              rows="6">{!! old('why_to_buy', optional($property)->why_to_buy) !!}</textarea>
+                </x-admin.form-group>
+
+                <x-admin.form-group label="Content" name="content" translatable
+                                    helper="{{ __('Location specifications and additional project details.') }}">
+                    <textarea id="tinymce-content"
+                              class="form-control form-control-solid tinymce-editor"
+                              name="content"
+                              rows="8">{!! old('content', optional($property)->content) !!}</textarea>
+                </x-admin.form-group>
             </div>
         </div>
 
+        {{-- Unit types --}}
+        <div class="card card-flush mb-7">
+            <div class="card-header">
+                <div class="card-title">
+                    <h2 class="d-flex align-items-center">
+                        <i class="bi bi-grid-3x3-gap text-primary fs-3 me-2"></i>
+                        {{ __('Unit types') }}
+                    </h2>
+                </div>
+            </div>
+            <div class="card-body pt-3">
+                <div class="text-muted fs-7 mb-5">{{ __('Add one row per layout. Choose a type, then enter area and starting price.') }}</div>
+                <div id="unit-type-rows">
+                    @foreach($unitTypeRowsForView as $i => $ut)
+                        @php
+                            $nameVal = (string) old("unit_types.$i.name", $ut['name'] ?? '');
+                            $cid = old("unit_types.$i.catalog_id", $ut['catalog_id'] ?? '');
+                            $catalogIds = collect($catalogItems)->pluck('id')->map(fn ($v) => (string) $v)->all();
+                            $inCatalog = $cid !== null && $cid !== '' && in_array((string) $cid, $catalogIds, true);
+                        @endphp
+                        <div class="card card-bordered mb-4 js-unit-row" data-row-index="{{ $i }}">
+                            <div class="card-body py-4">
+                                <div class="row g-3 align-items-end">
+                                    <div class="col-lg-3 col-md-6">
+                                        <label class="form-label">{{ __('Unit type') }}</label>
+                                        <select class="form-select form-select-solid js-unit-preset">
+                                            <option value="">{{ __('Select') }}</option>
+                                            @foreach($catalogItems as $c)
+                                                <option value="{{ $c['id'] }}" data-label="{{ e($c['name']) }}"
+                                                    @selected((string) $cid === (string) $c['id'])>{{ $c['name'] }}</option>
+                                            @endforeach
+                                            <option
+                                                value="__other__" @selected($nameVal !== '' && ! $inCatalog)>{{ __('Other') }}</option>
+                                        </select>
+                                        <input type="text"
+                                               class="form-control form-control-solid mt-2 js-unit-custom {{ ($nameVal !== '' && ! $inCatalog) ? '' : 'd-none' }}"
+                                               value="{{ ($nameVal !== '' && ! $inCatalog) ? $nameVal : '' }}"
+                                               placeholder="{{ __('Custom unit type') }}"
+                                               autocomplete="off">
+                                    </div>
+                                    <div class="col-lg-8">
+                                        <div
+                                            class="row g-3 js-unit-numeric {{ ($nameVal !== '' || $inCatalog) ? '' : 'd-none' }}">
+                                            <div class="col-md-4">
+                                                <label class="form-label">{{ __('Min area') }}</label>
+                                                <input type="number" step="0.01" min="0"
+                                                       class="form-control form-control-solid"
+                                                       name="unit_types[{{ $i }}][min_area]"
+                                                       value="{{ old("unit_types.$i.min_area", $ut['min_area'] ?? '') }}">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">{{ __('Max area') }}</label>
+                                                <input type="number" step="0.01" min="0"
+                                                       class="form-control form-control-solid"
+                                                       name="unit_types[{{ $i }}][max_area]"
+                                                       value="{{ old("unit_types.$i.max_area", $ut['max_area'] ?? '') }}">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">{{ __('Starting price') }}</label>
+                                                <input type="number" step="0.01" min="0"
+                                                       class="form-control form-control-solid"
+                                                       name="unit_types[{{ $i }}][price]"
+                                                       value="{{ old("unit_types.$i.price", $ut['price'] ?? '') }}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-1 col-md-6 text-lg-end">
+                                        <button type="button" class="btn btn-sm btn-light-danger js-remove-unit-row"
+                                                title="{{ __('Remove') }}">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="unit_types[{{ $i }}][id]" class="js-unit-id"
+                                       value="{{ $ut['id'] ?? '' }}">
+                                <input type="hidden" name="unit_types[{{ $i }}][catalog_id]" class="js-unit-catalog-id"
+                                       value="{{ $inCatalog ? $cid : '' }}">
+                                <input type="hidden" name="unit_types[{{ $i }}][name]" class="js-unit-name-hidden"
+                                       value="{{ $nameVal }}">
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+                <button type="button" class="btn btn-sm btn-light-primary" id="add-unit-type-row">
+                    <i class="bi bi-plus-lg"></i> {{ __('Add unit type') }}
+                </button>
+            </div>
+        </div>
 
-        <div class="row mb-2">
-            <div class="col-md-4">
-                <x-admin.form-group label="City" name="city_id">
-                    <select id="city_id" class="form-select form-select-solid">
-                        <option value="">{{ __('Select city') }}</option>
-                        @foreach(($cities ?? []) as $city)
-                            <option
-                                value="{{ $city['id'] }}" @selected((string) ($prefillCityId ?? '') === (string) $city['id'])>{{ $city['name'] }}</option>
+        {{-- Attributes --}}
+        <div class="card card-flush mb-7">
+            <div class="card-header">
+                <div class="card-title">
+                    <h2 class="d-flex align-items-center">
+                        <i class="bi bi-sliders text-primary fs-3 me-2"></i>
+                        {{ __('Property attributes') }}
+                    </h2>
+                </div>
+            </div>
+            <div class="card-body pt-3">
+                <x-admin.form-group label="Attribute groups" name="attribute_group_ids"
+                                    helper="{{ __('Select one or more groups to load their related attribute fields.') }}">
+                    <input type="hidden" name="attribute_group_ids_present" value="1"/>
+                    <select name="attribute_group_ids[]" id="attribute_group_ids"
+                            class="form-select form-select-solid"
+                            data-control="select2"
+                            data-placeholder="{{ __('Select attribute groups') }}"
+                            data-allow-clear="true"
+                            multiple="multiple">
+                        @foreach(($attributeGroupOptions ?? []) as $groupOption)
+                            <option value="{{ $groupOption['id'] }}"
+                                @selected(in_array((int) $groupOption['id'], $selectedAttributeGroupIds, true))>
+                                {{ $groupOption['name'] }}
+                            </option>
+                        @endforeach
+                    </select>
+                </x-admin.form-group>
+
+                <div id="property-attributes-container">
+                    @include('property::admin.property.partials._attributes')
+                </div>
+            </div>
+        </div>
+
+        {{-- Slide categories --}}
+        <div class="card card-flush mb-7">
+            <div class="card-header">
+                <div class="card-title">
+                    <h2 class="d-flex align-items-center">
+                        <i class="bi bi-images text-primary fs-3 me-2"></i>
+                        {{ __('Slide categories') }}
+                    </h2>
+                </div>
+            </div>
+            <div class="card-body pt-3">
+                <x-admin.form-group label="Slide categories" name="slide_category_ids"
+                                    helper="{{ __('Choose categories, then upload property-specific media inside each category. Removing a category from this property also removes its uploaded media.') }}">
+                    <input type="hidden" name="slide_category_ids_present" value="1"/>
+                    <select name="slide_category_ids[]"
+                            id="slide_category_ids"
+                            class="form-select form-select-solid"
+                            data-control="select2"
+                            data-placeholder="{{ __('Select slide categories') }}"
+                            data-allow-clear="true"
+                            multiple="multiple">
+                        @foreach(($slideCategories ?? []) as $slideCategory)
+                            <option value="{{ $slideCategory['id'] }}"
+                                @selected(in_array((int) $slideCategory['id'], $selectedSlideCategoryIds, true))>
+                                {{ $slideCategory['name'] }}
+                                @if($slideCategory['status'] !== \Modules\User\Enums\CmsStatus::PUBLISHED->value)
+                                    — {{ __($slideCategory['status']) }}
+                                @endif
+                            </option>
+                        @endforeach
+                    </select>
+                </x-admin.form-group>
+
+                <div id="property-slide-category-media" class="d-flex flex-column gap-5">
+                    @foreach(($slideCategories ?? []) as $slideCategory)
+                        @php
+                            $categoryId = (int) $slideCategory['id'];
+                            $categoryMedia = $existingSlideMediaByCategory->get($categoryId, collect());
+                        @endphp
+                        <div class="border rounded p-5 js-slide-category-media @if(! in_array($categoryId, $selectedSlideCategoryIds, true)) d-none @endif"
+                             data-slide-category-id="{{ $categoryId }}">
+                            <h4 class="fw-semibold mb-4">{{ $slideCategory['name'] }}</h4>
+
+                            <div class="row g-5">
+                                <div class="col-md-6">
+                                    <x-admin.form-group label="Images" :name="'slide_media.'.$categoryId.'.images_media_paths'"
+                                                        helper="{{ __('Choose up to 20 images from the Media Library for this property and category.') }}">
+                                        <div class="js-slide-media-library"
+                                             data-slide-category-id="{{ $categoryId }}"
+                                             data-max="20">
+                                            <div class="d-flex flex-wrap gap-2 mb-3 js-slide-media-selected"></div>
+                                            <button type="button"
+                                                    class="btn btn-light-primary btn-sm js-slide-media-pick">
+                                                <i class="bi bi-images me-1"></i>{{ __('Choose from library') }}
+                                            </button>
+                                        </div>
+                                    </x-admin.form-group>
+                                </div>
+                                <div class="col-md-6">
+                                    <x-admin.form-group label="Videos" :name="'slide_media.'.$categoryId.'.videos'"
+                                                        helper="{{ __('Upload up to 10 MP4, WebM, or MOV videos for this property and category.') }}">
+                                        <input type="file"
+                                               name="slide_media[{{ $categoryId }}][videos][]"
+                                               class="form-control form-control-solid"
+                                               accept="video/mp4,video/webm,video/quicktime"
+                                               multiple/>
+                                    </x-admin.form-group>
+                                </div>
+                            </div>
+
+                            @if($categoryMedia->isNotEmpty())
+                                <div class="row g-4">
+                                    @foreach($categoryMedia as $media)
+                                        <div class="col-6 col-md-3">
+                                            <div class="border rounded p-2 h-100">
+                                                @if($media->type === \Modules\Property\Models\PropertySlideMedia::TYPE_IMAGE)
+                                                    <img src="{{ $media->url }}"
+                                                         alt="{{ $slideCategory['name'] }}"
+                                                         class="rounded object-fit-cover w-100 mb-2"
+                                                         style="height: 110px"/>
+                                                @else
+                                                    <a href="{{ $media->url }}"
+                                                       target="_blank"
+                                                       rel="noopener"
+                                                       class="btn btn-light-primary btn-sm w-100 mb-2">
+                                                        <i class="bi bi-play-circle me-1"></i>{{ __('View video') }}
+                                                    </a>
+                                                @endif
+                                                <label class="form-check form-check-sm form-check-custom form-check-solid">
+                                                    <input class="form-check-input"
+                                                           type="checkbox"
+                                                           name="remove_slide_media_ids[]"
+                                                           value="{{ $media->id }}"/>
+                                                    <span class="form-check-label">{{ __('Remove') }}</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+
+        {{-- Similar + YouTube --}}
+        <div class="card card-flush mb-7">
+            <div class="card-header">
+                <div class="card-title">
+                    <h2 class="d-flex align-items-center">
+                        <i class="bi bi-link-45deg text-primary fs-3 me-2"></i>
+                        {{ __('Related') }}
+                    </h2>
+                </div>
+            </div>
+            <div class="card-body pt-3">
+                <x-admin.form-group label="Youtube link" name="youtube_video_url">
+                    <input type="url" name="youtube_video_url" class="form-control form-control-solid"
+                           value="{{ old('youtube_video_url', optional($property)->youtube_video_url) }}"/>
+                </x-admin.form-group>
+
+                <x-admin.form-group label="Similar properties" name="similar_property_ids"
+                                    helper="Choose up to 12 related projects to show on the property page. Leave empty to show properties of the same type automatically.">
+                    <select name="similar_property_ids[]" id="similar_property_ids"
+                            class="form-select form-select-solid"
+                            data-control="select2"
+                            data-placeholder="{{ __('Select similar properties') }}"
+                            data-allow-clear="true"
+                            multiple="multiple">
+                        @foreach(($propertiesForSimilar ?? []) as $similarOption)
+                            @if($currentPropertyId === null || (int) $similarOption['id'] !== $currentPropertyId)
+                                <option value="{{ $similarOption['id'] }}"
+                                    @selected(in_array((int) $similarOption['id'], $selectedSimilarPropertyIds, true))>
+                                    {{ $similarOption['label'] }}
+                                </option>
+                            @endif
                         @endforeach
                     </select>
                 </x-admin.form-group>
             </div>
-            <div class="col-md-4">
-                <x-admin.form-group label="Municipality" name="district_id" required>
-                    <select id="district_id" name="district_id" class="form-select form-select-solid" required
-                        @disabled(! $prefillCityId && ! old('district_id'))>
-                        <option value="">{{ __('Select municipality') }}</option>
-                    </select>
-                </x-admin.form-group>
-            </div>
-            <div class="col-md-4">
-                <x-admin.form-group label="Location" name="area_id">
-                    <select id="area_id" name="area_id" class="form-select form-select-solid"
-                        @disabled(! $prefillDistrictId && ! old('district_id'))>
-                        <option value="">{{ __('Select area') }}</option>
-                    </select>
-                </x-admin.form-group>
-            </div>
         </div>
 
-
-        <div class="fv-row mb-7">
-            <label class="form-label fw-semibold fs-6">{{ __('Unit types') }}</label>
-            <div
-                class="text-muted fs-7 mb-3">{{ __('Add one row per layout. Choose a type, then enter area and starting price.') }}</div>
-            <div id="unit-type-rows">
-                @foreach($unitTypeRowsForView as $i => $ut)
-                    @php
-                        $nameVal = (string) old("unit_types.$i.name", $ut['name'] ?? '');
-                        $cid = old("unit_types.$i.catalog_id", $ut['catalog_id'] ?? '');
-                        $catalogIds = collect($catalogItems)->pluck('id')->map(fn ($v) => (string) $v)->all();
-                        $inCatalog = $cid !== null && $cid !== '' && in_array((string) $cid, $catalogIds, true);
-                    @endphp
-                    <div class="card card-bordered mb-4 js-unit-row" data-row-index="{{ $i }}">
-                        <div class="card-body py-4">
-                            <div class="row g-3 align-items-end">
-                                <div class="col-lg-3 col-md-6">
-                                    <label class="form-label">{{ __('Unit type') }}</label>
-                                    <select class="form-select form-select-solid js-unit-preset">
-                                        <option value="">{{ __('Select') }}</option>
-                                        @foreach($catalogItems as $c)
-                                            <option value="{{ $c['id'] }}" data-label="{{ e($c['name']) }}"
-                                                @selected((string) $cid === (string) $c['id'])>{{ $c['name'] }}</option>
-                                        @endforeach
-                                        <option
-                                            value="__other__" @selected($nameVal !== '' && ! $inCatalog)>{{ __('Other') }}</option>
-                                    </select>
-                                    <input type="text"
-                                           class="form-control form-control-solid mt-2 js-unit-custom {{ ($nameVal !== '' && ! $inCatalog) ? '' : 'd-none' }}"
-                                           value="{{ ($nameVal !== '' && ! $inCatalog) ? $nameVal : '' }}"
-                                           placeholder="{{ __('Custom unit type') }}"
-                                           autocomplete="off">
-                                </div>
-                                <div class="col-lg-8">
-                                    <div
-                                        class="row g-3 js-unit-numeric {{ ($nameVal !== '' || $inCatalog) ? '' : 'd-none' }}">
-                                        <div class="col-md-4">
-                                            <label class="form-label">{{ __('Min area') }}</label>
-                                            <input type="number" step="0.01" min="0"
-                                                   class="form-control form-control-solid"
-                                                   name="unit_types[{{ $i }}][min_area]"
-                                                   value="{{ old("unit_types.$i.min_area", $ut['min_area'] ?? '') }}">
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label class="form-label">{{ __('Max area') }}</label>
-                                            <input type="number" step="0.01" min="0"
-                                                   class="form-control form-control-solid"
-                                                   name="unit_types[{{ $i }}][max_area]"
-                                                   value="{{ old("unit_types.$i.max_area", $ut['max_area'] ?? '') }}">
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label class="form-label">{{ __('Starting price') }}</label>
-                                            <input type="number" step="0.01" min="0"
-                                                   class="form-control form-control-solid"
-                                                   name="unit_types[{{ $i }}][price]"
-                                                   value="{{ old("unit_types.$i.price", $ut['price'] ?? '') }}">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-1 col-md-6 text-lg-end">
-                                    <button type="button" class="btn btn-sm btn-light-danger js-remove-unit-row"
-                                            title="{{ __('Remove') }}">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <input type="hidden" name="unit_types[{{ $i }}][id]" class="js-unit-id"
-                                   value="{{ $ut['id'] ?? '' }}">
-                            <input type="hidden" name="unit_types[{{ $i }}][catalog_id]" class="js-unit-catalog-id"
-                                   value="{{ $inCatalog ? $cid : '' }}">
-                            <input type="hidden" name="unit_types[{{ $i }}][name]" class="js-unit-name-hidden"
-                                   value="{{ $nameVal }}">
-                        </div>
-                    </div>
-                @endforeach
+        {{-- SEO --}}
+        <div class="card card-flush mb-7">
+            <div class="card-header">
+                <div class="card-title">
+                    <h2 class="d-flex align-items-center">
+                        <i class="bi bi-search text-primary fs-3 me-2"></i>
+                        {{ __('SEO settings') }}
+                    </h2>
+                </div>
             </div>
-            <button type="button" class="btn btn-sm btn-light-primary" id="add-unit-type-row">
-                <i class="bi bi-plus-lg"></i> {{ __('Add unit type') }}
-            </button>
-        </div>
+            <div class="card-body pt-3">
+                @include('cms::admin.partials._seo_section', [
+                    'metaTitle' => old('meta_title', $seoMeta['meta_title'] ?? ''),
+                    'metaDescription' => old('meta_description', $seoMeta['meta_description'] ?? ''),
+                    'metaKeywords' => old('meta_keywords', implode(', ', $seoMeta['meta_keywords'] ?? [])),
+                    'metaImagePreview' => ! empty($seoMeta['meta_img']) ? asset('storage/' . $seoMeta['meta_img']) : null,
+                    'metaImagePath' => $seoMeta['meta_img'] ?? null,
+                    'titleSource' => '#title',
+                    'descSource' => '#meta_description',
+                    'slugSource' => '#url_key',
+                    'baseUrl' => url('/').'/property/',
+                ])
 
-        <x-admin.form-group label="Why to buy this property" name="why_to_buy" required translatable>
-            <textarea id="tinymce-why-to-buy"
-                      class="form-control form-control-solid tinymce-editor"
-                      name="why_to_buy"
-                      rows="6">{!! old('why_to_buy', optional($property)->why_to_buy) !!}</textarea>
-        </x-admin.form-group>
-
-        <x-admin.form-group label="Facilities" name="facilities" translatable>
-            <textarea id="tinymce-facilities"
-                      class="form-control form-control-solid tinymce-editor"
-                      name="facilities"
-                      rows="6">{!! old('facilities', optional($property)->facilities) !!}</textarea>
-        </x-admin.form-group>
-
-        <x-admin.form-group label="Location specifications" name="content" required translatable>
-            <textarea id="tinymce-content"
-                      class="form-control form-control-solid tinymce-editor"
-                      name="content"
-                      rows="8">{!! old('content', optional($property)->content) !!}</textarea>
-        </x-admin.form-group>
-
-        <div class="row mb-2">
-            <div class="col-md-6">
-                <x-admin.form-group label="Latitude" name="lat">
-                    <input type="text" inputmode="decimal" name="lat" class="form-control form-control-solid"
-                           value="{{ old('lat', optional($property)->lat) }}"/>
+                <x-admin.form-group label="Schema JSON-LD" name="meta_schema">
+                    <textarea class="form-control form-control-solid" rows="5"
+                              name="meta_schema">{{ old('meta_schema', $seoMeta['schema'] ?? '') }}</textarea>
                 </x-admin.form-group>
-            </div>
-            <div class="col-md-6">
-                <x-admin.form-group label="Longitude" name="lng">
-                    <input type="text" inputmode="decimal" name="lng" class="form-control form-control-solid"
-                           value="{{ old('lng', optional($property)->lng) }}"/>
-                </x-admin.form-group>
+
+                @include('cms::admin.partials._seo_aside', [
+                    'hasFeaturedImage' => $isEdit && ! empty($property->thumbnail),
+                    'hasMetaImage' => ! empty($seoMeta['meta_img']),
+                    'includeShortDescription' => false,
+                ])
             </div>
         </div>
+    </div>
 
-        <div class="card card-bordered mb-7">
-            <div class="card-body py-4">
+    <div class="col-xxl-4 col-xl-4">
+        <div class="card card-flush mb-7">
+            <div class="card-header">
+                <div class="card-title">
+                    <h2 class="d-flex align-items-center">
+                        <i class="bi bi-toggles text-primary fs-3 me-2"></i>
+                        {{ __('Flags') }}
+                    </h2>
+                </div>
+            </div>
+            <div class="card-body pt-3">
                 <x-admin.toggle-switch name="is_sold_out" label="Sold out"
                                        :checked="(bool) old('is_sold_out', optional($property)->is_sold_out ?? false)"/>
                 <x-admin.toggle-switch name="is_recommended" label="Recommended"
@@ -317,82 +562,7 @@
             </div>
         </div>
 
-        <x-admin.form-group label="Youtube link" name="youtube_video_url">
-            <input type="url" name="youtube_video_url" class="form-control form-control-solid"
-                   value="{{ old('youtube_video_url', optional($property)->youtube_video_url) }}"/>
-        </x-admin.form-group>
-
-        <x-admin.form-group label="Similar properties" name="similar_property_ids"
-                            helper="Choose up to 12 related projects to show on the property page. Leave empty to show properties of the same type automatically.">
-            <select name="similar_property_ids[]" id="similar_property_ids"
-                    class="form-select form-select-solid"
-                    data-control="select2"
-                    data-placeholder="{{ __('Select similar properties') }}"
-                    data-allow-clear="true"
-                    multiple="multiple">
-                @foreach(($propertiesForSimilar ?? []) as $similarOption)
-                    @if($currentPropertyId === null || (int) $similarOption['id'] !== $currentPropertyId)
-                        <option value="{{ $similarOption['id'] }}"
-                            @selected(in_array((int) $similarOption['id'], $selectedSimilarPropertyIds, true))>
-                            {{ $similarOption['label'] }}
-                        </option>
-                    @endif
-                @endforeach
-            </select>
-        </x-admin.form-group>
-
-        <x-admin.form-group label="Add photos" name="slides"
-                            helper="Recommended dimensions: 1920px × 1080px. Maximum 20 images.">
-            <div class="dropzone border-dashed border-primary rounded p-5 text-center" id="property-slides-dropzone">
-                <div class="dz-message needsclick">
-                    <i class="bi bi-cloud-upload fs-1 text-primary"></i>
-                    <div class="ms-4">
-                        <h3 class="fs-5 fw-bold text-gray-900 mb-1">{{ __('Drop files here or click to upload.') }}</h3>
-                        <span
-                            class="fs-7 fw-semibold text-gray-500">{{ __('You can upload up to 20 files.') }}</span>
-                    </div>
-                </div>
-                <input type="file" name="slides[]" id="slides-input" class="d-none" accept="image/*" multiple>
-            </div>
-            <div class="text-muted fs-7 mt-2" id="slides-count-text">{{ __('No files selected.') }}</div>
-            @if($isEdit && $property->slides->isNotEmpty())
-                <div class="row mt-4">
-                    @foreach($property->slides as $slide)
-                        <div class="col-md-2 mb-3">
-                            <img src="{{ asset('storage/'.$slide->image) }}" class="img-fluid rounded border"
-                                 alt="slide">
-                        </div>
-                    @endforeach
-                </div>
-            @endif
-        </x-admin.form-group>
-
-        <div class="separator separator-dashed my-10"></div>
-        <h3 class="fw-bold mb-5">{{ __('SEO settings') }}</h3>
-
-        @include('cms::admin.partials._seo_section', [
-            'metaTitle' => old('meta_title', $seoMeta['meta_title'] ?? ''),
-            'metaDescription' => old('meta_description', $seoMeta['meta_description'] ?? ''),
-            'metaKeywords' => old('meta_keywords', implode(', ', $seoMeta['meta_keywords'] ?? [])),
-            'metaImagePreview' => null,
-            'titleSource' => '#title',
-            'descSource' => '#meta_description',
-            'slugSource' => '#slug',
-            'baseUrl' => url('/').'/properties/',
-        ])
-
-        <x-admin.form-group label="Schema JSON-LD" name="meta_schema">
-            <textarea class="form-control form-control-solid" rows="5"
-                      name="meta_schema">{{ old('meta_schema', $seoMeta['schema'] ?? '') }}</textarea>
-        </x-admin.form-group>
-
-        @include('cms::admin.partials._seo_aside', [
-            'hasFeaturedImage' => $isEdit && ! empty($property->thumbnail),
-            'hasMetaImage' => false,
-            'includeShortDescription' => false,
-        ])
-
-        <div class="d-flex justify-content-end gap-3 mt-10">
+        <div class="d-flex justify-content-end gap-3">
             <a href="{{ route('admin.properties.index') }}" class="btn btn-light">{{ __('Discard') }}</a>
             <button type="submit" class="btn btn-primary"
                     id="property-submit">{{ $isEdit ? __('Save Changes') : __('Save') }}</button>
@@ -404,9 +574,11 @@
     <script>
         (function () {
             const LOCATION_CHILDREN_URL = @json(route('admin.properties.location_children'));
+            const ATTRIBUTE_GROUP_SCHEMA_URL = @json(route('admin.properties.attribute_group_schema'));
             const TYPE_DISTRICT = 'district';
             const TYPE_AREA = 'area';
             const IS_EDIT = @json($isEdit);
+            const PROPERTY_ID = @json($currentPropertyId);
             const PREFILL_CITY_ID = @json($prefillCityId);
             const PREFILL_DISTRICT_ID = @json($prefillDistrictId);
             const PREFILL_AREA_ID = @json($selectedAreaIdValue);
@@ -693,6 +865,122 @@
             document.querySelectorAll('.js-unit-row').forEach(bindUnitRow);
             addUnitBtn?.addEventListener('click', () => addUnitRow());
 
+            async function loadAttributeGroups(groupIds) {
+                const container = document.getElementById('property-attributes-container');
+                if (!container) {
+                    return;
+                }
+                const params = new URLSearchParams();
+                (groupIds || []).forEach((id) => {
+                    if (id) {
+                        params.append('group_ids[]', String(id));
+                    }
+                });
+                if (PROPERTY_ID) {
+                    params.set('property_id', String(PROPERTY_ID));
+                }
+                container.classList.add('opacity-50');
+                try {
+                    const res = await fetch(`${ATTRIBUTE_GROUP_SCHEMA_URL}?${params.toString()}`, {
+                        headers: {'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest'},
+                    });
+                    if (!res.ok) {
+                        return;
+                    }
+                    const data = await res.json();
+                    container.innerHTML = data.html || '';
+                    if (window.jQuery && window.jQuery.fn.select2) {
+                        window.jQuery(container).find('[data-control="select2"]').select2();
+                    }
+                } finally {
+                    container.classList.remove('opacity-50');
+                }
+            }
+
+            function toggleSlideCategoryMedia(selectedIds) {
+                const selected = new Set((selectedIds || []).map((id) => String(id)));
+                document.querySelectorAll('.js-slide-category-media').forEach((panel) => {
+                    const visible = selected.has(String(panel.dataset.slideCategoryId || ''));
+                    panel.classList.toggle('d-none', !visible);
+                    if (!visible) {
+                        panel.querySelectorAll('input[type="file"]').forEach((input) => {
+                            input.value = '';
+                        });
+                        const libraryRoot = panel.querySelector('.js-slide-media-library');
+                        if (libraryRoot) {
+                            libraryRoot.querySelector('.js-slide-media-selected').innerHTML = '';
+                        }
+                    }
+                });
+            }
+
+            function bindSlideMediaLibraryPickers() {
+                document.querySelectorAll('.js-slide-media-library').forEach((root) => {
+                    if (root.dataset.bound === '1') {
+                        return;
+                    }
+                    root.dataset.bound = '1';
+                    const selectedWrap = root.querySelector('.js-slide-media-selected');
+                    const pickBtn = root.querySelector('.js-slide-media-pick');
+                    const categoryId = root.dataset.slideCategoryId;
+                    const max = parseInt(root.dataset.max || '20', 10);
+
+                    function currentCount() {
+                        return selectedWrap.querySelectorAll('input[name^="slide_media["]').length;
+                    }
+
+                    function addItem(item) {
+                        if (!item || !item.path || currentCount() >= max) {
+                            return;
+                        }
+                        const exists = [...selectedWrap.querySelectorAll('input')].some((input) => input.value === item.path);
+                        if (exists) {
+                            return;
+                        }
+                        const card = document.createElement('div');
+                        card.className = 'border rounded p-2 position-relative';
+                        card.style.width = '96px';
+                        card.innerHTML =
+                            '<img src="' + String(item.url || '').replace(/"/g, '&quot;') + '" alt="" class="rounded object-fit-cover w-100" style="height:72px">' +
+                            '<input type="hidden" name="slide_media[' + categoryId + '][images_media_paths][]" value="' + String(item.path).replace(/"/g, '&quot;') + '">' +
+                            '<button type="button" class="btn btn-icon btn-sm btn-light-danger position-absolute top-0 end-0 m-1 js-slide-media-remove" title="{{ __('Remove') }}"><i class="bi bi-x"></i></button>';
+                        selectedWrap.appendChild(card);
+                    }
+
+                    pickBtn?.addEventListener('click', () => {
+                        if (typeof window.openMediaLibraryPicker !== 'function') {
+                            return;
+                        }
+                        window.openMediaLibraryPicker({
+                            mode: 'multi',
+                            max: Math.max(1, max - currentCount()),
+                            onSelect: (items) => {
+                                (items || []).forEach(addItem);
+                            },
+                        });
+                    });
+
+                    selectedWrap?.addEventListener('click', (event) => {
+                        const removeBtn = event.target.closest('.js-slide-media-remove');
+                        if (!removeBtn) {
+                            return;
+                        }
+                        removeBtn.closest('.border')?.remove();
+                    });
+                });
+            }
+
+            bindSlideMediaLibraryPickers();
+
+            if (window.jQuery) {
+                window.jQuery('#attribute_group_ids').on('change', function () {
+                    loadAttributeGroups(window.jQuery(this).val() || []);
+                });
+                window.jQuery('#slide_category_ids').on('change', function () {
+                    toggleSlideCategoryMedia(window.jQuery(this).val() || []);
+                });
+            }
+
             const propertyForm = document.getElementById('property-form');
             propertyForm?.addEventListener('submit', () => {
                 if (typeof tinymce !== 'undefined') {
@@ -724,20 +1012,34 @@
             });
 
             if (window.jQuery && window.jQuery.fn.select2) {
-                window.jQuery('#property_type_id, select[name="status"], #similar_property_ids').select2();
+                window.jQuery('#property_type_id, select[name="status"], #similar_property_ids, #slide_category_ids, #attribute_group_ids').select2();
             }
             initLocationCascade();
 
-            const dropzone = document.getElementById('property-slides-dropzone');
-            const slidesInput = document.getElementById('slides-input');
-            const slidesCountText = document.getElementById('slides-count-text');
-            dropzone?.addEventListener('click', () => slidesInput?.click());
-            slidesInput?.addEventListener('change', () => {
-                const count = slidesInput.files?.length ?? 0;
-                if (slidesCountText) {
-                    slidesCountText.textContent = count > 0
-                        ? `{{ __('Selected images') }}: ${count}`
-                        : `{{ __('No files selected.') }}`;
+            document.addEventListener('click', function (event) {
+                const removeMedia = event.target.closest('[data-attribute-media-remove]');
+                if (removeMedia) {
+                    const code = removeMedia.getAttribute('data-attribute-media-remove');
+                    const removeInput = document.querySelector(`[name="attributes_remove[${code}]"]`);
+                    const libraryInput = document.querySelector(`[name="attribute_media_path[${code}]"]`);
+                    if (removeInput) removeInput.value = '1';
+                    if (libraryInput) libraryInput.value = '';
+                    const previewSelector = removeMedia.getAttribute('data-preview-target');
+                    const preview = previewSelector ? document.querySelector(previewSelector) : null;
+                    if (preview) preview.style.backgroundImage = 'url("' + @json(asset('images/default.jpg')) + '")';
+                    removeMedia.closest('.d-flex')?.querySelector('a')?.classList.add('d-none');
+                }
+
+                const control = event.target.closest('.js-gallery-up, .js-gallery-down, .js-gallery-remove');
+                if (!control) return;
+                const item = control.closest('.js-gallery-item');
+                if (!item) return;
+                if (control.classList.contains('js-gallery-remove')) {
+                    item.remove();
+                } else if (control.classList.contains('js-gallery-up') && item.previousElementSibling) {
+                    item.parentNode.insertBefore(item, item.previousElementSibling);
+                } else if (control.classList.contains('js-gallery-down') && item.nextElementSibling) {
+                    item.parentNode.insertBefore(item.nextElementSibling, item);
                 }
             });
         })();

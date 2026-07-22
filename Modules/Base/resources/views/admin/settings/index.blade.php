@@ -19,7 +19,9 @@
                 <div class="fs-6 fw-bold mt-2 mb-5">{{__('Transparent Logo')}}</div>
                 <x-admin.image-input
                     name="imgs[white_logo]"
+                    accept="image/*"
                     :preview="asset('storage/' . $settings->get('white_logo' ,'default.jpg'))"
+                    :mediaPath="$settings->get('white_logo')"
                     mediaInputName="imgs_media[white_logo]"/>
                 <!--begin::Hint-->
                 <div class="form-text"> 75px * 150px</div>
@@ -32,7 +34,9 @@
                 <div class="fs-6 fw-bold mt-2 mb-5">{{__('Dark Logo')}}</div>
                 <x-admin.image-input
                     name="imgs[black_logo]"
+                    accept="image/*"
                     :preview="asset('storage/' . $settings->get('black_logo' ,'default.jpg'))"
+                    :mediaPath="$settings->get('black_logo')"
                     mediaInputName="imgs_media[black_logo]"/>
                 <!--begin::Hint-->
                 <div class="form-text"> 238px * 51px</div>
@@ -44,7 +48,9 @@
                 <div class="fs-6 fw-bold mt-2 mb-5">{{ __('Admin Logo') }}</div>
                 <x-admin.image-input
                     name="imgs[admin_logo]"
+                    accept="image/*"
                     :preview="$settings->get('admin_logo') ? asset('storage/' . $settings->get('admin_logo')) : asset('images/logo.png')"
+                    :mediaPath="$settings->get('admin_logo')"
                     mediaInputName="imgs_media[admin_logo]"/>
                 <div class="form-text">{{ __('Used in the admin panel sidebar navigation.') }}</div>
             </div>
@@ -54,7 +60,9 @@
                 <div class="fs-6 fw-bold mt-2 mb-5">{{__('Meta Image')}}</div>
                 <x-admin.image-input
                     name="imgs[meta_img]"
+                    accept="image/*"
                     :preview="asset('storage/' . $settings->get('meta_img' ,'default.jpg'))"
+                    :mediaPath="$settings->get('meta_img')"
                     mediaInputName="imgs_media[meta_img]"/>
                 <!--begin::Hint-->
                 <div class="form-text"> 600px * 600px</div>
@@ -63,7 +71,7 @@
             <!--end::Col-->
 
         </div>
-        
+
         <h5 class="my-3 fw-bold text-primary">{{ __('Pages Banners') }}</h5>
         <hr/>
         <div class="row mb-10">
@@ -71,25 +79,31 @@
                 <div class="fs-6 fw-bold mt-2 mb-5">{{ __('Contact Us Page Banner') }}</div>
                 <x-admin.image-input
                     name="imgs[contact_us_banner]"
+                    accept="image/*"
                     :preview="asset('storage/' . $settings->get('contact_us_banner', 'default.jpg'))"
+                    :mediaPath="$settings->get('contact_us_banner')"
                     mediaInputName="imgs_media[contact_us_banner]"/>
-                <div class="form-text">{{ __('Minimum 1920×600 px, max 4 MB (JPEG, PNG, WebP).') }}</div>
+                <div class="form-text">{{ __('Minimum 1920×600 px, max 4 MB (any supported image format).') }}</div>
             </div>
             <div class="col-xl-3 mb-5">
                 <div class="fs-6 fw-bold mt-2 mb-5">{{ __('Blog Details Page Banner') }}</div>
                 <x-admin.image-input
                     name="imgs[blog_show_banner]"
+                    accept="image/*"
                     :preview="asset('storage/' . $settings->get('blog_show_banner', 'default.jpg'))"
+                    :mediaPath="$settings->get('blog_show_banner')"
                     mediaInputName="imgs_media[blog_show_banner]"/>
-                <div class="form-text">{{ __('Minimum 1920×600 px, max 4 MB (JPEG, PNG, WebP).') }}</div>
+                <div class="form-text">{{ __('Minimum 1920×600 px, max 4 MB (any supported image format).') }}</div>
             </div>
             <div class="col-xl-3 mb-5">
                 <div class="fs-6 fw-bold mt-2 mb-5">{{ __('Property Listings Page Banner') }}</div>
                 <x-admin.image-input
                     name="imgs[property_show_banner]"
+                    accept="image/*"
                     :preview="asset('storage/' . $settings->get('property_show_banner', 'default.jpg'))"
+                    :mediaPath="$settings->get('property_show_banner')"
                     mediaInputName="imgs_media[property_show_banner]"/>
-                <div class="form-text">{{ __('Minimum 1920×600 px, max 4 MB (JPEG, PNG, WebP).') }}</div>
+                <div class="form-text">{{ __('Minimum 1920×600 px, max 4 MB (any supported image format).') }}</div>
             </div>
         </div>
         <div class="row mb-8">
@@ -134,20 +148,52 @@
             </div>
         </div>
 
-        <div class="row mb-8">
+{{--        <div class="row mb-8">--}}
+{{--            <!--begin::Col-->--}}
+{{--            <div class="col-xl-3">--}}
+{{--                <div class="fs-6 fw-bold mt-2 mb-3"><i--}}
+{{--                        class="bi bi-map mx-1 text-primary"></i> {{__('Website Map')}}</div>--}}
+{{--            </div>--}}
+{{--            <!--end::Col-->--}}
+{{--            <!--begin::Col-->--}}
+{{--            <div class="col-xl-9 fv-row">--}}
+{{--                <textarea name="data[map]"--}}
+{{--                          class="form-control form-control-solid h-150px">{{$settings->get('map')}}</textarea>--}}
+{{--            </div>--}}
+{{--            <!--begin::Col-->--}}
+{{--        </div>--}}
+
+
+          <div class="row mb-8">
             <!--begin::Col-->
             <div class="col-xl-3">
                 <div class="fs-6 fw-bold mt-2 mb-3"><i
-                        class="bi bi-map mx-1 text-primary"></i> {{__('Website Map')}}</div>
+                        class="bi bi-code mx-1 text-primary"></i> {{__('Header Scripts')}}</div>
             </div>
             <!--end::Col-->
             <!--begin::Col-->
             <div class="col-xl-9 fv-row">
-                <textarea name="data[map]"
-                          class="form-control form-control-solid h-150px">{{$settings->get('map')}}</textarea>
+                <textarea name="data[header_scripts]"
+                          class="form-control form-control-solid h-150px">{{$settings->get('header_scripts')}}</textarea>
             </div>
             <!--begin::Col-->
         </div>
+
+           <div class="row mb-8">
+            <!--begin::Col-->
+            <div class="col-xl-3">
+                <div class="fs-6 fw-bold mt-2 mb-3"><i
+                        class="bi bi-code mx-1 text-primary"></i> {{__('Footer Scripts')}}</div>
+            </div>
+            <!--end::Col-->
+            <!--begin::Col-->
+            <div class="col-xl-9 fv-row">
+                <textarea name="data[footer_scripts]"
+                          class="form-control form-control-solid h-150px">{{$settings->get('footer_scripts')}}</textarea>
+            </div>
+            <!--begin::Col-->
+        </div>
+
 
         <h5 class="my-3 fw-bold text-primary">{{__('Social Media')}}</h5>
         <hr/>

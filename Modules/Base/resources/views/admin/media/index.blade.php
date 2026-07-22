@@ -17,11 +17,11 @@
                 <h2>{{ __('Media Library') }}</h2>
             </div>
             <div class="card-toolbar">
-                <button type="button" class="btn btn-primary" data-media-open="true">{{ __('Open Picker') }}</button>
+                <span class="text-muted">{{ __('Manage uploaded files and reuse them in content, SEO images, and editors.') }}</span>
             </div>
         </div>
         <div class="card-body">
-            <p class="text-muted mb-0">{{ __('Manage uploaded files and reuse them in content, SEO images, and editors.') }}</p>
+            <x-admin.media-library-browser instance="page" :autoload="true"/>
         </div>
     </div>
 </x-admin-layout>

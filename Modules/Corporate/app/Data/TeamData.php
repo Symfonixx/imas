@@ -2,8 +2,7 @@
 
 namespace Modules\Corporate\Data;
 
-use Closure;
-use Illuminate\Http\UploadedFile;
+use Modules\Base\Support\Media\LibraryImageRule;
 use Modules\User\Enums\CmsStatus;
 use Spatie\LaravelData\Attributes\Validation\IntegerType;
 use Spatie\LaravelData\Attributes\Validation\Nullable;
@@ -26,7 +25,7 @@ class TeamData extends Data
         public ?string $link = null,
 
         #[Nullable]
-        public UploadedFile|string|null $avatar = null,
+        public ?string $avatar = null,
 
         #[Nullable, IntegerType, Rule('min:0', 'max:999999')]
         public int $rank = 0,
@@ -36,28 +35,12 @@ class TeamData extends Data
     ) {}
 
     /**
-     * @return array<string, list<string|Closure>>
+     * @return array<string, list<mixed>>
      */
     public static function rules(?ValidationContext $context = null): array
     {
-        $imageOrPath = function (string $attribute, mixed $value, Closure $fail): void {
-            if ($value === null || $value === '') {
-                return;
-            }
-            if ($value instanceof UploadedFile) {
-                if (! $value->isValid()) {
-                    $fail(__('The :attribute is not a valid file.'));
-                }
-
-                return;
-            }
-            if (! is_string($value)) {
-                $fail(__('The :attribute must be a string.'));
-            }
-        };
-
         return [
-            'avatar' => ['nullable', $imageOrPath],
+            'avatar' => ['nullable', new LibraryImageRule],
         ];
     }
 }

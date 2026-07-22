@@ -3,6 +3,7 @@
     'metaDescription' => '',
     'metaKeywords' => '',
     'metaImagePreview' => null,
+    'metaImagePath' => null,
     'titleSource' => '#title',
     'descSource' => '#meta_description',
     'slugSource' => '#slug',
@@ -18,7 +19,7 @@
             </h2>
         </div>
     </div>
-    <div class="card-body pt-0">
+    <div class="card-body pt-3">
         <p class="text-muted mb-7">
             {{ __('Optimize how this content appears in search engines and on social networks.') }}
         </p>
@@ -45,7 +46,7 @@
         {{-- Meta Image --}}
         <x-admin.form-group :label="__('Meta Image')"
                             :helper="__('SEO Tip: Use a 1200×630 image for best results on social platforms (Open Graph / Twitter Card).')">
-            <x-admin.image-input name="meta_img" :preview="$metaImagePreview"/>
+            <x-admin.image-input name="meta_img" :preview="$metaImagePreview" :mediaPath="$metaImagePath"/>
         </x-admin.form-group>
 
         {{-- Meta Title --}}

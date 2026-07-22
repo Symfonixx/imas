@@ -95,7 +95,7 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         <p class="text-muted mb-7">
                             {{ __('These values are used as defaults across the site (titles, meta tags, sharing cards).') }}
                         </p>
@@ -257,7 +257,7 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         <x-admin.form-group label="Robots.txt" name="robots_txt"
                                             helper="Controls how search engine crawlers access your website.">
                             <textarea name="robots_txt"
@@ -288,7 +288,7 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         <div class="form-check form-check-custom form-check-solid">
                             <input class="form-check-input"
                                    type="checkbox"

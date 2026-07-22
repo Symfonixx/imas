@@ -27,7 +27,7 @@ class AboutUsController extends Controller
     public function store(Request $request)
     {
         $this->settingsService->update(
-            images: $request->file('imgs', []),
+            images: [],
             mediaPaths: (array) $request->input('imgs_media', []),
             removedImageKeys: (array) $request->input('imgs_remove', [])
         );

@@ -28,7 +28,7 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         <x-admin.form-group label="Name" name="name" required translatable>
                             <input type="text" name="name" class="form-control form-control-solid"
                                    value="{{ old('name', $testimonial->name) }}" placeholder="{{ __('Name') }}"/>
@@ -51,7 +51,7 @@
 
                         <x-admin.form-group label="Avatar" name="img"
                                             helper="{{ __('Optional. If empty, a default avatar is shown.') }}">
-                            <x-admin.image-input name="img" :preview="$testimonial->avatar_link"/>
+                            <x-admin.image-input name="img" :preview="$testimonial->avatar_link" :mediaPath="$testimonial->avatar"/>
                         </x-admin.form-group>
 
                         <x-admin.form-group label="Link" name="link">
@@ -79,7 +79,7 @@
                             </h2>
                         </div>
                     </div>
-                    <div class="card-body pt-0">
+                    <div class="card-body pt-3">
                         <x-admin.form-group label="Rank" name="rank" required>
                             <input type="number" min="0" name="rank" class="form-control form-control-solid"
                                    value="{{ old('rank', $testimonial->rank) }}"/>

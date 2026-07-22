@@ -4,7 +4,7 @@ namespace Modules\Core\Traits;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Laravel\Facades\Image;
+use Intervention\Image\ImageManager;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
 trait FileTrait
@@ -38,12 +38,19 @@ trait FileTrait
             return Storage::disk($disk)->putFileAs($dir, $file, $filename);
         }
 
-        // Process and upload image
-        $image = Image::read($file);
+        // Process and upload image via Intervention directly.
+        // Avoid Intervention\Image\Laravel\Facades\Image — Laravel 13 binds
+        // the same 'image' container key to Illuminate\Image\ImageManager,
+        // whose GD driver calls ImageManager::usingDriver() (Intervention v4 API).
+        $source = $file->getRealPath() ?: $file->getPathname();
+        $image = ImageManager::gd()->read($source);
         if ($width) {
-            $image->resize($width);
+            $image->scale(width: $width);
         }
-        Storage::disk($disk)->put($dir.'/'.$filename, (string) $image->encode());
+
+        $extension = $file->getClientOriginalExtension() ?: 'jpg';
+        $encoded = $image->encodeByExtension($extension);
+        Storage::disk($disk)->put($dir.'/'.$filename, (string) $encoded);
 
         return $dir.'/'.$filename;
     }
@@ -60,7 +67,10 @@ trait FileTrait
         }
 
         $allowedMimeTypes = config('core.allowed_mime_types');
-        if (! in_array($file->getMimeType(), $allowedMimeTypes, true)) {
+        $mimeType = $file->getMimeType();
+        $isAllowedImage = is_string($mimeType) && str_starts_with($mimeType, 'image/');
+
+        if (! $isAllowedImage && ! in_array($mimeType, $allowedMimeTypes, true)) {
             session()->flushMessage(false, __('File type is not allowed.'));
 
             return false;

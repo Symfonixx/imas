@@ -2,8 +2,7 @@
 
 namespace Modules\Corporate\Data;
 
-use Closure;
-use Illuminate\Http\UploadedFile;
+use Modules\Base\Support\Media\LibraryImageRule;
 use Modules\User\Enums\CmsStatus;
 use Spatie\LaravelData\Attributes\Validation\BooleanType;
 use Spatie\LaravelData\Attributes\Validation\Nullable;
@@ -38,10 +37,10 @@ class CorporateServiceData extends Data
         public ?string $meta_keywords = null,
 
         #[Nullable]
-        public UploadedFile|string|null $image = null,
+        public ?string $image = null,
 
         #[Nullable]
-        public UploadedFile|string|null $meta_image = null,
+        public ?string $meta_image = null,
 
         #[Nullable]
         public CmsStatus $status = CmsStatus::PUBLISHED,
@@ -51,29 +50,13 @@ class CorporateServiceData extends Data
     ) {}
 
     /**
-     * @return array<string, list<string|Closure>>
+     * @return array<string, list<mixed>>
      */
     public static function rules(?ValidationContext $context = null): array
     {
-        $imageOrPath = function (string $attribute, mixed $value, Closure $fail): void {
-            if ($value === null || $value === '') {
-                return;
-            }
-            if ($value instanceof UploadedFile) {
-                if (! $value->isValid()) {
-                    $fail(__('The :attribute is not a valid file.'));
-                }
-
-                return;
-            }
-            if (! is_string($value)) {
-                $fail(__('The :attribute must be a string.'));
-            }
-        };
-
         return [
-            'image' => ['nullable', $imageOrPath],
-            'meta_image' => ['nullable', $imageOrPath],
+            'image' => ['nullable', new LibraryImageRule],
+            'meta_image' => ['nullable', new LibraryImageRule],
         ];
     }
 }

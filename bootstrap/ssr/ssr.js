@@ -700,7 +700,7 @@ function resolveVideoPlayback(raw) {
 		type: "iframe",
 		src: `https://player.vimeo.com/video/${vimeoId}`
 	};
-	if (/\.(mp4|webm|ogg)(\?.*)?$/i.test(trimmed)) return {
+	if (/\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(trimmed)) return {
 		type: "file",
 		src: trimmed
 	};
@@ -1113,11 +1113,11 @@ var _sfc_main = {
 			if (typeof props.property.url === "string" && props.property.url.trim() !== "") return props.property.url;
 			try {
 				if (typeof route === "function" && route().has?.("property.show")) {
-					const slug = props.property.project_code || props.property.slug;
+					const slug = props.property.url_key || props.property.slug || props.property.project_code;
 					if (slug) return route("property.show", slug);
 				}
 			} catch {}
-			const slug = props.property.project_code || props.property.slug;
+			const slug = props.property.url_key || props.property.slug || props.property.project_code;
 			return slug ? `/property/${encodeURIComponent(slug)}` : "#";
 		});
 		const addressLine = computed(() => {
@@ -1140,35 +1140,35 @@ var _sfc_main = {
 			_push(`<div${ssrRenderAttrs(mergeProps({
 				class: ["imas-property-card imas-property-card--media-overlay item user-select-none", [__props.columnClass, { "imas-property-card--sold-out": isSoldOut.value }]],
 				"aria-disabled": isSoldOut.value ? "true" : void 0
-			}, _attrs))} data-v-a644e98f><div class="project-single imas-card__surface" data-v-a644e98f>`);
+			}, _attrs))} data-v-86dd8d01><div class="project-single imas-card__surface" data-v-86dd8d01>`);
 			if (!isSoldOut.value) _push(ssrRenderComponent(unref(Link), {
 				href: showUrl.value,
 				class: "imas-property-card__stretched-link",
 				"aria-label": displayTitle.value
 			}, null, _parent));
 			else _push(`<!---->`);
-			_push(`<div class="project-inner project-head imas-card__media" data-v-a644e98f><div class="homes" data-v-a644e98f><div class="homes-img"${ssrRenderAttr("aria-label", isSoldOut.value ? soldOutCardLabel.value : void 0)} data-v-a644e98f>`);
+			_push(`<div class="project-inner project-head imas-card__media" data-v-86dd8d01><div class="homes" data-v-86dd8d01><div class="homes-img"${ssrRenderAttr("aria-label", isSoldOut.value ? soldOutCardLabel.value : void 0)} data-v-86dd8d01>`);
 			if (propertyTypeLabel.value || __props.property.is_featured) {
-				_push(`<div class="homes-tag button alt imas-badge--type" data-v-a644e98f>`);
-				if (__props.property.is_featured) _push(`<i class="fa fa-star imas-featured-star"${ssrRenderAttr("aria-label", trans("properties.featured"))} data-v-a644e98f></i>`);
+				_push(`<div class="homes-tag button alt imas-badge--type" data-v-86dd8d01>`);
+				if (__props.property.is_featured) _push(`<i class="fa fa-star imas-featured-star"${ssrRenderAttr("aria-label", trans("properties.featured"))} data-v-86dd8d01></i>`);
 				else _push(`<!---->`);
-				if (propertyTypeLabel.value) _push(`<span data-v-a644e98f>${ssrInterpolate(propertyTypeLabel.value)}</span>`);
+				if (propertyTypeLabel.value) _push(`<span data-v-86dd8d01>${ssrInterpolate(propertyTypeLabel.value)}</span>`);
 				else _push(`<!---->`);
 				_push(`</div>`);
 			} else _push(`<!---->`);
-			if (__props.property.is_sold_out) _push(`<div class="homes-tag button alt imas-sold-out-badge imas-badge--danger" data-v-a644e98f>${ssrInterpolate(trans("properties.sold_out"))}</div>`);
+			if (__props.property.is_sold_out) _push(`<div class="homes-tag button alt imas-sold-out-badge imas-badge--danger" data-v-86dd8d01>${ssrInterpolate(trans("properties.sold_out"))}</div>`);
 			else _push(`<!---->`);
-			_push(`<img${ssrRenderAttr("src", __props.property.thumbnail_url)}${ssrRenderAttr("alt", displayTitle.value)} class="img-responsive" data-v-a644e98f></div></div><div class="imas-card-actions" data-v-a644e98f><div class="homes-price imas-start-price imas-chip" data-v-a644e98f><span class="imas-start-price__from" data-v-a644e98f>${ssrInterpolate(trans("properties.price_from"))}</span><span class="imas-start-price__amount" data-v-a644e98f>${ssrInterpolate(priceAmount.value)}</span></div>`);
+			_push(`<img${ssrRenderAttr("src", __props.property.thumbnail_url)}${ssrRenderAttr("alt", __props.property.thumbnail_alt || displayTitle.value)}${ssrRenderAttr("title", __props.property.thumbnail_title || void 0)} class="img-responsive" data-v-86dd8d01></div></div><div class="imas-card-actions" data-v-86dd8d01><div class="homes-price imas-start-price imas-chip" data-v-86dd8d01><span class="imas-start-price__from" data-v-86dd8d01>${ssrInterpolate(trans("properties.price_from"))}</span><span class="imas-start-price__amount" data-v-86dd8d01>${ssrInterpolate(priceAmount.value)}</span></div>`);
 			if (!isSoldOut.value) {
-				_push(`<div class="button-effect" data-v-a644e98f>`);
-				if (__props.property.youtube_video_url) _push(`<button type="button" class="btn imas-card-video-btn"${ssrRenderAttr("aria-label", playVideoLabel.value)} data-v-a644e98f><i class="fas fa-video" aria-hidden="true" data-v-a644e98f></i></button>`);
+				_push(`<div class="button-effect" data-v-86dd8d01>`);
+				if (__props.property.youtube_video_url) _push(`<button type="button" class="btn imas-card-video-btn"${ssrRenderAttr("aria-label", playVideoLabel.value)} data-v-86dd8d01><i class="fas fa-video" aria-hidden="true" data-v-86dd8d01></i></button>`);
 				else _push(`<!---->`);
-				_push(`<button type="button" class="${ssrRenderClass([{ "is-favorited": localFavorited.value }, "btn imas-favorite-btn"])}"${ssrRenderAttr("aria-label", favoriteAriaLabel.value)}${ssrRenderAttr("aria-pressed", localFavorited.value)} data-v-a644e98f><i class="${ssrRenderClass([localFavorited.value ? "fa-heart" : "fa-heart-o", "fa favorite-icon"])}" aria-hidden="true" data-v-a644e98f></i></button></div>`);
+				_push(`<button type="button" class="${ssrRenderClass([{ "is-favorited": localFavorited.value }, "btn imas-favorite-btn"])}"${ssrRenderAttr("aria-label", favoriteAriaLabel.value)}${ssrRenderAttr("aria-pressed", localFavorited.value)} data-v-86dd8d01><i class="${ssrRenderClass([localFavorited.value ? "fa-heart" : "fa-heart-o", "fa favorite-icon"])}" aria-hidden="true" data-v-86dd8d01></i></button></div>`);
 			} else _push(`<!---->`);
-			_push(`</div></div><div class="homes-content imas-card__body" data-v-a644e98f><h3 class="imas-property-title imas-card__title" data-v-a644e98f><span class="imas-card__title-text" data-v-a644e98f>${ssrInterpolate(displayTitle.value)}</span></h3>`);
-			if (overviewText.value) _push(`<p class="imas-property-overview imas-card__excerpt text-card-excerpt mb-3" data-v-a644e98f>${ssrInterpolate(overviewText.value)}</p>`);
+			_push(`</div></div><div class="homes-content imas-card__body" data-v-86dd8d01><h3 class="imas-property-title imas-card__title" data-v-86dd8d01><span class="imas-card__title-text" data-v-86dd8d01>${ssrInterpolate(displayTitle.value)}</span></h3>`);
+			if (overviewText.value) _push(`<p class="imas-property-overview imas-card__excerpt text-card-excerpt mb-3" data-v-86dd8d01>${ssrInterpolate(overviewText.value)}</p>`);
 			else _push(`<!---->`);
-			_push(`<p class="homes-address imas-card__meta text-base mb-3" data-v-a644e98f><span class="imas-card__address-line" data-v-a644e98f><i class="fa fa-map-marker imas-address-marker" aria-hidden="true" data-v-a644e98f></i><span data-v-a644e98f>${ssrInterpolate(addressLine.value)}</span></span></p>`);
+			_push(`<p class="homes-address imas-card__meta text-base mb-3" data-v-86dd8d01><span class="imas-card__address-line" data-v-86dd8d01><i class="fa fa-map-marker imas-address-marker" aria-hidden="true" data-v-86dd8d01></i><span data-v-86dd8d01>${ssrInterpolate(addressLine.value)}</span></span></p>`);
 			_push(ssrRenderComponent(PropertyCardUnitTypesBar_default, { "unit-types": __props.property.unit_types ?? [] }, null, _parent));
 			_push(`</div></div>`);
 			if (__props.property.youtube_video_url && !isSoldOut.value) _push(ssrRenderComponent(VideoLightbox_default, {
@@ -1189,7 +1189,7 @@ _sfc_main.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("Modules/Property/resources/assets/js/components/PropertyCard.vue");
 	return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
 };
-var PropertyCard_default = /* @__PURE__ */ _plugin_vue_export_helper_default(_sfc_main, [["__scopeId", "data-v-a644e98f"]]);
+var PropertyCard_default = /* @__PURE__ */ _plugin_vue_export_helper_default(_sfc_main, [["__scopeId", "data-v-86dd8d01"]]);
 //#endregion
 //#region resources/js/configureImasVueApp.js
 /**
@@ -1237,15 +1237,15 @@ function resolveInertiaPage(name) {
 	const modules = name.split("::");
 	if (modules.length > 1) return resolvePageComponent(`../../Modules/${modules[0]}/resources/assets/js/Pages/${modules[1]}.vue`, /* @__PURE__ */ Object.assign({
 		"../../Modules/Base/resources/assets/js/Pages/AboutUs.vue": () => import("./assets/AboutUs-D6EVbU88.js"),
-		"../../Modules/Base/resources/assets/js/Pages/Index.vue": () => import("./assets/Index-DNwbvhCH.js"),
-		"../../Modules/Cms/resources/assets/js/Pages/Index.vue": () => import("./assets/Index-oYqtyeBW.js"),
+		"../../Modules/Base/resources/assets/js/Pages/Index.vue": () => import("./assets/Index-6rAC2O_E.js"),
+		"../../Modules/Cms/resources/assets/js/Pages/Index.vue": () => import("./assets/Index-C1rQBQ8S.js"),
 		"../../Modules/Cms/resources/assets/js/Pages/PageShow.vue": () => import("./assets/PageShow-BnbooWe8.js"),
 		"../../Modules/Cms/resources/assets/js/Pages/Show.vue": () => import("./assets/Show-CSfhLrmo.js"),
 		"../../Modules/Corporate/resources/assets/js/Pages/index.vue": () => import("./assets/Pages-D1FViVaN.js"),
 		"../../Modules/Property/resources/assets/js/Pages/FavoriteProperties.vue": () => import("./assets/FavoriteProperties-byYQpoN2.js"),
 		"../../Modules/Property/resources/assets/js/Pages/TurkishCitizenship.vue": () => import("./assets/TurkishCitizenship-Bwz_u035.js"),
 		"../../Modules/Property/resources/assets/js/Pages/index.vue": () => import("./assets/Pages-DR9DnnNB.js"),
-		"../../Modules/Property/resources/assets/js/Pages/show.vue": () => import("./assets/show-Btb3fVBX.js"),
+		"../../Modules/Property/resources/assets/js/Pages/show.vue": () => import("./assets/show-CYWvE8Jt.js"),
 		"../../Modules/Support/resources/assets/js/Pages/ContactUs.vue": () => import("./assets/ContactUs-Ds4Uo8r5.js"),
 		"../../Modules/User/resources/assets/js/Pages/Auth/ForgotPassword.vue": () => import("./assets/ForgotPassword-DFjseVBQ.js"),
 		"../../Modules/User/resources/assets/js/Pages/Auth/Login.vue": () => import("./assets/Login-C2m2LYoo.js"),

@@ -1,1 +1,0 @@
-import{G as e,I as t,m as n}from"./app-IOBZ3nyd.js";var r={};function i(n,r){return e(),t(`div`)}var a=n(r,[[`render`,i]]);export{a as default};

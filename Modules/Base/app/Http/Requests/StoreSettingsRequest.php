@@ -34,6 +34,8 @@ class StoreSettingsRequest extends FormRequest
             'data.email' => ['nullable', 'string', 'email', 'max:255'],
             'data.address' => ['nullable', 'string', 'max:500'],
             'data.map' => ['nullable', 'string', 'max:10000'],
+            'data.header_scripts' => ['nullable', 'string', 'max:20000'],
+            'data.footer_scripts' => ['nullable', 'string', 'max:20000'],
             'data.whatsapp' => ['nullable', 'string', 'max:255'],
             'data.facebook' => ['nullable', 'string', 'max:255'],
             'data.instagram' => ['nullable', 'string', 'max:255'],

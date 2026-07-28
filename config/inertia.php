@@ -21,11 +21,19 @@ return [
 
     'ssr' => [
 
-        'enabled' => (bool) env('INERTIA_SSR_ENABLED', true),
+        // Shared hosting cannot keep `php artisan inertia:start-ssr` running — leave false there.
+        'enabled' => (bool) env('INERTIA_SSR_ENABLED', false),
 
         'url' => env('INERTIA_SSR_URL', 'http://127.0.0.1:13714'),
 
         'ensure_bundle_exists' => (bool) env('INERTIA_SSR_ENSURE_BUNDLE_EXISTS', true),
+
+        // Seconds to skip SSR after a dispatch failure (stops log spam when Node is down).
+        'circuit_ttl' => (int) env('INERTIA_SSR_CIRCUIT_TTL', 300),
+
+        'timeout' => (int) env('INERTIA_SSR_TIMEOUT', 5),
+
+        'connect_timeout' => (int) env('INERTIA_SSR_CONNECT_TIMEOUT', 1),
 
         // 'bundle' => base_path('bootstrap/ssr/ssr.mjs'),
 

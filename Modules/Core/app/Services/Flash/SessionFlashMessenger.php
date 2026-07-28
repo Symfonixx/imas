@@ -8,7 +8,9 @@ class SessionFlashMessenger implements FlashMessengerInterface
 {
     public function success(?string $message = null): void
     {
-        session()->flushMessage(true, $message ?? '');
+        // Pass null through so the macro falls back to its default message;
+        // an empty string here would render no toast at all.
+        session()->flushMessage(true, $message);
     }
 
     public function error(string $message): void

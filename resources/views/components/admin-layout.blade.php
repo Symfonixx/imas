@@ -512,14 +512,14 @@ Author: Hadi Hilal
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 <script>
-    @if (session('success'))
-    toastr.success('{{ session('success') }}');
-    @elseif (session('error'))
-    toastr.error('{{ session('error') }}');
+    @if (session()->has('success'))
+    toastr.success(@json((string) session('success') !== '' ? session('success') : __('The Operation Done Successfully')));
+    @elseif (session()->has('error'))
+    toastr.error(@json((string) session('error') !== '' ? session('error') : __('An Error Occurred!')));
     @endif
     @if ($errors->any())
     @foreach ($errors->all() as $error)
-    toastr.error('{{ $error }}');
+    toastr.error(@json($error));
     @endforeach
     @endif
 

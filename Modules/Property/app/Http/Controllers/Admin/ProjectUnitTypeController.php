@@ -48,6 +48,8 @@ class ProjectUnitTypeController extends Controller
         $type->is_active = $request->boolean('is_active', true);
         $type->save();
 
+        session()->flushMessage(true);
+
         return redirect()->route('admin.project_unit_types.index');
     }
 
@@ -74,6 +76,8 @@ class ProjectUnitTypeController extends Controller
         $project_unit_type->is_active = $request->boolean('is_active', true);
         $project_unit_type->save();
 
+        session()->flushMessage(true);
+
         return redirect()->route('admin.project_unit_types.index');
     }
 
@@ -81,6 +85,8 @@ class ProjectUnitTypeController extends Controller
     {
         $ids = array_map('intval', (array) $request->input('ids', []));
         ProjectUnitType::query()->whereIn('id', $ids)->delete();
+
+        session()->flushMessage(true);
 
         return back();
     }

@@ -37,11 +37,17 @@ class Settings extends Model
      */
     public static function set(string $key, ?string $value): bool
     {
-        if ($value === null) {
-            return false;
-        }
-
         self::loadSettingsCache();
+
+        // Null clears the setting so reads fall back to their defaults.
+        if ($value === null) {
+            if (isset(self::$settingsCache[$key])) {
+                self::$settingsCache[$key]->delete();
+                unset(self::$settingsCache[$key]);
+            }
+
+            return true;
+        }
 
         if (! isset(self::$settingsCache[$key])) {
             $model = self::create(['key' => $key, 'value' => $value]);

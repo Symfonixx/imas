@@ -100,6 +100,8 @@ class PropertyController extends Controller
             throw $e;
         }
 
+        session()->flushMessage(true);
+
         return redirect()->route('admin.properties.index');
     }
 
@@ -171,6 +173,8 @@ class PropertyController extends Controller
             throw $e;
         }
 
+        session()->flushMessage(true);
+
         return redirect()->route('admin.properties.index');
     }
 
@@ -204,6 +208,8 @@ class PropertyController extends Controller
             Storage::disk('public')->deleteDirectory("properties/attributes/{$property->id}");
             Storage::disk('public')->deleteDirectory("properties/slides/{$property->id}");
         });
+
+        session()->flushMessage(true);
 
         return back();
     }

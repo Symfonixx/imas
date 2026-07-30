@@ -48,22 +48,47 @@ class StoreSettingsRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $media = $this->input('imgs_media', []);
-        if (! is_array($media)) {
+        if (is_array($media)) {
+            $cleaned = [];
+            foreach ($media as $key => $path) {
+                if (! is_string($path)) {
+                    $cleaned[$key] = null;
+
+                    continue;
+                }
+
+                $path = trim($path);
+                $cleaned[$key] = ($path === '' || strcasecmp($path, 'null') === 0) ? null : $path;
+            }
+
+            $this->merge(['imgs_media' => $cleaned]);
+        }
+
+        // Client base64-encodes HTML fields (prefix "b64:") so WAFs do not 403 on <script>/<iframe>.
+        $data = $this->input('data', []);
+        if (! is_array($data)) {
             return;
         }
 
-        $cleaned = [];
-        foreach ($media as $key => $path) {
-            if (! is_string($path)) {
-                $cleaned[$key] = null;
-
+        foreach (['header_scripts', 'footer_scripts', 'map'] as $key) {
+            if (! isset($data[$key]) || ! is_string($data[$key])) {
                 continue;
             }
 
-            $path = trim($path);
-            $cleaned[$key] = ($path === '' || strcasecmp($path, 'null') === 0) ? null : $path;
+            $data[$key] = $this->decodeProtectedHtmlField($data[$key]);
         }
 
-        $this->merge(['imgs_media' => $cleaned]);
+        $this->merge(['data' => $data]);
+    }
+
+    private function decodeProtectedHtmlField(string $value): string
+    {
+        if (! str_starts_with($value, 'b64:')) {
+            return $value;
+        }
+
+        $decoded = base64_decode(substr($value, 4), true);
+
+        return $decoded === false ? $value : $decoded;
     }
 }

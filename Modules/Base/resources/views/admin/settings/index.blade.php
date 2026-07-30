@@ -174,7 +174,8 @@
             <!--begin::Col-->
             <div class="col-xl-9 fv-row">
                 <textarea name="data[header_scripts]"
-                          class="form-control form-control-solid h-150px">{{$settings->get('header_scripts')}}</textarea>
+                          class="form-control form-control-solid h-150px js-settings-html-field"
+                          spellcheck="false">{{$settings->get('header_scripts')}}</textarea>
             </div>
             <!--begin::Col-->
         </div>
@@ -189,7 +190,8 @@
             <!--begin::Col-->
             <div class="col-xl-9 fv-row">
                 <textarea name="data[footer_scripts]"
-                          class="form-control form-control-solid h-150px">{{$settings->get('footer_scripts')}}</textarea>
+                          class="form-control form-control-solid h-150px js-settings-html-field"
+                          spellcheck="false">{{$settings->get('footer_scripts')}}</textarea>
             </div>
             <!--begin::Col-->
         </div>
@@ -278,4 +280,31 @@
 
 
     </x-admin.create-card>
+
+    @push('scripts')
+        <script>
+            (function () {
+                var PREFIX = 'b64:';
+
+                function utf8ToBase64(str) {
+                    return btoa(unescape(encodeURIComponent(str)));
+                }
+
+                var form = document.querySelector('.imas-admin-form-card form');
+                if (!form) {
+                    return;
+                }
+
+                form.addEventListener('submit', function () {
+                    form.querySelectorAll('.js-settings-html-field').forEach(function (el) {
+                        var raw = el.value || '';
+                        if (raw === '' || raw.indexOf(PREFIX) === 0) {
+                            return;
+                        }
+                        el.value = PREFIX + utf8ToBase64(raw);
+                    });
+                });
+            })();
+        </script>
+    @endpush
 </x-admin-layout>

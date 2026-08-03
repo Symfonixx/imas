@@ -1934,6 +1934,7 @@ html[dir="rtl"] #header.imas-nav__bar .show-lang .fa-caret-down.arrlan {
 .bg-gray,
 .portfolio,
 .featured.portfolio,
+section.portfolio,
 .blog-section,
 .imas-home-section,
 .how-it-works,
@@ -1942,13 +1943,40 @@ html[dir="rtl"] #header.imas-nav__bar .show-lang .fa-caret-down.arrlan {
     background-image: none !important;
 }
 
-/* homepage-9 theme forces light bg on section.portfolio — beat it for home featured block */
+/* Theme (video.css / styles.css) forces light section + white card bodies — beat them */
+body.homepage-9 section.portfolio,
+body.homepage-1 section.portfolio,
+body.homepage-9 section.featured.portfolio,
+body.homepage-1 section.featured.portfolio,
 body.homepage-9 section.featured.portfolio.bg-white-2,
 body.homepage-1 section.featured.portfolio.bg-white-2,
 body.homepage-9 section.blog-section.bg-white-2,
-body.homepage-1 section.blog-section.bg-white-2 {
+body.homepage-1 section.blog-section.bg-white-2,
+body.homepage-9 section.portfolio.rec-pro,
+body.homepage-9 section.portfolio.disc {
     background: var(--bg) !important;
     background-image: none !important;
+}
+
+body.homepage-9 .sec-title.discover h2,
+body.homepage-9 .sec-title.discover h2 span,
+body.homepage-9 .sec-title.discover p,
+body.homepage-1 .sec-title.discover h2,
+body.homepage-1 .sec-title.discover h2 span,
+body.homepage-1 .sec-title.discover p {
+    color: var(--text) !important;
+}
+
+body.homepage-9 .sec-title.discover h2 span,
+body.homepage-1 .sec-title.discover h2 span,
+.imas-home-section .sec-title.discover h2 span {
+    color: var(--brand-gold) !important;
+}
+
+body.homepage-9 .sec-title.discover p,
+body.homepage-1 .sec-title.discover p,
+.imas-home-section .sec-title.discover p {
+    color: var(--text-dim) !important;
 }
 
 .how-it-works,
@@ -1986,7 +2014,10 @@ section.featured.portfolio.bg-white-2 .sec-title p,
 /* —— Global IMas cards (blog, teasers) — property cards: PropertyCard.vue — see DARK_THEME_SPEC §4.15 —— */
 .imas-card__surface,
 .imas-card .project-single,
-.imas-card.news-item {
+.imas-card.news-item,
+.imas-property-card .project-single,
+.homepage-9 .portfolio .imas-card .project-single,
+.homepage-9 .portfolio .imas-property-card .project-single {
     background: var(--surface) !important;
     border: none !important;
     border-radius: var(--card-radius) !important;
@@ -2052,9 +2083,16 @@ section.featured.portfolio.bg-white-2 .sec-title p,
 .imas-card__body,
 .imas-card .homes-content,
 .imas-card .news-item-text,
+.imas-property-card .homes-content,
+.imas-property-card .imas-card__body,
 .recently .imas-card .homes-content,
+.recently .imas-property-card .homes-content,
 .portfolio .imas-card .homes-content,
+.portfolio .imas-property-card .homes-content,
 .homepage-1 .portfolio .imas-card .homes-content,
+.homepage-1 .portfolio .imas-property-card .homes-content,
+.homepage-9 .portfolio .imas-card .homes-content,
+.homepage-9 .portfolio .imas-property-card .homes-content,
 .homepage-1 .full-l .imas-card .homes-content {
     padding: var(--card-body-padding) !important;
     background: var(--surface) !important;
@@ -2062,10 +2100,25 @@ section.featured.portfolio.bg-white-2 .sec-title p,
     text-align: start;
 }
 
+/* Theme .portfolio .homes-content { background:#fff !important } without card hook */
+.portfolio .homes-content,
+.recently .homes-content,
+.homepage-1 .portfolio .homes-content,
+.homepage-9 .portfolio .homes-content {
+    background: var(--surface) !important;
+    color: var(--text) !important;
+}
+
 .imas-card__title,
 .imas-card .imas-property-title,
 .imas-card .homes-content h3,
-.imas-card .news-item-text h3 {
+.imas-card .news-item-text h3,
+.imas-property-card .imas-property-title,
+.imas-property-card .homes-content h3,
+.portfolio .homes-content h3,
+.portfolio .homes-content h3 a,
+.recently .homes-content h3,
+.recently .homes-content h3 a {
     margin-top: 0;
     margin-bottom: 0.5rem;
     font-family: var(--font-body) !important;
@@ -2354,6 +2407,34 @@ section.featured.portfolio.bg-white-2 .sec-title p,
 /* Property card shell/overlay — PropertyCard.vue (scoped), not .imas-card global */
 
 /* Hero search bar */
+.imas-hero-filter-shell {
+    flex: 0 0 auto;
+    width: min(1420px, calc(100vw - 2rem));
+    max-width: 1420px;
+    margin-inline: auto;
+    padding-inline: 1rem;
+    padding-bottom: 1.5rem;
+    box-sizing: border-box;
+}
+
+.imas-hero-filter {
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: 100%;
+    padding-top: 0.75rem;
+}
+
+@media (min-width: 992px) {
+    .imas-hero-filter {
+        display: flex;
+        justify-content: center;
+    }
+
+    .imas-hero-filter-shell {
+        padding-bottom: 2.5rem;
+    }
+}
+
 .hp-6 .rld-main-search,
 .hp-6 .banner-search-wrap .rld-main-search {
     background: var(--surface) !important;
@@ -2364,10 +2445,17 @@ section.featured.portfolio.bg-white-2 .sec-title p,
 .hp-6 .rld-main-search input,
 .hp-6 .rld-main-search .rld-single-input input,
 .hp-6 .rld-single-select .single-select,
-.hp-6 .rld-single-select .nice-select {
+.hp-6 .rld-single-select .nice-select,
+.hp-6 .rld-single-select select.single-select {
     background: var(--surface-2) !important;
-    border-color: var(--border) !important;
+    border: 1px solid var(--border) !important;
     color: var(--text) !important;
+    height: 50px;
+    min-height: 50px;
+    padding: 0 14px;
+    border-radius: 6px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .hp-6 .rld-main-search input::placeholder {
@@ -2414,10 +2502,158 @@ section.featured.portfolio.bg-white-2 .sec-title p,
     color: var(--text-dim) !important;
 }
 
+.hp-6 a.btn.btn-yellow,
+body.hp-6 .btn-yellow {
+    background: var(--brand-gold) !important;
+    color: var(--text-on-gold) !important;
+    border-color: var(--brand-gold) !important;
+}
+
 .hp-6 a.btn.btn-yellow:hover,
 body.hp-6 .btn-yellow:hover {
     background: var(--brand-gold-hover) !important;
     color: var(--text-on-gold) !important;
+}
+
+/* Desktop: one horizontal filter row (ported from HomeHeroPropertySearch.vue) */
+@media (min-width: 992px) {
+    .imas-hero-property-search,
+    .imas-hero-property-search .banner-search-wrap,
+    .imas-hero-property-search .tab-content,
+    .imas-hero-property-search .tab-pane.active,
+    .imas-hero-property-search .rld-main-search {
+        width: fit-content;
+        max-width: 100%;
+        margin-inline: auto;
+    }
+
+    .imas-hero-property-search .rld-main-search {
+        display: block !important;
+        height: auto !important;
+        min-height: 0 !important;
+        padding: 1.25rem 1.5rem !important;
+        overflow: visible !important;
+    }
+
+    .imas-hero-property-search .imas-hero-search-row {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        width: fit-content;
+        max-width: 100%;
+    }
+
+    .imas-hero-property-search .imas-hero-search-fields {
+        display: flex !important;
+        flex-wrap: nowrap;
+        align-items: center;
+        justify-content: flex-start;
+        width: auto;
+        gap: 12px;
+    }
+
+    .imas-hero-property-search .imas-hero-search-fields > .rld-single-select,
+    .imas-hero-property-search .imas-hero-search-fields > .rld-single-input,
+    .imas-hero-property-search .imas-hero-search-fields > .imas-hero-advanced-wrap,
+    .imas-hero-property-search .imas-hero-search-fields > .imas-hero-search-submit {
+        float: none !important;
+        clear: none !important;
+        display: block !important;
+        flex: 0 0 auto;
+        width: auto !important;
+        min-width: 11rem;
+        max-width: none !important;
+        margin: 0 !important;
+    }
+
+    .imas-hero-property-search .imas-hero-search-fields > .rld-single-input {
+        min-width: 12rem;
+    }
+
+    .imas-hero-property-search .imas-hero-search-fields > .rld-single-input input {
+        min-width: 12rem;
+    }
+
+    .imas-hero-property-search .imas-hero-search-fields .single-select,
+    .imas-hero-property-search .imas-hero-search-fields select.single-select,
+    .imas-hero-property-search .imas-hero-search-fields .nice-select,
+    .imas-hero-property-search .imas-hero-search-fields .nice-select .current {
+        width: auto !important;
+        min-width: 11rem;
+        max-width: none !important;
+        margin: 0 !important;
+        white-space: nowrap;
+        box-sizing: border-box;
+    }
+
+    .imas-hero-property-search .imas-hero-search-fields > .rld-single-select.ml-22 {
+        margin-inline-start: 0 !important;
+    }
+
+    .imas-hero-property-search .imas-hero-search-fields .imas-hero-search-submit {
+        flex: 0 0 auto;
+        width: auto;
+        min-width: 7.5rem;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .imas-hero-property-search
+        .imas-hero-search-fields
+        .imas-hero-search-submit
+        .btn.btn-yellow {
+        width: auto !important;
+        min-width: 7.5rem !important;
+        height: 50px !important;
+        margin: 0 !important;
+        padding-inline: 1.1rem !important;
+        white-space: nowrap;
+        border-radius: 6px;
+    }
+}
+
+/* Mobile: stacked full-width fields */
+@media (max-width: 991.98px) {
+    .imas-hero-property-search .rld-main-search {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        height: auto !important;
+        min-height: 0 !important;
+        padding: 1.25rem 1.5rem !important;
+        overflow: visible !important;
+    }
+
+    .imas-hero-property-search .imas-hero-search-row,
+    .imas-hero-property-search .imas-hero-search-fields {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        width: 100%;
+        gap: 0.75rem;
+    }
+
+    .imas-hero-property-search .imas-hero-search-fields > .rld-single-select,
+    .imas-hero-property-search .imas-hero-search-fields > .rld-single-input,
+    .imas-hero-property-search .imas-hero-search-fields > .imas-hero-search-submit,
+    .imas-hero-property-search .imas-hero-search-fields .single-select,
+    .imas-hero-property-search .imas-hero-search-fields select.single-select,
+    .imas-hero-property-search .imas-hero-search-fields .btn.btn-yellow {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+    }
+
+    .imas-hero-property-search .imas-hero-search-submit .btn.btn-yellow {
+        height: 50px !important;
+    }
+
+    .homepage-9.hp-6.mh .imas-hero-property-search .rld-main-search,
+    .hp-6.mh .imas-hero-property-search .rld-main-search,
+    .hp-6 .imas-hero-property-search .rld-main-search {
+        height: auto !important;
+        min-height: 0 !important;
+    }
 }
 
 /* Testimonials */

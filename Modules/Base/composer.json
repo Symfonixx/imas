@@ -19,7 +19,10 @@
             "Modules\\Base\\": "app/",
             "Modules\\Base\\Database\\Factories\\": "database/factories/",
             "Modules\\Base\\Database\\Seeders\\": "database/seeders/"
-        }
+        },
+        "files": [
+            "app/Helpers/front_helpers.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

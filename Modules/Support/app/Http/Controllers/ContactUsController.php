@@ -3,9 +3,10 @@
 namespace Modules\Support\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
-use Inertia\Inertia;
-use Inertia\Response;
+use Modules\Base\Support\FrontSeo;
+use Modules\Base\Support\FrontViewData;
 use Modules\Support\Http\Requests\StorePublicContactRequest;
 use Modules\Support\Repositories\ContactForm\ContactFormRepository;
 
@@ -13,12 +14,26 @@ class ContactUsController extends Controller
 {
     public function __construct(
         private readonly ContactFormRepository $contactFormRepository,
+        private readonly FrontViewData $frontViewData,
     ) {}
 
-    public function index(): Response
+    public function index(): View
     {
-        return Inertia::render('Support::ContactUs', [
+        $globals = $this->frontViewData->sharedGlobals();
+        $localeSwitcher = $this->frontViewData->getLocaleSwitcher();
+        $appName = $this->frontViewData->sharedAppName();
+        $translations = $this->frontViewData->getTranslations();
+        $sectionTitle = front_trans('contact_us.title', $translations);
+
+        return view('support::front.contact-us', [
             'contactStoreUrl' => route('support.contact-us.store'),
+            'seo' => FrontSeo::forHub(
+                $sectionTitle,
+                $globals,
+                $localeSwitcher,
+                $appName,
+                route('support.contact-us'),
+            ),
         ]);
     }
 

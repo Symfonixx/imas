@@ -3,19 +3,22 @@
 namespace Modules\Cms\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use Inertia\Inertia;
-use Inertia\Response;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
+use Modules\Base\Support\FrontSeo;
+use Modules\Base\Support\FrontViewData;
 use Modules\Cms\Models\Blog;
 use Modules\Cms\Models\BlogCategory;
 
 class BlogController extends Controller
 {
-    public function index(Request $request): Response
+    public function __construct(private readonly FrontViewData $frontViewData) {}
+
+    public function index(Request $request): View
     {
         $validated = Validator::make($request->query(), [
             'q' => ['sometimes', 'nullable', 'string', 'max:255'],
@@ -52,16 +55,28 @@ class BlogController extends Controller
             'category_id' => $categoryId,
         ];
 
-        return Inertia::render('Cms::Index', [
-            'title' => $this->blogHubTitle(),
+        $hubTitle = $this->blogHubTitle();
+        $globals = $this->frontViewData->sharedGlobals();
+        $localeSwitcher = $this->frontViewData->getLocaleSwitcher();
+        $appName = $this->frontViewData->sharedAppName();
+
+        return view('cms::front.blog-index', [
+            'title' => $hubTitle,
             'blogs' => $blogs,
             'recentBlogs' => $recentBlogs,
             'categories' => $categories,
             'filters' => $filters,
+            'seo' => FrontSeo::forHub(
+                $hubTitle,
+                $globals,
+                $localeSwitcher,
+                $appName,
+                route('blog.index'),
+            ),
         ]);
     }
 
-    public function show(string $slug): Response
+    public function show(string $slug): View
     {
         $blog = Blog::query()
             ->published()
@@ -69,15 +84,42 @@ class BlogController extends Controller
             ->with(['category:id,name,slug'])
             ->firstOrFail();
 
-        return Inertia::render('Cms::Show', [
+        $detail = $this->serializeBlogDetail($blog);
+        $globals = $this->frontViewData->sharedGlobals();
+        $localeSwitcher = $this->frontViewData->getLocaleSwitcher();
+        $appName = $this->frontViewData->sharedAppName();
+        $meta = $detail['meta'] ?? [];
+        $jsonLd = [];
+        $articleSchema = \Modules\Base\Support\StructuredData::buildArticleSchema([
+            'headline' => (string) ($detail['title'] ?? ''),
+            'description' => (string) ($meta['description'] ?? $detail['excerpt'] ?? ''),
+            'url' => (string) ($meta['canonical_url'] ?? $detail['url'] ?? ''),
+            'image' => (string) ($meta['image'] ?? $detail['image'] ?? ''),
+            'datePublished' => $detail['created_at'] ?? null,
+            'dateModified' => $detail['created_at'] ?? null,
+        ]);
+        if ($articleSchema) {
+            $jsonLd[] = $articleSchema;
+        }
+
+        return view('cms::front.blog-show', [
             'title' => (string) $blog->title,
-            'blog' => $this->serializeBlogDetail($blog),
+            'blog' => $detail,
             'recentBlogs' => $this->recentPublishedBlogs(exceptId: $blog->id),
             'categories' => $this->categoriesList(),
             'filters' => [
                 'q' => null,
                 'category_id' => $blog->category_id,
             ],
+            'seo' => FrontSeo::make([
+                'title' => trim((string) ($meta['title'] ?? $blog->title)).' | '.$appName,
+                'description' => $meta['description'] ?? null,
+                'keywords' => is_string($meta['keywords'] ?? null) ? $meta['keywords'] : null,
+                'image' => $meta['image'] ?? ($detail['image'] ?? null),
+                'canonical' => $meta['canonical_url'] ?? null,
+                'og_type' => 'article',
+                'json_ld' => $jsonLd,
+            ], $globals, $localeSwitcher, $appName),
         ]);
     }
 

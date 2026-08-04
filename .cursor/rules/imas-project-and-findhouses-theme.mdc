@@ -3,9 +3,9 @@ alwaysApply: true
 ---
 # IMas — Project overview & Find Houses theme integration
 
-This repository is a **real estate** product built on the **HadoSaaS** modular Laravel starter (see repo root `README.md` and `DDD_LITE_ARCHITECTURE.md`). **Admin** workflows use Blade (and related tooling). **End-user (front-office) pages** use **Laravel Blade** with layout `resources/views/layouts/front.blade.php`, Vite entrypoints `resources/css/app.css` and `resources/js/front.js` (Alpine.js), and server-rendered SEO via `partials/seo-head.blade.php`.
+This repository is a **real estate** product built on the **HadoSaaS** modular Laravel starter (see repo root `README.md` and `DDD_LITE_ARCHITECTURE.md`). **Admin** workflows use Blade (and related tooling). **End-user (front-office) pages** are implemented with **Laravel + Inertia.js + Vue 3**, using Vite entrypoints `resources/css/app.css` and `resources/js/app.js`, with root shell `resources/views/app.blade.php`.
 
-Pair this rule with **Brand-accent-colors.mdc** for client Navy `#1a2a4a` and Gold `#d9a800` accent overrides (do not redesign base theme chrome). For front-office SEO (title/meta/OG/JSON-LD/hreflang), see **front-office-seo-inertia.mdc**.
+Pair this rule with **Brand-accent-colors.mdc** for client Navy `#1a2a4a` and Gold `#d9a800` accent overrides (do not redesign base theme chrome). For Inertia `<Head>` conventions (global vs hub vs detail SEO), see **front-office-seo-inertia.mdc**.
 
 ---
 

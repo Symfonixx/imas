@@ -3,11 +3,10 @@
 namespace Modules\Base\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Contracts\View\View;
 use Illuminate\Support\Str;
+use Inertia\Inertia;
+use Inertia\Response;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
-use Modules\Base\Support\FrontSeo;
-use Modules\Base\Support\FrontViewData;
 use Modules\Cms\Models\Blog;
 use Modules\Cms\Models\Slide;
 use Modules\Corporate\Models\CorporateService;
@@ -22,9 +21,7 @@ use Modules\User\Enums\CmsStatus;
 
 class HomeController extends Controller
 {
-    public function __construct(private readonly FrontViewData $frontViewData) {}
-
-    public function index(): View
+    public function index(): Response
     {
         $slides = Slide::query()
             ->published()
@@ -183,11 +180,7 @@ class HomeController extends Controller
             ->values()
             ->all();
 
-        $globals = $this->frontViewData->sharedGlobals();
-        $localeSwitcher = $this->frontViewData->getLocaleSwitcher();
-        $appName = $this->frontViewData->sharedAppName();
-
-        return view('base::front.home', [
+        return Inertia::render('Base::Index', [
             'welcomeTitle' => 'Find Your Dream Home',
             'welcomeSubtitle' => 'Browse curated listings and discover properties that match your goals.',
             'slides' => $slides,
@@ -200,8 +193,6 @@ class HomeController extends Controller
             'corporateServices' => $corporateServices,
             'testimonials' => $testimonials,
             'articles' => $articles,
-            'seo' => FrontSeo::forHome($globals, $localeSwitcher, $appName),
-            'navbar_transparent' => true,
         ]);
     }
 }

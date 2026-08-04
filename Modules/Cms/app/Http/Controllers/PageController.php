@@ -3,11 +3,10 @@
 namespace Modules\Cms\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Contracts\View\View;
 use Illuminate\Support\Str;
+use Inertia\Inertia;
+use Inertia\Response;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
-use Modules\Base\Support\FrontSeo;
-use Modules\Base\Support\FrontViewData;
 use Modules\Cms\Models\Page;
 
 class PageController extends Controller
@@ -25,9 +24,7 @@ class PageController extends Controller
         'api',
     ];
 
-    public function __construct(private readonly FrontViewData $frontViewData) {}
-
-    public function show(string $slug): View
+    public function show(string $slug): Response
     {
         if (in_array($slug, self::RESERVED_SLUGS, true)) {
             abort(404);
@@ -40,22 +37,9 @@ class PageController extends Controller
 
         $page->increment('visits');
 
-        $detail = $this->serializePageDetail($page);
-        $globals = $this->frontViewData->sharedGlobals();
-        $localeSwitcher = $this->frontViewData->getLocaleSwitcher();
-        $appName = $this->frontViewData->sharedAppName();
-        $meta = $detail['meta'] ?? [];
-
-        return view('cms::front.page-show', [
+        return Inertia::render('Cms::PageShow', [
             'title' => (string) $page->title,
-            'page' => $detail,
-            'seo' => FrontSeo::make([
-                'title' => trim((string) ($meta['title'] ?? $page->title)).' | '.$appName,
-                'description' => $meta['description'] ?? null,
-                'keywords' => is_string($meta['keywords'] ?? null) ? $meta['keywords'] : null,
-                'image' => $meta['image'] ?? ($detail['image'] ?? null),
-                'canonical' => $meta['canonical_url'] ?? null,
-            ], $globals, $localeSwitcher, $appName),
+            'page' => $this->serializePageDetail($page),
         ]);
     }
 

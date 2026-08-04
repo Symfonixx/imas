@@ -1,6 +1,9 @@
 <?php
 
+<<<<<<< HEAD
 use App\Http\Middleware\AuthenticateApiToken;
+=======
+>>>>>>> parent of 07ae30b (convert it to blade)
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\IsAdmin;
 use App\Http\Middleware\TrackPageView;

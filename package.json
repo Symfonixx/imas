@@ -2,10 +2,15 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "vite build",
-        "dev": "vite"
+        "build": "vite build && vite build --ssr",
+        "build:ssr": "vite build --ssr",
+        "dev": "vite",
+        "ssr": "php artisan inertia:start-ssr",
+        "dev:ssr": "concurrently -k \"php artisan serve\" \"npm run ssr\""
     },
     "devDependencies": {
+        "@vitejs/plugin-vue": "^6.0.0",
+        "@vue/server-renderer": "^3.5.39",
         "autoprefixer": "^10.4.20",
         "axios": "^1.7.4",
         "concurrently": "^9.0.1",
@@ -16,12 +21,16 @@
         "vite": "^8.0.14"
     },
     "dependencies": {
-        "alpinejs": "^3.14.0",
+        "@inertiajs/progress": "^0.1.2",
+        "@inertiajs/vue3": "^1.2.0",
         "bootstrap": "^5.3.3",
         "flag-icons": "^7.5.0",
         "gsap": "^3.15.0",
+        "nprogress": "^0.2.0",
         "path": "^0.12.7",
         "toastr": "^2.1.4",
-        "vite-plugin-html": "^3.2.2"
+        "vite-plugin-html": "^3.2.2",
+        "vite-plugin-vue-devtools": "^8.0.0",
+        "vue": "^3.5.39"
     }
 }

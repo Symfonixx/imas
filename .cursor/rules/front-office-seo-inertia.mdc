@@ -1,66 +1,84 @@
 ---
 alwaysApply: false
-description: Front-office Blade SEO — when adding or editing front views under Modules/*/resources/views/front, resources/views/layouts/front.blade.php, FrontSeo, or wiring meta/canonical/OG/JSON-LD/hreflang for user-facing routes.
+description: Front-office Inertia SEO — when adding or editing Vue pages under Modules/*/resources/assets/js/Pages, app/Http/Middleware/HandleInertiaRequests.php, or wiring Head/meta/canonical/OG tags for user-facing routes.
 globs:
-  - "**/Modules/*/resources/views/front/**/*.blade.php"
-  - "**/resources/views/layouts/front.blade.php"
-  - "**/resources/views/partials/seo-head.blade.php"
-  - "**/Modules/Base/app/Support/FrontSeo.php"
-  - "**/Modules/Base/app/Support/StructuredData.php"
-  - "**/Modules/Base/app/Support/FrontViewData.php"
+  - "**/Modules/*/resources/assets/js/Pages/**/*.vue"
+  - "**/resources/js/**/*.vue"
+  - "**/HandleInertiaRequests.php"
 ---
 
-# Front-office SEO (Blade)
+# Front-office SEO (Inertia + Vue)
 
-End-user pages use **Laravel Blade** with layout [`resources/views/layouts/front.blade.php`](resources/views/layouts/front.blade.php). Document `<title>`, meta, Open Graph, Twitter, hreflang, and JSON-LD are rendered **server-side** via [`resources/views/partials/seo-head.blade.php`](resources/views/partials/seo-head.blade.php) from the `$seo` array built by [`Modules\Base\Support\FrontSeo`](Modules/Base/app/Support/FrontSeo.php).
+End-user pages use **Laravel + Inertia.js + Vue 3**. Document `<title>` and meta tags are set from Vue with **`Head`** from `@inertiajs/vue3` (see `@inertiaHead` in `resources/views/app.blade.php`).
 
 ## Where global SEO lives
 
-[`FrontViewData`](Modules/Base/app/Support/FrontViewData.php) (via `FrontLayoutComposer`) shares on every front view:
+`app/Http/Middleware/HandleInertiaRequests.php` shares **`page.props.globals`** on every Inertia response, including:
 
 | Key | Purpose |
 |-----|--------|
-| `globals.seo` | Localized key/value rows from `Modules\Base\Models\Seo` |
-| `globals.media` | Resolved public URLs, including `meta_img` |
-| `globals.about` / `globals.turkish_citizenship` | Section copy + meta fields |
-| `locale_switcher` | `[{code, native, url}, …]` for en/tr/ar → hreflang |
-| `appName` | Website name |
+| `globals.seo` | Localized key/value rows from `Modules\Base\Models\Seo` (e.g. `main_title`, `website_name`, `website_desc`, `website_keywords`, `site_meta_*` if present, section-specific keys like `about_us_meta_*`, `turkish_citizenship_meta_*`, …) |
+| `globals.media` | Resolved public URLs, including `meta_img` for default social preview |
+| `globals.about` | Convenience slice for About Us copy + meta fields |
 
-Controllers pass page-specific SEO with `FrontSeo::make(...)`, `FrontSeo::forHome(...)`, or `FrontSeo::forHub(...)`.
+Use **`usePage()`** → `page.props.globals` (and `page.props.appName`) in page components. Do not duplicate site-wide strings in random components; read from globals unless the page tier below says otherwise.
+
+---
 
 ## Page tiers (convention)
 
-### 1) Global / hub pages
+### 1) Global / “partner” hub pages
 
-Home, listings index, marketing hubs.
+**Examples:** Home, main real-estate listings index, high-level marketing hubs that represent the **brand**, not a single entity.
 
-- Prefer `FrontSeo::forHome` / `FrontSeo::forHub` + `globals.seo` fallbacks.
-- Canonical = hub route URL (no noisy query strings unless required).
+**Strategy**
 
-### 2) Parent / section pages
+- **Title:** Prefer global SEO fallbacks where it matches product intent (e.g. home uses `site_meta_title` → `main_title` → `website_name`, then `Home \| appName`). For a **section** hub (e.g. listings index), keep a **clear section title** plus app name, e.g. `` `${listingSectionTitle} | ${appName}` ``.
+- **Meta description & keywords:** Use **`globals.seo`** with the same fallback chain as other hub pages (`site_meta_description` → `website_desc`, `site_meta_keywords` → `website_keywords`) unless product explicitly adds section-specific SEO keys later.
+- **Social:** Reuse **`globals.media.meta_img`** and standard OG/Twitter tags; **canonical** should point at the **main URL** of that hub (e.g. `route('home')`, `route('property.index')`) — typically **without** noisy query strings unless SEO explicitly requires preserving a single filtered canonical.
 
-About Us, Turkish citizenship, CMS pages.
+**Reference implementations**
 
-- Defaults from `globals`; overrides from controller props when non-empty.
+- `Modules/Base/resources/assets/js/Pages/Index.vue` (home)
+- `Modules/Property/resources/assets/js/Pages/index.vue` (listings hub)
 
-### 3) Detail pages
+### 2) Parent / main pages with optional overrides
 
-Property show, blog article.
+**Examples:** About Us, Turkish citizenship landing, top-level CMS page, any “main” route that is not a single record but is **more specific** than the home/listing hub.
 
-- Title/description/keywords from the **entity**.
-- OG image from entity media; fall back to `globals.media.meta_img`.
-- Property: include RealEstateListing + BreadcrumbList + admin `metadata.schema` in `json_ld`.
-- Blog: `og:type=article` + Article JSON-LD via `StructuredData`.
+**Strategy**
 
-## Implementation checklist
+- **Defaults:** Start from **`globals.seo`** / **`globals.about`** (or the relevant global keys for that section) so empty admin fields still behave sensibly.
+- **Overrides:** When the route needs unique positioning, pass **page-specific props** from the controller (e.g. `meta_title`, `meta_description`, `meta_keywords`, or a nested `seo` object). In Vue, **prefer props over globals** when the prop is non-empty.
+- **Canonical:** The **localized canonical URL** of that route (Ziggy `route(...)`), not another page’s URL.
 
-1. Return `view('…::front.…')` with `'seo' => FrontSeo::…`.
-2. Do not rely on client JS for head tags — crawlers must see them in View Source.
-3. Keep hreflang (en/tr/ar + x-default) via `locale_switcher` inside `FrontSeo::make`.
-4. Use `StructuredData` PHP builders (not the old Vue `structuredData.js`).
+### 3) Nested / detail pages (single entity)
+
+**Examples:** Show property, show blog article, show news item, any **`{resource}/{id}`** style page.
+
+**Strategy**
+
+- **Title, description, keywords:** Must come from **the entity** (and locale), via **Inertia props** from the controller/service — e.g. translated `meta_title` / `meta_description` / `excerpt`, or model fields. Do **not** rely on site-wide `website_desc` / `website_keywords` as the primary meta for these URLs (avoid duplicate descriptions across every listing).
+- **OG/Twitter:** Prefer **entity hero image / cover / gallery first image** when available; fall back to `globals.media.meta_img` only as a **last resort** so shares still look acceptable.
+- **Canonical:** **`route()` for that show route** including stable identity parameters (e.g. slug or id per app convention); avoid pointing many detail URLs at one hub canonical.
+
+---
+
+## Implementation checklist (new or updated page)
+
+1. Import **`Head`** from `@inertiajs/vue3` and set **`:title`** (or `<title>` child) from the tier rules above.
+2. Add **`meta name="description"`** / **`keywords`** when values exist; use **`head-key="description"`** (and similar) so Inertia replaces tags on client navigation.
+3. Add **`link rel="canonical"`** with **`head-key="canonical"`** when the canonical URL is known.
+4. Add **Open Graph** (`og:title`, `og:description`, `og:image`, `og:type`, `og:url`) and **Twitter** card tags aligned with the same strings/images.
+5. Keep **`og:type`** appropriate (`website` vs `article` for blog/news — align with content type when you add those pages).
+6. **Do not** hardcode production domain strings in Vue; use **`route()`** / server-provided absolute URLs when needed.
+
+---
 
 ## Related files
 
-- Layout: `resources/views/layouts/front.blade.php`
-- SEO partial: `resources/views/partials/seo-head.blade.php`
-- Builders: `FrontSeo.php`, `StructuredData.php`, `FrontViewData.php`
+- Shared globals: `app/Http/Middleware/HandleInertiaRequests.php` (`sharedGlobals()`)
+- SEO model: `Modules/Base/app/Models/Seo.php`
+- Hub examples: `Modules/Base/resources/assets/js/Pages/Index.vue`, `Modules/Property/resources/assets/js/Pages/index.vue`
+
+When in doubt: **hubs = globals (+ sensible section title); details = entity props first.**

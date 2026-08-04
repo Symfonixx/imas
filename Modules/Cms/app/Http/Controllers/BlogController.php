@@ -6,15 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-<<<<<<< HEAD
-use Inertia\Inertia;
-use Inertia\Response;
-=======
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
->>>>>>> parent of 07ae30b (convert it to blade)
 use Modules\Cms\Models\Blog;
 use Modules\Cms\Models\BlogCategory;
 use Modules\Cms\Support\BlogCardSerializer;
@@ -77,11 +72,7 @@ class BlogController extends Controller
 
         return Inertia::render('Cms::Show', [
             'title' => (string) $blog->title,
-<<<<<<< HEAD
             'blog' => BlogCardSerializer::toDetailArray($blog),
-=======
-            'blog' => $this->serializeBlogDetail($blog),
->>>>>>> parent of 07ae30b (convert it to blade)
             'recentBlogs' => $this->recentPublishedBlogs(exceptId: $blog->id),
             'categories' => $this->categoriesList(),
             'filters' => [

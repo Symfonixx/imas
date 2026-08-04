@@ -2,8 +2,8 @@
 
 namespace Modules\Cms\Repositories\BlogCategory;
 
-use App\Http\Middleware\HandleInertiaRequests;
 use Config;
+use Modules\Base\Support\FrontViewData;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
 use Modules\Cms\Application\Shared\Support\ContentPayloadBuilder;
@@ -82,6 +82,6 @@ class BlogCategoryModelRepository implements BlogCategoryRepository
 
     private function clearSharedBlogCategoriesCache(): void
     {
-        Cache::forget(HandleInertiaRequests::SHARED_BLOG_CATEGORIES_CACHE_KEY);
+        Cache::forget(FrontViewData::SHARED_BLOG_CATEGORIES_CACHE_KEY);
     }
 }

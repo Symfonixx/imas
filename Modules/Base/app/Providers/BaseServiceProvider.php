@@ -3,6 +3,7 @@
 namespace Modules\Base\Providers;
 
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Modules\Base\Repositories\Log\LogModelRepository;
 use Modules\Base\Repositories\Log\LogRepository;
@@ -10,6 +11,7 @@ use Modules\Base\Repositories\Seo\SeoModelRepository;
 use Modules\Base\Repositories\Seo\SeoRepository;
 use Modules\Base\Repositories\Settings\SettingsModelRepository;
 use Modules\Base\Repositories\Settings\SettingsRepository;
+use Modules\Base\View\Composers\FrontLayoutComposer;
 use Nwidart\Modules\Traits\PathNamespace;
 
 class BaseServiceProvider extends ServiceProvider
@@ -31,6 +33,16 @@ class BaseServiceProvider extends ServiceProvider
         $this->registerConfig();
         $this->registerViews();
         $this->loadMigrationsFrom(module_path($this->name, 'database/migrations'));
+
+        View::composer([
+            'layouts.front',
+            'base::front.*',
+            'support::front.*',
+            'property::front.*',
+            'cms::front.*',
+            'user::front.*',
+            'front.*',
+        ], FrontLayoutComposer::class);
     }
 
     /**

@@ -1,24 +1,13 @@
 <?php
 
-use App\Http\Middleware\HandleInertiaRequests;
 use Illuminate\Support\Facades\Route;
 use Modules\Base\Http\Controllers\RssController;
 use Modules\Base\Http\Controllers\SitemapController;
 use Modules\Base\Models\Settings;
 
-// Machine-readable endpoints (sitemap/feed/robots). These are stateless, public,
-// and NOT Inertia pages, so we strip the session/cookie/CSRF/Inertia middleware.
-//
-// Why: leaving them in the stateful "web" stack makes every response emit
-// Set-Cookie (session + XSRF) and "Cache-Control: no-cache, private". Chrome then
-// refuses to apply its built-in XML tree viewer and instead renders the document
-// as unstyled/flattened inline text — which looks like broken HTML in the browser
-// even though the bytes are valid XML. A cookie-less, cacheable response (matching
-// a plain static .xml file) renders as the proper XML tree. Stripping this stack
-// also stops Inertia turning X-Inertia requests into a 409 HTML "force reload" and
-// avoids running shared-data queries on every crawler hit.
+// Machine-readable endpoints (sitemap/feed/robots). Stateless public routes —
+// strip session/cookie/CSRF so responses stay cacheable and Chrome can render XML.
 Route::withoutMiddleware([
-    HandleInertiaRequests::class,
     'Illuminate\Cookie\Middleware\EncryptCookies',
     'Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse',
     'Illuminate\Session\Middleware\StartSession',

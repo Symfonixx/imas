@@ -3,13 +3,16 @@
 namespace Modules\Property\Http\Controllers\Property;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Validator;
-use Inertia\Inertia;
-use Inertia\Response;
+use Illuminate\Support\Str;
 use Modules\Base\lang;
+use Modules\Base\Support\FrontSeo;
+use Modules\Base\Support\FrontViewData;
+use Modules\Base\Support\StructuredData;
 use Modules\Property\Enums\LocationType;
 use Modules\Property\Models\Location;
 use Modules\Property\Models\Property;
@@ -25,6 +28,7 @@ use Modules\User\Enums\CmsStatus;
 
 class PropertyController extends Controller
 {
+    public function __construct(private readonly FrontViewData $frontViewData) {}
     /**
      * JSON listing for GET /api/properties (optional auth).
      */
@@ -44,7 +48,7 @@ class PropertyController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): Response
+    public function index(Request $request): View
     {
         $validated = $this->listingQueryRules($request);
         $sort = $validated['sort'] ?? 'price_asc';
@@ -146,8 +150,11 @@ class PropertyController extends Controller
             ->all();
 
         $pageTitle = $this->listingPageTitle();
+        $globals = $this->frontViewData->sharedGlobals();
+        $localeSwitcher = $this->frontViewData->getLocaleSwitcher();
+        $appName = $this->frontViewData->sharedAppName();
 
-        return Inertia::render('Property::index', [
+        return view('property::front.index', [
             'title' => $pageTitle,
             'properties' => $properties,
             'filters' => $filters,
@@ -158,13 +165,20 @@ class PropertyController extends Controller
             'areas' => $areas,
             'recentProperties' => $recentProperties,
             'featuredProperties' => $featuredProperties,
+            'seo' => FrontSeo::forHub(
+                $pageTitle,
+                $globals,
+                $localeSwitcher,
+                $appName,
+                route('property.index'),
+            ),
         ]);
     }
 
     /**
      * Authenticated user's favorited published properties.
      */
-    public function favoriteProperties(Request $request): Response
+    public function favoriteProperties(Request $request): View
     {
         $userId = (int) $request->user()->id;
 
@@ -179,18 +193,26 @@ class PropertyController extends Controller
         });
 
         $pageTitle = $this->favoritePropertiesPageTitle();
+        $globals = $this->frontViewData->sharedGlobals();
+        $localeSwitcher = $this->frontViewData->getLocaleSwitcher();
+        $appName = $this->frontViewData->sharedAppName();
 
-        return Inertia::render('Property::FavoriteProperties', [
+        return view('property::front.favorites', [
             'title' => $pageTitle,
             'properties' => $properties,
             'contactStoreUrl' => route('support.contact-us.store'),
+            'seo' => FrontSeo::make([
+                'title' => $pageTitle.' | '.$appName,
+                'robots' => 'noindex, nofollow',
+                'canonical' => route('property.favorites'),
+            ], $globals, $localeSwitcher, $appName),
         ]);
     }
 
     /**
      * Display the specified published property.
      */
-    public function show(Request $request, Property $property): Response
+    public function show(Request $request, Property $property): View
     {
         abort_unless($property->status === CmsStatus::PUBLISHED, 404);
 
@@ -203,12 +225,74 @@ class PropertyController extends Controller
             ->withFavoriteStateForUser($userId)
             ->firstOrFail();
 
-        return Inertia::render('Property::show', [
-            'property' => PropertyDetailSerializer::toArray($property),
+        $detail = PropertyDetailSerializer::toArray($property);
+        $globals = $this->frontViewData->sharedGlobals();
+        $localeSwitcher = $this->frontViewData->getLocaleSwitcher();
+        $appName = $this->frontViewData->sharedAppName();
+        $meta = $detail['metadata'] ?? [];
+        $locale = app()->getLocale();
+
+        $displayTitle = trim((string) ($detail['title'] ?? ''));
+        if ($displayTitle === '') {
+            $displayTitle = (string) ($detail['project_name'] ?? $detail['project_code'] ?? 'Property');
+        }
+        $customTitle = is_string($meta['meta_title'] ?? null) && trim($meta['meta_title']) !== ''
+            ? trim($meta['meta_title'])
+            : $displayTitle;
+        $metaDescription = is_string($meta['meta_description'] ?? null) && trim($meta['meta_description']) !== ''
+            ? trim($meta['meta_description'])
+            : Str::limit(front_strip_html(front_localized($detail['overview'] ?? null, $locale)), 160);
+        $keywords = $meta['meta_keywords'] ?? [];
+        if (is_array($keywords)) {
+            $keywords = implode(', ', array_filter(array_map('strval', $keywords)));
+        }
+        $canonical = route('property.show', $property);
+        $slideImages = array_values(array_filter(array_map(
+            static fn ($s) => is_array($s) ? ($s['image_url'] ?? null) : null,
+            $detail['slides'] ?? [],
+        )));
+        $translations = $this->frontViewData->getTranslations();
+
+        $jsonLd = array_values(array_filter([
+            StructuredData::buildRealEstateListingSchema([
+                'name' => $displayTitle,
+                'description' => $metaDescription,
+                'url' => $canonical,
+                'images' => array_values(array_filter([$detail['thumbnail_url'] ?? null, ...$slideImages])),
+                'datePosted' => $detail['created_at'] ?? null,
+                'dateModified' => $detail['updated_at'] ?? null,
+                'price' => property_start_price($detail),
+                'isSoldOut' => (bool) ($detail['is_sold_out'] ?? false),
+                'addressLocality' => front_localized($detail['location']['area']['name'] ?? ($detail['location']['district']['name'] ?? null), $locale),
+                'addressRegion' => front_localized($detail['location']['city']['name'] ?? null, $locale),
+                'latitude' => $detail['lat'] ?? null,
+                'longitude' => $detail['lng'] ?? null,
+                'minArea' => $detail['min_area'] ?? null,
+                'maxArea' => $detail['max_area'] ?? null,
+                'propertyType' => front_localized($detail['property_type']['name'] ?? null, $locale),
+            ]),
+            StructuredData::buildBreadcrumbSchema([
+                ['name' => front_trans('navBar.Home', $translations), 'url' => route('home')],
+                ['name' => front_trans('navBar.Buy Real Estate', $translations), 'url' => route('property.index')],
+                ['name' => $displayTitle, 'url' => $canonical],
+            ]),
+            $meta['schema'] ?? null,
+        ]));
+
+        return view('property::front.show', [
+            'property' => $detail,
             'recentProperties' => $this->recentProperties($userId, $property->id),
             'featuredProperties' => $this->featuredProperties($userId, $property->id),
             'similarProperties' => $this->similarProperties($property, $userId),
             'contactStoreUrl' => route('support.contact-us.store'),
+            'seo' => FrontSeo::make([
+                'title' => $customTitle.' | '.$appName,
+                'description' => $metaDescription,
+                'keywords' => is_string($keywords) && $keywords !== '' ? $keywords : null,
+                'image' => $detail['thumbnail_url'] ?? ($globals['media']['meta_img'] ?? null),
+                'canonical' => $canonical,
+                'json_ld' => $jsonLd,
+            ], $globals, $localeSwitcher, $appName),
         ]);
     }
 

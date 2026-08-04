@@ -27,11 +27,11 @@
                 </div>
             </th>
             <th class="min-w-125px">{{ __('Avatar') }}</th>
-            <th class="min-w-200px">{{ __('Name') }}</th>
+            <th class="min-w-150px">{{ __('Name') }}</th>
             <th class="min-w-120px">{{ __('Client') }}</th>
             <th class="min-w-100px">{{ __('Rank') }}</th>
-            <th class="min-w-150px">{{ __('Publish Status') }}</th>
-            <th class="min-w-150px">{{ __('Created At') }}</th>
+            <th class="min-w-100px">{{ __('Publish Status') }}</th>
+            <th class="min-w-100px">{{ __('Created At') }}</th>
             <th class="min-w-100px text-end rounded-end"></th>
         </tr>
         </thead>

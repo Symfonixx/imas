@@ -5,6 +5,8 @@ namespace Modules\Property\Http\Requests\Admin;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
+use Modules\Base\Support\Media\LibraryImageRule;
+use Modules\Core\Support\AdminImageInput;
 use Modules\Property\Enums\AttributeType;
 use Modules\Property\Models\PropertyAttribute;
 
@@ -42,6 +44,7 @@ class UpsertPropertyAttributeRequest extends FormRequest
             ],
             'name' => ['required', 'string', 'min:2', 'max:255'],
             'help_text' => ['nullable', 'string', 'max:2000'],
+            'image' => ['nullable', new LibraryImageRule],
             'type' => ['required', Rule::enum(AttributeType::class)],
             'is_required' => ['nullable', 'boolean'],
             'is_unique' => ['nullable', 'boolean'],
@@ -175,6 +178,7 @@ class UpsertPropertyAttributeRequest extends FormRequest
     {
         $this->merge([
             'code' => strtolower(trim((string) $this->input('code'))),
+            'image' => AdminImageInput::resolveMediaPathOnly($this, 'img', 'img_media_path'),
             'is_required' => $this->boolean('is_required'),
             'is_unique' => $this->boolean('is_unique'),
             'is_active' => $this->boolean('is_active'),

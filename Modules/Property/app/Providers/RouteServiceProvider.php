@@ -38,6 +38,11 @@ class RouteServiceProvider extends ServiceProvider
     protected function mapApiRoutes(): void
     {
         Route::middleware(['web', 'throttle:60,1'])->prefix('api')->name('api.')->group(module_path($this->name, '/routes/api.php'));
+
+        Route::middleware(['api', 'auth.api_token', 'throttle:60,1'])
+            ->prefix('api/v1')
+            ->name('api.v1.')
+            ->group(module_path($this->name, '/routes/api_v1.php'));
     }
 
     protected function mapWebRoutes(): void

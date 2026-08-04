@@ -91,6 +91,7 @@ class MediaLibraryManagementTest extends TestCase
             ->assertJsonPath('data.0.id', $inside->id);
 
         $this->patchJson(route('admin.media_library.update', $inside), [
+            'name' => 'Living room hero',
             'alt_text' => 'Updated alternative text',
             'title' => 'Updated title',
             'caption' => 'Updated caption',
@@ -98,9 +99,32 @@ class MediaLibraryManagementTest extends TestCase
 
         $this->assertDatabaseHas('media', [
             'id' => $inside->id,
+            'name' => 'Living room hero',
             'alt_text' => 'Updated alternative text',
             'title' => 'Updated title',
             'caption' => 'Updated caption',
+        ]);
+    }
+
+    public function test_admin_can_rename_a_folder_without_changing_storage_slug(): void
+    {
+        $this->actingAs($this->admin());
+        $folder = MediaFolder::query()->create([
+            'name' => 'Campaign A',
+            'slug' => 'campaign-a',
+            'user_id' => auth()->id(),
+        ]);
+
+        $this->patchJson(route('admin.media_library.folders.update', $folder), [
+            'name' => 'Campaign B',
+        ])
+            ->assertOk()
+            ->assertJsonPath('folder.name', 'Campaign B');
+
+        $this->assertDatabaseHas('media_folders', [
+            'id' => $folder->id,
+            'name' => 'Campaign B',
+            'slug' => 'campaign-a',
         ]);
     }
 

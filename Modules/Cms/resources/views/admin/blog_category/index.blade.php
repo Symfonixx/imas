@@ -27,12 +27,12 @@
                            data-kt-check-target="#dataTable .form-check-input" value="1"/>
                 </div>
             </th>
-            <th class="min-w-200px">{{__('Name')}}</th>
-            <th class="min-w-200px">{{__('Url')}}</th>
+            <th class="min-w-150px">{{__('Name')}}</th>
+            <th class="min-w-150px">{{__('Url')}}</th>
             <th class="min-w-120px">{{__('Add To Navbar')}}</th>
             <th class="min-w-120px">{{__('SEO')}}</th>
-            <th class="min-w-150px">{{__('Created At')}}</th>
-            <th class="min-w-200px text-end rounded-end"></th>
+            <th class="min-w-100px">{{__('Created At')}}</th>
+            <th class="min-w-100px text-end rounded-end"></th>
         </thead>
         <tbody class="text-gray-600 fw-semibold">
         @foreach($model as $category)

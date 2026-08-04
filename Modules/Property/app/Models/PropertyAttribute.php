@@ -19,10 +19,13 @@ class PropertyAttribute extends Model
 
     public array $translatable = ['name', 'help_text'];
 
+    protected $appends = ['image_link'];
+
     protected $fillable = [
         'code',
         'name',
         'help_text',
+        'image',
         'type',
         'is_required',
         'is_unique',
@@ -90,5 +93,15 @@ class PropertyAttribute extends Model
     public function scopeOrdered(Builder $query): Builder
     {
         return $query->orderBy('code')->orderBy('id');
+    }
+
+    public function getImageLinkAttribute(): ?string
+    {
+        $path = $this->attributes['image'] ?? null;
+        if (! is_string($path) || $path === '') {
+            return null;
+        }
+
+        return asset('storage/'.$path);
     }
 }

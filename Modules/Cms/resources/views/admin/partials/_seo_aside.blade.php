@@ -2,6 +2,10 @@
     'hasFeaturedImage' => false,
     'hasMetaImage' => false,
     'includeShortDescription' => false,
+    'slugTarget' => '#slug',
+    'bodyTarget' => '#tinymce',
+    'featuredImageTarget' => "input[name='img'], input[name='img_media_path']",
+    'bodyLabel' => 'Body content',
 ])
 
 @php
@@ -15,7 +19,7 @@
             'hint' => 'Aim for 30–70 characters.',
         ],
         [
-            'target' => '#slug',
+            'target' => $slugTarget,
             'rule' => 'length',
             'min' => 3,
             'max' => 60,
@@ -58,7 +62,7 @@
             'hint' => '3–8 relevant keywords.',
         ],
         [
-            'target' => "input[name='img'], input[name='img_media_path']",
+            'target' => $featuredImageTarget,
             'rule' => 'image',
             'initial' => $hasFeaturedImage ? '1' : '',
             'label' => 'Featured image',
@@ -72,10 +76,10 @@
             'hint' => '1200×630 for Open Graph cards.',
         ],
         [
-            'target' => '#tinymce',
+            'target' => $bodyTarget,
             'rule' => 'length',
             'min' => 300,
-            'label' => 'Body content',
+            'label' => $bodyLabel,
             'hint' => 'Aim for at least 300 characters.',
         ],
     ])->filter()->values()->all();

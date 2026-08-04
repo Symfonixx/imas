@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use Mcamara\LaravelLocalization\Middleware\LaravelLocalizationRedirectFilter;
 use Mcamara\LaravelLocalization\Middleware\LocaleCookieRedirect;
 use Mcamara\LaravelLocalization\Middleware\LocaleSessionRedirect;
+use Modules\Base\Models\Media;
 use Modules\Core\Contracts\Translation\TranslatorInterface;
 use Modules\Property\Enums\AttributeType;
 use Modules\Property\Enums\LocationType;
@@ -328,6 +329,52 @@ class PropertyAttributeManagementTest extends TestCase
         ])->assertRedirect(route('admin.property_attributes.index'));
 
         $this->assertDatabaseHas('property_attributes', ['code' => 'valid_datetime_default']);
+    }
+
+    public function test_admin_can_attach_and_remove_attribute_image(): void
+    {
+        Media::query()->create([
+            'name' => 'Attribute icon',
+            'path' => 'media-library/attribute-icon.jpg',
+            'disk' => 'public',
+            'mime_type' => 'image/jpeg',
+            'size' => 36,
+            'width' => 36,
+            'height' => 36,
+        ]);
+
+        $this->post(route('admin.property_attributes.store'), [
+            'code' => 'parking',
+            'name' => 'Parking',
+            'type' => AttributeType::Boolean->value,
+            'is_active' => '1',
+            'img_media_path' => 'media-library/attribute-icon.jpg',
+        ])->assertRedirect(route('admin.property_attributes.index'));
+
+        $attribute = PropertyAttribute::query()->where('code', 'parking')->firstOrFail();
+        $this->assertSame('media-library/attribute-icon.jpg', $attribute->image);
+        $this->assertStringContainsString('media-library/attribute-icon.jpg', (string) $attribute->image_link);
+
+        $this->get(route('admin.property_attributes.index'))
+            ->assertOk()
+            ->assertSee('media-library/attribute-icon.jpg', false);
+
+        $this->get(route('admin.property_attributes.edit', $attribute))
+            ->assertOk()
+            ->assertSee('width: 36px', false)
+            ->assertSee('media-library/attribute-icon.jpg', false);
+
+        $this->put(route('admin.property_attributes.update', $attribute), [
+            'name' => 'Parking',
+            'type' => AttributeType::Boolean->value,
+            'is_active' => '1',
+            'img_remove' => '1',
+            'img_media_path' => 'null',
+        ])->assertRedirect(route('admin.property_attributes.index'));
+
+        $attribute->refresh();
+        $this->assertNull($attribute->image);
+        $this->assertNull($attribute->image_link);
     }
 
     private function admin(): User

@@ -928,6 +928,22 @@ body.imas-admin-sidebar-searching #kt_app_sidebar .imas-admin-search-match > a.m
     overflow: auto;
 }
 
+.imas-media-library .imas-ml-breadcrumb .breadcrumb {
+    background: transparent;
+    padding: 0;
+    font-size: 0.85rem;
+}
+
+.imas-media-library .imas-ml-breadcrumb .btn-link {
+    color: var(--imas-admin-navy);
+    font-weight: 600;
+}
+
+.imas-media-library .imas-ml-breadcrumb .breadcrumb-item.active {
+    color: #7e8299;
+    font-weight: 600;
+}
+
 .imas-media-library .imas-ml-items--grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -954,9 +970,31 @@ body.imas-admin-sidebar-searching #kt_app_sidebar .imas-admin-search-match > a.m
     box-shadow: 0 0 0 2px rgba(26, 42, 74, 0.18);
 }
 
+.imas-media-library .imas-ml-grid__item--folder {
+    background: linear-gradient(180deg, #f8fafc 0%, #fff 70%);
+}
+
+.imas-media-library .imas-ml-grid__item--folder:hover {
+    border-color: rgba(217, 168, 0, 0.55);
+}
+
 .imas-media-library .imas-ml-grid__thumb {
     aspect-ratio: 1 / 1;
     background: #f1f3f7;
+}
+
+.imas-media-library .imas-ml-grid__thumb--folder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(217, 168, 0, 0.08);
+    color: #d9a800;
+    font-size: 2.4rem;
+}
+
+.imas-media-library .imas-ml-grid__item--up .imas-ml-grid__thumb--folder {
+    color: var(--imas-admin-navy);
+    background: #eef1f6;
 }
 
 .imas-media-library .imas-ml-grid__thumb img {
@@ -967,10 +1005,32 @@ body.imas-admin-sidebar-searching #kt_app_sidebar .imas-admin-search-match > a.m
 }
 
 .imas-media-library .imas-ml-grid__meta {
-    padding: 0.45rem 0.55rem;
+    padding: 0.45rem 0.55rem 0.15rem;
     font-size: 0.78rem;
     font-weight: 600;
     color: var(--imas-admin-navy);
+}
+
+.imas-media-library .imas-ml-grid__submeta {
+    padding: 0 0.55rem 0.45rem;
+    font-size: 0.7rem;
+    color: #7e8299;
+}
+
+.imas-media-library .imas-ml-grid__item [data-ml-inline-rename] {
+    cursor: text;
+}
+
+.imas-media-library .imas-ml-list__folder-icon {
+    display: inline-flex;
+    width: 48px;
+    height: 48px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.35rem;
+    background: rgba(217, 168, 0, 0.1);
+    color: #d9a800;
+    font-size: 1.35rem;
 }
 
 .imas-media-library .imas-ml-check {

@@ -534,6 +534,10 @@
                     'hasFeaturedImage' => $isEdit && ! empty($property->thumbnail),
                     'hasMetaImage' => ! empty($seoMeta['meta_img']),
                     'includeShortDescription' => false,
+                    'slugTarget' => '#url_key',
+                    'bodyTarget' => '#tinymce-overview, #tinymce-why-to-buy, #tinymce-content',
+                    'featuredImageTarget' => "input[name='thumbnail'], input[name='thumbnail_media_path']",
+                    'bodyLabel' => 'Body content',
                 ])
             </div>
         </div>

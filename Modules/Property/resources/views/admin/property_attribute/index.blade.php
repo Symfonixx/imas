@@ -27,6 +27,7 @@
                 </div>
             </th>
             <th>{{ __('Name') }}</th>
+            <th>{{ __('Image') }}</th>
             <th>{{ __('Code') }}</th>
             <th>{{ __('Type') }}</th>
             <th>{{ __('Options') }}</th>
@@ -43,6 +44,18 @@
                     </div>
                 </td>
                 <td class="fw-bold">{{ $row->name }}</td>
+                <td>
+                    @if($row->image_link)
+                        <img src="{{ $row->image_link }}"
+                             alt="{{ $row->name }}"
+                             width="36"
+                             height="36"
+                             class="rounded object-fit-cover"
+                             style="width: 36px; height: 36px; object-fit: cover;"/>
+                    @else
+                        <span class="text-muted">—</span>
+                    @endif
+                </td>
                 <td><code>{{ $row->code }}</code></td>
                 <td>{{ __(ucfirst($row->type->value)) }}</td>
                 <td>{{ $row->options_count }}</td>

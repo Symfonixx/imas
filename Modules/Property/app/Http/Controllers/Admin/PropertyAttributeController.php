@@ -26,6 +26,7 @@ class PropertyAttributeController extends Controller
             'id',
             'code',
             'name',
+            'image',
             'type',
             'is_required',
             'is_unique',

@@ -27,8 +27,8 @@
             </th>
             <th class="min-w-250px">{{ __('Question') }}</th>
             <th class="min-w-120px">{{ __('Rank') }}</th>
-            <th class="min-w-150px">{{ __('Publish Status') }}</th>
-            <th class="min-w-150px">{{ __('Created At') }}</th>
+            <th class="min-w-100px">{{ __('Publish Status') }}</th>
+            <th class="min-w-100px">{{ __('Created At') }}</th>
             <th class="min-w-100px text-end rounded-end"></th>
         </tr>
         </thead>

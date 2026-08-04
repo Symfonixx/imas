@@ -99,7 +99,10 @@ class PropertyAttributeApplicationService
             data: $command->attributes,
             uploadPath: 'property-attributes',
             translatableFields: ['name', 'help_text'],
-            imageFields: [],
+            imageFields: ['image'],
+            existingMedia: [
+                'image' => $attribute?->image,
+            ],
             entity: $attribute,
             updateTranslations: $updateTranslations
         );

@@ -19,6 +19,7 @@ Route::middleware('can:Media Library Management')->group(function () {
     Route::get('media-library/list', [MediaLibraryController::class, 'list'])->name('media_library.list');
     Route::get('media-library/folders', [MediaLibraryController::class, 'folders'])->name('media_library.folders.index');
     Route::post('media-library/folders', [MediaLibraryController::class, 'storeFolder'])->name('media_library.folders.store');
+    Route::patch('media-library/folders/{folder}', [MediaLibraryController::class, 'updateFolder'])->name('media_library.folders.update');
     Route::delete('media-library/folders/{folder}', [MediaLibraryController::class, 'destroyFolder'])->name('media_library.folders.destroy');
     Route::post('media-library', [MediaLibraryController::class, 'store'])->name('media_library.store');
     Route::delete('media-library/delete-multi', [MediaLibraryController::class, 'deleteMulti'])->name('media_library.delete_multi');

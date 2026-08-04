@@ -299,17 +299,24 @@
                     return targetEl.value || '';
                 }
 
+                function fieldValue(target) {
+                    if (!target) return '';
+                    if (target.id === 'tinymce' || (target.tagName === 'TEXTAREA' && target.classList.contains('tinymce-editor'))) {
+                        return getTinymceContent(target);
+                    }
+                    return target.value || '';
+                }
+
                 function evaluateCheck(check, root) {
                     var scope = root && root.querySelector ? root : document;
                     var rule = check.dataset.seoRule;
                     var min = parseInt(check.dataset.seoMin || '0', 10);
                     var max = parseInt(check.dataset.seoMax || '0', 10);
                     var hardMax = parseInt(check.dataset.seoHardMax || '0', 10);
-                    var target = safeQuery(check.dataset.seoTarget, scope);
+                    var targets = safeQueryAll(check.dataset.seoTarget, scope);
 
                     if (rule === 'image') {
                         var hasInitial = check.dataset.seoInitial === '1';
-                        var targets = safeQueryAll(check.dataset.seoTarget, scope);
                         var hasFile = targets.some(function (item) {
                             return item && item.files && item.files.length > 0;
                         });
@@ -322,13 +329,12 @@
                         return { state: 'danger', label: I18N.missing };
                     }
 
-                    if (!target) {
+                    if (targets.length === 0) {
                         return { state: 'empty', label: I18N.empty, length: 0 };
                     }
 
-                    var value = (target.id === 'tinymce' || (target.tagName === 'TEXTAREA' && target.classList.contains('tinymce-editor')))
-                        ? getTinymceContent(target)
-                        : (target.value || '');
+                    // Sum text across all matched fields (e.g. property overview + why_to_buy + content).
+                    var value = targets.map(fieldValue).join('');
 
                     if (rule === 'count') {
                         var parts = String(value).split(',').map(function (p) { return p.trim(); }).filter(Boolean);

@@ -128,7 +128,7 @@ Author: Hadi Hilal
                                 <!--begin:Menu link-->
                                 <span class="menu-link">
 											<span class="menu-title">
-                                                Imas Group
+                                                Imas Global
                                             </span>
 											<span class="menu-arrow d-lg-none"></span>
                                 </span>

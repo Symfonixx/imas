@@ -21,6 +21,7 @@
                     list: @json(route('admin.media_library.list')),
                     folders: @json(route('admin.media_library.folders.index')),
                     storeFolder: @json(route('admin.media_library.folders.store')),
+                    updateFolder: @json(route('admin.media_library.folders.update', ['folder' => '__id__'])),
                     destroyFolder: @json(route('admin.media_library.folders.destroy', ['folder' => '__id__'])),
                     store: @json(route('admin.media_library.store')),
                     update: @json(route('admin.media_library.update', ['media' => '__id__'])),
@@ -34,6 +35,7 @@
                     useSelectedImages: @json(__('Use selected images')),
                     selectDetails: @json(__('Select an image to see details.')),
                     noMedia: @json(__('No media found.')),
+                    emptyFolder: @json(__('This folder is empty.')),
                     loading: @json(__('Loading...')),
                     name: @json(__('Name')),
                     altText: @json(__('Alt text')),
@@ -48,17 +50,26 @@
                     uploader: @json(__('Uploader')),
                     date: @json(__('Date')),
                     folder: @json(__('Folder')),
+                    folders: @json(__('Folders')),
+                    files: @json(__('Files')),
                     saveDetails: @json(__('Save details')),
+                    rename: @json(__('Rename')),
+                    renameFolder: @json(__('Rename folder')),
+                    renamePrompt: @json(__('Enter a new name')),
+                    openFolder: @json(__('Open folder')),
+                    itemsCount: @json(__(':count items')),
                     deleteLabel: @json(__('Delete')),
                     trashConfirm: @json(__('Move to trash / remove from library?')),
                     deleteFolderConfirm: @json(__('Delete this folder and every image inside it?')),
                     unableSave: @json(__('Unable to save image details.')),
                     unableCreateFolder: @json(__('Unable to create folder.')),
+                    unableRenameFolder: @json(__('Unable to rename folder.')),
                     unableDeleteFolder: @json(__('Unable to delete folder.')),
                     uploadFailed: @json(__('Upload failed.')),
                     copied: @json(__('Copied')),
                     prev: @json(__('Prev')),
                     next: @json(__('Next')),
+                    parentFolder: @json(__('Parent folder')),
                 };
 
                 function csrf() {
@@ -147,6 +158,21 @@
                         return folder ? folder.name : i18n.root;
                     }
 
+                    function directoryFolders() {
+                        if (state.folderId !== 'root') {
+                            return [];
+                        }
+                        var q = (state.search || '').trim().toLowerCase();
+                        return state.folders.filter(function (folder) {
+                            if (!q) return true;
+                            return String(folder.name || '').toLowerCase().indexOf(q) !== -1;
+                        });
+                    }
+
+                    function itemsCountLabel(count) {
+                        return String(i18n.itemsCount).replace(':count', String(count));
+                    }
+
                     function isChecked(mediaId) {
                         return state.selectedIds.indexOf(mediaId) !== -1;
                     }
@@ -156,6 +182,35 @@
                         return state.items.find(function (item) {
                             return item.id === state.selectedId;
                         }) || null;
+                    }
+
+                    function openDirectory(folderId) {
+                        state.folderId = String(folderId);
+                        resetSelection();
+                        renderFolders();
+                        renderBreadcrumb();
+                        loadMedia(1);
+                    }
+
+                    function renderBreadcrumb() {
+                        var el = $('[data-ml-breadcrumb]');
+                        if (!el) return;
+
+                        var html = '<nav class="imas-ml-breadcrumb" aria-label="breadcrumb">' +
+                            '<ol class="breadcrumb mb-0">' +
+                            '<li class="breadcrumb-item">' +
+                            '<button type="button" class="btn btn-link p-0 align-baseline" data-ml-folder="root">' +
+                            '<i class="bi bi-house-door me-1"></i>' + escapeHtml(i18n.root) +
+                            '</button></li>';
+
+                        if (state.folderId !== 'root') {
+                            html += '<li class="breadcrumb-item active" aria-current="page">' +
+                                '<i class="bi bi-folder2 me-1"></i>' + escapeHtml(currentFolderName()) +
+                                '</li>';
+                        }
+
+                        html += '</ol></nav>';
+                        el.innerHTML = html;
                     }
 
                     function getOrderedSelectedItems() {
@@ -215,10 +270,15 @@
 
                         html += state.folders.map(function (folder) {
                             var active = parseInt(state.folderId, 10) === folder.id ? 'active' : '';
-                            return '<button type="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center ' + active + '" data-ml-folder="' + folder.id + '">' +
-                                '<span class="text-truncate"><i class="bi bi-folder me-2"></i>' + escapeHtml(folder.name) + '</span>' +
-                                '<span class="badge badge-light-primary ms-2">' + folder.media_count + '</span>' +
-                                '</button>';
+                            return '<div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center gap-2 ' + active + '" data-ml-folder-row="' + folder.id + '">' +
+                                '<button type="button" class="btn btn-link text-start text-dark text-decoration-none p-0 flex-grow-1 text-truncate" data-ml-folder="' + folder.id + '">' +
+                                '<i class="bi bi-folder me-2"></i>' + escapeHtml(folder.name) +
+                                '</button>' +
+                                '<span class="badge badge-light-primary">' + folder.media_count + '</span>' +
+                                '<button type="button" class="btn btn-icon btn-sm btn-light" data-ml-rename-folder="' + folder.id + '" title="' + escapeAttribute(i18n.renameFolder) + '">' +
+                                '<i class="bi bi-pencil"></i>' +
+                                '</button>' +
+                                '</div>';
                         }).join('');
 
                         el.innerHTML = html;
@@ -228,6 +288,21 @@
 
                         var deleteBtn = $('[data-ml-delete-folder]');
                         if (deleteBtn) deleteBtn.disabled = state.folderId === 'root';
+
+                        renderBreadcrumb();
+                    }
+
+                    function renderFolderGrid(folders) {
+                        return folders.map(function (folder) {
+                            return '' +
+                                '<div class="imas-ml-grid__item imas-ml-grid__item--folder" data-ml-dir-folder="' + folder.id + '" title="' + escapeAttribute(i18n.openFolder) + '">' +
+                                '  <div class="imas-ml-grid__thumb imas-ml-grid__thumb--folder">' +
+                                '    <i class="bi bi-folder-fill"></i>' +
+                                '  </div>' +
+                                '  <div class="imas-ml-grid__meta text-truncate" title="' + escapeAttribute(folder.name || '') + '">' + escapeHtml(folder.name || '') + '</div>' +
+                                '  <div class="imas-ml-grid__submeta text-truncate">' + escapeHtml(itemsCountLabel(folder.media_count || 0)) + '</div>' +
+                                '</div>';
+                        }).join('');
                     }
 
                     function renderGrid(items) {
@@ -242,8 +317,29 @@
                                 '  <div class="imas-ml-grid__thumb">' +
                                 '    <img src="' + escapeAttribute(item.url) + '" alt="' + escapeAttribute(item.alt_text || '') + '" loading="lazy">' +
                                 '  </div>' +
-                                '  <div class="imas-ml-grid__meta text-truncate" title="' + escapeAttribute(item.name || '') + '">' + escapeHtml(item.name || '') + '</div>' +
+                                '  <div class="imas-ml-grid__meta text-truncate" data-ml-inline-rename="' + item.id + '" title="' + escapeAttribute((item.name || '') + ' — ' + i18n.rename) + '">' + escapeHtml(item.name || '') + '</div>' +
                                 '</div>';
+                        }).join('');
+                    }
+
+                    function renderFolderList(folders) {
+                        return folders.map(function (folder) {
+                            return '' +
+                                '<tr class="imas-ml-list__folder" data-ml-dir-folder="' + folder.id + '" style="cursor:pointer" title="' + escapeAttribute(i18n.openFolder) + '">' +
+                                '  <td style="width:40px"></td>' +
+                                '  <td style="width:64px" class="text-center">' +
+                                '    <span class="imas-ml-list__folder-icon"><i class="bi bi-folder-fill"></i></span>' +
+                                '  </td>' +
+                                '  <td class="fw-semibold">' +
+                                '    <span class="me-2">' + escapeHtml(folder.name || '-') + '</span>' +
+                                '    <button type="button" class="btn btn-icon btn-sm btn-light" data-ml-rename-folder="' + folder.id + '" title="' + escapeAttribute(i18n.renameFolder) + '" onclick="event.stopPropagation()">' +
+                                '      <i class="bi bi-pencil"></i>' +
+                                '    </button>' +
+                                '  </td>' +
+                                '  <td class="text-muted">' + escapeHtml(i18n.folder) + '</td>' +
+                                '  <td class="text-muted">' + escapeHtml(itemsCountLabel(folder.media_count || 0)) + '</td>' +
+                                '  <td class="text-muted">—</td>' +
+                                '</tr>';
                         }).join('');
                     }
 
@@ -259,28 +355,16 @@
                                 '  <td style="width:64px">' +
                                 '    <img src="' + escapeAttribute(item.url) + '" alt="" class="imas-ml-list__thumb" loading="lazy">' +
                                 '  </td>' +
-                                '  <td class="fw-semibold">' + escapeHtml(item.name || '-') + '</td>' +
+                                '  <td class="fw-semibold">' +
+                                '    <span data-ml-inline-rename="' + item.id + '" title="' + escapeAttribute(i18n.rename) + '">' + escapeHtml(item.name || '-') + '</span>' +
+                                '  </td>' +
                                 '  <td class="text-muted">' + escapeHtml(item.mime_type || '-') + '</td>' +
                                 '  <td class="text-muted">' + formatSize(item.size) + '</td>' +
                                 '  <td class="text-muted">' + escapeHtml(item.created_at_human || item.created_at || '-') + '</td>' +
                                 '</tr>';
                         }).join('');
 
-                        return '' +
-                            '<div class="table-responsive">' +
-                            '  <table class="table table-row-bordered table-hover align-middle gs-3 gy-2 mb-0">' +
-                            '    <thead>' +
-                            '      <tr class="fw-bold text-muted">' +
-                            '        <th></th><th></th>' +
-                            '        <th>' + escapeHtml(i18n.name) + '</th>' +
-                            '        <th>' + escapeHtml(i18n.type) + '</th>' +
-                            '        <th>' + escapeHtml(i18n.size) + '</th>' +
-                            '        <th>' + escapeHtml(i18n.date) + '</th>' +
-                            '      </tr>' +
-                            '    </thead>' +
-                            '    <tbody>' + rows + '</tbody>' +
-                            '  </table>' +
-                            '</div>';
+                        return rows;
                     }
 
                     function renderItems(items) {
@@ -288,8 +372,13 @@
                         if (!el) return;
 
                         state.items = items || [];
-                        if (!state.items.length) {
-                            el.innerHTML = '<div class="text-center text-muted py-15">' + escapeHtml(i18n.noMedia) + '</div>';
+                        var folders = directoryFolders();
+                        var hasFolders = folders.length > 0;
+                        var hasItems = state.items.length > 0;
+
+                        if (!hasFolders && !hasItems) {
+                            var emptyMsg = state.folderId === 'root' ? i18n.noMedia : i18n.emptyFolder;
+                            el.innerHTML = '<div class="text-center text-muted py-15">' + escapeHtml(emptyMsg) + '</div>';
                             renderDetails(null);
                             setBulkButtonState();
                             updateUseButton();
@@ -298,10 +387,47 @@
 
                         if (state.view === 'list') {
                             el.className = 'imas-ml-items imas-ml-items--list';
-                            el.innerHTML = renderList(state.items);
+                            el.innerHTML = '' +
+                                '<div class="table-responsive">' +
+                                '  <table class="table table-row-bordered table-hover align-middle gs-3 gy-2 mb-0">' +
+                                '    <thead>' +
+                                '      <tr class="fw-bold text-muted">' +
+                                '        <th></th><th></th>' +
+                                '        <th>' + escapeHtml(i18n.name) + '</th>' +
+                                '        <th>' + escapeHtml(i18n.type) + '</th>' +
+                                '        <th>' + escapeHtml(i18n.size) + '</th>' +
+                                '        <th>' + escapeHtml(i18n.date) + '</th>' +
+                                '      </tr>' +
+                                '    </thead>' +
+                                '    <tbody>' +
+                                (state.folderId !== 'root'
+                                    ? '<tr class="imas-ml-list__folder" data-ml-folder="root" style="cursor:pointer">' +
+                                      '  <td></td><td class="text-center"><span class="imas-ml-list__folder-icon"><i class="bi bi-arrow-up-left"></i></span></td>' +
+                                      '  <td class="fw-semibold">..</td>' +
+                                      '  <td class="text-muted">' + escapeHtml(i18n.parentFolder) + '</td>' +
+                                      '  <td></td><td></td>' +
+                                      '</tr>'
+                                    : '') +
+                                renderFolderList(folders) +
+                                renderList(state.items) +
+                                '    </tbody>' +
+                                '  </table>' +
+                                '</div>';
                         } else {
                             el.className = 'imas-ml-items imas-ml-items--grid';
-                            el.innerHTML = renderGrid(state.items);
+                            var gridHtml = '';
+                            if (state.folderId !== 'root') {
+                                gridHtml += '' +
+                                    '<div class="imas-ml-grid__item imas-ml-grid__item--folder imas-ml-grid__item--up" data-ml-folder="root" title="' + escapeAttribute(i18n.parentFolder) + '">' +
+                                    '  <div class="imas-ml-grid__thumb imas-ml-grid__thumb--folder">' +
+                                    '    <i class="bi bi-arrow-up-left"></i>' +
+                                    '  </div>' +
+                                    '  <div class="imas-ml-grid__meta text-truncate">..</div>' +
+                                    '  <div class="imas-ml-grid__submeta text-truncate">' + escapeHtml(i18n.parentFolder) + '</div>' +
+                                    '</div>';
+                            }
+                            gridHtml += renderFolderGrid(folders) + renderGrid(state.items);
+                            el.innerHTML = gridHtml;
                         }
 
                         if (!state.selectedId && state.items[0]) {
@@ -354,7 +480,10 @@
                             '  <img src="' + escapeAttribute(item.url) + '" alt="' + escapeAttribute(item.alt_text || '') + '">' +
                             '</div>' +
                             '<div class="mb-3">' +
-                            '  <label class="form-label">' + escapeHtml(i18n.name) + '</label>' +
+                            '  <label class="form-label d-flex justify-content-between align-items-center">' +
+                            '    <span>' + escapeHtml(i18n.name) + '</span>' +
+                            '    <button type="button" class="btn btn-link btn-sm p-0" data-ml-focus-name>' + escapeHtml(i18n.rename) + '</button>' +
+                            '  </label>' +
                             '  <input type="text" class="form-control form-control-sm" data-ml-field="name" maxlength="255" value="' + escapeAttribute(item.name || '') + '">' +
                             '</div>' +
                             '<div class="mb-3">' +
@@ -679,6 +808,96 @@
                             });
                     }
 
+                    function renameFolderById(folderId) {
+                        var folder = state.folders.find(function (item) {
+                            return item.id === parseInt(folderId, 10);
+                        });
+                        if (!folder) return;
+
+                        var nextName = window.prompt(i18n.renamePrompt, folder.name || '');
+                        if (nextName === null) return;
+                        nextName = String(nextName).trim();
+                        if (!nextName || nextName === folder.name) return;
+
+                        fetch(routes.updateFolder.replace('__id__', folder.id), {
+                            method: 'PATCH',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrf(),
+                                'X-Requested-With': 'XMLHttpRequest',
+                            },
+                            body: JSON.stringify({name: nextName}),
+                        })
+                            .then(function (res) {
+                                if (!res.ok) {
+                                    return res.json().then(function (data) {
+                                        var message = data.message || i18n.unableRenameFolder;
+                                        if (data.errors && data.errors.name && data.errors.name[0]) {
+                                            message = data.errors.name[0];
+                                        }
+                                        throw new Error(message);
+                                    });
+                                }
+                                return res.json();
+                            })
+                            .then(function (data) {
+                                var index = state.folders.findIndex(function (item) {
+                                    return item.id === folder.id;
+                                });
+                                if (index !== -1) {
+                                    state.folders[index].name = data.folder.name;
+                                }
+                                renderFolders();
+                                renderItems(state.items);
+                            })
+                            .catch(function (error) {
+                                alert(error.message);
+                            });
+                    }
+
+                    function renameMediaById(mediaId) {
+                        var item = state.items.find(function (media) {
+                            return media.id === parseInt(mediaId, 10);
+                        });
+                        if (!item) return;
+
+                        var nextName = window.prompt(i18n.renamePrompt, item.name || '');
+                        if (nextName === null) return;
+                        nextName = String(nextName).trim();
+                        if (!nextName || nextName === item.name) return;
+
+                        fetch(routes.update.replace('__id__', item.id), {
+                            method: 'PATCH',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrf(),
+                                'X-Requested-With': 'XMLHttpRequest',
+                            },
+                            body: JSON.stringify({
+                                name: nextName,
+                                alt_text: item.alt_text,
+                                title: item.title,
+                                caption: item.caption,
+                                folder_id: item.folder_id,
+                            }),
+                        })
+                            .then(function (res) {
+                                if (!res.ok) throw new Error(i18n.unableSave);
+                                return res.json();
+                            })
+                            .then(function (data) {
+                                var index = state.items.findIndex(function (media) {
+                                    return media.id === item.id;
+                                });
+                                if (index !== -1) state.items[index] = data.item;
+                                state.selectedId = data.item.id;
+                                renderItems(state.items);
+                            })
+                            .catch(function (error) {
+                                alert(error.message);
+                            });
+                    }
+
                     function deleteCurrentFolder() {
                         if (state.folderId === 'root') return;
                         if (!confirm(i18n.deleteFolderConfirm)) return;
@@ -783,6 +1002,20 @@
                                 return;
                             }
 
+                            var renameFolderBtn = event.target.closest('[data-ml-rename-folder]');
+                            if (renameFolderBtn && root.contains(renameFolderBtn)) {
+                                event.preventDefault();
+                                event.stopPropagation();
+                                renameFolderById(renameFolderBtn.getAttribute('data-ml-rename-folder'));
+                                return;
+                            }
+
+                            var dirFolder = event.target.closest('[data-ml-dir-folder]');
+                            if (dirFolder && root.contains(dirFolder)) {
+                                openDirectory(dirFolder.getAttribute('data-ml-dir-folder'));
+                                return;
+                            }
+
                             var item = event.target.closest('[data-ml-item]');
                             if (item && root.contains(item)) {
                                 state.selectedId = parseInt(item.getAttribute('data-ml-item'), 10);
@@ -792,10 +1025,7 @@
 
                             var folder = event.target.closest('[data-ml-folder]');
                             if (folder && root.contains(folder)) {
-                                state.folderId = folder.getAttribute('data-ml-folder');
-                                resetSelection();
-                                renderFolders();
-                                loadMedia(1);
+                                openDirectory(folder.getAttribute('data-ml-folder'));
                                 return;
                             }
 
@@ -822,6 +1052,14 @@
                                 deleteCurrentFolder();
                                 return;
                             }
+                            if (event.target.closest('[data-ml-focus-name]')) {
+                                var nameField = $('[data-ml-field="name"]');
+                                if (nameField) {
+                                    nameField.focus();
+                                    nameField.select();
+                                }
+                                return;
+                            }
                             if (event.target.closest('[data-ml-save]')) {
                                 saveCurrentMetadata();
                                 return;
@@ -841,6 +1079,14 @@
                             if (event.target.closest('[data-ml-use]')) {
                                 useSelection();
                             }
+                        });
+
+                        root.addEventListener('dblclick', function (event) {
+                            var renameTarget = event.target.closest('[data-ml-inline-rename]');
+                            if (!renameTarget || !root.contains(renameTarget)) return;
+                            event.preventDefault();
+                            event.stopPropagation();
+                            renameMediaById(renameTarget.getAttribute('data-ml-inline-rename'));
                         });
 
                         root.addEventListener('change', function (event) {
@@ -1125,6 +1371,15 @@
         <div class="col-xl-7 col-lg-5">
             <div class="card card-flush border h-100">
                 <div class="card-body p-4">
+                    <div class="imas-ml-path mb-3" data-ml-breadcrumb>
+                        <nav class="imas-ml-breadcrumb" aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-0">
+                                <li class="breadcrumb-item active" aria-current="page">
+                                    <i class="bi bi-house-door me-1"></i>{{ __('Root') }}
+                                </li>
+                            </ol>
+                        </nav>
+                    </div>
                     <div class="imas-ml-items imas-ml-items--grid" data-ml-items>
                         <div class="text-center text-muted py-15">{{ __('Loading...') }}</div>
                     </div>

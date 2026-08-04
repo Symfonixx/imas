@@ -41,6 +41,15 @@
                               rows="3">{{ old('help_text', $attribute->help_text ?? '') }}</textarea>
                 </x-admin.form-group>
 
+                <x-admin.form-group label="Image" name="img"
+                                    helper="{{ __('Optional icon shown at 36×36. Choose from the Media Library.') }}">
+                    <x-admin.image-input
+                        name="img"
+                        size="36px"
+                        :preview="$editing && $attribute->image_link ? $attribute->image_link : null"
+                        :mediaPath="$editing ? ($attribute->image ?? null) : null"/>
+                </x-admin.form-group>
+
                 <x-admin.form-group label="Type" name="type" required>
                     <select class="form-select form-select-solid" name="type" id="attribute_type" required>
                         @foreach($types as $type)

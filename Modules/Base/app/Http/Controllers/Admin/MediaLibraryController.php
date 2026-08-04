@@ -7,7 +7,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Modules\Base\Models\Media;
@@ -130,6 +129,36 @@ class MediaLibraryController extends Controller
         ], 201);
     }
 
+    public function updateFolder(Request $request, MediaFolder $folder): JsonResponse
+    {
+        $request->merge(['name' => trim((string) $request->input('name'))]);
+
+        $payload = $request->validate([
+            'name' => [
+                'required',
+                'string',
+                'max:120',
+                Rule::unique('media_folders', 'name')->ignore($folder->id),
+            ],
+        ]);
+
+        // Keep slug unchanged so on-disk paths under media-library/{id}-{slug} stay valid.
+        $folder->update([
+            'name' => $payload['name'],
+        ]);
+
+        $folder->loadCount(['media as media_count' => fn ($query) => $query->active()]);
+
+        return response()->json([
+            'message' => __('The Operation Done Successfully'),
+            'folder' => [
+                'id' => $folder->id,
+                'name' => $folder->name,
+                'media_count' => (int) $folder->media_count,
+            ],
+        ]);
+    }
+
     public function store(Request $request): JsonResponse|RedirectResponse
     {
         $request->validate([
@@ -202,6 +231,14 @@ class MediaLibraryController extends Controller
             'caption' => ['nullable', 'string', 'max:2000'],
             'folder_id' => ['nullable', 'integer', 'exists:media_folders,id'],
         ]);
+
+        if (array_key_exists('name', $payload) && is_string($payload['name'])) {
+            $payload['name'] = trim($payload['name']) ?: $media->name;
+        }
+
+        if ($request->exists('folder_id') && ($request->input('folder_id') === null || $request->input('folder_id') === '')) {
+            $payload['folder_id'] = null;
+        }
 
         $media->update($payload);
 

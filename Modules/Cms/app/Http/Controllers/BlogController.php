@@ -6,12 +6,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
-use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use Modules\Cms\Models\Blog;
 use Modules\Cms\Models\BlogCategory;
+use Modules\Cms\Support\BlogCardSerializer;
 
 class BlogController extends Controller
 {
@@ -41,7 +40,7 @@ class BlogController extends Controller
         $blogsPaginator = $query->paginate(8)->withQueryString();
 
         $blogs = $blogsPaginator->through(
-            fn (Blog $blog) => $this->serializeBlog($blog),
+            fn (Blog $blog) => BlogCardSerializer::toArray($blog),
         );
 
         $recentBlogs = $this->recentPublishedBlogs();
@@ -71,7 +70,7 @@ class BlogController extends Controller
 
         return Inertia::render('Cms::Show', [
             'title' => (string) $blog->title,
-            'blog' => $this->serializeBlogDetail($blog),
+            'blog' => BlogCardSerializer::toDetailArray($blog),
             'recentBlogs' => $this->recentPublishedBlogs(exceptId: $blog->id),
             'categories' => $this->categoriesList(),
             'filters' => [
@@ -114,7 +113,7 @@ class BlogController extends Controller
 
         return $query->limit($limit)
             ->get()
-            ->map(fn (Blog $b) => $this->serializeBlog($b))
+            ->map(fn (Blog $b) => BlogCardSerializer::toArray($b))
             ->values()
             ->all();
     }
@@ -138,91 +137,6 @@ class BlogController extends Controller
                     ->orWhere("content->{$locale}", 'like', $pattern);
             }
         });
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function serializeBlog(Blog $blog): array
-    {
-        $description = (string) ($blog->description ?? '');
-        $media = app(\Modules\Base\Support\Media\MediaAssetResolver::class)->resolve($blog->image);
-
-        return [
-            'id' => $blog->id,
-            'title' => $blog->title,
-            'slug' => $blog->slug,
-            'description' => $blog->description,
-            'excerpt' => Str::limit(strip_tags($description), 150),
-            'image' => $media['url'] ?? $blog->image_link,
-            'image_alt' => $media['alt_text'] ?: (string) $blog->title,
-            'image_title' => $media['title'] ?? null,
-            'featured' => (bool) $blog->featured,
-            'visits' => (int) $blog->visits,
-            'created_at' => $blog->created_at?->toIso8601String(),
-            'date' => $blog->created_at?->locale(app()->getLocale())->translatedFormat('d M Y') ?? '',
-            'url' => LaravelLocalization::localizeUrl('/blog/'.$blog->slug),
-            'category' => $blog->category
-                ? [
-                    'id' => $blog->category->id,
-                    'name' => $blog->category->name,
-                    'slug' => $blog->category->slug,
-                ]
-                : null,
-        ];
-    }
-
-    /**
-     * Full blog payload for the detail page (content + SEO meta).
-     *
-     * @return array<string, mixed>
-     */
-    private function serializeBlogDetail(Blog $blog): array
-    {
-        $description = (string) ($blog->description ?? '');
-        $metaTitle = $blog->meta_title;
-        if ($metaTitle === null || trim((string) $metaTitle) === '') {
-            $metaTitle = $blog->title;
-        }
-        $metaDescription = $blog->meta_description;
-        if ($metaDescription === null || trim(strip_tags((string) $metaDescription)) === '') {
-            $metaDescription = Str::limit(strip_tags($description), 160);
-        }
-        $resolver = app(\Modules\Base\Support\Media\MediaAssetResolver::class);
-        $imageMedia = $resolver->resolve($blog->image);
-        $metaMedia = $resolver->resolve($blog->meta_image);
-
-        return [
-            'id' => $blog->id,
-            'title' => $blog->title,
-            'slug' => $blog->slug,
-            'description' => $blog->description,
-            'content' => $blog->content,
-            'excerpt' => Str::limit(strip_tags($description), 150),
-            'image' => $imageMedia['url'] ?? $blog->image_link,
-            'image_alt' => $imageMedia['alt_text'] ?: (string) $blog->title,
-            'image_title' => $imageMedia['title'] ?? null,
-            'meta_image' => $metaMedia['url'] ?? $blog->meta_image_link,
-            'meta' => [
-                'title' => $metaTitle,
-                'description' => $metaDescription,
-                'keywords' => $blog->meta_keywords,
-                'image' => $metaMedia['url'] ?? $blog->meta_image_link,
-                'canonical_url' => LaravelLocalization::localizeUrl('/blog/'.$blog->slug),
-            ],
-            'featured' => (bool) $blog->featured,
-            'visits' => (int) $blog->visits,
-            'created_at' => $blog->created_at?->toIso8601String(),
-            'date' => $blog->created_at?->locale(app()->getLocale())->translatedFormat('d M Y') ?? '',
-            'url' => LaravelLocalization::localizeUrl('/blog/'.$blog->slug),
-            'category' => $blog->category
-                ? [
-                    'id' => $blog->category->id,
-                    'name' => $blog->category->name,
-                    'slug' => $blog->category->slug,
-                ]
-                : null,
-        ];
     }
 
     private function blogHubTitle(): string

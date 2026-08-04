@@ -68,6 +68,8 @@ final class PropertyAttributeFormSchemaService
                     'code' => $attribute->code,
                     'name' => $attribute->name,
                     'help_text' => $attribute->help_text,
+                    'image' => $attribute->image,
+                    'image_url' => $attribute->image_link,
                     'type' => $attribute->type->value,
                     'is_required' => $attribute->is_required,
                     'is_unique' => $attribute->is_unique,

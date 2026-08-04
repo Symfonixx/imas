@@ -28,13 +28,13 @@
                 </div>
             </th>
 
-            <th class="min-w-200px"></th>
-            <th class="min-w-200px">{{__('Title')}}</th>
-            <th class="min-w-150px">{{__('Featured')}}</th>
-            <th class="min-w-150px">{{__('Publish Status')}}</th>
-            <th class="min-w-150px">{{__('Created At')}}</th>
-            <th class="min-w-150px"><i class="bi bi-eye text-primary fa-2x"></i></th>
-            <th class="min-w-200px text-end rounded-end"></th>
+            <th class="min-w-150px"></th>
+            <th class="min-w-150px">{{__('Title')}}</th>
+            <th class="min-w-100px">{{__('Featured')}}</th>
+            <th class="min-w-100px">{{__('Publish Status')}}</th>
+            <th class="min-w-100px">{{__('Created At')}}</th>
+            <th class="min-w-100px"><i class="bi bi-eye text-primary fa-2x"></i></th>
+            <th class="min-w-100px text-end rounded-end"></th>
         </thead>
         <!--end::Table head-->
         <!--begin::Table body-->

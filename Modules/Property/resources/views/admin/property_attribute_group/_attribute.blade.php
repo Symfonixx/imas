@@ -4,6 +4,14 @@
 <div class="attribute-row d-flex flex-wrap align-items-center gap-3 border rounded p-3"
      data-attribute-id="{{ $attribute->id }}" draggable="true">
     <span class="text-muted cursor-move" aria-hidden="true">⋮⋮</span>
+    @if($attribute->image_link)
+        <img src="{{ $attribute->image_link }}"
+             alt="{{ $attribute->name }}"
+             width="36"
+             height="36"
+             class="rounded flex-shrink-0"
+             style="width: 36px; height: 36px; object-fit: cover;"/>
+    @endif
     <div class="flex-grow-1">
         <span class="fw-bold">{{ $attribute->name }}</span>
         <code class="ms-2">{{ $attribute->code }}</code>

@@ -233,3 +233,48 @@ export function destroyHeroRangeSliders({
         removeValueInputs($slider);
     });
 }
+
+/**
+ * Update existing hero range slider handles + labels without destroying widgets.
+ */
+export function setHeroRangeSliderValues({
+    areaSelector = "#imas-hero-area-range",
+    priceSelector = "#imas-hero-price-range",
+    areaValues,
+    priceValues,
+    areaUnit = "m²",
+    priceUnit = "$",
+} = {}) {
+    const $ = window.jQuery;
+    if (!$?.fn?.slider) {
+        return;
+    }
+
+    if (Array.isArray(areaValues) && areaValues.length === 2) {
+        const $area = $(areaSelector);
+        if ($area.hasClass("ui-slider")) {
+            $area.slider("values", areaValues);
+            $area.children(".first-slider-value").val(
+                `${areaValues[0]} ${areaUnit}`,
+            );
+            $area.children(".second-slider-value").val(
+                `${areaValues[1]} ${areaUnit}`,
+            );
+        }
+    }
+
+    if (Array.isArray(priceValues) && priceValues.length === 2) {
+        const $price = $(priceSelector);
+        if ($price.hasClass("ui-slider")) {
+            const format = (n) =>
+                priceUnit +
+                Number(n)
+                    .toString()
+                    .replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
+
+            $price.slider("values", priceValues);
+            $price.children(".first-slider-value").val(format(priceValues[0]));
+            $price.children(".second-slider-value").val(format(priceValues[1]));
+        }
+    }
+}

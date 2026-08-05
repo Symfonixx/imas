@@ -21,8 +21,9 @@
         "mobile_invalid_length": "أدخل رقم جوال صالحًا (8–15 رقمًا إجمالاً بما في ذلك رمز الدولة).",
         "country_code_search_placeholder": "ابحث بالرمز أو اسم الدولة…",
         "country_code_search_empty": "لا توجد دول مطابقة لبحثك.",
-        "agree_terms_prefix": "بإنشاء حساب، أنت توافق على Imas Global",
+        "agree_terms_prefix": "بانشاء حساب، أنت توافق على",
         "terms_and_conditions": "الشروط والأحكام",
+        "agree_terms_suffix": "الخاصة ب IMAS GLOBAL",
         "terms_required": "يرجى الموافقة على الشروط.",
         "forgot_page_opening": "جاري فتح استعادة كلمة المرور… يمكنك أيضًا استخدام الزر أدناه إذا لم يظهر الحوار.",
         "reset_page_opening": "جاري فتح نموذج إعادة تعيين كلمة المرور… يمكنك أيضًا استخدام الزر أدناه إذا لم يظهر الحوار."
@@ -71,7 +72,8 @@
     "Apply": "تطبيق",
     "Active": "نشط",
     "Not Active": "غير نشط",
-    "Accept": "قبول",
+    "Accept": "موافق",
+    "Cancel": "إلغاء",
     "Decline": "رفض",
     "Read More": "قراءة المزيد",
     "Website Configurations": "إعدادات الموقع",
@@ -312,7 +314,7 @@
     "Recommended dimensions: 1920px × 600px.": "الأبعاد الموصى بها: 1920 × 600 بكسل.",
     "properties": {
         "proprty_details": "تفاصيل العقار",
-        "start_price": "السعر الأدنى",
+        "start_price": "الأسعار تبدأ من",
         "featured_properties": "العقارات الموصى بها لك اليوم",
         "we_provide_full_service_at_every_step": "نقدم خدمة كاملة في كل خطوة.",
         "title": "اطلع على احدث العقارات المضافة الى منصتنا",
@@ -387,7 +389,7 @@
     },
     "articles": {
         "title": "آخر المدونات والأخبار",
-        "description": "ابق على اطلاع على أحدث الأخبار والرؤى من خبرائنا.",
+        "description": " ابق على اطلاع على أحدث الأخبار و الدراسات  من خبرائنا المختصين.",
         "read_more": "اقرأ المزيد..."
     },
     "blogs": {

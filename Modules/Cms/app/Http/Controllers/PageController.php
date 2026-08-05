@@ -7,6 +7,7 @@ use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
+use Modules\Base\Application\Seo\SeoDocumentService;
 use Modules\Cms\Models\Page;
 
 class PageController extends Controller
@@ -37,9 +38,31 @@ class PageController extends Controller
 
         $page->increment('visits');
 
+        $serialized = $this->serializePageDetail($page);
+        $seoService = app(SeoDocumentService::class);
+        $siteName = $seoService->siteName();
+        $meta = is_array($serialized['meta'] ?? null) ? $serialized['meta'] : [];
+
+        $metaTitle = is_string($meta['title'] ?? null) ? trim(strip_tags((string) $meta['title'])) : '';
+        $documentTitle = $metaTitle !== ''
+            ? ($siteName !== '' && ! str_contains($metaTitle, $siteName)
+                ? $metaTitle.' | '.$siteName
+                : $metaTitle)
+            : $siteName;
+
         return Inertia::render('Cms::PageShow', [
             'title' => (string) $page->title,
-            'page' => $this->serializePageDetail($page),
+            'page' => $serialized,
+        ])->withViewData([
+            'seo' => $seoService->documentSeo([
+                'title' => $documentTitle,
+                'description' => is_string($meta['description'] ?? null)
+                    ? trim(strip_tags($meta['description']))
+                    : '',
+                'keywords' => $meta['keywords'] ?? null,
+                'og_image' => is_string($meta['image'] ?? null) ? trim($meta['image']) : '',
+                'canonical' => is_string($meta['canonical_url'] ?? null) ? trim($meta['canonical_url']) : '',
+            ]),
         ]);
     }
 

@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Modules\Base\Application\Seo\SeoDocumentService;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,13 +16,28 @@ use Inertia\Inertia;
 
 Route::middleware('guest')->group(function () {
     Route::get('/forgot-password', function () {
-        return Inertia::render('User::Auth/ForgotPassword');
+        $seoService = app(SeoDocumentService::class);
+
+        return Inertia::render('User::Auth/ForgotPassword')
+            ->withViewData([
+                'seo' => $seoService->documentSeo([
+                    'page_title' => $seoService->labelFromBaseLang('Forgot Password', 'Forgot Password'),
+                    'robots' => 'noindex, nofollow',
+                ]),
+            ]);
     })->name('password.request');
 
     Route::get('/reset-password/{token}', function (Request $request, string $token) {
+        $seoService = app(SeoDocumentService::class);
+
         return Inertia::render('User::Auth/ResetPassword', [
             'email' => (string) $request->query('email', ''),
             'token' => $token,
+        ])->withViewData([
+            'seo' => $seoService->documentSeo([
+                'page_title' => $seoService->labelFromBaseLang('Reset Password', 'Reset Password'),
+                'robots' => 'noindex, nofollow',
+            ]),
         ]);
     })->name('password.reset');
 });

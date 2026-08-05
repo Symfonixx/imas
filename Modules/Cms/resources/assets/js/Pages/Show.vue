@@ -230,13 +230,13 @@ const blogIndexUrl = computed(() =>
     blogIndexLocalizedUrl(activeLocale.value),
 );
 
-function categoryIndexUrl(categoryId) {
+function categoryIndexUrl(categorySlug) {
     const params = {};
     if (props.filters.q) {
         params.q = props.filters.q;
     }
-    if (categoryId != null) {
-        params.category_id = categoryId;
+    if (categorySlug != null && categorySlug !== "") {
+        params.category = categorySlug;
     }
     return blogIndexLocalizedUrl(activeLocale.value, params);
 }

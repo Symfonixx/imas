@@ -2,6 +2,14 @@
     $fh = asset('theme/findhouses');
     $feedSiteName = trim((string) (\Modules\Base\Models\Seo::get('website_name') ?: config('app.name')));
     $settings = \Modules\Base\Models\Settings::pluck('value', 'key');
+    $seo = $seo ?? app(\Modules\Base\Application\Seo\SeoDocumentService::class)->documentSeo();
+    $seoTitle = $seo['title'] ?? $feedSiteName;
+    $seoDescription = $seo['description'] ?? '';
+    $seoKeywords = $seo['keywords'] ?? '';
+    $seoOgImage = $seo['og_image'] ?? '';
+    $seoCanonical = $seo['canonical'] ?? '';
+    $seoOgType = $seo['og_type'] ?? 'website';
+    $seoRobots = $seo['robots'] ?? '';
 @endphp
 <!DOCTYPE html>
 <html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
@@ -16,6 +24,28 @@
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/favicon/apple-touch-icon.png') }}"/>
     <link rel="manifest" href="{{ asset('images/favicon/site.webmanifest') }}"/>
     <link rel="alternate" type="application/rss+xml" title="{{ $feedSiteName }} Blog" href="{{ url('/feed.xml') }}">
+
+    {{-- Document SEO in the first HTML response (View Page Source). inertia="" lets Vue Head replace these on SPA navigations. --}}
+    <title inertia>{{ $seoTitle }}</title>
+    @if ($seoDescription !== '')
+        <meta inertia="description" name="description" content="{{ $seoDescription }}">
+        <meta inertia="og:description" property="og:description" content="{{ $seoDescription }}">
+    @endif
+    @if ($seoKeywords !== '')
+        <meta inertia="keywords" name="keywords" content="{{ $seoKeywords }}">
+    @endif
+    <meta inertia="og:title" property="og:title" content="{{ $seoTitle }}">
+    <meta inertia="og:type" property="og:type" content="{{ $seoOgType }}">
+    @if ($seoOgImage !== '')
+        <meta inertia="og:image" property="og:image" content="{{ $seoOgImage }}">
+    @endif
+    @if ($seoCanonical !== '')
+        <link inertia="canonical" rel="canonical" href="{{ $seoCanonical }}">
+        <meta inertia="og:url" property="og:url" content="{{ $seoCanonical }}">
+    @endif
+    @if ($seoRobots !== '')
+        <meta inertia="robots" name="robots" content="{{ $seoRobots }}">
+    @endif
 
     {{-- Brand font (public/fonts/Avenir_LT_Std_55_Roman.otf) — asset() so URL works in dev + subfolder deploys --}}
     <link rel="preload" href="{{ asset('fonts/Avenir_LT_Std_55_Roman.otf') }}" as="font" type="font/otf" crossorigin="anonymous">

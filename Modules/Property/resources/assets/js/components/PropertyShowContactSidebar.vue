@@ -657,4 +657,8 @@ onBeforeUnmount(() => {
     color: var(--text);
     margin-bottom: 1rem;
 }
+.imas-contact-list__icon.la-phone i{
+    font-size: 18px !important;
+}
+
 </style>

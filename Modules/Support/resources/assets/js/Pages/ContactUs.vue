@@ -111,6 +111,7 @@ import { Head, usePage } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/App.vue";
 import InnerPageHeadingHero from "@/components/global/InnerPageHeadingHero.vue";
 import { useScrollReveal } from "@/composables/useScrollReveal";
+import { useDocumentSeo } from "@/composables/useDocumentSeo.js";
 import ContactForm from "../Components/ContactForm.vue";
 import ContactDetails from "../Components/ContactDetails.vue";
 import ContactFaq from "../Components/ContactFaq.vue";
@@ -130,23 +131,12 @@ const pageRef = ref(null);
 
 useScrollReveal(pageRef, { variant: "propertyListings" });
 
-const globals = computed(() => page.props.globals ?? {});
-const seo = computed(() => globals.value.seo ?? {});
-const media = computed(() => globals.value.media ?? {});
-
-function pickSeoString(...keys) {
-    const s = seo.value;
-    for (const key of keys) {
-        const v = s[key];
-        if (typeof v === "string" && v.trim() !== "") {
-            return v.trim();
-        }
-    }
-    return "";
+function trans(key) {
+    return page.props.translations[key] || key;
 }
 
 const contactUsBannerUrl = computed(() => {
-    const url = media.value.contact_us_banner;
+    const url = page.props.globals?.media?.contact_us_banner;
     if (typeof url !== "string" || url.trim() === "") {
         return "";
     }
@@ -157,53 +147,27 @@ const contactUsBannerUrl = computed(() => {
     return trimmed;
 });
 
-function trans(key) {
-    return page.props.translations[key] || key;
-}
-
-const documentTitle = computed(
-    () => `${trans("contact_us.title")} | ${page.props.appName}`,
-);
-
-const metaDescription = computed(() =>
-    pickSeoString("site_meta_description", "website_desc"),
-);
-
-const metaKeywords = computed(() =>
-    pickSeoString("site_meta_keywords", "website_keywords"),
-);
-
-const ogTitle = computed(() => documentTitle.value);
-const ogDescription = computed(() => metaDescription.value);
-
-const ogImage = computed(() => {
-    const banner = media.value.contact_us_banner;
-    if (typeof banner === "string" && banner.trim() !== "") {
-        const trimmed = banner.trim();
-        if (!/\/default\.jpg(?:\?.*)?$/i.test(trimmed)) {
-            return trimmed;
-        }
-    }
-    const fallback = media.value.meta_img;
-    return typeof fallback === "string" && fallback.trim() !== ""
-        ? fallback.trim()
-        : "";
+const {
+    title: documentTitle,
+    description: metaDescription,
+    keywords: metaKeywords,
+    ogTitle,
+    ogDescription,
+    ogImage,
+    canonical: canonicalUrl,
+    ogUrl,
+    twitterCard,
+} = useDocumentSeo({
+    pageTitle: () => trans("contact_us.title"),
+    ogImage: () => contactUsBannerUrl.value,
+    canonical: () =>
+        localizedRoute(
+            "support.contact-us",
+            {},
+            activeLocale.value,
+            "/contact-us",
+        ),
 });
-
-const canonicalUrl = computed(() =>
-    localizedRoute(
-        "support.contact-us",
-        {},
-        activeLocale.value,
-        "/contact-us",
-    ),
-);
-
-const ogUrl = computed(() => canonicalUrl.value);
-
-const twitterCard = computed(() =>
-    ogImage.value ? "summary_large_image" : "summary",
-);
 
 const blogHeadingItems = computed(() => {
     const rows = [];

@@ -21,8 +21,9 @@
         "mobile_invalid_length":"Geçerli bir cep numarası girin (ülke kodu dahil toplam 8–15 rakam).",
         "country_code_search_placeholder":"Koda veya ülkeye göre ara…",
         "country_code_search_empty":"Aramanızla eşleşen ülke yok.",
-        "agree_terms_prefix":"Hesap oluşturmak için, Imas Global'in",
-        "terms_and_conditions":"şartlar ve koşullar",
+        "agree_terms_prefix":"Hesap oluşturarak",
+        "terms_and_conditions":"şartlar ve koşulları",
+        "agree_terms_suffix":"kabul etmiş olursunuz — IMAS GLOBAL",
         "terms_required":"Lütfen şartları kabul edin.",
         "forgot_page_opening":"Şifre kurtarma açılıyor… Diyalog görünmezse aşağıdaki düğmeyi de kullanabilirsiniz.",
         "reset_page_opening":"Şifre sıfırlama formu açılıyor… Diyalog görünmezse aşağıdaki düğmeyi de kullanabilirsiniz."
@@ -72,6 +73,7 @@
     "Active": "Aktif",
     "Not Active": "Pasif",
     "Accept": "Kabul et",
+    "Cancel": "İptal",
     "Decline": "Reddet",
     "Read More": "Devamını oku",
     "Website Configurations": "Site yapılandırması",
@@ -397,7 +399,7 @@
     },
     "articles":{
         "title":"Son Eklenen Bloglar ve Haberler",
-        "description":"Son gönderilerimizden haberdar olun.",
+        "description":"Son gönderilerimizden ve yazılarımızdan haberdar olun ve yazılarımızdan öğrenin.",
         "read_more":"Devamını oku..."
     },
     "blogs":{

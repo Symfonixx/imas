@@ -13,10 +13,10 @@
                 class="imas-blog-v2-sidebar__search"
             >
                 <input
-                    v-if="filters.category_id"
+                    v-if="filters.category"
                     type="hidden"
-                    name="category_id"
-                    :value="filters.category_id"
+                    name="category"
+                    :value="filters.category"
                 />
                 <input
                     type="text"
@@ -45,19 +45,19 @@
                     <Link
                         :href="categoryUrl(null)"
                         class="imas-blog-v2-sidebar__cat-link"
-                        :class="{ 'is-active': !filters.category_id }"
+                        :class="{ 'is-active': !filters.category }"
                     >
                         {{ trans("blogs.all_categories") }}
                     </Link>
                 </li>
                 <li v-for="c in categories" :key="c.id">
                     <Link
-                        :href="categoryUrl(c.id)"
+                        :href="categoryUrl(c.slug)"
                         class="imas-blog-v2-sidebar__cat-link"
                         :class="{
                             'is-active':
-                                filters.category_id != null &&
-                                Number(filters.category_id) === c.id,
+                                filters.category != null &&
+                                filters.category === c.slug,
                         }"
                     >
                         {{ c.name }}

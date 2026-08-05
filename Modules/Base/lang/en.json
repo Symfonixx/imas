@@ -21,8 +21,9 @@
         "mobile_invalid_length":"Enter a valid mobile number (8–15 digits total, including country code).",
         "country_code_search_placeholder":"Search by code or country…",
         "country_code_search_empty":"No countries match your search.",
-        "agree_terms_prefix":"By Creating an Account, You Agree on Imas Global's",
+        "agree_terms_prefix":"By creating an account, you agree to the",
         "terms_and_conditions":"terms and conditions",
+        "agree_terms_suffix":"of IMAS GLOBAL",
         "terms_required":"Please accept the terms.",
         "forgot_page_opening":"Opening password recovery… You can also use the button below if the dialog does not appear.",
         "reset_page_opening":"Opening the reset password form… You can also use the button below if the dialog does not appear."
@@ -72,6 +73,7 @@
     "Active": "Active",
     "Not Active": "Not active",
     "Accept": "Accept",
+    "Cancel": "Cancel",
     "Decline": "Decline",
     "Read More": "Read more",
     "Website Configurations": "Website configuration",
@@ -396,7 +398,7 @@
     },
     "articles":{
         "title":"Recent In Our Blogs & News",
-        "description":"Stay up to date with the latest news and insights from our experts.",
+        "description":"Stay up to date with the latest news and studies insights from our experts.",
         "read_more":"Read more..."
     },
     "blogs":{

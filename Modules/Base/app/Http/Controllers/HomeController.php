@@ -7,6 +7,7 @@ use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
+use Modules\Base\Application\Seo\SeoDocumentService;
 use Modules\Cms\Models\Blog;
 use Modules\Cms\Models\Slide;
 use Modules\Corporate\Models\CorporateService;
@@ -193,6 +194,10 @@ class HomeController extends Controller
             'corporateServices' => $corporateServices,
             'testimonials' => $testimonials,
             'articles' => $articles,
+        ])->withViewData([
+            'seo' => app(SeoDocumentService::class)->documentSeo([
+                'canonical' => route('home'),
+            ]),
         ]);
     }
 }

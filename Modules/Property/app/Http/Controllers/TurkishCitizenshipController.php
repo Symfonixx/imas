@@ -5,6 +5,7 @@ namespace Modules\Property\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Inertia\Inertia;
 use Inertia\Response;
+use Modules\Base\Application\Seo\SeoDocumentService;
 use Modules\Base\Application\Settings\SettingsApplicationService;
 use Modules\Base\Models\Seo;
 use Modules\Property\Models\Property;
@@ -37,9 +38,17 @@ class TurkishCitizenshipController extends Controller
             ->values()
             ->all();
 
+        $seoService = app(SeoDocumentService::class);
+        $metaTitle = $this->seoString('turkish_citizenship_meta_title');
+        $pageTitle = $metaTitle !== ''
+            ? $metaTitle
+            : $seoService->labelFromBaseLang('navBar.Turkish Citizenship', 'Turkish citizenship');
+
+        $bannerUrl = $this->storagePublicUrl($bannerPath);
+
         return Inertia::render('Property::TurkishCitizenship', [
             'turkishCitizenship' => [
-                'banner_url' => $this->storagePublicUrl($bannerPath),
+                'banner_url' => $bannerUrl,
                 'content' => $this->seoString('turkish_citizenship_content'),
                 'youtube_embed' => $this->seoString('turkish_citizenship_youtube_embed'),
                 'meta_title' => $this->seoString('turkish_citizenship_meta_title'),
@@ -48,6 +57,22 @@ class TurkishCitizenshipController extends Controller
             ],
             'citizenshipProperties' => $citizenshipProperties,
             'contactStoreUrl' => route('support.contact-us.store'),
+        ])->withViewData([
+            'seo' => $seoService->documentSeo([
+                'page_title' => $pageTitle,
+                'description_keys' => [
+                    'turkish_citizenship_meta_description',
+                    'site_meta_description',
+                    'website_desc',
+                ],
+                'keywords_keys' => [
+                    'turkish_citizenship_meta_keywords',
+                    'site_meta_keywords',
+                    'website_keywords',
+                ],
+                'og_image' => $seoService->settingsImageUrl('turkish_citizenship_banner'),
+                'canonical' => route('turkish-citizenship'),
+            ]),
         ]);
     }
 

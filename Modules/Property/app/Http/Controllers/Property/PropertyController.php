@@ -7,8 +7,10 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
+use Modules\Base\Application\Seo\SeoDocumentService;
 use Modules\Base\lang;
 use Modules\Property\Enums\LocationType;
 use Modules\Property\Models\Location;
@@ -158,6 +160,11 @@ class PropertyController extends Controller
             'areas' => $areas,
             'recentProperties' => $recentProperties,
             'featuredProperties' => $featuredProperties,
+        ])->withViewData([
+            'seo' => app(SeoDocumentService::class)->documentSeo([
+                'page_title' => $pageTitle,
+                'canonical' => route('property.index'),
+            ]),
         ]);
     }
 
@@ -184,6 +191,12 @@ class PropertyController extends Controller
             'title' => $pageTitle,
             'properties' => $properties,
             'contactStoreUrl' => route('support.contact-us.store'),
+        ])->withViewData([
+            'seo' => app(SeoDocumentService::class)->documentSeo([
+                'page_title' => $pageTitle,
+                'robots' => 'noindex, nofollow',
+                'canonical' => route('property.favorites'),
+            ]),
         ]);
     }
 
@@ -203,12 +216,55 @@ class PropertyController extends Controller
             ->withFavoriteStateForUser($userId)
             ->firstOrFail();
 
+        $payload = PropertyDetailSerializer::toArray($property);
+        $seoService = app(SeoDocumentService::class);
+        $siteName = $seoService->siteName();
+
+        $metadata = is_array($payload['metadata'] ?? null) ? $payload['metadata'] : [];
+        $metaTitle = is_string($metadata['meta_title'] ?? null) ? trim($metadata['meta_title']) : '';
+        $displayTitle = is_string($payload['title'] ?? null) && trim($payload['title']) !== ''
+            ? trim($payload['title'])
+            : (string) ($payload['project_name'] ?? '');
+        $titleBase = $metaTitle !== '' ? $metaTitle : $displayTitle;
+        $documentTitle = $titleBase !== ''
+            ? ($siteName !== '' && ! str_contains($titleBase, $siteName)
+                ? $titleBase.' | '.$siteName
+                : $titleBase)
+            : $siteName;
+
+        $metaDescription = is_string($metadata['meta_description'] ?? null)
+            ? trim($metadata['meta_description'])
+            : '';
+        if ($metaDescription === '') {
+            $metaDescription = Str::limit(strip_tags((string) ($payload['overview'] ?? '')), 160, '');
+        }
+
+        $metaKeywords = $metadata['meta_keywords'] ?? [];
+        $ogImage = is_string($payload['thumbnail_url'] ?? null) ? trim($payload['thumbnail_url']) : '';
+        $canonical = '';
+        try {
+            $slug = $payload['url_key'] ?? $payload['slug'] ?? $payload['project_code'] ?? null;
+            if (is_string($slug) && $slug !== '') {
+                $canonical = route('property.show', $slug);
+            }
+        } catch (\Throwable) {
+            $canonical = '';
+        }
+
         return Inertia::render('Property::show', [
-            'property' => PropertyDetailSerializer::toArray($property),
+            'property' => $payload,
             'recentProperties' => $this->recentProperties($userId, $property->id),
             'featuredProperties' => $this->featuredProperties($userId, $property->id),
             'similarProperties' => $this->similarProperties($property, $userId),
             'contactStoreUrl' => route('support.contact-us.store'),
+        ])->withViewData([
+            'seo' => $seoService->documentSeo([
+                'title' => $documentTitle,
+                'description' => $metaDescription,
+                'keywords' => $metaKeywords,
+                'og_image' => $ogImage,
+                'canonical' => $canonical,
+            ]),
         ]);
     }
 

@@ -59,7 +59,7 @@ class SlideCategoryTest extends TestCase
                 'position' => 2,
             ],
         ]);
-        $property->load(['slideMedia', 'unitTypes', 'location', 'propertyType']);
+        $property->load(['slideMedia.slideCategory', 'unitTypes', 'location', 'propertyType']);
 
         $payload = PropertyDetailSerializer::toArray($property);
 
@@ -68,6 +68,66 @@ class SlideCategoryTest extends TestCase
         $this->assertCount(2, $payload['videos']);
         $this->assertStringEndsWith('/storage/properties/slides/property/videos/primary.mp4', $payload['videos'][0]);
         $this->assertNull($payload['youtube_video_url']);
+
+        $this->assertCount(1, $payload['slide_categories']);
+        $this->assertSame($category->id, $payload['slide_categories'][0]['id']);
+        $this->assertSame('Primary Gallery', $payload['slide_categories'][0]['name']);
+        $this->assertSame('primary-gallery', $payload['slide_categories'][0]['slug']);
+        $this->assertSame(3, $payload['slide_categories'][0]['assets_count']);
+        $this->assertCount(3, $payload['slide_categories'][0]['assets']);
+        $this->assertSame(PropertySlideMedia::TYPE_IMAGE, $payload['slide_categories'][0]['assets'][0]['type']);
+        $this->assertSame(PropertySlideMedia::TYPE_VIDEO, $payload['slide_categories'][0]['assets'][1]['type']);
+        $this->assertStringEndsWith(
+            '/storage/properties/slides/property/images/primary.jpg',
+            $payload['slide_categories'][0]['assets'][0]['url']
+        );
+        $this->assertStringEndsWith(
+            '/storage/properties/slides/property/videos/primary.mp4',
+            $payload['slide_categories'][0]['assets'][1]['url']
+        );
+    }
+
+    public function test_detail_serializer_groups_slide_categories_with_asset_counts(): void
+    {
+        $property = $this->createProperty('PRJ-002B');
+        $exterior = $this->createCategory('exterior');
+        $interior = SlideCategory::query()->create([
+            'name' => ['en' => 'Interior'],
+            'description' => 'Category configuration only.',
+            'slug' => 'interior',
+            'status' => CmsStatus::PUBLISHED,
+            'position' => 2,
+        ]);
+        $property->slideCategories()->attach([$exterior->id, $interior->id]);
+        $property->slideMedia()->createMany([
+            [
+                'slide_category_id' => $exterior->id,
+                'type' => PropertySlideMedia::TYPE_IMAGE,
+                'path' => 'properties/slides/exterior-a.jpg',
+                'position' => 0,
+            ],
+            [
+                'slide_category_id' => $exterior->id,
+                'type' => PropertySlideMedia::TYPE_VIDEO,
+                'path' => 'properties/slides/exterior-v.mp4',
+                'position' => 1,
+            ],
+            [
+                'slide_category_id' => $interior->id,
+                'type' => PropertySlideMedia::TYPE_IMAGE,
+                'path' => 'properties/slides/interior-a.jpg',
+                'position' => 0,
+            ],
+        ]);
+        $property->load(['slideMedia.slideCategory', 'unitTypes', 'location', 'propertyType']);
+
+        $payload = PropertyDetailSerializer::toArray($property);
+
+        $this->assertCount(2, $payload['slide_categories']);
+        $this->assertSame('Exterior', $payload['slide_categories'][0]['name']);
+        $this->assertSame(2, $payload['slide_categories'][0]['assets_count']);
+        $this->assertSame('Interior', $payload['slide_categories'][1]['name']);
+        $this->assertSame(1, $payload['slide_categories'][1]['assets_count']);
     }
 
     public function test_media_is_isolated_between_properties_using_the_same_category(): void

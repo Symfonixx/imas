@@ -137,7 +137,7 @@ function safeRoute(name, fallbackHref = "#") {
     return localizedRoute(name, {}, activeLocale.value, fallbackHref);
 }
 
-function blogCategoryUrl(categoryId) {
+function blogCategoryUrl(categorySlug) {
     const base = localizedRoute(
         "blog.index",
         {},
@@ -145,7 +145,7 @@ function blogCategoryUrl(categoryId) {
         "/blog",
     );
     const sep = base.includes("?") ? "&" : "?";
-    return `${base}${sep}category_id=${categoryId}`;
+    return `${base}${sep}category=${encodeURIComponent(categorySlug)}`;
 }
 
 const blogNavCategories = computed(
@@ -160,7 +160,7 @@ const navLinks = computed(() => {
     const blogCategoryChildren = blogNavCategories.value.map((c) => ({
         key: `blog-category-${c.id}`,
         label: c.name,
-        href: blogCategoryUrl(c.id),
+        href: blogCategoryUrl(c.slug),
     }));
 
     const blogsNav = {

@@ -41,6 +41,7 @@ final class PropertyDetailSerializer
             'thumbnail_alt' => ($thumbnailMedia['alt_text'] ?? null) ?: $fallbackAlt,
             'thumbnail_title' => $thumbnailMedia['title'] ?? null,
             'slides' => self::slides($property, $resolver, $fallbackAlt),
+            'slide_categories' => self::slideCategories($property, $resolver, $fallbackAlt),
             'location' => PropertyLocationHierarchySerializer::toArray($property->location),
             'unit_types' => self::unitTypes($property),
             'property_type' => $property->propertyType
@@ -136,6 +137,99 @@ final class PropertyDetailSerializer
             ->where('type', PropertySlideMedia::TYPE_VIDEO)
             ->sortBy(self::mediaSortKey(...))
             ->map(static fn (PropertySlideMedia $media): string => asset('storage/'.$media->path))
+            ->values()
+            ->all();
+    }
+
+    /**
+     * Grouped slide media by published category for the front-office gallery tabs.
+     *
+     * @return list<array{
+     *     id: int,
+     *     name: string,
+     *     slug: string,
+     *     position: int,
+     *     assets_count: int,
+     *     assets: list<array{id: int, type: string, url: string, alt: ?string, title: ?string, position: int}>
+     * }>
+     */
+    private static function slideCategories(
+        Property $property,
+        MediaAssetResolver $resolver,
+        string $fallbackAlt,
+    ): array {
+        if (! $property->relationLoaded('slideMedia')) {
+            return [];
+        }
+
+        $imagePaths = $property->slideMedia
+            ->where('type', PropertySlideMedia::TYPE_IMAGE)
+            ->pluck('path')
+            ->filter()
+            ->values()
+            ->all();
+        $resolved = $resolver->resolveMany($imagePaths);
+
+        return $property->slideMedia
+            ->filter(static fn (PropertySlideMedia $media): bool => $media->slideCategory !== null)
+            ->groupBy('slide_category_id')
+            ->map(static function ($mediaGroup) use ($resolved, $fallbackAlt): ?array {
+                /** @var PropertySlideMedia $first */
+                $first = $mediaGroup->first();
+                $category = $first->slideCategory;
+                if ($category === null) {
+                    return null;
+                }
+
+                $assets = $mediaGroup
+                    ->sortBy(static fn (PropertySlideMedia $media): array => [
+                        $media->position,
+                        $media->id,
+                    ])
+                    ->map(static function (PropertySlideMedia $media) use ($resolved, $fallbackAlt): array {
+                        if ($media->type === PropertySlideMedia::TYPE_VIDEO) {
+                            return [
+                                'id' => $media->id,
+                                'type' => PropertySlideMedia::TYPE_VIDEO,
+                                'url' => asset('storage/'.$media->path),
+                                'alt' => null,
+                                'title' => null,
+                                'position' => $media->position,
+                            ];
+                        }
+
+                        $meta = $resolved[$media->path] ?? null;
+
+                        return [
+                            'id' => $media->id,
+                            'type' => PropertySlideMedia::TYPE_IMAGE,
+                            'url' => $meta['url'] ?? asset('storage/'.$media->path),
+                            'alt' => ($meta['alt_text'] ?? null) ?: $fallbackAlt,
+                            'title' => $meta['title'] ?? null,
+                            'position' => $media->position,
+                        ];
+                    })
+                    ->values()
+                    ->all();
+
+                if ($assets === []) {
+                    return null;
+                }
+
+                return [
+                    'id' => $category->id,
+                    'name' => (string) $category->name,
+                    'slug' => (string) $category->slug,
+                    'position' => (int) $category->position,
+                    'assets_count' => count($assets),
+                    'assets' => $assets,
+                ];
+            })
+            ->filter()
+            ->sortBy(static fn (array $row): array => [
+                $row['position'],
+                $row['id'],
+            ])
             ->values()
             ->all();
     }

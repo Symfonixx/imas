@@ -209,6 +209,9 @@
                                         <PropertyShowGallery
                                             :property-id="property.id"
                                             :slides="property.slides"
+                                            :slide-categories="
+                                                property.slide_categories ?? []
+                                            "
                                             :thumbnail-url="
                                                 property.thumbnail_url
                                             "
@@ -442,12 +445,12 @@ function trans(key) {
 }
 
 const propertyVideos = computed(() => {
-    const videos = [
-        props.property.youtube_video_url,
-        ...(Array.isArray(props.property.videos) ? props.property.videos : []),
-    ];
-
-    return [...new Set(videos.filter((url) => typeof url === "string" && url.trim() !== ""))];
+    // Category-uploaded videos render inside PropertyShowGallery; YouTube stays here.
+    const url = props.property.youtube_video_url;
+    if (typeof url !== "string" || url.trim() === "") {
+        return [];
+    }
+    return [url.trim()];
 });
 
 const displayTitle = computed(() => {

@@ -91,7 +91,10 @@
                                 />
                             </div>
 
-                            <div class="imas-hero-advanced-wrap">
+                            <div
+                                ref="advancedWrapRef"
+                                class="imas-hero-advanced-wrap"
+                            >
                                 <div
                                     class="dropdown-filter"
                                     role="button"
@@ -107,6 +110,7 @@
                                 <div
                                     class="explore__form-checkbox-list full-filter imas-hero-advanced-panel"
                                     :class="{ 'filter-block': advancedOpen }"
+                                    @click.stop
                                 >
                                     <div class="row">
                                         <div class="col-12 py-1 pr-30 sld">
@@ -139,6 +143,24 @@
                                                     <div class="clearfix"></div>
                                                 </div>
                                             </div>
+                                            <div
+                                                class="imas-hero-advanced-actions"
+                                            >
+                                                <button
+                                                    type="button"
+                                                    class="btn imas-hero-advanced-btn imas-hero-advanced-btn--cancel"
+                                                    @click="cancelAdvanced"
+                                                >
+                                                    {{ trans("Cancel") }}
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-yellow imas-hero-advanced-btn imas-hero-advanced-btn--accept"
+                                                    @click="acceptAdvanced"
+                                                >
+                                                    {{ trans("Accept") }}
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -167,13 +189,13 @@ import {
     onBeforeUnmount,
     onMounted,
     ref,
-    watch,
 } from "vue";
 import { usePage } from "@inertiajs/vue3";
 import {
     destroyHeroRangeSliders,
     initHeroRangeSliders,
     loadJqueryUi,
+    setHeroRangeSliderValues,
 } from "@/utils/initHeroRangeSliders.js";
 import LocationAreaPicker from "@/components/Global/LocationAreaPicker.vue";
 import LocationCityPicker from "@/components/Global/LocationCityPicker.vue";
@@ -196,6 +218,7 @@ const searchUnitTypeId = ref("");
 const advancedOpen = ref(false);
 const rangesDirty = ref(false);
 const slidersReady = ref(false);
+const advancedWrapRef = ref(null);
 
 const { searchCityIds, searchLocationIds, filteredDistricts, filteredAreas } =
     useLocationSearchFilters(
@@ -212,7 +235,6 @@ const propertySearch = computed(
 const priceBounds = computed(() => {
     const p = propertySearch.value.price ?? {};
     return {
-    
         min: Number(p.min ?? 0),
         max: Number(p.max ?? 1) || 1,
         currency: String(p.currency ?? "$"),
@@ -232,8 +254,13 @@ const projectUnitTypes = computed(
     () => propertySearch.value.project_unit_types ?? [],
 );
 
+/** Committed values (sent with search only after Accept). */
 const priceRange = ref([0, 1]);
 const areaRange = ref([0, 1]);
+
+/** Draft values while the advanced panel is open. */
+const draftPriceRange = ref([0, 1]);
+const draftAreaRange = ref([0, 1]);
 
 const includeAdvancedParams = computed(() => rangesDirty.value);
 
@@ -244,10 +271,12 @@ function trans(key) {
 function syncRangeDefaults() {
     priceRange.value = [priceBounds.value.min, priceBounds.value.max];
     areaRange.value = [areaBounds.value.min, areaBounds.value.max];
+    syncDraftFromCommitted();
 }
 
-function toggleAdvanced() {
-    advancedOpen.value = !advancedOpen.value;
+function syncDraftFromCommitted() {
+    draftPriceRange.value = [...priceRange.value];
+    draftAreaRange.value = [...areaRange.value];
 }
 
 function markRangesDirty() {
@@ -258,6 +287,19 @@ function markRangesDirty() {
         areaRange.value[0] === areaBounds.value.min &&
         areaRange.value[1] === areaBounds.value.max;
     rangesDirty.value = !priceDefault || !areaDefault;
+}
+
+function applySliderUi(areaValues, priceValues) {
+    if (!slidersReady.value) {
+        return;
+    }
+
+    setHeroRangeSliderValues({
+        areaValues,
+        priceValues,
+        areaUnit: areaBounds.value.unit,
+        priceUnit: priceBounds.value.currency,
+    });
 }
 
 async function ensureSliders() {
@@ -280,15 +322,13 @@ async function ensureSliders() {
             priceMin: priceBounds.value.min,
             priceMax: priceBounds.value.max,
             priceUnit: priceBounds.value.currency,
-            initialArea: areaRange.value,
-            initialPrice: priceRange.value,
+            initialArea: draftAreaRange.value,
+            initialPrice: draftPriceRange.value,
             onAreaChange(min, max) {
-                areaRange.value = [min, max];
-                markRangesDirty();
+                draftAreaRange.value = [min, max];
             },
             onPriceChange(min, max) {
-                priceRange.value = [min, max];
-                markRangesDirty();
+                draftPriceRange.value = [min, max];
             },
         });
         slidersReady.value = true;
@@ -297,18 +337,53 @@ async function ensureSliders() {
     }
 }
 
-watch(advancedOpen, async (open) => {
-    if (open) {
-        await nextTick();
-        await ensureSliders();
+async function openAdvanced() {
+    syncDraftFromCommitted();
+    advancedOpen.value = true;
+    await nextTick();
+    await ensureSliders();
+    applySliderUi(draftAreaRange.value, draftPriceRange.value);
+}
+
+function cancelAdvanced() {
+    syncDraftFromCommitted();
+    applySliderUi(areaRange.value, priceRange.value);
+    advancedOpen.value = false;
+}
+
+function acceptAdvanced() {
+    priceRange.value = [...draftPriceRange.value];
+    areaRange.value = [...draftAreaRange.value];
+    markRangesDirty();
+    advancedOpen.value = false;
+}
+
+function toggleAdvanced() {
+    if (advancedOpen.value) {
+        cancelAdvanced();
+    } else {
+        openAdvanced();
     }
-});
+}
+
+function onDocumentPointerDown(event) {
+    if (!advancedOpen.value) {
+        return;
+    }
+
+    const wrap = advancedWrapRef.value;
+    if (wrap && !wrap.contains(event.target)) {
+        cancelAdvanced();
+    }
+}
 
 onMounted(() => {
     syncRangeDefaults();
+    document.addEventListener("pointerdown", onDocumentPointerDown);
 });
 
 onBeforeUnmount(() => {
+    document.removeEventListener("pointerdown", onDocumentPointerDown);
     destroyHeroRangeSliders();
 });
 </script>
@@ -443,6 +518,64 @@ onBeforeUnmount(() => {
     margin-top: 0;
 }
 
+.imas-hero-property-search :deep(.imas-hero-advanced-actions) {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.65rem;
+    margin-top: 1.15rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--divider);
+}
+
+.imas-hero-property-search :deep(.imas-hero-advanced-actions .imas-hero-advanced-btn) {
+    flex: 0 0 auto;
+    width: auto !important;
+    max-width: none !important;
+    min-width: 6.5rem;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0.55rem 1.1rem;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: var(--text-sm);
+    line-height: 1.3;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+}
+
+.imas-hero-property-search :deep(.imas-hero-advanced-btn--cancel) {
+    background: transparent;
+    color: var(--brand-gold);
+    border: 1px solid var(--brand-gold);
+}
+
+.imas-hero-property-search :deep(.imas-hero-advanced-btn--cancel:hover),
+.imas-hero-property-search :deep(.imas-hero-advanced-btn--cancel:focus-visible) {
+    background: var(--brand-gold);
+    color: var(--text-on-gold);
+    border-color: var(--brand-gold);
+    box-shadow: var(--ring);
+}
+
+.imas-hero-property-search :deep(.imas-hero-advanced-btn--accept) {
+    background: var(--brand-gold);
+    color: var(--text-on-gold);
+    border: 1px solid var(--brand-gold);
+}
+
+.imas-hero-property-search :deep(.imas-hero-advanced-btn--accept:hover),
+.imas-hero-property-search :deep(.imas-hero-advanced-btn--accept:focus-visible) {
+    background: var(--brand-gold-hover);
+    border-color: var(--brand-gold-hover);
+    color: var(--text-on-gold);
+    box-shadow: var(--ring);
+}
+
 .imas-hero-property-search
     :deep(.imas-hero-advanced-panel .range-slider label) {
     display: block;
@@ -568,7 +701,7 @@ onBeforeUnmount(() => {
     .imas-hero-property-search :deep(.rld-single-select .single-select),
     .imas-hero-property-search :deep(.rld-single-select .nice-select),
     .imas-hero-property-search :deep(.dropdown-filter span),
-    .imas-hero-property-search :deep(.btn.btn-yellow) {
+    .imas-hero-property-search :deep(.imas-hero-search-submit .btn.btn-yellow) {
         width: 100% !important;
         max-width: 100% !important;
         margin-inline: 0 !important;

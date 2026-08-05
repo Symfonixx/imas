@@ -4133,6 +4133,14 @@ html[dir="rtl"] .imas-about-page .imas-blog-v2-sidebar__recent-item:hover img {
     outline: none;
 }
 
+.imas-featured-properties-sidebar__body-meta {
+    width: 100%;
+    margin: 0.35rem 0 0;
+    padding: 0;
+    background: transparent;
+    border: none;
+}
+
 .imas-featured-properties-sidebar__card {
     display: block;
     color: inherit;
@@ -4252,31 +4260,33 @@ html[dir="rtl"] .imas-about-page .imas-blog-v2-sidebar__recent-item:hover img {
 
 .imas-featured-properties-sidebar__badges {
     position: absolute;
-    top: 12px;
-    inset-inline: 12px;
+    top: 10px;
+    inset-inline: 10px;
     z-index: 2;
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
+    gap: 6px;
     pointer-events: none;
 }
 
 .imas-featured-properties-sidebar__badges-end {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: flex-start;
     gap: 6px;
-    max-width: min(55%, 12rem);
+    min-width: 0;
+    max-width: none;
 }
 
 .imas-featured-properties-sidebar__badge {
-    display: inline-block;
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-size: var(--text-xs);
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 7px;
+    border-radius: 3px;
+    font-size: 10px;
     font-weight: 600;
     line-height: 1.2;
     letter-spacing: 0.02em;
@@ -4288,16 +4298,42 @@ html[dir="rtl"] .imas-about-page .imas-blog-v2-sidebar__recent-item:hover img {
 }
 
 .imas-featured-properties-sidebar__badge--price {
+    display: inline-flex;
+    align-items: baseline;
+    flex-shrink: 1;
+    min-width: 0;
+    gap: 0.25em;
     background: var(--brand-gold);
     color: var(--text-on-gold);
     direction: ltr;
     unicode-bidi: isolate;
+    text-transform: none;
+    font-size: 13px;
+}
+
+.imas-featured-properties-sidebar__price-from,
+.imas-featured-properties-sidebar__price-amount {
+    font-size: inherit;
+    line-height: inherit;
+}
+
+.imas-featured-properties-sidebar__price-from {
+    font-weight: 500;
+    text-transform: capitalize;
+    opacity: 0.92;
+}
+
+.imas-featured-properties-sidebar__price-amount {
+    font-weight: 700;
 }
 
 .imas-featured-properties-sidebar__badge--type {
+    flex-shrink: 1;
+    min-width: 0;
     background: var(--brand-gold);
     color: var(--text-on-gold);
-    letter-spacing: 0.5px;
+    letter-spacing: 0.03em;
+    font-size: 13px;
 }
 
 .imas-featured-properties-sidebar__card--sold-out
@@ -4413,6 +4449,7 @@ html[dir="rtl"] .imas-about-page .imas-blog-v2-sidebar__recent-item:hover img {
 .imas-featured-properties-sidebar__arrow--next::before {
     content: "❯";
 }
+
 html[dir="rtl"] .imas-featured-properties-sidebar .slick-prev::before,
 html[dir="rtl"] .imas-featured-properties-sidebar__arrow--prev::before {
     content: "❯";

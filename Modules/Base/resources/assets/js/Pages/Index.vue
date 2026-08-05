@@ -122,72 +122,41 @@ import HomeServices from "../components/HomeServices.vue";
 import HomeTestimonials from "../components/HomeTestimonials.vue";
 import HomeArticlesSection from "../components/HomeArticlesSection.vue";
 import HomeHero from "../components/HomeHero.vue";
+import { useDocumentSeo } from "@/composables/useDocumentSeo.js";
 import {
     buildOrganizationSchema,
     buildWebsiteSchema,
     collectSocialUrls,
 } from "@/utils/structuredData.js";
+
 const page = usePage();
 
-const globals = computed(() => page.props.globals ?? {});
-const seo = computed(() => globals.value.seo ?? {});
-const media = computed(() => globals.value.media ?? {});
-
-function pickSeoString(...keys) {
-    const s = seo.value;
-    for (const key of keys) {
-        const v = s[key];
-        if (typeof v === "string" && v.trim() !== "") {
-            return v.trim();
+const {
+    globals,
+    media,
+    title: documentTitle,
+    description: metaDescription,
+    keywords: metaKeywords,
+    ogTitle,
+    ogDescription,
+    ogImage,
+    canonical: canonicalUrl,
+    ogUrl,
+    twitterCard,
+} = useDocumentSeo({
+    useGlobalTitleTemplate: true,
+    fallbackPageTitle: "Home",
+    canonical: () => {
+        if (typeof route !== "function" || !route().has?.("home")) {
+            return "";
         }
-    }
-    return "";
-}
-
-const documentTitle = computed(() => {
-    const fromSeo = pickSeoString(
-        "site_meta_title",
-        "main_title",
-        "website_name",
-    );
-    if (fromSeo) {
-        return fromSeo;
-    }
-    return `Home | ${page.props.appName}`;
+        try {
+            return route("home");
+        } catch {
+            return "";
+        }
+    },
 });
-
-const metaDescription = computed(() =>
-    pickSeoString("site_meta_description", "website_desc"),
-);
-
-const metaKeywords = computed(() =>
-    pickSeoString("site_meta_keywords", "website_keywords"),
-);
-
-const ogTitle = computed(() => documentTitle.value);
-const ogDescription = computed(() => metaDescription.value);
-
-const ogImage = computed(() => {
-    const url = media.value.meta_img;
-    return typeof url === "string" && url.trim() !== "" ? url.trim() : "";
-});
-
-const canonicalUrl = computed(() => {
-    if (typeof route !== "function" || !route().has?.("home")) {
-        return "";
-    }
-    try {
-        return route("home");
-    } catch {
-        return "";
-    }
-});
-
-const ogUrl = computed(() => canonicalUrl.value);
-
-const twitterCard = computed(() =>
-    ogImage.value ? "summary_large_image" : "summary",
-);
 
 const organizationSchema = computed(() => {
     const contact = globals.value.contact ?? {};
@@ -244,6 +213,7 @@ const websiteJsonLd = computed(() => {
 function trans(key) {
     return page.props.translations[key] || key;
 }
+
 defineProps({
     welcomeTitle: { type: String, required: true },
     welcomeSubtitle: { type: String, required: true },
@@ -258,5 +228,4 @@ defineProps({
     testimonials: { type: Array, default: () => [] },
     articles: { type: Array, default: () => [] },
 });
-
 </script>

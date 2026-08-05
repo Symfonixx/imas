@@ -29,7 +29,7 @@ final class PropertyDetailEagerLoads
                     'path',
                     'position',
                 ]),
-            'slideMedia.slideCategory:id,name,position,status',
+            'slideMedia.slideCategory:id,name,slug,position,status',
             'similarProperties' => fn ($query) => $query->with(PropertyCardEagerLoads::relations()),
         ];
     }

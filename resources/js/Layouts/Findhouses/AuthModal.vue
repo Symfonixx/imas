@@ -727,6 +727,11 @@
                                                                 )
                                                             }}</a
                                                         >
+                                                        {{
+                                                            trans(
+                                                                "auth_modal.agree_terms_suffix",
+                                                            )
+                                                        }}
                                                     </label>
                                                 </div>
                                                 <p

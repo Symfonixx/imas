@@ -152,6 +152,7 @@ import {
 import { usePage } from "@inertiajs/vue3";
 import { useGsap } from "@/composables/useGsap";
 import { createGsapContext, prefersReducedMotion } from "@/plugins/gsap";
+import { localizedRoute } from "@/utils/localizedRoute.js";
 import HomeHeroPropertySearch from "./HomeHeroPropertySearch.vue";
 
 const props = defineProps({
@@ -274,7 +275,16 @@ function splitTitleForTypewriter(title) {
 
 const titleParts = computed(() => splitTitleForTypewriter(heroTitle.value));
 
-const propertyIndexUrl = computed(() => route("property.index"));
+const activeLocale = computed(() => page.props.locale || "en");
+
+const propertyIndexUrl = computed(() =>
+    localizedRoute(
+        "property.index",
+        {},
+        activeLocale.value,
+        "/property",
+    ),
+);
 
 function updateStaticHeroCopy() {
     if (typeof window === "undefined" || !window.matchMedia) {

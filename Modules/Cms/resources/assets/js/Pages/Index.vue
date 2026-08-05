@@ -126,6 +126,7 @@ import BlogV2Pagination from "../Components/BlogV2Pagination.vue";
 import BlogListingSidebar from "../Components/BlogListingSidebar.vue";
 import { blogIndexLocalizedUrl } from "../utils/blogLocalizedRoute.js";
 import { localizedRoute } from "@/utils/localizedRoute.js";
+import { useDocumentSeo } from "@/composables/useDocumentSeo.js";
 
 const props = defineProps({
     title: { type: String, required: true },
@@ -138,9 +139,6 @@ const props = defineProps({
 const page = usePage();
 const activeLocale = computed(() => page.props.locale || "en");
 const pageRef = ref(null);
-const globals = computed(() => page.props.globals ?? {});
-const seo = computed(() => globals.value.seo ?? {});
-const media = computed(() => globals.value.media ?? {});
 
 function scrollToBlogTop() {
     pageRef.value?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -150,46 +148,21 @@ onMounted(() => {
     scrollToBlogTop();
 });
 
-function pickSeoString(...keys) {
-    const s = seo.value;
-    for (const key of keys) {
-        const v = s[key];
-        if (typeof v === "string" && v.trim() !== "") {
-            return v.trim();
-        }
-    }
-    return "";
-}
-
-const documentTitle = computed(() => `${props.title} | ${page.props.appName}`);
-
-const metaDescription = computed(() =>
-    pickSeoString("site_meta_description", "website_desc"),
-);
-
-const metaKeywords = computed(() =>
-    pickSeoString("site_meta_keywords", "website_keywords"),
-);
-
-const ogTitle = computed(() => documentTitle.value);
-const ogDescription = computed(() => metaDescription.value);
-
-const ogImage = computed(() => {
-    const url = media.value.meta_img;
-    return typeof url === "string" && url.trim() !== "" ? url.trim() : "";
+const {
+    media,
+    title: documentTitle,
+    description: metaDescription,
+    keywords: metaKeywords,
+    ogTitle,
+    ogDescription,
+    ogImage,
+    canonical: canonicalUrl,
+    ogUrl,
+    twitterCard,
+} = useDocumentSeo({
+    pageTitle: () => props.title,
+    canonical: () => blogIndexLocalizedUrl(activeLocale.value),
 });
-
-const canonicalUrl = computed(() =>
-    blogIndexLocalizedUrl(activeLocale.value),
-);
-
-const ogUrl = computed(() => canonicalUrl.value);
-
-const twitterCard = computed(() =>
-    ogImage.value ? "summary_large_image" : "summary",
-);
-
-
 
 function trans(key) {
     return page.props.translations[key] || key;
@@ -223,13 +196,13 @@ const blogIndexUrl = computed(() =>
     blogIndexLocalizedUrl(activeLocale.value),
 );
 
-function categoryIndexUrl(categoryId) {
+function categoryIndexUrl(categorySlug) {
     const params = {};
     if (props.filters.q) {
         params.q = props.filters.q;
     }
-    if (categoryId != null) {
-        params.category_id = categoryId;
+    if (categorySlug != null && categorySlug !== "") {
+        params.category = categorySlug;
     }
     return blogIndexLocalizedUrl(activeLocale.value, params);
 }

@@ -10,6 +10,12 @@ createServer((page) =>
         page,
         render: renderToString,
         resolve: resolveInertiaPage,
+        title: (title) => {
+            if (!title) {
+                return page.props?.appName || "IMas";
+            }
+            return title;
+        },
         setup({ App, props, plugin }) {
             const app = createSSRApp({ render: () => h(App, props) }).use(
                 plugin,

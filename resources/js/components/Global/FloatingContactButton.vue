@@ -29,9 +29,10 @@
                             >
                                 <i class="fa fa-whatsapp"></i>
                             </span>
-                            <span class="imas-floating-contact__label text-sm font-medium">{{
-                                labelWhatsApp
-                            }}</span>
+                            <span
+                                class="imas-floating-contact__label text-sm font-medium"
+                                >{{ labelWhatsApp }}</span
+                            >
                         </a>
                     </li>
                     <!-- <li v-if="messengerHref">
@@ -65,9 +66,10 @@
                             >
                                 <i class="fab fa-google"></i>
                             </span>
-                            <span class="imas-floating-contact__label text-sm font-medium">{{
-                                labelGmail
-                            }}</span>
+                            <span
+                                class="imas-floating-contact__label text-sm font-medium"
+                                >{{ labelGmail }}</span
+                            >
                         </a>
                     </li>
                     <li v-if="phoneHref">
@@ -81,9 +83,10 @@
                             >
                                 <i class="fa fa-phone"></i>
                             </span>
-                            <span class="imas-floating-contact__label text-sm font-medium">{{
-                                labelDirectCall
-                            }}</span>
+                            <span
+                                class="imas-floating-contact__label text-sm font-medium"
+                                >{{ labelDirectCall }}</span
+                            >
                         </a>
                     </li>
                 </ul>
@@ -92,14 +95,14 @@
 
         <button
             type="button"
-            class="imas-floating-contact__toggle"
+            class="imas-floating-contact__toggle "
             :aria-expanded="isOpen"
             :aria-controls="isOpen ? 'imas-floating-contact-menu' : undefined"
             :aria-label="toggleAriaLabel"
             @click="toggle"
         >
             <i
-                class="fa"
+                class="fa callIcon"
                 :class="isOpen ? 'fa-times' : 'fa-comment'"
                 aria-hidden="true"
             ></i>
@@ -113,8 +116,7 @@ import { usePage } from "@inertiajs/vue3";
 import { buildGmailComposeUrl } from "@/utils/gmailUrl.js";
 import { resolveWhatsAppContactHref } from "@/utils/whatsappUrl.js";
 
-const MESSENGER_URL =
-    "https://m.me/61584547460936";
+const MESSENGER_URL = "https://m.me/61584547460936";
 
 const page = usePage();
 const isOpen = ref(false);
@@ -165,14 +167,13 @@ const phoneHref = computed(() => {
     return digits ? `tel:${digits}` : "";
 });
 
-const hasAnyChannel = computed(
-    () =>
-        Boolean(
-            whatsappHref.value ||
-                messengerHref.value ||
-                gmailHref.value ||
-                phoneHref.value,
-        ),
+const hasAnyChannel = computed(() =>
+    Boolean(
+        whatsappHref.value ||
+        messengerHref.value ||
+        gmailHref.value ||
+        phoneHref.value,
+    ),
 );
 
 const menuTitle = computed(
@@ -189,9 +190,7 @@ const labelWhatsApp = computed(
     () => trans("floating_whatsapp.aria_label") || "Contact us on WhatsApp",
 );
 
-const labelGmail = computed(
-    () => trans("floating_contact.gmail") || "Gmail",
-);
+const labelGmail = computed(() => trans("floating_contact.gmail") || "Gmail");
 
 const labelDirectCall = computed(
     () => trans("floating_contact.direct_call") || "Direct call",
@@ -436,5 +435,9 @@ onBeforeUnmount(() => {
     .imas-floating-contact__toggle:focus-visible {
         transform: none;
     }
+}
+
+.imas-floating-contact__toggle .callIcon{
+    font-size: 24px !important;
 }
 </style>

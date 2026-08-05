@@ -128,6 +128,7 @@ import { Head, usePage } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/App.vue";
 import InnerPageHeadingHero from "@/components/global/InnerPageHeadingHero.vue";
 import { useScrollReveal } from "@/composables/useScrollReveal";
+import { useDocumentSeo } from "@/composables/useDocumentSeo.js";
 import { localizedRoute } from "@/utils/localizedRoute.js";
 import PropertyListingToolbar from "../components/PropertyListingToolbar.vue";
 import PropertyGridSection from "../components/PropertyGridSection.vue";
@@ -151,9 +152,7 @@ const page = usePage();
 const activeLocale = computed(() => page.props.locale || "en");
 const pageRef = ref(null);
 
-const globals = computed(() => page.props.globals ?? {});
-const seo = computed(() => globals.value.seo ?? {});
-const media = computed(() => globals.value.media ?? {});
+const media = computed(() => page.props.globals?.media ?? {});
 
 function scrollToListingsTop() {
     pageRef.value?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -163,44 +162,29 @@ onMounted(() => {
     scrollToListingsTop();
 });
 
-function pickSeoString(...keys) {
-    const s = seo.value;
-    for (const key of keys) {
-        const v = s[key];
-        if (typeof v === "string" && v.trim() !== "") {
-            return v.trim();
-        }
-    }
-    return "";
-}
-
-const documentTitle = computed(
-    () => `${props.title} | ${page.props.appName}`,
+const propertyIndexUrl = computed(() =>
+    localizedRoute(
+        "property.index",
+        {},
+        activeLocale.value,
+        "/property",
+    ),
 );
 
-const metaDescription = computed(() =>
-    pickSeoString("site_meta_description", "website_desc"),
-);
-
-const metaKeywords = computed(() =>
-    pickSeoString("site_meta_keywords", "website_keywords"),
-);
-
-const ogTitle = computed(() => documentTitle.value);
-const ogDescription = computed(() => metaDescription.value);
-
-const ogImage = computed(() => {
-    const url = media.value.meta_img;
-    return typeof url === "string" && url.trim() !== "" ? url.trim() : "";
+const {
+    title: documentTitle,
+    description: metaDescription,
+    keywords: metaKeywords,
+    ogTitle,
+    ogDescription,
+    ogImage,
+    canonical: canonicalUrl,
+    ogUrl,
+    twitterCard,
+} = useDocumentSeo({
+    pageTitle: () => props.title,
+    canonical: () => propertyIndexUrl.value,
 });
-
-const canonicalUrl = computed(() => propertyIndexUrl.value);
-
-const ogUrl = computed(() => canonicalUrl.value);
-
-const twitterCard = computed(() =>
-    ogImage.value ? "summary_large_image" : "summary",
-);
 
 function trans(key) {
     return page.props.translations[key] || key;
@@ -224,15 +208,6 @@ const propertyHeadingItems = computed(() => {
     });
     return rows;
 });
-
-const propertyIndexUrl = computed(() =>
-    localizedRoute(
-        "property.index",
-        {},
-        activeLocale.value,
-        "/property",
-    ),
-);
 
 const listingsBannerUrl = computed(() => {
     const url = media.value.property_show_banner;

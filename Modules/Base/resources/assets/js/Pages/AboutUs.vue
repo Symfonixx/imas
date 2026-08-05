@@ -117,6 +117,7 @@ import { computed, ref } from "vue";
 import { Head, usePage } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/App.vue";
 import { useScrollReveal } from "@/composables/useScrollReveal";
+import { useDocumentSeo } from "@/composables/useDocumentSeo.js";
 import InnerPageHeadingHero from "@/components/global/InnerPageHeadingHero.vue";
 import AboutUsQuickLinksSidebar from "../components/AboutUsQuickLinksSidebar.vue";
 
@@ -136,9 +137,6 @@ const pageRef = ref(null);
 
 useScrollReveal(pageRef, { variant: "propertyListings" });
 
-const globals = computed(() => page.props.globals ?? {});
-const seo = computed(() => globals.value.seo ?? {});
-const media = computed(() => globals.value.media ?? {});
 const contentHtml = computed(() => props.aboutUs.content ?? "");
 
 const heroYoutubeEmbed = computed(() => {
@@ -146,31 +144,11 @@ const heroYoutubeEmbed = computed(() => {
     return typeof raw === "string" ? raw.trim() : "";
 });
 
-function pickSeoString(fromProps, ...globalKeys) {
-    const p = fromProps;
-    if (typeof p === "string" && p.trim() !== "") {
-        return p.trim();
-    }
-    const s = seo.value;
-    for (const key of globalKeys) {
-        const v = s[key];
-        if (typeof v === "string" && v.trim() !== "") {
-            return v.trim();
-        }
-    }
-    return "";
-}
-
 function trans(key) {
     return page.props.translations[key] || key;
 }
 
 const sectionLabel = computed(() => trans("about_us.title"));
-
-const pageHeadingTitle = computed(() => {
-    const t = pickSeoString(props.aboutUs.meta_title, "about_us_meta_title");
-    return t !== "" ? t : sectionLabel.value;
-});
 
 const headingItems = computed(() => {
     const rows = [];
@@ -191,6 +169,80 @@ const headingItems = computed(() => {
     return rows;
 });
 
+const {
+    media,
+    pickSeoString,
+    title: documentTitle,
+    description: metaDescription,
+    keywords: metaKeywords,
+    ogTitle,
+    ogDescription,
+    ogImage,
+    canonical: canonicalUrl,
+    ogUrl,
+    twitterCard,
+} = useDocumentSeo({
+    pageTitle: () => {
+        const t = props.aboutUs.meta_title;
+        if (typeof t === "string" && t.trim() !== "") {
+            return t.trim();
+        }
+        const fromGlobal = pickSeoString("about_us_meta_title");
+        return fromGlobal !== "" ? fromGlobal : sectionLabel.value;
+    },
+    description: () => {
+        const d = props.aboutUs.meta_description;
+        if (typeof d === "string" && d.trim() !== "") {
+            return d.trim();
+        }
+        return pickSeoString(
+            "about_us_meta_description",
+            "site_meta_description",
+            "website_desc",
+        );
+    },
+    keywords: () => {
+        const k = props.aboutUs.meta_keywords;
+        if (typeof k === "string" && k.trim() !== "") {
+            return k.trim();
+        }
+        return pickSeoString(
+            "about_us_meta_keywords",
+            "site_meta_keywords",
+            "website_keywords",
+        );
+    },
+    ogImage: () => {
+        const url = page.props.globals?.media?.about_us_banner;
+        if (typeof url === "string" && url.trim() !== "") {
+            const trimmed = url.trim();
+            if (!/\/default\.jpg(?:\?.*)?$/i.test(trimmed)) {
+                return trimmed;
+            }
+        }
+        return "";
+    },
+    canonical: () => {
+        if (typeof route !== "function" || !route().has?.("about-us")) {
+            return "";
+        }
+        try {
+            return route("about-us");
+        } catch {
+            return "";
+        }
+    },
+});
+
+const pageHeadingTitle = computed(() => {
+    const t = props.aboutUs.meta_title;
+    if (typeof t === "string" && t.trim() !== "") {
+        return t.trim();
+    }
+    const fromGlobal = pickSeoString("about_us_meta_title");
+    return fromGlobal !== "" ? fromGlobal : sectionLabel.value;
+});
+
 const heroBannerUrl = computed(() => {
     const url = media.value.about_us_banner;
     if (typeof url !== "string" || url.trim() === "") {
@@ -202,70 +254,6 @@ const heroBannerUrl = computed(() => {
     }
     return trimmed;
 });
-
-const documentTitle = computed(() => {
-    const t = pickSeoString(props.aboutUs.meta_title, "about_us_meta_title");
-    if (t !== "") {
-        return `${t} | ${page.props.appName}`;
-    }
-    return `${sectionLabel.value} | ${page.props.appName}`;
-});
-
-const metaDescription = computed(() =>
-    pickSeoString(
-        props.aboutUs.meta_description,
-        "about_us_meta_description",
-        "site_meta_description",
-        "website_desc",
-    ),
-);
-
-const metaKeywords = computed(() =>
-    pickSeoString(
-        props.aboutUs.meta_keywords,
-        "about_us_meta_keywords",
-        "site_meta_keywords",
-        "website_keywords",
-    ),
-);
-
-const ogTitle = computed(() => {
-    const t = pickSeoString(props.aboutUs.meta_title, "about_us_meta_title");
-    return t !== "" ? t : sectionLabel.value;
-});
-
-const ogDescription = computed(() => metaDescription.value);
-
-const ogImage = computed(() => {
-    const banner = media.value.about_us_banner;
-    if (typeof banner === "string" && banner.trim() !== "") {
-        const trimmed = banner.trim();
-        if (!/\/default\.jpg(?:\?.*)?$/i.test(trimmed)) {
-            return trimmed;
-        }
-    }
-    const fallback = media.value.meta_img;
-    return typeof fallback === "string" && fallback.trim() !== ""
-        ? fallback.trim()
-        : "";
-});
-
-const canonicalUrl = computed(() => {
-    if (typeof route !== "function" || !route().has?.("about-us")) {
-        return "";
-    }
-    try {
-        return route("about-us");
-    } catch {
-        return "";
-    }
-});
-
-const ogUrl = computed(() => canonicalUrl.value);
-
-const twitterCard = computed(() =>
-    ogImage.value ? "summary_large_image" : "summary",
-);
 
 const hasQuickLinks = computed(() => {
     try {

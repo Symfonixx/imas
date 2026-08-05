@@ -68,7 +68,18 @@
                                 <span
                                     class="imas-featured-properties-sidebar__badge imas-featured-properties-sidebar__badge--price"
                                 >
-                                    {{ formatMoney(propertyStartPrice(p)) }}
+                                    <span
+                                        class="imas-featured-properties-sidebar__price-from"
+                                        >{{
+                                            trans("properties.price_from")
+                                        }}</span
+                                    >
+                                    <span
+                                        class="imas-featured-properties-sidebar__price-amount"
+                                        >{{
+                                            formatMoney(propertyStartPrice(p))
+                                        }}</span
+                                    >
                                 </span>
                                 <div
                                     class="imas-featured-properties-sidebar__badges-end"
@@ -101,24 +112,16 @@
                                 >
                                     {{ locationLine(p) }}
                                 </p>
-                                <ul
-                                    v-if="statRows(p).length > 0"
-                                    class="imas-featured-properties-sidebar__stats"
+
+                                <div
+                                    v-if="(p.unit_types ?? []).length > 0"
+                                    class="imas-featured-properties-sidebar__body-meta"
+                                    @click.stop
                                 >
-                                    <li
-                                        v-for="(row, idx) in statRows(p)"
-                                        :key="idx"
-                                    >
-                                        <span
-                                            class="imas-featured-properties-sidebar__stat-label"
-                                            >{{ row.label }}</span
-                                        >
-                                        <span
-                                            class="imas-featured-properties-sidebar__stat-value"
-                                            >{{ row.value }}</span
-                                        >
-                                    </li>
-                                </ul>
+                                    <FeaturedPropertyUnitAreasFlip
+                                        :unit-types="p.unit_types ?? []"
+                                    />
+                                </div>
                             </div>
                         </div>
                     </component>
@@ -144,6 +147,7 @@ import {
     formatPropertyMoney,
     propertyStartPrice,
 } from "../utils/propertyPrice.js";
+import FeaturedPropertyUnitAreasFlip from "./FeaturedPropertyUnitAreasFlip.vue";
 
 const props = defineProps({
     featuredProperties: { type: Array, default: () => [] },

@@ -9,6 +9,12 @@ import { syncZiggy } from "./utils/syncZiggy.js";
 
 createInertiaApp({
     resolve: resolveInertiaPage,
+    title: (title) => {
+        if (!title) {
+            return document.title || "IMas";
+        }
+        return title;
+    },
     setup({ el, App, props, plugin }) {
         const app = createSSRApp({ render: () => h(App, props) }).use(plugin);
 

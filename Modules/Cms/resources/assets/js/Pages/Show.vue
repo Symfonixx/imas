@@ -66,6 +66,18 @@
             name="twitter:image"
             :content="ogImage"
         />
+        <meta
+            v-if="articlePublishedTime"
+            head-key="article:published_time"
+            property="article:published_time"
+            :content="articlePublishedTime"
+        />
+        <meta
+            v-if="articleModifiedTime"
+            head-key="article:modified_time"
+            property="article:modified_time"
+            :content="articleModifiedTime"
+        />
         <JsonLdScript head-key="jsonld-article" :content="articleJsonLd" />
     </Head>
 
@@ -294,6 +306,19 @@ const twitterCard = computed(() =>
     ogImage.value ? "summary_large_image" : "summary",
 );
 
+const articlePublishedTime = computed(() => {
+    const v = props.blog.created_at;
+    return typeof v === "string" && v.trim() !== "" ? v.trim() : "";
+});
+
+const articleModifiedTime = computed(() => {
+    const v = props.blog.updated_at;
+    if (typeof v === "string" && v.trim() !== "") {
+        return v.trim();
+    }
+    return articlePublishedTime.value;
+});
+
 const articleSchema = computed(() => {
     const publisherLogo =
         media.value.white_logo ||
@@ -305,7 +330,8 @@ const articleSchema = computed(() => {
         headline: plainText(String(meta.value.title || props.blog.title)),
         description: metaDescription.value,
         image: ogImage.value,
-        datePublished: props.blog.created_at,
+        datePublished: articlePublishedTime.value || undefined,
+        dateModified: articleModifiedTime.value || undefined,
         url: canonicalUrl.value,
         publisherName: page.props.appName,
         publisherLogo,

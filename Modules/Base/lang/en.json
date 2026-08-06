@@ -356,7 +356,8 @@
         "results_count":":count search results",
         "feature_properties":"Featured properties",
         "for_sale":"For sale",
-        "recent_properties":"Recent properties"
+        "recent_properties":"Recent properties",
+        "meta_description":"Browse property listings for sale. Filter by location, type, and price to find apartments, villas, and investment homes with Imas."
     },
     "property_show":{
         "gallery":"Gallery",

@@ -347,7 +347,8 @@
         "results_count": ":count نتائج بحث",
         "feature_properties": "عقارات مميزة",
         "for_sale": "للبيع",
-        "recent_properties": "أحدث العقارات"
+        "recent_properties": "أحدث العقارات",
+        "meta_description": "تصفح عقارات للبيع. صفِّ حسب الموقع والنوع والسعر للعثور على شقق وفلل واستثمارات عقارية مع Imas."
     },
     "property_show": {
         "gallery": "المعرض",

@@ -65,4 +65,28 @@ class SeoDocumentServiceTest extends TestCase
         $this->assertSame('article', $seo['og_type']);
         $this->assertSame('noindex, nofollow', $seo['robots']);
     }
+
+    public function test_document_seo_includes_locale_hreflang_and_theme_color(): void
+    {
+        Seo::set('website_name', 'IMas', false);
+        Cache::forget('seo_entries');
+
+        app()->setLocale('en');
+
+        $seo = app(SeoDocumentService::class)->documentSeo([
+            'article_published_time' => '2026-01-15T10:00:00+00:00',
+            'article_modified_time' => '2026-02-01T12:00:00+00:00',
+        ]);
+
+        $this->assertSame('IMas', $seo['og_site_name']);
+        $this->assertSame('en_US', $seo['og_locale']);
+        $this->assertSame(SeoDocumentService::THEME_COLOR, $seo['theme_color']);
+        $this->assertSame('2026-01-15T10:00:00+00:00', $seo['article_published_time']);
+        $this->assertSame('2026-02-01T12:00:00+00:00', $seo['article_modified_time']);
+        $this->assertNotEmpty($seo['hreflang']);
+        $this->assertTrue(
+            collect($seo['hreflang'])->contains(fn (array $item) => ($item['hreflang'] ?? '') === 'x-default'),
+        );
+        $this->assertNotEmpty($seo['og_locale_alternates']);
+    }
 }

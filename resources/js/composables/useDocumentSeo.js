@@ -14,6 +14,7 @@ import { usePage } from "@inertiajs/vue3";
  * @param {string|import('vue').Ref|import('vue').ComputedRef|(() => string)} [options.ogImage]
  * @param {string|import('vue').Ref|import('vue').ComputedRef|(() => string)} [options.canonical]
  * @param {string|import('vue').Ref|import('vue').ComputedRef|(() => string)} [options.ogType]
+ * @param {string|import('vue').Ref|import('vue').ComputedRef|(() => string)} [options.robots]
  * @param {boolean} [options.useGlobalTitleTemplate=false] Home-style global title template (no "| site" append)
  */
 export function useDocumentSeo(options = {}) {
@@ -67,6 +68,45 @@ export function useDocumentSeo(options = {}) {
 
     function isDefaultPlaceholder(url) {
         return /\/default\.jpg(?:\?.*)?$/i.test(url);
+    }
+
+    /**
+     * Site origin for absolutizing relative canonical / og:url values.
+     * Prefer Ziggy (works in SSR); fall back to window on the client.
+     */
+    function siteOrigin() {
+        const ziggyUrl = page.props.ziggy?.url;
+        if (typeof ziggyUrl === "string" && ziggyUrl.trim() !== "") {
+            return ziggyUrl.trim().replace(/\/$/, "");
+        }
+        if (typeof window !== "undefined" && window.location?.origin) {
+            return String(window.location.origin).replace(/\/$/, "");
+        }
+        return "";
+    }
+
+    /**
+     * Open Graph / canonical URLs must be absolute. Nav helpers may pass paths.
+     */
+    function toAbsoluteUrl(url) {
+        const trimmed = asTrimmedString(url);
+        if (!trimmed) {
+            return "";
+        }
+        if (/^https?:\/\//i.test(trimmed)) {
+            return trimmed;
+        }
+
+        const origin = siteOrigin();
+        if (!origin) {
+            return trimmed;
+        }
+
+        try {
+            return new URL(trimmed, `${origin}/`).href;
+        } catch {
+            return trimmed;
+        }
     }
 
     const title = computed(() => {
@@ -138,24 +178,28 @@ export function useDocumentSeo(options = {}) {
     const ogImage = computed(() => {
         const explicit = asTrimmedString(resolveOption(options.ogImage));
         if (explicit && !isDefaultPlaceholder(explicit)) {
-            return explicit;
+            return toAbsoluteUrl(explicit);
         }
         const fallback = media.value.meta_img;
         if (typeof fallback === "string" && fallback.trim() !== "") {
             const trimmed = fallback.trim();
-            return isDefaultPlaceholder(trimmed) ? "" : trimmed;
+            return isDefaultPlaceholder(trimmed) ? "" : toAbsoluteUrl(trimmed);
         }
         return "";
     });
 
     const canonical = computed(() =>
-        asTrimmedString(resolveOption(options.canonical)),
+        toAbsoluteUrl(resolveOption(options.canonical)),
     );
 
     const ogType = computed(() => {
         const t = asTrimmedString(resolveOption(options.ogType));
         return t || "website";
     });
+
+    const robots = computed(() =>
+        asTrimmedString(resolveOption(options.robots)),
+    );
 
     const ogTitle = computed(() => title.value);
     const ogDescription = computed(() => description.value);
@@ -175,10 +219,12 @@ export function useDocumentSeo(options = {}) {
         ogImage,
         canonical,
         ogType,
+        robots,
         ogTitle,
         ogDescription,
         ogUrl,
         twitterCard,
         pickSeoString,
+        toAbsoluteUrl,
     };
 }

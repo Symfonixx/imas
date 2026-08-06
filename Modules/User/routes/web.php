@@ -23,6 +23,7 @@ Route::middleware('guest')->group(function () {
                 'seo' => $seoService->documentSeo([
                     'page_title' => $seoService->labelFromBaseLang('Forgot Password', 'Forgot Password'),
                     'robots' => 'noindex, nofollow',
+                    'canonical' => route('password.request'),
                 ]),
             ]);
     })->name('password.request');
@@ -37,6 +38,7 @@ Route::middleware('guest')->group(function () {
             'seo' => $seoService->documentSeo([
                 'page_title' => $seoService->labelFromBaseLang('Reset Password', 'Reset Password'),
                 'robots' => 'noindex, nofollow',
+                'canonical' => url()->current(),
             ]),
         ]);
     })->name('password.reset');

@@ -8,6 +8,8 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use Modules\Base\Application\Seo\SeoDocumentService;
+use Modules\Base\Models\Settings;
+use Modules\Base\Support\Seo\SchemaBuilder;
 use Modules\Cms\Models\Blog;
 use Modules\Cms\Models\Slide;
 use Modules\Corporate\Models\CorporateService;
@@ -197,7 +199,62 @@ class HomeController extends Controller
         ])->withViewData([
             'seo' => app(SeoDocumentService::class)->documentSeo([
                 'canonical' => route('home'),
+                'json_ld' => $this->homeJsonLd(),
             ]),
         ]);
+    }
+
+    /**
+     * Organization + WebSite JSON-LD for the home page (keys match Index.vue head-keys).
+     *
+     * @return array<string, array<array-key, mixed>|null>
+     */
+    private function homeJsonLd(): array
+    {
+        $seoService = app(SeoDocumentService::class);
+        $seo = $seoService->documentSeo(['canonical' => route('home')]);
+        $canonical = $seo['canonical'];
+        $description = $seo['description'];
+        $siteName = $seoService->siteName();
+
+        $logo = $seoService->settingsImageUrl('white_logo')
+            ?: $seoService->settingsImageUrl('black_logo')
+            ?: $seoService->settingsImageUrl('meta_img');
+
+        $social = [
+            'whatsapp' => (string) (Settings::get('whatsapp', '') ?: ''),
+            'facebook' => (string) (Settings::get('facebook', '') ?: ''),
+            'instagram' => (string) (Settings::get('instagram', '') ?: ''),
+            'youtube' => (string) (Settings::get('youtube', '') ?: ''),
+            'twitter' => (string) (Settings::get('twitter', '') ?: ''),
+        ];
+
+        $searchUrlTemplate = '';
+        try {
+            $base = route('property.index');
+            $sep = str_contains($base, '?') ? '&' : '?';
+            $searchUrlTemplate = $base.$sep.'q={search_term_string}';
+        } catch (\Throwable) {
+            $searchUrlTemplate = '';
+        }
+
+        return [
+            'jsonld-organization' => SchemaBuilder::organization(
+                $siteName,
+                $canonical,
+                $description,
+                $logo !== '' ? $logo : null,
+                (string) (Settings::get('email', '') ?: ''),
+                (string) (Settings::get('phone', '') ?: ''),
+                (string) (Settings::get('address', '') ?: ''),
+                SchemaBuilder::collectSocialUrls($social),
+            ),
+            'jsonld-website' => SchemaBuilder::website(
+                $siteName,
+                $canonical,
+                $description,
+                $searchUrlTemplate !== '' ? $searchUrlTemplate : null,
+            ),
+        ];
     }
 }

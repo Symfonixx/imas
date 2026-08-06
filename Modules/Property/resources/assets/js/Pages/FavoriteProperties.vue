@@ -1,6 +1,77 @@
 <template>
     <Head :title="documentTitle">
-        <meta name="robots" head-key="robots" content="noindex, nofollow" />
+        <meta
+            v-if="metaDescription"
+            head-key="description"
+            name="description"
+            :content="metaDescription"
+        />
+        <meta
+            v-if="metaKeywords"
+            head-key="keywords"
+            name="keywords"
+            :content="metaKeywords"
+        />
+        <link
+            v-if="canonicalUrl"
+            head-key="canonical"
+            rel="canonical"
+            :href="canonicalUrl"
+        />
+        <meta
+            v-if="ogTitle"
+            head-key="og:title"
+            property="og:title"
+            :content="ogTitle"
+        />
+        <meta
+            v-if="ogDescription"
+            head-key="og:description"
+            property="og:description"
+            :content="ogDescription"
+        />
+        <meta
+            v-if="ogImage"
+            head-key="og:image"
+            property="og:image"
+            :content="ogImage"
+        />
+        <meta head-key="og:type" property="og:type" content="website" />
+        <meta
+            v-if="ogUrl"
+            head-key="og:url"
+            property="og:url"
+            :content="ogUrl"
+        />
+        <meta
+            v-if="robots"
+            head-key="robots"
+            name="robots"
+            :content="robots"
+        />
+        <meta
+            head-key="twitter:card"
+            name="twitter:card"
+            :content="twitterCard"
+        />
+        <meta
+            v-if="ogTitle"
+            head-key="twitter:title"
+            name="twitter:title"
+            :content="ogTitle"
+        />
+        <meta
+            v-if="ogDescription"
+            head-key="twitter:description"
+            name="twitter:description"
+            :content="ogDescription"
+        />
+        <meta
+            v-if="ogImage"
+            head-key="twitter:image"
+            name="twitter:image"
+            :content="ogImage"
+        />
     </Head>
 
     <AppLayout>
@@ -62,6 +133,7 @@ import { Head, usePage } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/App.vue";
 import InnerPageHeadingHero from "@/components/global/InnerPageHeadingHero.vue";
 import { useScrollReveal } from "@/composables/useScrollReveal";
+import { useDocumentSeo } from "@/composables/useDocumentSeo.js";
 import { localizedRoute } from "@/utils/localizedRoute.js";
 import PropertyGridSection from "../components/PropertyGridSection.vue";
 import PropertyListingPagination from "../components/PropertyListingPagination.vue";
@@ -87,9 +159,36 @@ onMounted(() => {
     scrollToListingsTop();
 });
 
-const documentTitle = computed(
-    () => `${props.title} | ${page.props.appName}`,
-);
+const {
+    title: documentTitle,
+    description: metaDescription,
+    keywords: metaKeywords,
+    ogTitle,
+    ogDescription,
+    ogImage,
+    canonical: canonicalUrl,
+    ogUrl,
+    twitterCard,
+    robots,
+} = useDocumentSeo({
+    pageTitle: () => props.title,
+    robots: "noindex, nofollow",
+    canonical: () => {
+        try {
+            if (typeof route === "function" && route().has?.("property.favorites")) {
+                return route("property.favorites");
+            }
+        } catch {
+            /* Ziggy may be unavailable */
+        }
+        return localizedRoute(
+            "property.favorites",
+            {},
+            activeLocale.value,
+            "/property/favorites",
+        );
+    },
+});
 
 const inquirySubject = computed(() => props.title);
 

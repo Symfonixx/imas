@@ -7,7 +7,6 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Inertia\Middleware;
-use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use Module;
 use Modules\Base\Models\Country;
 use Modules\Base\Models\Seo;
@@ -502,21 +501,6 @@ class HandleInertiaRequests extends Middleware
      */
     protected function getLocaleSwitcher(): array
     {
-        $order = ['en', 'tr', 'ar'];
-        $supported = LaravelLocalization::getSupportedLocales();
-        $items = [];
-
-        foreach ($order as $code) {
-            if (! isset($supported[$code])) {
-                continue;
-            }
-            $items[] = [
-                'code' => $code,
-                'native' => (string) ($supported[$code]['native'] ?? $code),
-                'url' => LaravelLocalization::getLocalizedURL($code),
-            ];
-        }
-
-        return $items;
+        return \Modules\Base\Support\Seo\LocaleAlternates::switcherItems();
     }
 }

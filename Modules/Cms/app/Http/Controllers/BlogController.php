@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 use Inertia\Response;
 use Modules\Base\Application\Seo\SeoDocumentService;
+use Modules\Base\Support\Seo\SchemaBuilder;
 use Modules\Cms\Models\Blog;
 use Modules\Cms\Models\BlogCategory;
 use Modules\Cms\Support\BlogCardSerializer;
@@ -108,6 +109,15 @@ class BlogController extends Controller
             : (is_string($detail['image'] ?? null) ? trim($detail['image']) : '');
         $canonical = is_string($meta['canonical_url'] ?? null) ? trim($meta['canonical_url']) : '';
 
+        $publishedAt = $blog->created_at?->toIso8601String() ?? '';
+        $modifiedAt = $blog->updated_at?->toIso8601String() ?? $publishedAt;
+
+        $publisherLogo = $seoService->settingsImageUrl('white_logo')
+            ?: $seoService->settingsImageUrl('black_logo')
+            ?: $seoService->settingsImageUrl('meta_img');
+
+        $articleHeadline = strip_tags((string) ($metaTitle !== '' ? $metaTitle : $blog->title));
+
         return Inertia::render('Cms::Show', [
             'title' => (string) $blog->title,
             'blog' => $detail,
@@ -125,6 +135,21 @@ class BlogController extends Controller
                 'og_image' => $ogImage,
                 'canonical' => $canonical,
                 'og_type' => 'article',
+                'article_published_time' => $publishedAt,
+                'article_modified_time' => $modifiedAt,
+                'json_ld' => [
+                    'jsonld-article' => SchemaBuilder::article(
+                        $articleHeadline,
+                        $metaDescription !== '' ? strip_tags($metaDescription) : null,
+                        $ogImage !== '' ? $ogImage : null,
+                        [],
+                        $publishedAt !== '' ? $publishedAt : null,
+                        $modifiedAt !== '' ? $modifiedAt : null,
+                        $canonical !== '' ? $canonical : null,
+                        $siteName !== '' ? $siteName : null,
+                        $publisherLogo !== '' ? $publisherLogo : null,
+                    ),
+                ],
             ]),
         ]);
     }

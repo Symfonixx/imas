@@ -6,6 +6,7 @@ use Modules\Base\Models\Seo;
 use Modules\Base\Models\Settings;
 use Modules\Base\Support\Media\MediaAssetResolver;
 use Modules\Base\Support\Seo\JsonLd;
+use Modules\Base\Support\Seo\LocaleAlternates;
 
 /**
  * Resolves document-level SEO for the root Blade layout (View Page Source)
@@ -13,6 +14,8 @@ use Modules\Base\Support\Seo\JsonLd;
  */
 class SeoDocumentService
 {
+    public const THEME_COLOR = '#0a1526';
+
     /**
      * @param  array{
      *     page_title?: string,
@@ -23,6 +26,8 @@ class SeoDocumentService
      *     canonical?: string|null,
      *     og_type?: string|null,
      *     robots?: string|null,
+     *     article_published_time?: string|null,
+     *     article_modified_time?: string|null,
      *     json_ld?: array<string, array<array-key, mixed>|string|null>,
      *     title_keys?: list<string>,
      *     description_keys?: list<string>,
@@ -36,6 +41,13 @@ class SeoDocumentService
      *     canonical: string,
      *     og_type: string,
      *     robots: string,
+     *     og_site_name: string,
+     *     og_locale: string,
+     *     og_locale_alternates: list<array{key: string, value: string}>,
+     *     hreflang: list<array{key: string, hreflang: string, href: string}>,
+     *     theme_color: string,
+     *     article_published_time: string,
+     *     article_modified_time: string,
      *     json_ld: array<string, string>
      * }
      */
@@ -59,6 +71,13 @@ class SeoDocumentService
             'canonical' => $canonical,
             'og_type' => $ogType,
             'robots' => $robots,
+            'og_site_name' => $siteName,
+            'og_locale' => LocaleAlternates::currentOgLocale(),
+            'og_locale_alternates' => LocaleAlternates::ogLocaleAlternates(),
+            'hreflang' => LocaleAlternates::hreflangLinks(),
+            'theme_color' => self::THEME_COLOR,
+            'article_published_time' => $this->stringOverride($overrides['article_published_time'] ?? null),
+            'article_modified_time' => $this->stringOverride($overrides['article_modified_time'] ?? null),
             'json_ld' => $this->resolveJsonLd($overrides),
         ];
     }

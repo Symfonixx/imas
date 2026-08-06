@@ -357,7 +357,8 @@
         "results_count":":count arama sonucu",
         "feature_properties":"Öne Çıkan Mülkler",
         "for_sale":"Satılık",
-        "recent_properties":"Son Mülkler"
+        "recent_properties":"Son Mülkler",
+        "meta_description":"Satılık mülk ilanlarını inceleyin. Konum, tip ve fiyata göre filtreleyerek Imas ile daire, villa ve yatırım evleri bulun."
     },
     "property_show":{
         "gallery":"Galeri",

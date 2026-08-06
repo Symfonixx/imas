@@ -1,6 +1,77 @@
 <template>
-    <Head :title="`${trans('Forgot Password')} | ${appName}`">
-        <meta head-key="robots" name="robots" content="noindex, nofollow" />
+    <Head :title="documentTitle">
+        <meta
+            v-if="metaDescription"
+            head-key="description"
+            name="description"
+            :content="metaDescription"
+        />
+        <meta
+            v-if="metaKeywords"
+            head-key="keywords"
+            name="keywords"
+            :content="metaKeywords"
+        />
+        <link
+            v-if="canonicalUrl"
+            head-key="canonical"
+            rel="canonical"
+            :href="canonicalUrl"
+        />
+        <meta
+            v-if="ogTitle"
+            head-key="og:title"
+            property="og:title"
+            :content="ogTitle"
+        />
+        <meta
+            v-if="ogDescription"
+            head-key="og:description"
+            property="og:description"
+            :content="ogDescription"
+        />
+        <meta
+            v-if="ogImage"
+            head-key="og:image"
+            property="og:image"
+            :content="ogImage"
+        />
+        <meta head-key="og:type" property="og:type" content="website" />
+        <meta
+            v-if="ogUrl"
+            head-key="og:url"
+            property="og:url"
+            :content="ogUrl"
+        />
+        <meta
+            v-if="robots"
+            head-key="robots"
+            name="robots"
+            :content="robots"
+        />
+        <meta
+            head-key="twitter:card"
+            name="twitter:card"
+            :content="twitterCard"
+        />
+        <meta
+            v-if="ogTitle"
+            head-key="twitter:title"
+            name="twitter:title"
+            :content="ogTitle"
+        />
+        <meta
+            v-if="ogDescription"
+            head-key="twitter:description"
+            name="twitter:description"
+            :content="ogDescription"
+        />
+        <meta
+            v-if="ogImage"
+            head-key="twitter:image"
+            name="twitter:image"
+            :content="ogImage"
+        />
     </Head>
 
     <app-layout>
@@ -37,10 +108,11 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from "vue";
+import { onMounted } from "vue";
 import { Head, usePage } from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/App.vue";
 import { useOpenAuthModal } from "@/composables/useOpenAuthModal";
+import { useDocumentSeo } from "@/composables/useDocumentSeo.js";
 
 defineProps({
     errors: {
@@ -52,8 +124,33 @@ defineProps({
 const page = usePage();
 const { openAuthModal } = useOpenAuthModal();
 
-const appName = computed(() => page.props.appName);
 const trans = (key) => page.props.translations?.[key] || key;
+
+const {
+    title: documentTitle,
+    description: metaDescription,
+    keywords: metaKeywords,
+    ogTitle,
+    ogDescription,
+    ogImage,
+    canonical: canonicalUrl,
+    ogUrl,
+    twitterCard,
+    robots,
+} = useDocumentSeo({
+    pageTitle: () => trans("Forgot Password"),
+    robots: "noindex, nofollow",
+    canonical: () => {
+        try {
+            if (typeof route === "function" && route().has?.("password.request")) {
+                return route("password.request");
+            }
+        } catch {
+            /* Ziggy may be unavailable */
+        }
+        return "";
+    },
+});
 
 function openForgotModal() {
     openAuthModal("forgot");

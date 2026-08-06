@@ -150,6 +150,13 @@ class PropertyController extends Controller
             ->all();
 
         $pageTitle = $this->listingPageTitle();
+        $seoService = app(SeoDocumentService::class);
+        $listingDescription = $seoService->labelFromBaseLang('listing_page.meta_description');
+        $description = $seoService->seoValue('site_meta_description')
+            ?: $seoService->seoValue('website_desc')
+            ?: $listingDescription;
+        $listingOgImage = $seoService->settingsImageUrl('property_show_banner')
+            ?: $seoService->settingsImageUrl('meta_img');
 
         return Inertia::render('Property::index', [
             'title' => $pageTitle,
@@ -162,9 +169,13 @@ class PropertyController extends Controller
             'areas' => $areas,
             'recentProperties' => $recentProperties,
             'featuredProperties' => $featuredProperties,
+            'seoDescription' => $description,
+            'seoOgImage' => $listingOgImage,
         ])->withViewData([
-            'seo' => app(SeoDocumentService::class)->documentSeo([
+            'seo' => $seoService->documentSeo([
                 'page_title' => $pageTitle,
+                'description' => $description !== '' ? $description : null,
+                'og_image' => $listingOgImage !== '' ? $listingOgImage : null,
                 'canonical' => route('property.index'),
             ]),
         ]);

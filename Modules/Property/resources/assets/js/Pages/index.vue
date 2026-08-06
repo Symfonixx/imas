@@ -146,6 +146,8 @@ const props = defineProps({
     areas: { type: Array, default: () => [] },
     recentProperties: { type: Array, default: () => [] },
     featuredProperties: { type: Array, default: () => [] },
+    seoDescription: { type: String, default: "" },
+    seoOgImage: { type: String, default: "" },
 });
 
 const page = usePage();
@@ -183,7 +185,24 @@ const {
     twitterCard,
 } = useDocumentSeo({
     pageTitle: () => props.title,
-    canonical: () => propertyIndexUrl.value,
+    description: () => props.seoDescription,
+    ogImage: () => {
+        if (props.seoOgImage) {
+            return props.seoOgImage;
+        }
+        const banner = media.value.property_show_banner;
+        return typeof banner === "string" ? banner : "";
+    },
+    canonical: () => {
+        if (typeof route === "function" && route().has?.("property.index")) {
+            try {
+                return route("property.index");
+            } catch {
+                /* fall through */
+            }
+        }
+        return propertyIndexUrl.value;
+    },
 });
 
 function trans(key) {

@@ -31,6 +31,7 @@ final class BlogCardSerializer
             'featured' => (bool) $blog->featured,
             'visits' => (int) $blog->visits,
             'created_at' => $blog->created_at?->toIso8601String(),
+            'updated_at' => $blog->updated_at?->toIso8601String(),
             'date' => $blog->created_at?->locale(app()->getLocale())->translatedFormat('d M Y') ?? '',
             'url' => LaravelLocalization::localizeUrl('/blog/'.$blog->slug),
             'category' => $blog->category

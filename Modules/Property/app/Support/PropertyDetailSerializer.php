@@ -65,6 +65,7 @@ final class PropertyDetailSerializer
                 'meta_keywords' => $metadata['meta_keywords'] ?? [],
                 'schema' => $metadata['schema'] ?? null,
                 'meta_img' => $metadata['meta_img'] ?? null,
+                'meta_img_url' => self::metaImageUrl($metadata, $resolver),
             ],
             'highlights' => ListingCardHighlightBuilder::forProperty($property),
             'attributes' => PropertyAttributeDisplaySerializer::forProperty($property),
@@ -72,6 +73,28 @@ final class PropertyDetailSerializer
             'created_at' => $property->created_at?->toIso8601String(),
             'updated_at' => $property->updated_at?->toIso8601String(),
         ];
+    }
+
+    /**
+     * Public URL for the admin SEO meta image (used as og:image / twitter:image).
+     *
+     * @param  array<string, mixed>  $metadata
+     */
+    private static function metaImageUrl(array $metadata, MediaAssetResolver $resolver): string
+    {
+        $path = is_string($metadata['meta_img'] ?? null) ? trim($metadata['meta_img']) : '';
+
+        if ($path === '') {
+            return '';
+        }
+
+        if (preg_match('#^https?://#i', $path)) {
+            return $path;
+        }
+
+        $url = $resolver->resolve($path)['url'] ?? asset('storage/'.ltrim($path, '/'));
+
+        return preg_match('#/(?:default\.jpg|blank\.png)(?:\?.*)?$#i', $url) ? '' : $url;
     }
 
     private static function startPrice(Property $property): float

@@ -5,6 +5,7 @@ namespace Modules\Base\Application\Seo;
 use Modules\Base\Models\Seo;
 use Modules\Base\Models\Settings;
 use Modules\Base\Support\Media\MediaAssetResolver;
+use Modules\Base\Support\Seo\JsonLd;
 
 /**
  * Resolves document-level SEO for the root Blade layout (View Page Source)
@@ -22,6 +23,7 @@ class SeoDocumentService
      *     canonical?: string|null,
      *     og_type?: string|null,
      *     robots?: string|null,
+     *     json_ld?: array<string, array<array-key, mixed>|string|null>,
      *     title_keys?: list<string>,
      *     description_keys?: list<string>,
      *     keywords_keys?: list<string>
@@ -33,7 +35,8 @@ class SeoDocumentService
      *     og_image: string,
      *     canonical: string,
      *     og_type: string,
-     *     robots: string
+     *     robots: string,
+     *     json_ld: array<string, string>
      * }
      */
     public function documentSeo(array $overrides = []): array
@@ -56,6 +59,7 @@ class SeoDocumentService
             'canonical' => $canonical,
             'og_type' => $ogType,
             'robots' => $robots,
+            'json_ld' => $this->resolveJsonLd($overrides),
         ];
     }
 
@@ -234,6 +238,38 @@ class SeoDocumentService
         }
 
         return $this->isDefaultPlaceholderImage($url) ? '' : $url;
+    }
+
+    /**
+     * Encoded JSON-LD blocks keyed by the Inertia head-key their Vue counterpart uses,
+     * so the client head replaces them instead of duplicating them.
+     *
+     * @param  array<string, mixed>  $overrides
+     * @return array<string, string>
+     */
+    private function resolveJsonLd(array $overrides): array
+    {
+        $blocks = $overrides['json_ld'] ?? null;
+
+        if (! is_array($blocks)) {
+            return [];
+        }
+
+        $resolved = [];
+
+        foreach ($blocks as $key => $block) {
+            if (! is_string($key) || $key === '') {
+                continue;
+            }
+
+            $json = is_string($block) ? JsonLd::encode(JsonLd::decode($block)) : JsonLd::encode($block);
+
+            if ($json !== '') {
+                $resolved[$key] = $json;
+            }
+        }
+
+        return $resolved;
     }
 
     /**

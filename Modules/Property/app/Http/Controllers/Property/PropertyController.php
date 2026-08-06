@@ -12,6 +12,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Modules\Base\Application\Seo\SeoDocumentService;
 use Modules\Base\lang;
+use Modules\Base\Support\Seo\JsonLd;
 use Modules\Property\Enums\LocationType;
 use Modules\Property\Models\Location;
 use Modules\Property\Models\Property;
@@ -21,6 +22,7 @@ use Modules\Property\Support\PropertyCardEagerLoads;
 use Modules\Property\Support\PropertyDetailEagerLoads;
 use Modules\Property\Support\PropertyDetailSerializer;
 use Modules\Property\Support\PropertyListingCardSerializer;
+use Modules\Property\Support\PropertySchemaBuilder;
 use Modules\Property\Support\PropertySearchBounds;
 use Modules\Property\Transformers\PropertyCardResource;
 use Modules\User\Enums\CmsStatus;
@@ -240,7 +242,10 @@ class PropertyController extends Controller
         }
 
         $metaKeywords = $metadata['meta_keywords'] ?? [];
-        $ogImage = is_string($payload['thumbnail_url'] ?? null) ? trim($payload['thumbnail_url']) : '';
+        $ogImage = is_string($metadata['meta_img_url'] ?? null) ? trim($metadata['meta_img_url']) : '';
+        if ($ogImage === '') {
+            $ogImage = is_string($payload['thumbnail_url'] ?? null) ? trim($payload['thumbnail_url']) : '';
+        }
         $canonical = '';
         try {
             $slug = $payload['url_key'] ?? $payload['slug'] ?? $payload['project_code'] ?? null;
@@ -264,8 +269,53 @@ class PropertyController extends Controller
                 'keywords' => $metaKeywords,
                 'og_image' => $ogImage,
                 'canonical' => $canonical,
+                'json_ld' => $this->showJsonLd($payload, $metadata, $canonical, $metaDescription, $seoService),
             ]),
         ]);
+    }
+
+    /**
+     * Structured data for the property show page. Keys match the `head-key` values
+     * in Modules/Property/resources/assets/js/Pages/show.vue.
+     *
+     * @param  array<string, mixed>  $payload
+     * @param  array<string, mixed>  $metadata
+     * @return array<string, array<array-key, mixed>|null>
+     */
+    private function showJsonLd(
+        array $payload,
+        array $metadata,
+        string $canonical,
+        string $metaDescription,
+        SeoDocumentService $seoService,
+    ): array {
+        $locale = app()->getLocale();
+
+        $crumbs = [];
+        try {
+            $crumbs[] = ['name' => $seoService->labelFromBaseLang('navBar.Home', 'Home'), 'url' => route('home')];
+            $crumbs[] = [
+                'name' => $seoService->labelFromBaseLang('navBar.Buy Real Estate', 'Buy Real Estate'),
+                'url' => route('property.index'),
+            ];
+        } catch (\Throwable) {
+            // Route names may be unavailable; breadcrumb degrades to the listing title only.
+        }
+        $crumbs[] = [
+            'name' => PropertySchemaBuilder::displayTitle($payload, $locale),
+            'url' => $canonical,
+        ];
+
+        return [
+            'jsonld-real-estate-listing' => PropertySchemaBuilder::realEstateListing(
+                $payload,
+                $canonical,
+                $metaDescription,
+                $locale,
+            ),
+            'jsonld-breadcrumb' => PropertySchemaBuilder::breadcrumb($crumbs),
+            'jsonld-custom' => JsonLd::decode($metadata['schema'] ?? null),
+        ];
     }
 
     /**

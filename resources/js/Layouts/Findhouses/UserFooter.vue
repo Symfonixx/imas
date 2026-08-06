@@ -44,7 +44,10 @@
                                             ><i class="fa fa-phone"></i
                                         ></span>
                                         <p class="in-p in-p--phone" dir="ltr">
-                                            <span v-if="phoneDisplay && phoneHref" class="in-p-link-wrap">
+                                            <span
+                                                v-if="phoneDisplay && phoneHref"
+                                                class="in-p-link-wrap"
+                                            >
                                                 <a
                                                     :href="phoneHref"
                                                     target="_blank"
@@ -53,9 +56,10 @@
                                                     {{ phoneDisplay }}
                                                 </a>
                                             </span>
-                                            <template v-else-if="phoneDisplay">{{
-                                                phoneDisplay
-                                            }}</template>
+                                            <template
+                                                v-else-if="phoneDisplay"
+                                                >{{ phoneDisplay }}</template
+                                            >
                                         </p>
                                     </div>
                                 </li>
@@ -72,7 +76,6 @@
                                         </p>
                                     </div>
                                 </li>
-                              
                             </ul>
                         </div>
                     </div>
@@ -214,16 +217,16 @@
                     {{ year }} © {{ appName }} —
                     {{ trans("navBar.All Rights Reserved") }}
                 </p>
-                <p class="imas-second-footer__developer">
-                    <span>{{ trans("Developed By Symfonix") }}</span>
-                    <a
-                        href="https://symfonix.io/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="imas-second-footer__developer-link"
-                        >{{ trans("Go to website") }}</a
-                    >
-                </p>
+
+                <a
+                    href="https://symfonix.io/en"
+                    target="_blank"
+                    class="text-decoration-none"
+                >
+                    <p class="imas-second-footer__developer">
+                        <span>{{ trans("Developed By Symfonix") }}</span>
+                    </p>
+                </a>
             </div>
         </div>
     </footer>

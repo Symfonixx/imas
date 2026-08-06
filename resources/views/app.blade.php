@@ -10,6 +10,7 @@
     $seoCanonical = $seo['canonical'] ?? '';
     $seoOgType = $seo['og_type'] ?? 'website';
     $seoRobots = $seo['robots'] ?? '';
+    $seoJsonLd = $seo['json_ld'] ?? [];
 @endphp
 <!DOCTYPE html>
 <html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
@@ -46,6 +47,19 @@
     @if ($seoRobots !== '')
         <meta inertia="robots" name="robots" content="{{ $seoRobots }}">
     @endif
+    <meta inertia="twitter:card" name="twitter:card" content="{{ $seoOgImage !== '' ? 'summary_large_image' : 'summary' }}">
+    <meta inertia="twitter:title" name="twitter:title" content="{{ $seoTitle }}">
+    @if ($seoDescription !== '')
+        <meta inertia="twitter:description" name="twitter:description" content="{{ $seoDescription }}">
+    @endif
+    @if ($seoOgImage !== '')
+        <meta inertia="twitter:image" name="twitter:image" content="{{ $seoOgImage }}">
+    @endif
+
+    {{-- Structured data. Values are encoded by SeoDocumentService with JSON_HEX_TAG|JSON_HEX_AMP. --}}
+    @foreach ($seoJsonLd as $seoJsonLdKey => $seoJsonLdBlock)
+        <script inertia="{{ $seoJsonLdKey }}" type="application/ld+json">{!! $seoJsonLdBlock !!}</script>
+    @endforeach
 
     {{-- Brand font (public/fonts/Avenir_LT_Std_55_Roman.otf) — asset() so URL works in dev + subfolder deploys --}}
     <link rel="preload" href="{{ asset('fonts/Avenir_LT_Std_55_Roman.otf') }}" as="font" type="font/otf" crossorigin="anonymous">

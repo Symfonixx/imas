@@ -604,6 +604,7 @@ const ogTitle = computed(() => documentTitle.value);
 const ogDescription = computed(() => metaDescription.value);
 const ogImage = computed(() => {
     const candidates = filterSchemaImages([
+        meta.value.meta_img_url,
         props.property.thumbnail_url,
         media.value.meta_img,
     ]);

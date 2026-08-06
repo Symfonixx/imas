@@ -386,7 +386,10 @@
         "inquiry_subject":"Inquiry about :title",
         "map_unavailable":"Location map is not available for this property.",
         "play_video":"Play Property Video",
-        "video_unavailable":"Video is not available."
+        "video_unavailable":"Video is not available.",
+        "yes":"Yes",
+        "no":"No",
+        "download":"Download"
     },
     "services":{
         "title":"Why choose us?",

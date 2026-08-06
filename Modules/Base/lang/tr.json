@@ -387,7 +387,10 @@
         "inquiry_subject":":title hakkında bilgi",
         "map_unavailable":"Bu mülk için konum haritası mevcut değil.",
         "play_video":"Mülk videosunu oynat",
-        "video_unavailable":"Video mevcut değil."
+        "video_unavailable":"Video mevcut değil.",
+        "yes":"Evet",
+        "no":"Hayır",
+        "download":"İndir"
     },
     "services":{
         "title":"Neden biz?",

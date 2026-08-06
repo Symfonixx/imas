@@ -30,6 +30,10 @@ final class PropertyDetailEagerLoads
                     'position',
                 ]),
             'slideMedia.slideCategory:id,name,slug,position,status',
+            'attributeGroups' => fn ($query) => $query->where('property_attribute_groups.is_active', true),
+            'attributeGroups.attributes' => fn ($query) => $query->where('property_attributes.is_active', true),
+            'attributeGroups.attributes.options',
+            'attributeValues',
             'similarProperties' => fn ($query) => $query->with(PropertyCardEagerLoads::relations()),
         ];
     }

@@ -17,8 +17,13 @@ class PropertyAttributeFactory extends Factory
     {
         return [
             'code' => fake()->unique()->slug(2),
-            'name' => ['en' => fake()->words(2, true)],
-            'help_text' => ['en' => fake()->optional()->sentence()],
+            'name' => [
+                'en' => fake()->words(2, true),
+                'ar' => fake('ar_SA')->words(2, true),
+                'tr' => fake()->words(2, true),
+            ],
+            'help_text' => null,
+            'image' => null,
             'type' => fake()->randomElement(AttributeType::cases()),
             'is_required' => false,
             'is_unique' => false,
@@ -27,5 +32,36 @@ class PropertyAttributeFactory extends Factory
             'regex' => null,
             'default_value' => null,
         ];
+    }
+
+    public function ofType(AttributeType $type): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'type' => $type,
+        ]);
+    }
+
+    public function withCode(string $code): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'code' => $code,
+        ]);
+    }
+
+    /**
+     * @param  array<string, string>  $translations
+     */
+    public function named(array $translations): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'name' => $translations,
+        ]);
+    }
+
+    public function withIcon(?string $path): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'image' => $path,
+        ]);
     }
 }

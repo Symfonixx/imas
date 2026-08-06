@@ -319,6 +319,15 @@
                             </div>
 
                             <div
+                                v-if="property.attributes?.length"
+                                data-imas-reveal
+                            >
+                                <PropertyShowAttributes
+                                    :attributes="property.attributes"
+                                />
+                            </div>
+
+                            <div
                                 v-for="(videoUrl, videoIndex) in propertyVideos"
                                 :key="`property-video-${videoIndex}-${videoUrl}`"
                                 data-imas-reveal
@@ -410,6 +419,7 @@ import PopularPropertiesSection from "../../../../../Base/resources/assets/js/co
 import PropertyShowGallery from "../components/PropertyShowGallery.vue";
 import PropertyShowVideo from "../components/PropertyShowVideo.vue";
 import PropertyShowUnitTypesTable from "../components/PropertyShowUnitTypesTable.vue";
+import PropertyShowAttributes from "../components/PropertyShowAttributes.vue";
 import PropertyShowMap from "../components/PropertyShowMap.vue";
 import PropertyShowContactSidebar from "../components/PropertyShowContactSidebar.vue";
 import FeaturedPropertiesSidebar from "../components/FeaturedPropertiesSidebar.vue";

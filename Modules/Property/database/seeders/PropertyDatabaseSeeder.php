@@ -13,6 +13,7 @@ class PropertyDatabaseSeeder extends Seeder
     {
         $this->call([
             PropertiesBulkSeeder::class,
+            PropertyAttributeDemoSeeder::class,
         ]);
     }
 }

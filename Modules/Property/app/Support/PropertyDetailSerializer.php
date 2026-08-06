@@ -67,6 +67,7 @@ final class PropertyDetailSerializer
                 'meta_img' => $metadata['meta_img'] ?? null,
             ],
             'highlights' => ListingCardHighlightBuilder::forProperty($property),
+            'attributes' => PropertyAttributeDisplaySerializer::forProperty($property),
             'is_favorited' => (bool) ($property->getAttribute('is_favorited') ?? false),
             'created_at' => $property->created_at?->toIso8601String(),
             'updated_at' => $property->updated_at?->toIso8601String(),

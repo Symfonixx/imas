@@ -377,7 +377,10 @@
         "inquiry_subject": "استفسار عن :title",
         "map_unavailable": "خريطة الموقع غير متوفرة لهذا العقار.",
         "play_video": "تشغيل فيديو العقار",
-        "video_unavailable": "الفيديو غير متوفر."
+        "video_unavailable": "الفيديو غير متوفر.",
+        "yes": "نعم",
+        "no": "لا",
+        "download": "تحميل"
     },
     "services": {
         "title": "لماذا نحن؟",

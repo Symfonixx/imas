@@ -1,1 +1,0 @@
-import{K as e,L as t,h as n}from"./app-DYw4aE8d.js";var r={};function i(n,r){return e(),t(`div`)}var a=n(r,[[`render`,i]]);export{a as default};

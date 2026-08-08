@@ -1235,21 +1235,21 @@ async function resolvePageComponent(path, pages) {
 function resolveInertiaPage(name) {
 	const modules = name.split("::");
 	if (modules.length > 1) return resolvePageComponent(`../../Modules/${modules[0]}/resources/assets/js/Pages/${modules[1]}.vue`, /* @__PURE__ */ Object.assign({
-		"../../Modules/Base/resources/assets/js/Pages/AboutUs.vue": () => import("./assets/AboutUs-CJeniljS.js"),
-		"../../Modules/Base/resources/assets/js/Pages/Index.vue": () => import("./assets/Index-V3q8HTMG.js"),
-		"../../Modules/Cms/resources/assets/js/Pages/Index.vue": () => import("./assets/Index-EOtL_nd_.js"),
-		"../../Modules/Cms/resources/assets/js/Pages/PageShow.vue": () => import("./assets/PageShow-mA4NPJdQ.js"),
-		"../../Modules/Cms/resources/assets/js/Pages/Show.vue": () => import("./assets/Show-CsT5J5Km.js"),
+		"../../Modules/Base/resources/assets/js/Pages/AboutUs.vue": () => import("./assets/AboutUs-BfsPimk2.js"),
+		"../../Modules/Base/resources/assets/js/Pages/Index.vue": () => import("./assets/Index-nI-iFQ9k.js"),
+		"../../Modules/Cms/resources/assets/js/Pages/Index.vue": () => import("./assets/Index-BYMirxkS.js"),
+		"../../Modules/Cms/resources/assets/js/Pages/PageShow.vue": () => import("./assets/PageShow-BB1cCgmh.js"),
+		"../../Modules/Cms/resources/assets/js/Pages/Show.vue": () => import("./assets/Show-D28qYINo.js"),
 		"../../Modules/Corporate/resources/assets/js/Pages/index.vue": () => import("./assets/Pages-DmYQ7aH7.js"),
-		"../../Modules/Property/resources/assets/js/Pages/FavoriteProperties.vue": () => import("./assets/FavoriteProperties-Cx6tDACA.js"),
-		"../../Modules/Property/resources/assets/js/Pages/TurkishCitizenship.vue": () => import("./assets/TurkishCitizenship-C15sleiE.js"),
-		"../../Modules/Property/resources/assets/js/Pages/index.vue": () => import("./assets/Pages-CcexM75f.js"),
-		"../../Modules/Property/resources/assets/js/Pages/show.vue": () => import("./assets/show-BEx6RI1m.js"),
-		"../../Modules/Support/resources/assets/js/Pages/ContactUs.vue": () => import("./assets/ContactUs-BP-cNMEB.js"),
-		"../../Modules/User/resources/assets/js/Pages/Auth/ForgotPassword.vue": () => import("./assets/ForgotPassword-DfzgkmSK.js"),
-		"../../Modules/User/resources/assets/js/Pages/Auth/Login.vue": () => import("./assets/Login-ChvPLFYb.js"),
-		"../../Modules/User/resources/assets/js/Pages/Auth/Register.vue": () => import("./assets/Register-CKX-X1GO.js"),
-		"../../Modules/User/resources/assets/js/Pages/Auth/ResetPassword.vue": () => import("./assets/ResetPassword-BJi93NXY.js")
+		"../../Modules/Property/resources/assets/js/Pages/FavoriteProperties.vue": () => import("./assets/FavoriteProperties-DH7LIYI7.js"),
+		"../../Modules/Property/resources/assets/js/Pages/TurkishCitizenship.vue": () => import("./assets/TurkishCitizenship-ybCbx3c7.js"),
+		"../../Modules/Property/resources/assets/js/Pages/index.vue": () => import("./assets/Pages-C5cU0pDQ.js"),
+		"../../Modules/Property/resources/assets/js/Pages/show.vue": () => import("./assets/show-D-AtN-op.js"),
+		"../../Modules/Support/resources/assets/js/Pages/ContactUs.vue": () => import("./assets/ContactUs-CZdCmFzw.js"),
+		"../../Modules/User/resources/assets/js/Pages/Auth/ForgotPassword.vue": () => import("./assets/ForgotPassword-Bw8g7MPT.js"),
+		"../../Modules/User/resources/assets/js/Pages/Auth/Login.vue": () => import("./assets/Login-fOB2C32W.js"),
+		"../../Modules/User/resources/assets/js/Pages/Auth/Register.vue": () => import("./assets/Register-BxjXFUs6.js"),
+		"../../Modules/User/resources/assets/js/Pages/Auth/ResetPassword.vue": () => import("./assets/ResetPassword-DM3Rpa6h.js")
 	}));
 	return resolvePageComponent(`./Pages/${name}.vue`, /* @__PURE__ */ Object.assign({}));
 }

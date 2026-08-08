@@ -127,6 +127,27 @@ html {
     font-size: var(--font-size-body) !important;
 }
 
+/* Strip UA border/focus chrome from icon/action buttons that use aria-label */
+button[aria-label] {
+    -webkit-appearance: none;
+    appearance: none;
+    border: none;
+}
+
+button[aria-label]::-moz-focus-inner {
+    border: 0;
+    padding: 0;
+}
+
+button[aria-label]:focus:not(:focus-visible) {
+    outline: none;
+}
+
+button[aria-label]:focus-visible {
+    outline: none;
+    box-shadow: var(--ring);
+}
+
 body,
 body button,
 body input,
@@ -1369,6 +1390,10 @@ html[dir="rtl"]
     margin: 0 !important;
     border: none !important;
     background: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+    -webkit-appearance: none;
+    appearance: none;
     cursor: pointer;
     font-size: 14px !important;
     font-weight: 500 !important;
@@ -1379,6 +1404,26 @@ html[dir="rtl"]
     letter-spacing: normal !important;
     white-space: nowrap;
     unicode-bidi: isolate;
+}
+
+#header.imas-nav__bar
+    .imas-nav__actions
+    .header-user-name.imas-nav__account-trigger:focus,
+#header.imas-nav__bar
+    .imas-nav__actions
+    .header-user-name.imas-nav__account-trigger:focus-visible,
+#header.imas-nav__bar
+    .imas-nav__actions
+    .header-user-name.imas-nav__account-trigger:active {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+#header.imas-nav__bar
+    .imas-nav__actions
+    .header-user-name.imas-nav__account-trigger:focus-visible {
+    box-shadow: var(--ring) !important;
 }
 
 /* LTR: avatar → greeting → caret */

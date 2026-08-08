@@ -1176,11 +1176,34 @@ onBeforeUnmount(() => {
     float: none !important;
     padding: 0 !important;
     margin: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+    -webkit-appearance: none;
+    appearance: none;
     font-size: 14px !important;
     font-weight: 500 !important;
     font-family: var(--font-body) !important;
     line-height: 1.4 !important;
     max-height: none;
+}
+
+:deep(.imas-nav__account-trigger.header-user-name:focus),
+:deep(.imas-nav__account-trigger.header-user-name:focus-visible),
+:deep(.imas-nav__account-trigger.header-user-name:active) {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+:deep(.imas-nav__account-trigger.header-user-name:focus-visible) {
+    box-shadow: var(--ring, 0 0 0 3px rgba(217, 168, 0, 0.35)) !important;
+}
+
+:deep(.imas-nav__account-trigger.header-user-name::-moz-focus-inner) {
+    border: 0;
+    padding: 0;
 }
 
 html[dir="rtl"] :deep(.imas-nav__account-trigger--rtl.header-user-name) {

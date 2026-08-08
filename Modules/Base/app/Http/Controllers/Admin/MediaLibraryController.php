@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Modules\Base\Models\Media;
 use Modules\Base\Models\MediaFolder;
 use Modules\Core\Traits\FileTrait;
@@ -95,67 +96,72 @@ class MediaLibraryController extends Controller
         $folders = MediaFolder::query()
             ->withCount(['media as media_count' => fn ($query) => $query->active()])
             ->orderBy('name')
-            ->get()
-            ->map(fn (MediaFolder $folder) => [
-                'id' => $folder->id,
-                'name' => $folder->name,
-                'media_count' => (int) $folder->media_count,
-            ]);
+            ->get();
 
-        return response()->json(['folders' => $folders]);
+        $serialized = collect(MediaFolder::sortTree($folders))
+            ->map(fn (MediaFolder $folder) => $this->serializeFolder($folder))
+            ->values();
+
+        return response()->json(['folders' => $serialized]);
     }
 
     public function storeFolder(Request $request): JsonResponse
     {
-        $request->merge(['name' => trim((string) $request->input('name'))]);
-
-        $payload = $request->validate([
-            'name' => ['required', 'string', 'max:120', 'unique:media_folders,name'],
+        $request->merge([
+            'name' => trim((string) $request->input('name')),
+            'parent_id' => $this->nullableParentId($request->input('parent_id')),
         ]);
 
+        $payload = $request->validate([
+            'name' => ['required', 'string', 'max:120'],
+            'parent_id' => ['nullable', 'integer', 'exists:media_folders,id'],
+        ]);
+
+        $parentId = $payload['parent_id'] ?? null;
+        $this->assertUniqueFolderName($payload['name'], $parentId);
+
         $folder = MediaFolder::query()->create([
-            'name' => trim($payload['name']),
+            'name' => $payload['name'],
             'slug' => $this->uniqueFolderSlug($payload['name']),
+            'parent_id' => $parentId,
             'user_id' => auth()->id(),
         ]);
 
         return response()->json([
             'message' => __('The Operation Done Successfully'),
-            'folder' => [
-                'id' => $folder->id,
-                'name' => $folder->name,
-                'media_count' => 0,
-            ],
+            'folder' => $this->serializeFolder($folder->fresh()),
         ], 201);
     }
 
     public function updateFolder(Request $request, MediaFolder $folder): JsonResponse
     {
-        $request->merge(['name' => trim((string) $request->input('name'))]);
+        $request->merge([
+            'name' => trim((string) $request->input('name')),
+            'parent_id' => $request->exists('parent_id')
+                ? $this->nullableParentId($request->input('parent_id'))
+                : $folder->parent_id,
+        ]);
 
         $payload = $request->validate([
-            'name' => [
-                'required',
-                'string',
-                'max:120',
-                Rule::unique('media_folders', 'name')->ignore($folder->id),
-            ],
+            'name' => ['required', 'string', 'max:120'],
+            'parent_id' => ['nullable', 'integer', 'exists:media_folders,id'],
         ]);
+
+        $parentId = array_key_exists('parent_id', $payload) ? ($payload['parent_id'] ?? null) : $folder->parent_id;
+        $this->assertParentNotCyclic($folder, $parentId);
+        $this->assertUniqueFolderName($payload['name'], $parentId, $folder->id);
 
         // Keep slug unchanged so on-disk paths under media-library/{id}-{slug} stay valid.
         $folder->update([
             'name' => $payload['name'],
+            'parent_id' => $parentId,
         ]);
 
         $folder->loadCount(['media as media_count' => fn ($query) => $query->active()]);
 
         return response()->json([
             'message' => __('The Operation Done Successfully'),
-            'folder' => [
-                'id' => $folder->id,
-                'name' => $folder->name,
-                'media_count' => (int) $folder->media_count,
-            ],
+            'folder' => $this->serializeFolder($folder),
         ]);
     }
 
@@ -282,18 +288,90 @@ class MediaLibraryController extends Controller
 
     public function destroyFolder(MediaFolder $folder): JsonResponse
     {
-        $folder->load('media');
+        $folderIds = array_merge([$folder->id], MediaFolder::descendantIdsOf($folder->id));
 
-        foreach ($folder->media as $media) {
+        $items = Media::query()->whereIn('folder_id', $folderIds)->get();
+        foreach ($items as $media) {
             $media->archive();
             $media->forceFill(['folder_id' => null])->save();
         }
 
-        $folder->delete();
+        MediaFolder::query()
+            ->whereIn('id', $folderIds)
+            ->orderByDesc('id')
+            ->get()
+            ->each(fn (MediaFolder $item) => $item->delete());
 
         return response()->json([
             'message' => __('The Operation Done Successfully'),
         ]);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function serializeFolder(MediaFolder $folder): array
+    {
+        if (! array_key_exists('media_count', $folder->getAttributes()) && ! isset($folder->media_count)) {
+            $folder->loadCount(['media as media_count' => fn ($query) => $query->active()]);
+        }
+
+        return [
+            'id' => $folder->id,
+            'name' => $folder->name,
+            'parent_id' => $folder->parent_id,
+            'media_count' => (int) ($folder->media_count ?? 0),
+        ];
+    }
+
+    private function nullableParentId(mixed $value): ?int
+    {
+        if ($value === null || $value === '' || $value === 'root') {
+            return null;
+        }
+
+        return (int) $value;
+    }
+
+    private function assertUniqueFolderName(string $name, ?int $parentId, ?int $ignoreId = null): void
+    {
+        $query = MediaFolder::query()
+            ->where('name', $name)
+            ->when(
+                $parentId === null,
+                fn ($builder) => $builder->whereNull('parent_id'),
+                fn ($builder) => $builder->where('parent_id', $parentId)
+            );
+
+        if ($ignoreId !== null) {
+            $query->where('id', '!=', $ignoreId);
+        }
+
+        if ($query->exists()) {
+            throw ValidationException::withMessages([
+                'name' => __('A folder with this name already exists in the selected parent.'),
+            ]);
+        }
+    }
+
+    private function assertParentNotCyclic(MediaFolder $folder, ?int $parentId): void
+    {
+        if ($parentId === null) {
+            return;
+        }
+
+        if ($parentId === $folder->id) {
+            throw ValidationException::withMessages([
+                'parent_id' => __('A folder cannot be its own parent.'),
+            ]);
+        }
+
+        $blocked = array_merge([$folder->id], MediaFolder::descendantIdsOf($folder->id));
+        if (in_array($parentId, $blocked, true)) {
+            throw ValidationException::withMessages([
+                'parent_id' => __('A folder cannot be moved into itself or one of its subfolders.'),
+            ]);
+        }
     }
 
     /**

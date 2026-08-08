@@ -85,7 +85,7 @@
                 :banner-image-url="listingsBannerUrl"
             />
 
-            <main class="imas-blog-v2__page">
+            <div class="imas-blog-v2__page">
                 <section class="imas-blog-v2__main">
                     <p
                         v-if="(properties.data ?? []).length > 0"
@@ -122,7 +122,7 @@
                         />
                     </div>
                 </aside>
-            </main>
+            </div>
         </div>
     </AppLayout>
 </template>

@@ -35,6 +35,7 @@ class StoreSettingsRequest extends FormRequest
             'data.address' => ['nullable', 'string', 'max:500'],
             'data.map' => ['nullable', 'string', 'max:10000'],
             'data.header_scripts' => ['nullable', 'string', 'max:20000'],
+            'data.body_scripts' => ['nullable', 'string', 'max:20000'],
             'data.footer_scripts' => ['nullable', 'string', 'max:20000'],
             'data.whatsapp' => ['nullable', 'string', 'max:255'],
             'data.facebook' => ['nullable', 'string', 'max:255'],
@@ -70,7 +71,7 @@ class StoreSettingsRequest extends FormRequest
             return;
         }
 
-        foreach (['header_scripts', 'footer_scripts', 'map'] as $key) {
+        foreach (['header_scripts', 'body_scripts', 'footer_scripts', 'map'] as $key) {
             if (! isset($data[$key]) || ! is_string($data[$key])) {
                 continue;
             }

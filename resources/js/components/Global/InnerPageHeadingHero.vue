@@ -23,13 +23,13 @@
             />
         </div>
         <div class="imas-inner-page-heading-hero__inner">
-            <h1
+            <component
+                :is="titleTag"
                 class="imas-inner-page-heading-hero__title"
                 :class="{
                     'imas-inner-page-heading-hero__title--connected':
                         titleUsesConnectedTitle,
                 }"
-                :aria-label="pageTitle"
             >
                 <span
                     v-if="titleUsesConnectedTitle"
@@ -45,7 +45,7 @@
                         >{{ ch === " " ? "\u00A0" : ch }}</span
                     >
                 </template>
-            </h1>
+            </component>
             <nav
                 v-if="items.length"
                 class="imas-inner-page-heading-hero__crumbs"
@@ -98,6 +98,15 @@ const props = defineProps({
     bannerVideoEmbed: { type: String, default: "" },
     /** Title casing for Latin letter-by-letter / compact hero (connected scripts stay unchanged). */
     capitalizeTitle: { type: Boolean, default: true },
+    /**
+     * Heading element for the banner title. Use "p" on detail pages that render
+     * their own content h1 so the document has a single H1.
+     */
+    titleTag: {
+        type: String,
+        default: "h1",
+        validator: (value) => ["h1", "p"].includes(value),
+    },
 });
 
 const page = usePage();

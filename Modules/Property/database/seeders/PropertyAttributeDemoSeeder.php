@@ -88,8 +88,8 @@ class PropertyAttributeDemoSeeder extends Seeder
                     ['group_id' => $group->id, 'position' => $attributePosition],
                 );
 
-                foreach ($attributeData['options'] ?? [] as $optionPosition => $labels) {
-                    $this->upsertOption($attribute, $labels, $optionPosition);
+                foreach ($attributeData['options'] ?? [] as $optionPosition => $optionData) {
+                    $this->upsertOption($attribute, $optionData, $optionPosition);
                 }
 
                 $attributes->push($attribute->load('options'));
@@ -151,10 +151,14 @@ class PropertyAttributeDemoSeeder extends Seeder
     }
 
     /**
-     * @param  array<string, string>  $labels
+     * @param  array<string, string>  $optionData  locale labels plus optional `icon`
      */
-    private function upsertOption(PropertyAttribute $attribute, array $labels, int $position): void
+    private function upsertOption(PropertyAttribute $attribute, array $optionData, int $position): void
     {
+        $icon = trim((string) ($optionData['icon'] ?? ''));
+        unset($optionData['icon']);
+        $labels = $optionData;
+
         $option = PropertyAttributeOption::query()
             ->where('attribute_id', $attribute->id)
             ->where('position', $position)
@@ -164,14 +168,18 @@ class PropertyAttributeDemoSeeder extends Seeder
             PropertyAttributeOption::factory()
                 ->forAttribute($attribute)
                 ->labelled($labels, $position)
-                ->create();
+                ->create([
+                    'icon' => $icon !== '' ? $icon : null,
+                ]);
 
             return;
         }
 
         $option->forceFill([
             'label' => $labels,
+            'icon' => $icon !== '' ? $icon : null,
             'is_active' => true,
+            'position' => $position,
         ])->save();
     }
 
@@ -427,12 +435,12 @@ class PropertyAttributeDemoSeeder extends Seeder
                         'type' => AttributeType::Select,
                         'name' => ['en' => 'Project Views', 'ar' => 'إطلالات المشروع', 'tr' => 'Proje Manzarası'],
                         'options' => [
-                            ['en' => 'Sea view', 'ar' => 'إطلالة بحرية', 'tr' => 'Deniz manzarası'],
-                            ['en' => 'City view', 'ar' => 'إطلالة على المدينة', 'tr' => 'Şehir manzarası'],
-                            ['en' => 'Forest view', 'ar' => 'إطلالة على الغابة', 'tr' => 'Orman manzarası'],
-                            ['en' => 'Bosphorus view', 'ar' => 'إطلالة على البوسفور', 'tr' => 'Boğaz manzarası'],
-                            ['en' => 'Garden view', 'ar' => 'إطلالة على الحديقة', 'tr' => 'Bahçe manzarası'],
-                            ['en' => 'Mountain view', 'ar' => 'إطلالة جبلية', 'tr' => 'Dağ manzarası'],
+                            ['en' => 'Sea view', 'ar' => 'إطلالة بحرية', 'tr' => 'Deniz manzarası', 'icon' => 'bi bi-water'],
+                            ['en' => 'City view', 'ar' => 'إطلالة على المدينة', 'tr' => 'Şehir manzarası', 'icon' => 'bi bi-building'],
+                            ['en' => 'Forest view', 'ar' => 'إطلالة على الغابة', 'tr' => 'Orman manzarası', 'icon' => 'bi bi-tree'],
+                            ['en' => 'Bosphorus view', 'ar' => 'إطلالة على البوسفور', 'tr' => 'Boğaz manzarası', 'icon' => 'bi bi-binoculars'],
+                            ['en' => 'Garden view', 'ar' => 'إطلالة على الحديقة', 'tr' => 'Bahçe manzarası', 'icon' => 'bi bi-flower1'],
+                            ['en' => 'Mountain view', 'ar' => 'إطلالة جبلية', 'tr' => 'Dağ manzarası', 'icon' => 'bi bi-brightness-high'],
                         ],
                     ],
                     [
@@ -445,11 +453,11 @@ class PropertyAttributeDemoSeeder extends Seeder
                         'type' => AttributeType::Radio,
                         'name' => ['en' => 'Completion Status', 'ar' => 'حالة الإنجاز', 'tr' => 'Tamamlanma Durumu'],
                         'options' => [
-                            ['en' => 'Ready to move', 'ar' => 'جاهز للسكن', 'tr' => 'Taşınmaya hazır'],
-                            ['en' => 'Under construction', 'ar' => 'قيد الإنشاء', 'tr' => 'İnşaat halinde'],
-                            ['en' => 'Off-plan', 'ar' => 'على الخارطة', 'tr' => 'Proje aşamasında'],
-                            ['en' => 'Delivered', 'ar' => 'تم التسليم', 'tr' => 'Teslim edildi'],
-                            ['en' => 'Under renovation', 'ar' => 'قيد التجديد', 'tr' => 'Yenileniyor'],
+                            ['en' => 'Ready to move', 'ar' => 'جاهز للسكن', 'tr' => 'Taşınmaya hazır', 'icon' => 'bi bi-check-circle'],
+                            ['en' => 'Under construction', 'ar' => 'قيد الإنشاء', 'tr' => 'İnşaat halinde', 'icon' => 'bi bi-cone-striped'],
+                            ['en' => 'Off-plan', 'ar' => 'على الخارطة', 'tr' => 'Proje aşamasında', 'icon' => 'bi bi-layout-split'],
+                            ['en' => 'Delivered', 'ar' => 'تم التسليم', 'tr' => 'Teslim edildi', 'icon' => 'bi bi-patch-check'],
+                            ['en' => 'Under renovation', 'ar' => 'قيد التجديد', 'tr' => 'Yenileniyor', 'icon' => 'bi bi-tools'],
                         ],
                     ],
                     [
@@ -494,12 +502,12 @@ class PropertyAttributeDemoSeeder extends Seeder
                         'type' => AttributeType::Multiselect,
                         'name' => ['en' => 'Nearby Landmarks', 'ar' => 'المعالم القريبة', 'tr' => 'Yakın Noktalar'],
                         'options' => [
-                            ['en' => 'Shopping mall', 'ar' => 'مركز تسوق', 'tr' => 'Alışveriş merkezi'],
-                            ['en' => 'University', 'ar' => 'جامعة', 'tr' => 'Üniversite'],
-                            ['en' => 'Hospital', 'ar' => 'مستشفى', 'tr' => 'Hastane'],
-                            ['en' => 'International school', 'ar' => 'مدرسة دولية', 'tr' => 'Uluslararası okul'],
-                            ['en' => 'City center', 'ar' => 'مركز المدينة', 'tr' => 'Şehir merkezi'],
-                            ['en' => 'Public park', 'ar' => 'حديقة عامة', 'tr' => 'Halk parkı'],
+                            ['en' => 'Shopping mall', 'ar' => 'مركز تسوق', 'tr' => 'Alışveriş merkezi', 'icon' => 'bi bi-cart'],
+                            ['en' => 'University', 'ar' => 'جامعة', 'tr' => 'Üniversite', 'icon' => 'bi bi-mortarboard'],
+                            ['en' => 'Hospital', 'ar' => 'مستشفى', 'tr' => 'Hastane', 'icon' => 'bi bi-hospital'],
+                            ['en' => 'International school', 'ar' => 'مدرسة دولية', 'tr' => 'Uluslararası okul', 'icon' => 'bi bi-journal-text'],
+                            ['en' => 'City center', 'ar' => 'مركز المدينة', 'tr' => 'Şehir merkezi', 'icon' => 'bi bi-geo-alt'],
+                            ['en' => 'Public park', 'ar' => 'حديقة عامة', 'tr' => 'Halk parkı', 'icon' => 'bi bi-tree-fill'],
                         ],
                     ],
                     [
@@ -522,12 +530,12 @@ class PropertyAttributeDemoSeeder extends Seeder
                         'type' => AttributeType::Checkbox,
                         'name' => ['en' => 'Transportation Options', 'ar' => 'وسائل النقل', 'tr' => 'Ulaşım Seçenekleri'],
                         'options' => [
-                            ['en' => 'Metro', 'ar' => 'مترو', 'tr' => 'Metro'],
-                            ['en' => 'Metrobus', 'ar' => 'مترو باص', 'tr' => 'Metrobüs'],
-                            ['en' => 'Tram', 'ar' => 'ترام', 'tr' => 'Tramvay'],
-                            ['en' => 'Bus', 'ar' => 'حافلة', 'tr' => 'Otobüs'],
-                            ['en' => 'Marmaray', 'ar' => 'مرمراي', 'tr' => 'Marmaray'],
-                            ['en' => 'Ferry', 'ar' => 'عبّارة', 'tr' => 'Vapur'],
+                            ['en' => 'Metro', 'ar' => 'مترو', 'tr' => 'Metro', 'icon' => 'bi bi-train-front'],
+                            ['en' => 'Metrobus', 'ar' => 'مترو باص', 'tr' => 'Metrobüs', 'icon' => 'bi bi-truck'],
+                            ['en' => 'Tram', 'ar' => 'ترام', 'tr' => 'Tramvay', 'icon' => 'bi bi-train-lightrail-front'],
+                            ['en' => 'Bus', 'ar' => 'حافلة', 'tr' => 'Otobüs', 'icon' => 'bi bi-car-front'],
+                            ['en' => 'Marmaray', 'ar' => 'مرمراي', 'tr' => 'Marmaray', 'icon' => 'bi bi-train-front-fill'],
+                            ['en' => 'Ferry', 'ar' => 'عبّارة', 'tr' => 'Vapur', 'icon' => 'bi bi-water'],
                         ],
                     ],
                     [
@@ -549,11 +557,11 @@ class PropertyAttributeDemoSeeder extends Seeder
                         'type' => AttributeType::Select,
                         'name' => ['en' => 'Parking Type', 'ar' => 'نوع الموقف', 'tr' => 'Otopark Tipi'],
                         'options' => [
-                            ['en' => 'Closed garage', 'ar' => 'كراج مغلق', 'tr' => 'Kapalı garaj'],
-                            ['en' => 'Open parking', 'ar' => 'موقف مكشوف', 'tr' => 'Açık otopark'],
-                            ['en' => 'Underground', 'ar' => 'تحت الأرض', 'tr' => 'Yeraltı'],
-                            ['en' => 'Private garage', 'ar' => 'كراج خاص', 'tr' => 'Özel garaj'],
-                            ['en' => 'Valet parking', 'ar' => 'خدمة صف السيارات', 'tr' => 'Vale hizmeti'],
+                            ['en' => 'Closed garage', 'ar' => 'كراج مغلق', 'tr' => 'Kapalı garaj', 'icon' => 'bi bi-p-circle'],
+                            ['en' => 'Open parking', 'ar' => 'موقف مكشوف', 'tr' => 'Açık otopark', 'icon' => 'bi bi-p-square-fill'],
+                            ['en' => 'Underground', 'ar' => 'تحت الأرض', 'tr' => 'Yeraltı', 'icon' => 'bi bi-layers'],
+                            ['en' => 'Private garage', 'ar' => 'كراج خاص', 'tr' => 'Özel garaj', 'icon' => 'bi bi-lock'],
+                            ['en' => 'Valet parking', 'ar' => 'خدمة صف السيارات', 'tr' => 'Vale hizmeti', 'icon' => 'bi bi-person-badge'],
                         ],
                     ],
                     [
@@ -571,14 +579,14 @@ class PropertyAttributeDemoSeeder extends Seeder
                         'type' => AttributeType::Checkbox,
                         'name' => ['en' => 'Facilities', 'ar' => 'المرافق', 'tr' => 'Olanaklar'],
                         'options' => [
-                            ['en' => 'Swimming pool', 'ar' => 'مسبح', 'tr' => 'Yüzme havuzu'],
-                            ['en' => 'Gym', 'ar' => 'صالة رياضية', 'tr' => 'Spor salonu'],
-                            ['en' => 'Sauna', 'ar' => 'ساونا', 'tr' => 'Sauna'],
-                            ['en' => 'Turkish bath', 'ar' => 'حمام تركي', 'tr' => 'Türk hamamı'],
-                            ['en' => 'Kids playground', 'ar' => 'منطقة ألعاب للأطفال', 'tr' => 'Çocuk oyun alanı'],
-                            ['en' => '24/7 security', 'ar' => 'أمن على مدار الساعة', 'tr' => '7/24 güvenlik'],
-                            ['en' => 'Green areas', 'ar' => 'مساحات خضراء', 'tr' => 'Yeşil alanlar'],
-                            ['en' => 'Cinema room', 'ar' => 'غرفة سينما', 'tr' => 'Sinema salonu'],
+                            ['en' => 'Swimming pool', 'ar' => 'مسبح', 'tr' => 'Yüzme havuzu', 'icon' => 'bi bi-droplet'],
+                            ['en' => 'Gym', 'ar' => 'صالة رياضية', 'tr' => 'Spor salonu', 'icon' => 'bi bi-heart'],
+                            ['en' => 'Sauna', 'ar' => 'ساونا', 'tr' => 'Sauna', 'icon' => 'bi bi-thermometer-sun'],
+                            ['en' => 'Turkish bath', 'ar' => 'حمام تركي', 'tr' => 'Türk hamamı', 'icon' => 'bi bi-moisture'],
+                            ['en' => 'Kids playground', 'ar' => 'منطقة ألعاب للأطفال', 'tr' => 'Çocuk oyun alanı', 'icon' => 'bi bi-people'],
+                            ['en' => '24/7 security', 'ar' => 'أمن على مدار الساعة', 'tr' => '7/24 güvenlik', 'icon' => 'bi bi-shield-check'],
+                            ['en' => 'Green areas', 'ar' => 'مساحات خضراء', 'tr' => 'Yeşil alanlar', 'icon' => 'bi bi-tree-fill'],
+                            ['en' => 'Cinema room', 'ar' => 'غرفة سينما', 'tr' => 'Sinema salonu', 'icon' => 'bi bi-film'],
                         ],
                     ],
                     [
@@ -619,16 +627,16 @@ class PropertyAttributeDemoSeeder extends Seeder
                             'tr' => 'Dairedeki Elektrikli Cihazlar',
                         ],
                         'options' => [
-                            ['en' => 'Smart system', 'ar' => 'نظام ذكي', 'tr' => 'Akıllı sistem'],
-                            ['en' => 'Heating system', 'ar' => 'نظام تدفئة', 'tr' => 'Isıtma sistemi'],
-                            ['en' => 'Air conditioning', 'ar' => 'تكييف هواء', 'tr' => 'Klima'],
-                            ['en' => 'Stove', 'ar' => 'موقد', 'tr' => 'Ocak'],
-                            ['en' => 'Oven', 'ar' => 'فرن', 'tr' => 'Fırın'],
-                            ['en' => 'Aspirator', 'ar' => 'شفاط', 'tr' => 'Aspiratör'],
-                            ['en' => 'Microwave', 'ar' => 'ميكروويف', 'tr' => 'Mikrodalga'],
-                            ['en' => 'Dishwasher', 'ar' => 'غسالة صحون', 'tr' => 'Bulaşık makinesi'],
-                            ['en' => 'Washing machine', 'ar' => 'غسالة ملابس', 'tr' => 'Çamaşır makinesi'],
-                            ['en' => 'Refrigerator', 'ar' => 'ثلاجة', 'tr' => 'Buzdolabı'],
+                            ['en' => 'Smart system', 'ar' => 'نظام ذكي', 'tr' => 'Akıllı sistem', 'icon' => 'bi bi-wifi'],
+                            ['en' => 'Heating system', 'ar' => 'نظام تدفئة', 'tr' => 'Isıtma sistemi', 'icon' => 'bi bi-thermometer-half'],
+                            ['en' => 'Air conditioning', 'ar' => 'تكييف هواء', 'tr' => 'Klima', 'icon' => 'bi bi-fan'],
+                            ['en' => 'Stove', 'ar' => 'موقد', 'tr' => 'Ocak', 'icon' => 'bi bi-fire'],
+                            ['en' => 'Oven', 'ar' => 'فرن', 'tr' => 'Fırın', 'icon' => 'bi bi-egg-fried'],
+                            ['en' => 'Aspirator', 'ar' => 'شفاط', 'tr' => 'Aspiratör', 'icon' => 'bi bi-wind'],
+                            ['en' => 'Microwave', 'ar' => 'ميكروويف', 'tr' => 'Mikrodalga', 'icon' => 'bi bi-lightning'],
+                            ['en' => 'Dishwasher', 'ar' => 'غسالة صحون', 'tr' => 'Bulaşık makinesi', 'icon' => 'bi bi-droplet-fill'],
+                            ['en' => 'Washing machine', 'ar' => 'غسالة ملابس', 'tr' => 'Çamaşır makinesi', 'icon' => 'bi bi-arrow-left-right'],
+                            ['en' => 'Refrigerator', 'ar' => 'ثلاجة', 'tr' => 'Buzdolabı', 'icon' => 'bi bi-snow'],
                         ],
                     ],
                     [
@@ -641,11 +649,11 @@ class PropertyAttributeDemoSeeder extends Seeder
                         'type' => AttributeType::Select,
                         'name' => ['en' => 'Flooring Type', 'ar' => 'نوع الأرضيات', 'tr' => 'Zemin Tipi'],
                         'options' => [
-                            ['en' => 'Ceramic', 'ar' => 'سيراميك', 'tr' => 'Seramik'],
-                            ['en' => 'Parquet', 'ar' => 'باركيه', 'tr' => 'Parke'],
-                            ['en' => 'Marble', 'ar' => 'رخام', 'tr' => 'Mermer'],
-                            ['en' => 'Laminate', 'ar' => 'لامينيت', 'tr' => 'Laminat'],
-                            ['en' => 'Porcelain', 'ar' => 'بورسلان', 'tr' => 'Porselen'],
+                            ['en' => 'Ceramic', 'ar' => 'سيراميك', 'tr' => 'Seramik', 'icon' => 'bi bi-grid-3x3-gap'],
+                            ['en' => 'Parquet', 'ar' => 'باركيه', 'tr' => 'Parke', 'icon' => 'bi bi-border-all'],
+                            ['en' => 'Marble', 'ar' => 'رخام', 'tr' => 'Mermer', 'icon' => 'bi bi-gem'],
+                            ['en' => 'Laminate', 'ar' => 'لامينيت', 'tr' => 'Laminat', 'icon' => 'bi bi-layers'],
+                            ['en' => 'Porcelain', 'ar' => 'بورسلان', 'tr' => 'Porselen', 'icon' => 'bi bi-square'],
                         ],
                     ],
                     [
@@ -662,11 +670,11 @@ class PropertyAttributeDemoSeeder extends Seeder
                         'type' => AttributeType::Radio,
                         'name' => ['en' => 'Kitchen Style', 'ar' => 'نمط المطبخ', 'tr' => 'Mutfak Tarzı'],
                         'options' => [
-                            ['en' => 'Open kitchen', 'ar' => 'مطبخ مفتوح', 'tr' => 'Açık mutfak'],
-                            ['en' => 'Closed kitchen', 'ar' => 'مطبخ مغلق', 'tr' => 'Kapalı mutfak'],
-                            ['en' => 'American kitchen', 'ar' => 'مطبخ أمريكي', 'tr' => 'Amerikan mutfak'],
-                            ['en' => 'Island kitchen', 'ar' => 'مطبخ بجزيرة', 'tr' => 'Adalı mutfak'],
-                            ['en' => 'Galley kitchen', 'ar' => 'مطبخ ممر', 'tr' => 'Koridor mutfak'],
+                            ['en' => 'Open kitchen', 'ar' => 'مطبخ مفتوح', 'tr' => 'Açık mutfak', 'icon' => 'bi bi-door-open'],
+                            ['en' => 'Closed kitchen', 'ar' => 'مطبخ مغلق', 'tr' => 'Kapalı mutfak', 'icon' => 'bi bi-door-closed'],
+                            ['en' => 'American kitchen', 'ar' => 'مطبخ أمريكي', 'tr' => 'Amerikan mutfak', 'icon' => 'bi bi-layout-three-columns'],
+                            ['en' => 'Island kitchen', 'ar' => 'مطبخ بجزيرة', 'tr' => 'Adalı mutfak', 'icon' => 'bi bi-bounding-box'],
+                            ['en' => 'Galley kitchen', 'ar' => 'مطبخ ممر', 'tr' => 'Koridor mutfak', 'icon' => 'bi bi-layout-split'],
                         ],
                     ],
                 ],

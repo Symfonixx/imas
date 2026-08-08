@@ -111,16 +111,13 @@
                                 class="lang-wrap"
                                 :class="{ 'lang-wrap--open': langMenuOpen }"
                             >
-                                <div
+                                <button
+                                    type="button"
                                     class="show-lang imas-nav__lang-trigger"
-                                    role="button"
-                                    tabindex="0"
                                     :aria-expanded="langMenuOpen"
                                     aria-haspopup="listbox"
                                     :aria-label="trans('Language')"
                                     @click.stop="toggleLangMenu"
-                                    @keydown.enter.prevent="toggleLangMenu"
-                                    @keydown.space.prevent="toggleLangMenu"
                                 >
                                     <span class="show-lang-trigger-inner">
                                         <span
@@ -136,7 +133,7 @@
                                         <!-- <strong>{{ localeBadge }}</strong> -->
                                     </span>
                                     <i class="fa fa-caret-down arrlan"></i>
-                                </div>
+                                </button>
                                 <ul
                                     class="lang-tooltip lang-action no-list-style"
                                     role="listbox"
@@ -206,19 +203,16 @@
                             :class="{ active: userMenuOpen }"
                         >
                             <template v-if="auth">
-                                <div
+                                <button
+                                    type="button"
                                     class="header-user-name imas-nav__account-trigger"
                                     :class="{
                                         'imas-nav__account-trigger--rtl': isRtl,
                                     }"
-                                    role="button"
-                                    tabindex="0"
                                     :aria-expanded="userMenuOpen"
                                     aria-haspopup="true"
                                     :aria-label="trans('Account menu')"
                                     @click.stop="toggleUserMenu"
-                                    @keydown.enter.prevent="toggleUserMenu"
-                                    @keydown.space.prevent="toggleUserMenu"
                                 >
                                     <span class="imas-nav__avatar">
                                         <img :src="auth.avatar" alt="" />
@@ -232,7 +226,7 @@
                                         class="fa fa-caret-down imas-nav__account-caret imas-nav__desktop-only"
                                         aria-hidden="true"
                                     ></i>
-                                </div>
+                                </button>
                                 <ul class="imas-user-menu-dropdown text-start">
                                     <li v-if="isAdmin">
                                         <Link
@@ -1122,6 +1116,19 @@ onBeforeUnmount(() => {
     font-family: var(--font-body) !important;
     line-height: 1.4 !important;
     border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+:deep(.imas-nav__lang-trigger.show-lang:focus),
+:deep(.imas-nav__lang-trigger.show-lang:focus-visible),
+:deep(.imas-nav__lang-trigger.show-lang:active) {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
 }
 
 :deep(.imas-nav__lang-trigger .show-lang span) {

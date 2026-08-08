@@ -22,9 +22,17 @@ class PropertyAttributeOptionFactory extends Factory
                 'ar' => fake('ar_SA')->words(2, true),
                 'tr' => fake()->words(2, true),
             ],
+            'icon' => null,
             'position' => fake()->numberBetween(0, 20),
             'is_active' => true,
         ];
+    }
+
+    public function withIcon(string $icon): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'icon' => $icon,
+        ]);
     }
 
     public function forAttribute(PropertyAttribute|int $attribute): static

@@ -19,6 +19,7 @@ class PropertyAttributeOption extends Model
     protected $fillable = [
         'attribute_id',
         'label',
+        'icon',
         'position',
         'is_active',
     ];

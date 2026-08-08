@@ -166,12 +166,12 @@
                         :alt="displayTitle(p)"
                         loading="lazy"
                     />
-                    <div>
+                    <div class="imas-blog-v2-sidebar__recent-body">
                         <div class="imas-blog-v2-sidebar__recent-title">
                             {{ displayTitle(p) }}
                         </div>
                         <div
-                            class="imas-blog-v2-sidebar__recent-date text-dim text-start"
+                            class="imas-blog-v2-sidebar__recent-date text-dim"
                         >
                             {{ formatMoney(propertyStartPrice(p)) }}
                         </div>

@@ -85,11 +85,12 @@
         <div class="imas-blog-v2 imas-blog-section-anchor">
             <InnerPageHeadingHero
                 :page-title="trans('blogs.blog_details')"
+                title-tag="p"
                 :items="blogHeadingItems"
                 :banner-image-url="blogShowBannerUrl"
             />
 
-            <main class="imas-blog-v2__page container">
+            <div class="imas-blog-v2__page container">
                 <section class="imas-blog-v2__main">
                     <article ref="articleTextRef" class="imas-blog-show">
                         <div v-if="blog.image" class="imas-blog-show__media">
@@ -155,7 +156,7 @@
                     :recent-blogs="recentBlogs"
                     :category-url="categoryIndexUrl"
                 />
-            </main>
+            </div>
         </div>
     </AppLayout>
 </template>

@@ -124,7 +124,7 @@ class PropertyAttributeApplicationService
     }
 
     /**
-     * @param  list<array{id?: int, label: string, is_active?: bool}>  $submitted
+     * @param  list<array{id?: int, label: string, icon?: ?string, is_active?: bool}>  $submitted
      */
     private function syncOptions(
         PropertyAttribute $attribute,
@@ -158,8 +158,11 @@ class PropertyAttributeApplicationService
                 }
             }
 
+            $icon = trim((string) ($row['icon'] ?? ''));
+
             $saved = $this->repository->saveOption($attribute, $option, [
                 'label' => $labels,
+                'icon' => $icon !== '' ? $icon : null,
                 'position' => $position,
                 'is_active' => (bool) ($row['is_active'] ?? false),
             ]);

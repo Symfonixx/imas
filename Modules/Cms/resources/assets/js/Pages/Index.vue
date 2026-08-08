@@ -76,7 +76,7 @@
                 :banner-image-url="blogShowBannerUrl"
             />
 
-            <main class="imas-blog-v2__page container">
+            <div class="imas-blog-v2__page container">
                 <section class="imas-blog-v2__main">
                     <div
                         v-if="blogs.data.length > 0"
@@ -111,7 +111,7 @@
                     :recent-blogs="recentBlogs"
                     :category-url="categoryIndexUrl"
                 />
-            </main>
+            </div>
         </div>
     </AppLayout>
 </template>

@@ -42,7 +42,6 @@
                         'imas-featured-properties-sidebar__slide--sold-out':
                             isSoldOut(p),
                     }"
-                    :aria-disabled="isSoldOut(p) ? 'true' : undefined"
                 >
                     <component
                         :is="isSoldOut(p) ? 'div' : 'a'"
@@ -52,6 +51,7 @@
                             'imas-featured-properties-sidebar__card--sold-out':
                                 isSoldOut(p),
                         }"
+                        :role="isSoldOut(p) ? 'group' : undefined"
                         :aria-label="
                             isSoldOut(p) ? soldOutCardLabel(p) : undefined
                         "

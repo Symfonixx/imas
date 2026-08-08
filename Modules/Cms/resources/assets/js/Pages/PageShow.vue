@@ -76,7 +76,7 @@
                 :banner-image-url="heroBannerUrl"
             />
 
-            <main class="imas-cms-page-show__page container">
+            <div class="imas-cms-page-show__page container">
                 <article class="imas-blog-show imas-cms-page-show">
                    
                     <div class="imas-blog-show__content">
@@ -86,7 +86,7 @@
                         />
                     </div>
                 </article>
-            </main>
+            </div>
         </div>
     </AppLayout>
 </template>

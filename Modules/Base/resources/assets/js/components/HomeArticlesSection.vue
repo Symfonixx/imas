@@ -41,21 +41,18 @@
                     <ul
                         v-if="isMobileCarousel && pageCount > 1"
                         class="slick-dots imas-articles-dots"
-                        role="tablist"
+                        role="group"
                         :aria-label="trans('articles.title')"
                     >
                         <li
                             v-for="i in pageCount"
                             :key="i - 1"
                             :class="{ 'slick-active': activePage === i - 1 }"
-                            role="presentation"
                         >
                             <button
                                 type="button"
                                 :aria-label="`Slide ${i}`"
-                                :aria-current="
-                                    activePage === i - 1 ? 'page' : undefined
-                                "
+                                :aria-pressed="activePage === i - 1"
                                 @click.prevent="goToPage(i - 1)"
                             ></button>
                         </li>
@@ -503,10 +500,10 @@ onBeforeUnmount(() => {
     position: relative;
     z-index: 2;
     display: block;
-    width: 15px;
-    height: 15px;
-    min-width: 15px;
-    min-height: 15px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
     box-sizing: border-box;
     outline: none !important;
 }

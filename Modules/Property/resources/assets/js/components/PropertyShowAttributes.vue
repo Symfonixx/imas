@@ -66,8 +66,16 @@
                             attribute.type === 'radio' ||
                             attribute.type === 'select'
                         "
-                        >{{ attribute.value.label }}</span
+                        class="imas-property-attributes__option"
                     >
+                        <i
+                            v-if="attribute.value.icon"
+                            :class="attribute.value.icon"
+                            class="imas-property-attributes__option-icon"
+                            aria-hidden="true"
+                        ></i>
+                        <span>{{ attribute.value.label }}</span>
+                    </span>
 
                     <ul
                         v-else-if="
@@ -81,7 +89,13 @@
                             :key="option.id"
                             class="imas-property-attributes__chip"
                         >
-                            {{ option.label }}
+                            <i
+                                v-if="option.icon"
+                                :class="option.icon"
+                                class="imas-property-attributes__option-icon"
+                                aria-hidden="true"
+                            ></i>
+                            <span>{{ option.label }}</span>
                         </li>
                     </ul>
 
@@ -266,12 +280,28 @@ function formatTemporal(value, options) {
 }
 
 .imas-property-attributes__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
     padding: 5px 10px;
     border-radius: 4px;
     background: var(--chip-bg);
     color: var(--brand-gold);
     font-size: var(--text-sm);
     font-weight: 500;
+}
+
+.imas-property-attributes__option {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.imas-property-attributes__option-icon {
+    flex: 0 0 auto;
+    font-size: 1.05em;
+    line-height: 1;
+    color: var(--brand-gold);
 }
 
 .imas-property-attributes__gallery {

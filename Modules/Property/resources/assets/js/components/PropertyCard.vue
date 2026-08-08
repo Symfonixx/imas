@@ -2,7 +2,6 @@
     <div
         class="imas-property-card imas-property-card--media-overlay item user-select-none"
         :class="[columnClass, { 'imas-property-card--sold-out': isSoldOut }]"
-        :aria-disabled="isSoldOut ? 'true' : undefined"
     >
         <div class="project-single imas-card__surface">
             <Link
@@ -13,10 +12,7 @@
             />
             <div class="project-inner project-head imas-card__media">
                 <div class="homes">
-                    <div
-                        class="homes-img"
-                        :aria-label="isSoldOut ? soldOutCardLabel : undefined"
-                    >
+                    <div class="homes-img">
                         <div
                             v-if="propertyTypeLabel || property.is_featured"
                             class="homes-tag button alt imas-badge--type"
@@ -24,8 +20,13 @@
                             <i
                                 v-if="property.is_featured"
                                 class="fa fa-star imas-featured-star"
-                                :aria-label="trans('properties.featured')"
+                                aria-hidden="true"
                             ></i>
+                            <span
+                                v-if="property.is_featured"
+                                class="visually-hidden"
+                                >{{ trans("properties.featured") }}</span
+                            >
                             <span v-if="propertyTypeLabel">{{
                                 propertyTypeLabel
                             }}</span>
@@ -189,10 +190,6 @@ const displayTitle = computed(() => {
               props.property.project_code ||
               "Property";
 });
-
-const soldOutCardLabel = computed(
-    () => `${displayTitle.value} – ${trans("properties.sold_out")}`,
-);
 
 const showUrl = computed(() => {
     if (

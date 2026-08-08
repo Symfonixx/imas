@@ -2,6 +2,7 @@
     <div
         v-if="unitTypes.length > 0"
         class="imas-unit-types-bar text-base pb-3"
+        role="group"
         :aria-label="trans('properties.unit_types_aria')"
     >
         <div class="imas-unit-types-bar__left">

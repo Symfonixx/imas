@@ -10,17 +10,14 @@
             <div class="main-overlay" tabindex="-1" @click="closeModal"></div>
             <div class="main-register-holder">
                 <div class="main-register fl-wrap">
-                    <div
+                    <button
+                        type="button"
                         class="close-reg"
-                        role="button"
-                        tabindex="0"
                         :aria-label="trans('auth_modal.close')"
                         @click="closeModal"
-                        @keydown.enter.prevent="closeModal"
-                        @keydown.space.prevent="closeModal"
                     >
                         <i class="fa fa-times" aria-hidden="true"></i>
-                    </div>
+                    </button>
                     <div class="app_logo" v-if="logoUrl">
                         <img
                             :src="logoUrl"
@@ -1374,12 +1371,17 @@ const logoUrl = computed(() => {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 2rem;
-    height: 2rem;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
     padding: 0;
+    border: none;
+    border-radius: 6px;
     line-height: 1;
     background: var(--brand-gold);
     color: var(--text-on-gold);
+    cursor: pointer;
 }
 
 .imas-auth-modal.login-and-register-form .close-reg:hover {

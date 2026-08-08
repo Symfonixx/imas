@@ -218,18 +218,41 @@ class PropertyController extends Controller
     {
         $parentId = $request->query('parent_id');
         $type = (string) $request->query('type');
+        $resolvedParentId = $parentId === null || $parentId === '' ? null : (int) $parentId;
 
-        $items = Location::query()
-            ->where('parent_id', $parentId === null || $parentId === '' ? null : (int) $parentId)
-            ->when($type !== '', fn ($query) => $query->where('type', $type))
-            ->orderBy('id')
-            ->get(['id', 'name', 'type']);
+        // Areas for a city: direct children of the city + children of its municipalities.
+        if (
+            $request->boolean('for_city')
+            && $resolvedParentId !== null
+            && $type === LocationType::Area->value
+        ) {
+            $municipalityIds = Location::query()
+                ->where('parent_id', $resolvedParentId)
+                ->where('type', LocationType::Municipality->value)
+                ->pluck('id');
+
+            $items = Location::query()
+                ->where('type', LocationType::Area->value)
+                ->where(function ($query) use ($resolvedParentId, $municipalityIds): void {
+                    $query->where('parent_id', $resolvedParentId)
+                        ->orWhereIn('parent_id', $municipalityIds);
+                })
+                ->orderBy('id')
+                ->get(['id', 'name', 'type', 'parent_id']);
+        } else {
+            $items = Location::query()
+                ->where('parent_id', $resolvedParentId)
+                ->when($type !== '', fn ($query) => $query->where('type', $type))
+                ->orderBy('id')
+                ->get(['id', 'name', 'type', 'parent_id']);
+        }
 
         return response()->json([
             'items' => $items->map(fn (Location $location): array => [
                 'id' => $location->id,
                 'name' => $this->translatedName($location->name),
                 'type' => $location->type instanceof LocationType ? $location->type->value : (string) $location->type,
+                'parent_id' => $location->parent_id,
             ])->values(),
         ]);
     }
@@ -365,10 +388,14 @@ class PropertyController extends Controller
 
         if ($location?->type === LocationType::Area && $location->parent) {
             $areaId ??= $location->id;
-            $districtId ??= $location->parent_id;
-            $cityId = $location->parent->type === LocationType::Municipality
-                ? $location->parent->parent_id
-                : ($location->parent->type === LocationType::City ? $location->parent->id : null);
+            if ($location->parent->type === LocationType::Municipality) {
+                $districtId ??= $location->parent_id;
+                $cityId = $location->parent->parent_id;
+            } elseif ($location->parent->type === LocationType::City) {
+                // Area can belong directly to a city (no municipality).
+                $districtId = $districtId !== null && $districtId !== '' ? $districtId : null;
+                $cityId = $location->parent->id;
+            }
         } elseif ($location?->type === LocationType::Municipality) {
             $districtId ??= $location->id;
             $cityId = $location->parent_id;
@@ -470,16 +497,30 @@ class PropertyController extends Controller
         ]);
 
         if (! empty($validated['area_id'])) {
-            if (empty($validated['district_id'])) {
+            $area = Location::query()
+                ->with(['parent:id,parent_id,type'])
+                ->find((int) $validated['area_id']);
+
+            if ($area === null || $area->type !== LocationType::Area) {
                 throw ValidationException::withMessages([
-                    'district_id' => __('The municipality field is required when area is selected.'),
+                    'area_id' => __('Invalid area selection.'),
                 ]);
             }
 
-            $area = Location::query()->find((int) $validated['area_id']);
-            if ($area === null || (int) $area->parent_id !== (int) $validated['district_id']) {
+            $areaParentType = $area->parent?->type instanceof LocationType
+                ? $area->parent->type->value
+                : (string) ($area->parent?->type ?? '');
+
+            if (! empty($validated['district_id'])) {
+                if ((int) $area->parent_id !== (int) $validated['district_id']) {
+                    throw ValidationException::withMessages([
+                        'area_id' => __('Invalid area selection.'),
+                    ]);
+                }
+            } elseif ($areaParentType !== LocationType::City->value) {
+                // Area without municipality is only valid when the area is a direct child of a city.
                 throw ValidationException::withMessages([
-                    'area_id' => __('Invalid area selection.'),
+                    'district_id' => __('The municipality field is required when area is selected.'),
                 ]);
             }
         }

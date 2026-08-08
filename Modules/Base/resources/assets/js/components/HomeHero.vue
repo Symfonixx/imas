@@ -46,7 +46,6 @@
                                     <template v-else>
                                         <h1
                                             class="h1 imas-hero-title"
-                                            :aria-label="heroTitle"
                                         >
                                             <component
                                                 :is="heroTitleTag"
@@ -101,7 +100,7 @@
                                 <div
                                     v-if="slides.length > 1"
                                     class="imas-hero-dots"
-                                    role="tablist"
+                                    role="group"
                                     aria-label="Slides"
                                 >
                                     <button
@@ -113,7 +112,8 @@
                                             'imas-hero-dot--active':
                                                 index === activeSlideIndex,
                                         }"
-                                        :aria-selected="
+                                        :aria-label="`Slide ${index + 1}`"
+                                        :aria-pressed="
                                             index === activeSlideIndex
                                         "
                                         @click="goToSlide(index)"
@@ -781,25 +781,39 @@ onBeforeUnmount(() => {
 
 .imas-hero-dots {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.25rem;
     justify-content: center;
     margin-top: 1rem;
 }
 
 .imas-hero-dot {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    border: none;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.imas-hero-dot::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    border: none;
-    background: rgba(255, 255, 255, 0.4);
-    padding: 0;
-    cursor: pointer;
+    background: rgba(255, 255, 255, 0.55);
+    transform: translate(-50%, -50%);
     transition:
         width 0.2s ease,
+        border-radius 0.2s ease,
         background 0.2s ease;
 }
 
-.imas-hero-dot--active {
+.imas-hero-dot--active::after {
     width: 24px;
     border-radius: 6px;
     background: var(--brand-gold, #d9a800);

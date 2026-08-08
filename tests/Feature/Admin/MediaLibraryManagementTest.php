@@ -128,6 +128,109 @@ class MediaLibraryManagementTest extends TestCase
         ]);
     }
 
+    public function test_admin_can_create_nested_subfolders_and_list_parent_ids(): void
+    {
+        $this->actingAs($this->admin());
+        $this->withoutMiddleware([
+            LaravelLocalizationRedirectFilter::class,
+            LocaleCookieRedirect::class,
+            LocaleSessionRedirect::class,
+        ]);
+
+        $parentResponse = $this->postJson(route('admin.media_library.folders.store'), [
+            'name' => 'Properties',
+        ]);
+        $parentResponse->assertCreated();
+        $parentId = (int) $parentResponse->json('folder.id');
+
+        $childResponse = $this->postJson(route('admin.media_library.folders.store'), [
+            'name' => 'Antalya',
+            'parent_id' => $parentId,
+        ]);
+        $childResponse
+            ->assertCreated()
+            ->assertJsonPath('folder.name', 'Antalya')
+            ->assertJsonPath('folder.parent_id', $parentId);
+
+        $this->getJson(route('admin.media_library.folders.index'))
+            ->assertOk()
+            ->assertJsonPath('folders.0.name', 'Properties')
+            ->assertJsonPath('folders.0.parent_id', null)
+            ->assertJsonPath('folders.1.name', 'Antalya')
+            ->assertJsonPath('folders.1.parent_id', $parentId);
+    }
+
+    public function test_admin_can_move_folder_under_another_parent_and_rejects_cycles(): void
+    {
+        $this->actingAs($this->admin());
+
+        $parent = MediaFolder::query()->create([
+            'name' => 'Parent',
+            'slug' => 'parent',
+            'user_id' => auth()->id(),
+        ]);
+        $child = MediaFolder::query()->create([
+            'name' => 'Child',
+            'slug' => 'child',
+            'parent_id' => $parent->id,
+            'user_id' => auth()->id(),
+        ]);
+        $other = MediaFolder::query()->create([
+            'name' => 'Other',
+            'slug' => 'other',
+            'user_id' => auth()->id(),
+        ]);
+
+        $this->patchJson(route('admin.media_library.folders.update', $parent), [
+            'name' => 'Parent',
+            'parent_id' => $child->id,
+        ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['parent_id']);
+
+        $this->patchJson(route('admin.media_library.folders.update', $child), [
+            'name' => 'Child',
+            'parent_id' => $other->id,
+        ])
+            ->assertOk()
+            ->assertJsonPath('folder.parent_id', $other->id);
+    }
+
+    public function test_deleting_a_folder_archives_nested_media_and_removes_subfolders(): void
+    {
+        Storage::fake('public');
+        $this->actingAs($this->admin());
+
+        $parent = MediaFolder::query()->create([
+            'name' => 'Old Campaign',
+            'slug' => 'old-campaign',
+            'user_id' => auth()->id(),
+        ]);
+        $child = MediaFolder::query()->create([
+            'name' => 'Nested',
+            'slug' => 'nested',
+            'parent_id' => $parent->id,
+            'user_id' => auth()->id(),
+        ]);
+        $media = Media::query()->create($this->mediaAttributes([
+            'folder_id' => $child->id,
+            'path' => 'media-library/nested/photo.jpg',
+        ]));
+        Storage::disk('public')->put($media->path, 'image');
+
+        $this->deleteJson(route('admin.media_library.folders.destroy', $parent))
+            ->assertOk();
+
+        $this->assertDatabaseMissing('media_folders', ['id' => $parent->id]);
+        $this->assertDatabaseMissing('media_folders', ['id' => $child->id]);
+        $this->assertDatabaseHas('media', [
+            'id' => $media->id,
+            'folder_id' => null,
+        ]);
+        $this->assertNotNull(Media::query()->find($media->id)?->archived_at);
+        Storage::disk('public')->assertExists($media->path);
+    }
+
     public function test_deleting_a_folder_archives_its_media_and_deletes_the_folder(): void
     {
         Storage::fake('public');

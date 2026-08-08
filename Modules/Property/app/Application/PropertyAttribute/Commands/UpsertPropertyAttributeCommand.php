@@ -6,7 +6,7 @@ class UpsertPropertyAttributeCommand
 {
     /**
      * @param  array<string, mixed>  $attributes
-     * @param  list<array{id?: int, label: string, is_active?: bool}>  $options
+     * @param  list<array{id?: int, label: string, icon?: ?string, is_active?: bool}>  $options
      */
     public function __construct(
         public readonly array $attributes,

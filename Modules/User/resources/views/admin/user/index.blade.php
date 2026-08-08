@@ -103,14 +103,9 @@
                     <a class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#edit_modal{{$user->id}}">
                         <i class="bi bi-pencil"></i>
                     </a>
-                    <div class="modal fade" tabindex="-1" id="edit_modal{{$user->id}}">
-                        @include('user::admin.user._edit_model' , $user)
-                    </div>
-
                     <a class="btn btn-sm btn-danger delete" data-id="{{ $user->id }}">
                         <i class="bi bi-trash"></i>
                     </a>
-
                 </td>
 
             </tr>
@@ -118,6 +113,13 @@
         </tbody>
         <!--end::Table body-->
     </x-admin.table>
+
+    {{-- Modals must live outside the DataTable; nesting them in <td> empties the body after DataTables init. --}}
+    @foreach($model as $user)
+        <div class="modal fade" tabindex="-1" id="edit_modal{{$user->id}}">
+            @include('user::admin.user._edit_model', ['user' => $user])
+        </div>
+    @endforeach
 </x-admin-layout>
 
 

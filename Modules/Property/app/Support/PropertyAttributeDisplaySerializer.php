@@ -171,7 +171,7 @@ final class PropertyAttributeDisplaySerializer
     }
 
     /**
-     * @return array{id: int, label: string}|null
+     * @return array{id: int, label: string, icon: ?string}|null
      */
     private static function option(PropertyAttribute $attribute, ?int $optionId): ?array
     {
@@ -184,7 +184,7 @@ final class PropertyAttributeDisplaySerializer
 
     /**
      * @param  array<int, mixed>  $optionIds
-     * @return list<array{id: int, label: string}>
+     * @return list<array{id: int, label: string, icon: ?string}>
      */
     private static function options(PropertyAttribute $attribute, array $optionIds): array
     {
@@ -200,10 +200,15 @@ final class PropertyAttributeDisplaySerializer
                 $selected,
                 true
             ))
-            ->map(static fn (PropertyAttributeOption $option): array => [
-                'id' => (int) $option->id,
-                'label' => (string) $option->label,
-            ])
+            ->map(static function (PropertyAttributeOption $option): array {
+                $icon = is_string($option->icon) ? trim($option->icon) : '';
+
+                return [
+                    'id' => (int) $option->id,
+                    'label' => (string) $option->label,
+                    'icon' => $icon !== '' ? $icon : null,
+                ];
+            })
             ->values()
             ->all();
     }

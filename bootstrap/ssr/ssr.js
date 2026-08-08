@@ -1052,13 +1052,14 @@ var _sfc_main$1 = {
 			if (__props.unitTypes.length > 0) {
 				_push(`<div${ssrRenderAttrs(mergeProps({
 					class: "imas-unit-types-bar text-base pb-3",
+					role: "group",
 					"aria-label": trans("properties.unit_types_aria")
-				}, _attrs))} data-v-20df4a12><div class="imas-unit-types-bar__left" data-v-20df4a12><i class="fa fa-building imas-unit-types-bar__icon" aria-hidden="true" data-v-20df4a12></i><div class="imas-unit-types-flip" aria-live="polite" data-v-20df4a12><div class="imas-unit-types-flip__slide" data-v-20df4a12><span class="imas-unit-types-flip__name" data-v-20df4a12>${ssrInterpolate(activeUnit.value.name)}</span>`);
-				if (activeUnit.value.area) _push(`<span class="imas-unit-types-flip__sep" aria-hidden="true" data-v-20df4a12>→</span>`);
+				}, _attrs))} data-v-6b93fea9><div class="imas-unit-types-bar__left" data-v-6b93fea9><i class="fa fa-building imas-unit-types-bar__icon" aria-hidden="true" data-v-6b93fea9></i><div class="imas-unit-types-flip" aria-live="polite" data-v-6b93fea9><div class="imas-unit-types-flip__slide" data-v-6b93fea9><span class="imas-unit-types-flip__name" data-v-6b93fea9>${ssrInterpolate(activeUnit.value.name)}</span>`);
+				if (activeUnit.value.area) _push(`<span class="imas-unit-types-flip__sep" aria-hidden="true" data-v-6b93fea9>→</span>`);
 				else _push(`<!---->`);
-				if (activeUnit.value.area) _push(`<span class="imas-unit-types-flip__area" dir="ltr" data-v-20df4a12>${ssrInterpolate(activeUnit.value.area)}</span>`);
+				if (activeUnit.value.area) _push(`<span class="imas-unit-types-flip__area" dir="ltr" data-v-6b93fea9>${ssrInterpolate(activeUnit.value.area)}</span>`);
 				else _push(`<!---->`);
-				_push(`</div></div></div><span class="imas-unit-types-bar__count" data-v-20df4a12><i class="fa fa-circle imas-unit-types-bar__dot" aria-hidden="true" data-v-20df4a12></i> ${ssrInterpolate(countLabel.value)}</span></div>`);
+				_push(`</div></div></div><span class="imas-unit-types-bar__count" data-v-6b93fea9><i class="fa fa-circle imas-unit-types-bar__dot" aria-hidden="true" data-v-6b93fea9></i> ${ssrInterpolate(countLabel.value)}</span></div>`);
 			} else _push(`<!---->`);
 		};
 	}
@@ -1069,7 +1070,7 @@ _sfc_main$1.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("Modules/Property/resources/assets/js/components/PropertyCardUnitTypesBar.vue");
 	return _sfc_setup$1 ? _sfc_setup$1(props, ctx) : void 0;
 };
-var PropertyCardUnitTypesBar_default = /* @__PURE__ */ _plugin_vue_export_helper_default(_sfc_main$1, [["__scopeId", "data-v-20df4a12"]]);
+var PropertyCardUnitTypesBar_default = /* @__PURE__ */ _plugin_vue_export_helper_default(_sfc_main$1, [["__scopeId", "data-v-6b93fea9"]]);
 //#endregion
 //#region Modules/Property/resources/assets/js/components/PropertyCard.vue
 var _sfc_main = {
@@ -1108,7 +1109,6 @@ var _sfc_main = {
 			const t = props.property.title;
 			return typeof t === "string" && t.trim() !== "" ? t : props.property.project_name || props.property.project_code || "Property";
 		});
-		const soldOutCardLabel = computed(() => `${displayTitle.value} – ${trans("properties.sold_out")}`);
 		const showUrl = computed(() => {
 			if (typeof props.property.url === "string" && props.property.url.trim() !== "") return props.property.url;
 			try {
@@ -1137,38 +1137,37 @@ var _sfc_main = {
 		const videoInvalidMessage = computed(() => trans("property_show.video_unavailable"));
 		const videoLightboxAria = computed(() => `${playVideoLabel.value} – ${displayTitle.value}`);
 		return (_ctx, _push, _parent, _attrs) => {
-			_push(`<div${ssrRenderAttrs(mergeProps({
-				class: ["imas-property-card imas-property-card--media-overlay item user-select-none", [__props.columnClass, { "imas-property-card--sold-out": isSoldOut.value }]],
-				"aria-disabled": isSoldOut.value ? "true" : void 0
-			}, _attrs))} data-v-86dd8d01><div class="project-single imas-card__surface" data-v-86dd8d01>`);
+			_push(`<div${ssrRenderAttrs(mergeProps({ class: ["imas-property-card imas-property-card--media-overlay item user-select-none", [__props.columnClass, { "imas-property-card--sold-out": isSoldOut.value }]] }, _attrs))} data-v-6b3d484b><div class="project-single imas-card__surface" data-v-6b3d484b>`);
 			if (!isSoldOut.value) _push(ssrRenderComponent(unref(Link), {
 				href: showUrl.value,
 				class: "imas-property-card__stretched-link",
 				"aria-label": displayTitle.value
 			}, null, _parent));
 			else _push(`<!---->`);
-			_push(`<div class="project-inner project-head imas-card__media" data-v-86dd8d01><div class="homes" data-v-86dd8d01><div class="homes-img"${ssrRenderAttr("aria-label", isSoldOut.value ? soldOutCardLabel.value : void 0)} data-v-86dd8d01>`);
+			_push(`<div class="project-inner project-head imas-card__media" data-v-6b3d484b><div class="homes" data-v-6b3d484b><div class="homes-img" data-v-6b3d484b>`);
 			if (propertyTypeLabel.value || __props.property.is_featured) {
-				_push(`<div class="homes-tag button alt imas-badge--type" data-v-86dd8d01>`);
-				if (__props.property.is_featured) _push(`<i class="fa fa-star imas-featured-star"${ssrRenderAttr("aria-label", trans("properties.featured"))} data-v-86dd8d01></i>`);
+				_push(`<div class="homes-tag button alt imas-badge--type" data-v-6b3d484b>`);
+				if (__props.property.is_featured) _push(`<i class="fa fa-star imas-featured-star" aria-hidden="true" data-v-6b3d484b></i>`);
 				else _push(`<!---->`);
-				if (propertyTypeLabel.value) _push(`<span data-v-86dd8d01>${ssrInterpolate(propertyTypeLabel.value)}</span>`);
+				if (__props.property.is_featured) _push(`<span class="visually-hidden" data-v-6b3d484b>${ssrInterpolate(trans("properties.featured"))}</span>`);
+				else _push(`<!---->`);
+				if (propertyTypeLabel.value) _push(`<span data-v-6b3d484b>${ssrInterpolate(propertyTypeLabel.value)}</span>`);
 				else _push(`<!---->`);
 				_push(`</div>`);
 			} else _push(`<!---->`);
-			if (__props.property.is_sold_out) _push(`<div class="homes-tag button alt imas-sold-out-badge imas-badge--danger" data-v-86dd8d01>${ssrInterpolate(trans("properties.sold_out"))}</div>`);
+			if (__props.property.is_sold_out) _push(`<div class="homes-tag button alt imas-sold-out-badge imas-badge--danger" data-v-6b3d484b>${ssrInterpolate(trans("properties.sold_out"))}</div>`);
 			else _push(`<!---->`);
-			_push(`<img${ssrRenderAttr("src", __props.property.thumbnail_url)}${ssrRenderAttr("alt", __props.property.thumbnail_alt || displayTitle.value)}${ssrRenderAttr("title", __props.property.thumbnail_title || void 0)} class="img-responsive" data-v-86dd8d01></div></div><div class="imas-card-actions" data-v-86dd8d01><div class="homes-price imas-start-price imas-chip" data-v-86dd8d01><span class="imas-start-price__from" data-v-86dd8d01>${ssrInterpolate(trans("properties.price_from"))}</span><span class="imas-start-price__amount" data-v-86dd8d01>${ssrInterpolate(priceAmount.value)}</span></div>`);
+			_push(`<img${ssrRenderAttr("src", __props.property.thumbnail_url)}${ssrRenderAttr("alt", __props.property.thumbnail_alt || displayTitle.value)}${ssrRenderAttr("title", __props.property.thumbnail_title || void 0)} class="img-responsive" data-v-6b3d484b></div></div><div class="imas-card-actions" data-v-6b3d484b><div class="homes-price imas-start-price imas-chip" data-v-6b3d484b><span class="imas-start-price__from" data-v-6b3d484b>${ssrInterpolate(trans("properties.price_from"))}</span><span class="imas-start-price__amount" data-v-6b3d484b>${ssrInterpolate(priceAmount.value)}</span></div>`);
 			if (!isSoldOut.value) {
-				_push(`<div class="button-effect" data-v-86dd8d01>`);
-				if (__props.property.youtube_video_url) _push(`<button type="button" class="btn imas-card-video-btn"${ssrRenderAttr("aria-label", playVideoLabel.value)} data-v-86dd8d01><i class="fas fa-video" aria-hidden="true" data-v-86dd8d01></i></button>`);
+				_push(`<div class="button-effect" data-v-6b3d484b>`);
+				if (__props.property.youtube_video_url) _push(`<button type="button" class="btn imas-card-video-btn"${ssrRenderAttr("aria-label", playVideoLabel.value)} data-v-6b3d484b><i class="fas fa-video" aria-hidden="true" data-v-6b3d484b></i></button>`);
 				else _push(`<!---->`);
-				_push(`<button type="button" class="${ssrRenderClass([{ "is-favorited": localFavorited.value }, "btn imas-favorite-btn"])}"${ssrRenderAttr("aria-label", favoriteAriaLabel.value)}${ssrRenderAttr("aria-pressed", localFavorited.value)} data-v-86dd8d01><i class="${ssrRenderClass([localFavorited.value ? "fa-heart" : "fa-heart-o", "fa favorite-icon"])}" aria-hidden="true" data-v-86dd8d01></i></button></div>`);
+				_push(`<button type="button" class="${ssrRenderClass([{ "is-favorited": localFavorited.value }, "btn imas-favorite-btn"])}"${ssrRenderAttr("aria-label", favoriteAriaLabel.value)}${ssrRenderAttr("aria-pressed", localFavorited.value)} data-v-6b3d484b><i class="${ssrRenderClass([localFavorited.value ? "fa-heart" : "fa-heart-o", "fa favorite-icon"])}" aria-hidden="true" data-v-6b3d484b></i></button></div>`);
 			} else _push(`<!---->`);
-			_push(`</div></div><div class="homes-content imas-card__body" data-v-86dd8d01><h3 class="imas-property-title imas-card__title" data-v-86dd8d01><span class="imas-card__title-text" data-v-86dd8d01>${ssrInterpolate(displayTitle.value)}</span></h3>`);
-			if (overviewText.value) _push(`<p class="imas-property-overview imas-card__excerpt text-card-excerpt mb-3" data-v-86dd8d01>${ssrInterpolate(overviewText.value)}</p>`);
+			_push(`</div></div><div class="homes-content imas-card__body" data-v-6b3d484b><h3 class="imas-property-title imas-card__title" data-v-6b3d484b><span class="imas-card__title-text" data-v-6b3d484b>${ssrInterpolate(displayTitle.value)}</span></h3>`);
+			if (overviewText.value) _push(`<p class="imas-property-overview imas-card__excerpt text-card-excerpt mb-3" data-v-6b3d484b>${ssrInterpolate(overviewText.value)}</p>`);
 			else _push(`<!---->`);
-			_push(`<p class="homes-address imas-card__meta text-base mb-3" data-v-86dd8d01><span class="imas-card__address-line" data-v-86dd8d01><i class="fa fa-map-marker imas-address-marker" aria-hidden="true" data-v-86dd8d01></i><span data-v-86dd8d01>${ssrInterpolate(addressLine.value)}</span></span></p>`);
+			_push(`<p class="homes-address imas-card__meta text-base mb-3" data-v-6b3d484b><span class="imas-card__address-line" data-v-6b3d484b><i class="fa fa-map-marker imas-address-marker" aria-hidden="true" data-v-6b3d484b></i><span data-v-6b3d484b>${ssrInterpolate(addressLine.value)}</span></span></p>`);
 			_push(ssrRenderComponent(PropertyCardUnitTypesBar_default, { "unit-types": __props.property.unit_types ?? [] }, null, _parent));
 			_push(`</div></div>`);
 			if (__props.property.youtube_video_url && !isSoldOut.value) _push(ssrRenderComponent(VideoLightbox_default, {
@@ -1189,7 +1188,7 @@ _sfc_main.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("Modules/Property/resources/assets/js/components/PropertyCard.vue");
 	return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
 };
-var PropertyCard_default = /* @__PURE__ */ _plugin_vue_export_helper_default(_sfc_main, [["__scopeId", "data-v-86dd8d01"]]);
+var PropertyCard_default = /* @__PURE__ */ _plugin_vue_export_helper_default(_sfc_main, [["__scopeId", "data-v-6b3d484b"]]);
 //#endregion
 //#region resources/js/configureImasVueApp.js
 /**
@@ -1236,21 +1235,21 @@ async function resolvePageComponent(path, pages) {
 function resolveInertiaPage(name) {
 	const modules = name.split("::");
 	if (modules.length > 1) return resolvePageComponent(`../../Modules/${modules[0]}/resources/assets/js/Pages/${modules[1]}.vue`, /* @__PURE__ */ Object.assign({
-		"../../Modules/Base/resources/assets/js/Pages/AboutUs.vue": () => import("./assets/AboutUs-CLbWaS9P.js"),
-		"../../Modules/Base/resources/assets/js/Pages/Index.vue": () => import("./assets/Index-CmiIKYsT.js"),
-		"../../Modules/Cms/resources/assets/js/Pages/Index.vue": () => import("./assets/Index-DXK8sbp5.js"),
-		"../../Modules/Cms/resources/assets/js/Pages/PageShow.vue": () => import("./assets/PageShow-Cm9AC2oo.js"),
-		"../../Modules/Cms/resources/assets/js/Pages/Show.vue": () => import("./assets/Show-Bcp-yOTP.js"),
+		"../../Modules/Base/resources/assets/js/Pages/AboutUs.vue": () => import("./assets/AboutUs-CJeniljS.js"),
+		"../../Modules/Base/resources/assets/js/Pages/Index.vue": () => import("./assets/Index-V3q8HTMG.js"),
+		"../../Modules/Cms/resources/assets/js/Pages/Index.vue": () => import("./assets/Index-EOtL_nd_.js"),
+		"../../Modules/Cms/resources/assets/js/Pages/PageShow.vue": () => import("./assets/PageShow-mA4NPJdQ.js"),
+		"../../Modules/Cms/resources/assets/js/Pages/Show.vue": () => import("./assets/Show-CsT5J5Km.js"),
 		"../../Modules/Corporate/resources/assets/js/Pages/index.vue": () => import("./assets/Pages-DmYQ7aH7.js"),
-		"../../Modules/Property/resources/assets/js/Pages/FavoriteProperties.vue": () => import("./assets/FavoriteProperties-DUOabJEs.js"),
-		"../../Modules/Property/resources/assets/js/Pages/TurkishCitizenship.vue": () => import("./assets/TurkishCitizenship-B8-0ROMz.js"),
-		"../../Modules/Property/resources/assets/js/Pages/index.vue": () => import("./assets/Pages-iqS3jmWF.js"),
-		"../../Modules/Property/resources/assets/js/Pages/show.vue": () => import("./assets/show-aGQpgb4x.js"),
-		"../../Modules/Support/resources/assets/js/Pages/ContactUs.vue": () => import("./assets/ContactUs-DY1hjsoZ.js"),
-		"../../Modules/User/resources/assets/js/Pages/Auth/ForgotPassword.vue": () => import("./assets/ForgotPassword-DH9mIdvy.js"),
-		"../../Modules/User/resources/assets/js/Pages/Auth/Login.vue": () => import("./assets/Login-CzqNEw_p.js"),
-		"../../Modules/User/resources/assets/js/Pages/Auth/Register.vue": () => import("./assets/Register-DfM8W2bT.js"),
-		"../../Modules/User/resources/assets/js/Pages/Auth/ResetPassword.vue": () => import("./assets/ResetPassword-BFGI4vIV.js")
+		"../../Modules/Property/resources/assets/js/Pages/FavoriteProperties.vue": () => import("./assets/FavoriteProperties-Cx6tDACA.js"),
+		"../../Modules/Property/resources/assets/js/Pages/TurkishCitizenship.vue": () => import("./assets/TurkishCitizenship-C15sleiE.js"),
+		"../../Modules/Property/resources/assets/js/Pages/index.vue": () => import("./assets/Pages-CcexM75f.js"),
+		"../../Modules/Property/resources/assets/js/Pages/show.vue": () => import("./assets/show-BEx6RI1m.js"),
+		"../../Modules/Support/resources/assets/js/Pages/ContactUs.vue": () => import("./assets/ContactUs-BP-cNMEB.js"),
+		"../../Modules/User/resources/assets/js/Pages/Auth/ForgotPassword.vue": () => import("./assets/ForgotPassword-DfzgkmSK.js"),
+		"../../Modules/User/resources/assets/js/Pages/Auth/Login.vue": () => import("./assets/Login-ChvPLFYb.js"),
+		"../../Modules/User/resources/assets/js/Pages/Auth/Register.vue": () => import("./assets/Register-CKX-X1GO.js"),
+		"../../Modules/User/resources/assets/js/Pages/Auth/ResetPassword.vue": () => import("./assets/ResetPassword-BJi93NXY.js")
 	}));
 	return resolvePageComponent(`./Pages/${name}.vue`, /* @__PURE__ */ Object.assign({}));
 }

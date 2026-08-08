@@ -48,8 +48,8 @@ class PropertyAttributeManagementTest extends TestCase
             'is_required' => '1',
             'is_active' => '1',
             'options' => [
-                ['label' => 'Gas', 'is_active' => '1'],
-                ['label' => 'Electric', 'is_active' => '1'],
+                ['label' => 'Gas', 'icon' => 'bi bi-fire', 'is_active' => '1'],
+                ['label' => 'Electric', 'icon' => 'bi bi-lightning', 'is_active' => '1'],
             ],
         ])->assertRedirect(route('admin.property_attributes.index'));
 
@@ -60,6 +60,7 @@ class PropertyAttributeManagementTest extends TestCase
         $this->assertSame(['Gas', 'Electric'], $attribute->options->map(
             fn ($option) => $option->getTranslation('label', app()->getLocale())
         )->all());
+        $this->assertSame(['bi bi-fire', 'bi bi-lightning'], $attribute->options->pluck('icon')->all());
         $this->assertSame([0, 1], $attribute->options->pluck('position')->all());
     }
 

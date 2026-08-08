@@ -54,22 +54,34 @@
                     files: @json(__('Files')),
                     saveDetails: @json(__('Save details')),
                     rename: @json(__('Rename')),
-                    renameFolder: @json(__('Rename folder')),
+                    renameFolder: @json(__('Edit folder')),
                     renamePrompt: @json(__('Enter a new name')),
                     openFolder: @json(__('Open folder')),
                     itemsCount: @json(__(':count items')),
                     deleteLabel: @json(__('Delete')),
                     trashConfirm: @json(__('Move to trash / remove from library?')),
-                    deleteFolderConfirm: @json(__('Delete this folder and every image inside it?')),
+                    deleteFolderConfirm: @json(__('Delete this folder, its subfolders, and every image inside them?')),
                     unableSave: @json(__('Unable to save image details.')),
                     unableCreateFolder: @json(__('Unable to create folder.')),
-                    unableRenameFolder: @json(__('Unable to rename folder.')),
+                    unableRenameFolder: @json(__('Unable to save folder.')),
                     unableDeleteFolder: @json(__('Unable to delete folder.')),
                     uploadFailed: @json(__('Upload failed.')),
                     copied: @json(__('Copied')),
                     prev: @json(__('Prev')),
                     next: @json(__('Next')),
                     parentFolder: @json(__('Parent folder')),
+                    newFolder: @json(__('New folder')),
+                    editFolder: @json(__('Edit folder')),
+                    folderName: @json(__('Folder name')),
+                    expand: @json(__('Expand')),
+                    collapse: @json(__('Collapse')),
+                };
+
+                var folderModalState = {
+                    instanceId: null,
+                    mode: 'edit',
+                    folderId: null,
+                    bound: false,
                 };
 
                 function csrf() {
@@ -127,6 +139,7 @@
                         items: [],
                         folders: [],
                         folderId: 'root',
+                        expandedFolderIds: {},
                         selectedId: null,
                         selectedIds: [],
                         targetInput: null,
@@ -150,23 +163,97 @@
                         return state.mode === 'picker' || state.mode === 'picker-multi';
                     }
 
+                    function findFolder(folderId) {
+                        var idNum = parseInt(folderId, 10);
+                        if (!idNum) return null;
+                        return state.folders.find(function (item) {
+                            return item.id === idNum;
+                        }) || null;
+                    }
+
                     function currentFolderName() {
                         if (state.folderId === 'root') return i18n.root;
-                        var folder = state.folders.find(function (item) {
-                            return item.id === parseInt(state.folderId, 10);
-                        });
+                        var folder = findFolder(state.folderId);
                         return folder ? folder.name : i18n.root;
                     }
 
-                    function directoryFolders() {
-                        if (state.folderId !== 'root') {
-                            return [];
-                        }
-                        var q = (state.search || '').trim().toLowerCase();
+                    function currentParentId() {
+                        if (state.folderId === 'root') return null;
+                        return parseInt(state.folderId, 10) || null;
+                    }
+
+                    function folderParentKey(folder) {
+                        return folder.parent_id == null ? null : parseInt(folder.parent_id, 10);
+                    }
+
+                    function childFoldersOf(parentId) {
+                        var parentKey = parentId == null || parentId === 'root' ? null : parseInt(parentId, 10);
                         return state.folders.filter(function (folder) {
+                            return folderParentKey(folder) === parentKey;
+                        });
+                    }
+
+                    function folderDepth(folder) {
+                        var depth = 0;
+                        var pid = folderParentKey(folder);
+                        var guard = 0;
+                        while (pid != null && guard < 50) {
+                            depth++;
+                            var parent = findFolder(pid);
+                            pid = parent ? folderParentKey(parent) : null;
+                            guard++;
+                        }
+                        return depth;
+                    }
+
+                    function folderAncestorIds(folderId) {
+                        var ids = [];
+                        var folder = findFolder(folderId);
+                        var guard = 0;
+                        while (folder && folder.parent_id != null && guard < 50) {
+                            ids.push(parseInt(folder.parent_id, 10));
+                            folder = findFolder(folder.parent_id);
+                            guard++;
+                        }
+                        return ids;
+                    }
+
+                    function ensureExpandedPath(folderId) {
+                        folderAncestorIds(folderId).forEach(function (ancestorId) {
+                            state.expandedFolderIds[ancestorId] = true;
+                        });
+                        if (folderId && folderId !== 'root') {
+                            state.expandedFolderIds[parseInt(folderId, 10)] = true;
+                        }
+                    }
+
+                    function directoryFolders() {
+                        var parentId = state.folderId === 'root' ? null : parseInt(state.folderId, 10);
+                        var q = (state.search || '').trim().toLowerCase();
+                        return childFoldersOf(parentId).filter(function (folder) {
                             if (!q) return true;
                             return String(folder.name || '').toLowerCase().indexOf(q) !== -1;
                         });
+                    }
+
+                    function parentDirectoryId() {
+                        if (state.folderId === 'root') return 'root';
+                        var folder = findFolder(state.folderId);
+                        if (!folder || folder.parent_id == null) return 'root';
+                        return String(folder.parent_id);
+                    }
+
+                    function breadcrumbTrail() {
+                        if (state.folderId === 'root') return [];
+                        var trail = [];
+                        var folder = findFolder(state.folderId);
+                        var guard = 0;
+                        while (folder && guard < 50) {
+                            trail.unshift(folder);
+                            folder = folder.parent_id != null ? findFolder(folder.parent_id) : null;
+                            guard++;
+                        }
+                        return trail;
                     }
 
                     function itemsCountLabel(count) {
@@ -186,6 +273,9 @@
 
                     function openDirectory(folderId) {
                         state.folderId = String(folderId);
+                        if (folderId !== 'root') {
+                            ensureExpandedPath(folderId);
+                        }
                         resetSelection();
                         renderFolders();
                         renderBreadcrumb();
@@ -196,6 +286,7 @@
                         var el = $('[data-ml-breadcrumb]');
                         if (!el) return;
 
+                        var trail = breadcrumbTrail();
                         var html = '<nav class="imas-ml-breadcrumb" aria-label="breadcrumb">' +
                             '<ol class="breadcrumb mb-0">' +
                             '<li class="breadcrumb-item">' +
@@ -203,11 +294,19 @@
                             '<i class="bi bi-house-door me-1"></i>' + escapeHtml(i18n.root) +
                             '</button></li>';
 
-                        if (state.folderId !== 'root') {
-                            html += '<li class="breadcrumb-item active" aria-current="page">' +
-                                '<i class="bi bi-folder2 me-1"></i>' + escapeHtml(currentFolderName()) +
-                                '</li>';
-                        }
+                        trail.forEach(function (folder, index) {
+                            var isLast = index === trail.length - 1;
+                            if (isLast) {
+                                html += '<li class="breadcrumb-item active" aria-current="page">' +
+                                    '<i class="bi bi-folder2 me-1"></i>' + escapeHtml(folder.name) +
+                                    '</li>';
+                            } else {
+                                html += '<li class="breadcrumb-item">' +
+                                    '<button type="button" class="btn btn-link p-0 align-baseline" data-ml-folder="' + folder.id + '">' +
+                                    '<i class="bi bi-folder2 me-1"></i>' + escapeHtml(folder.name) +
+                                    '</button></li>';
+                            }
+                        });
 
                         html += '</ol></nav>';
                         el.innerHTML = html;
@@ -263,24 +362,47 @@
                         var el = $('[data-ml-folders]');
                         if (!el) return;
 
+                        if (state.folderId !== 'root') {
+                            ensureExpandedPath(state.folderId);
+                        }
+
                         var rootActive = state.folderId === 'root' ? 'active' : '';
                         var html = '<button type="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center ' + rootActive + '" data-ml-folder="root">' +
                             '<span><i class="bi bi-folder2-open me-2"></i>' + escapeHtml(i18n.root) + '</span>' +
                             '</button>';
 
-                        html += state.folders.map(function (folder) {
-                            var active = parseInt(state.folderId, 10) === folder.id ? 'active' : '';
-                            return '<div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center gap-2 ' + active + '" data-ml-folder-row="' + folder.id + '">' +
-                                '<button type="button" class="btn btn-link text-start text-dark text-decoration-none p-0 flex-grow-1 text-truncate" data-ml-folder="' + folder.id + '">' +
-                                '<i class="bi bi-folder me-2"></i>' + escapeHtml(folder.name) +
-                                '</button>' +
-                                '<span class="badge badge-light-primary">' + folder.media_count + '</span>' +
-                                '<button type="button" class="btn btn-icon btn-sm btn-light" data-ml-rename-folder="' + folder.id + '" title="' + escapeAttribute(i18n.renameFolder) + '">' +
-                                '<i class="bi bi-pencil"></i>' +
-                                '</button>' +
-                                '</div>';
-                        }).join('');
+                        function appendTree(parentId, depth) {
+                            childFoldersOf(parentId).forEach(function (folder) {
+                                var children = childFoldersOf(folder.id);
+                                var hasChildren = children.length > 0;
+                                var expanded = !!state.expandedFolderIds[folder.id];
+                                var active = parseInt(state.folderId, 10) === folder.id ? 'active' : '';
+                                var pad = Math.max(0, depth) * 14;
 
+                                html += '<div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center gap-1 imas-ml-folder-row ' + active + '" data-ml-folder-row="' + folder.id + '">' +
+                                    '<div class="d-flex align-items-center flex-grow-1 min-w-0" style="padding-inline-start:' + pad + 'px">' +
+                                    (hasChildren
+                                        ? '<button type="button" class="btn btn-icon btn-sm btn-light imas-ml-folder-toggle" data-ml-toggle-folder="' + folder.id + '" title="' + escapeAttribute(expanded ? i18n.collapse : i18n.expand) + '">' +
+                                          '<i class="bi ' + (expanded ? 'bi-caret-down-fill' : 'bi-caret-right-fill') + '"></i>' +
+                                          '</button>'
+                                        : '<span class="imas-ml-folder-toggle-spacer"></span>') +
+                                    '<button type="button" class="btn btn-link text-start text-dark text-decoration-none p-0 flex-grow-1 text-truncate" data-ml-folder="' + folder.id + '">' +
+                                    '<i class="bi bi-folder' + (hasChildren && expanded ? '2-open' : '') + ' me-2"></i>' + escapeHtml(folder.name) +
+                                    '</button>' +
+                                    '</div>' +
+                                    '<span class="badge badge-light-primary">' + folder.media_count + '</span>' +
+                                    '<button type="button" class="btn btn-icon btn-sm btn-light" data-ml-rename-folder="' + folder.id + '" title="' + escapeAttribute(i18n.renameFolder) + '">' +
+                                    '<i class="bi bi-pencil"></i>' +
+                                    '</button>' +
+                                    '</div>';
+
+                                if (hasChildren && expanded) {
+                                    appendTree(folder.id, depth + 1);
+                                }
+                            });
+                        }
+
+                        appendTree(null, 0);
                         el.innerHTML = html;
 
                         var current = $('[data-ml-current-folder]');
@@ -401,7 +523,7 @@
                                 '    </thead>' +
                                 '    <tbody>' +
                                 (state.folderId !== 'root'
-                                    ? '<tr class="imas-ml-list__folder" data-ml-folder="root" style="cursor:pointer">' +
+                                    ? '<tr class="imas-ml-list__folder" data-ml-folder="' + escapeAttribute(parentDirectoryId()) + '" style="cursor:pointer">' +
                                       '  <td></td><td class="text-center"><span class="imas-ml-list__folder-icon"><i class="bi bi-arrow-up-left"></i></span></td>' +
                                       '  <td class="fw-semibold">..</td>' +
                                       '  <td class="text-muted">' + escapeHtml(i18n.parentFolder) + '</td>' +
@@ -418,7 +540,7 @@
                             var gridHtml = '';
                             if (state.folderId !== 'root') {
                                 gridHtml += '' +
-                                    '<div class="imas-ml-grid__item imas-ml-grid__item--folder imas-ml-grid__item--up" data-ml-folder="root" title="' + escapeAttribute(i18n.parentFolder) + '">' +
+                                    '<div class="imas-ml-grid__item imas-ml-grid__item--folder imas-ml-grid__item--up" data-ml-folder="' + escapeAttribute(parentDirectoryId()) + '" title="' + escapeAttribute(i18n.parentFolder) + '">' +
                                     '  <div class="imas-ml-grid__thumb imas-ml-grid__thumb--folder">' +
                                     '    <i class="bi bi-arrow-up-left"></i>' +
                                     '  </div>' +
@@ -455,13 +577,21 @@
                             '<button type="button" class="btn btn-sm btn-light ' + nextDisabled + '" data-ml-page="' + (state.meta.current_page + 1) + '">' + escapeHtml(i18n.next) + '</button>';
                     }
 
-                    function folderOptionsHtml(selectedFolderId) {
-                        var options = '<option value="">' + escapeHtml(i18n.root) + '</option>';
-                        options += state.folders.map(function (folder) {
+                    function folderOptionsHtml(selectedFolderId, options) {
+                        options = options || {};
+                        var excludeIds = options.excludeIds || [];
+                        var rootSelected = selectedFolderId == null || selectedFolderId === '' ? ' selected' : '';
+                        var html = '<option value=""' + rootSelected + '>' + escapeHtml(i18n.root) + '</option>';
+                        state.folders.forEach(function (folder) {
+                            if (excludeIds.indexOf(folder.id) !== -1) return;
+                            var depth = folderDepth(folder);
+                            var prefix = depth > 0 ? Array(depth + 1).join('— ') : '';
                             var selected = selectedFolderId === folder.id ? ' selected' : '';
-                            return '<option value="' + folder.id + '"' + selected + '>' + escapeHtml(folder.name) + '</option>';
-                        }).join('');
-                        return options;
+                            html += '<option value="' + folder.id + '"' + selected + '>' +
+                                escapeHtml(prefix + folder.name) +
+                                '</option>';
+                        });
+                        return html;
                     }
 
                     function renderDetails(item) {
@@ -780,6 +910,7 @@
                         var name = input ? input.value.trim() : '';
                         if (!name) return;
 
+                        var parentId = currentParentId();
                         fetch(routes.storeFolder, {
                             method: 'POST',
                             headers: {
@@ -787,51 +918,15 @@
                                 'X-CSRF-TOKEN': csrf(),
                                 'X-Requested-With': 'XMLHttpRequest',
                             },
-                            body: JSON.stringify({name: name}),
+                            body: JSON.stringify({
+                                name: name,
+                                parent_id: parentId,
+                            }),
                         })
                             .then(function (res) {
                                 if (!res.ok) {
                                     return res.json().then(function (data) {
-                                        throw new Error(data.message || i18n.unableCreateFolder);
-                                    });
-                                }
-                                return res.json();
-                            })
-                            .then(function (data) {
-                                if (input) input.value = '';
-                                state.folderId = String(data.folder.id);
-                                resetSelection();
-                                return reload();
-                            })
-                            .catch(function (error) {
-                                alert(error.message);
-                            });
-                    }
-
-                    function renameFolderById(folderId) {
-                        var folder = state.folders.find(function (item) {
-                            return item.id === parseInt(folderId, 10);
-                        });
-                        if (!folder) return;
-
-                        var nextName = window.prompt(i18n.renamePrompt, folder.name || '');
-                        if (nextName === null) return;
-                        nextName = String(nextName).trim();
-                        if (!nextName || nextName === folder.name) return;
-
-                        fetch(routes.updateFolder.replace('__id__', folder.id), {
-                            method: 'PATCH',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': csrf(),
-                                'X-Requested-With': 'XMLHttpRequest',
-                            },
-                            body: JSON.stringify({name: nextName}),
-                        })
-                            .then(function (res) {
-                                if (!res.ok) {
-                                    return res.json().then(function (data) {
-                                        var message = data.message || i18n.unableRenameFolder;
+                                        var message = data.message || i18n.unableCreateFolder;
                                         if (data.errors && data.errors.name && data.errors.name[0]) {
                                             message = data.errors.name[0];
                                         }
@@ -841,18 +936,220 @@
                                 return res.json();
                             })
                             .then(function (data) {
-                                var index = state.folders.findIndex(function (item) {
-                                    return item.id === folder.id;
-                                });
-                                if (index !== -1) {
-                                    state.folders[index].name = data.folder.name;
+                                if (input) input.value = '';
+                                if (parentId) {
+                                    state.expandedFolderIds[parentId] = true;
                                 }
-                                renderFolders();
-                                renderItems(state.items);
+                                state.folderId = String(data.folder.id);
+                                resetSelection();
+                                return reload();
                             })
                             .catch(function (error) {
                                 alert(error.message);
                             });
+                    }
+
+                    function openFolderEditor(folderId) {
+                        var folder = findFolder(folderId);
+                        if (!folder) return;
+
+                        var modal = document.getElementById('kt_modal_media_folder');
+                        if (!modal) {
+                            // Fallback if modal markup is missing.
+                            renameFolderByIdPrompt(folder);
+                            return;
+                        }
+
+                        bindFolderModalOnce();
+                        folderModalState.instanceId = state.id;
+                        folderModalState.mode = 'edit';
+                        folderModalState.folderId = folder.id;
+
+                        var title = modal.querySelector('[data-ml-folder-modal-title]');
+                        var nameInput = modal.querySelector('[data-ml-folder-modal-name]');
+                        var parentSelect = modal.querySelector('[data-ml-folder-modal-parent]');
+                        var nameError = modal.querySelector('[data-ml-folder-modal-name-error]');
+                        var parentError = modal.querySelector('[data-ml-folder-modal-parent-error]');
+
+                        if (title) title.textContent = i18n.editFolder;
+                        if (nameInput) {
+                            nameInput.value = folder.name || '';
+                            nameInput.classList.remove('is-invalid');
+                        }
+                        if (nameError) nameError.textContent = '';
+                        if (parentError) parentError.textContent = '';
+
+                        var blocked = [folder.id].concat(
+                            state.folders
+                                .filter(function (item) {
+                                    return folderAncestorIds(item.id).indexOf(folder.id) !== -1;
+                                })
+                                .map(function (item) { return item.id; })
+                        );
+
+                        if (parentSelect) {
+                            parentSelect.innerHTML = folderOptionsHtml(
+                                folder.parent_id == null ? null : folder.parent_id,
+                                {excludeIds: blocked}
+                            );
+                        }
+
+                        var bsModal = window.bootstrap && window.bootstrap.Modal
+                            ? window.bootstrap.Modal.getOrCreateInstance(modal)
+                            : null;
+                        if (bsModal) {
+                            bsModal.show();
+                        } else if (window.jQuery) {
+                            window.jQuery(modal).modal('show');
+                        }
+                    }
+
+                    function renameFolderByIdPrompt(folder) {
+                        var nextName = window.prompt(i18n.renamePrompt, folder.name || '');
+                        if (nextName === null) return;
+                        nextName = String(nextName).trim();
+                        if (!nextName || nextName === folder.name) return;
+                        submitFolderUpdate(folder.id, {
+                            name: nextName,
+                            parent_id: folder.parent_id,
+                        });
+                    }
+
+                    function submitFolderUpdate(folderId, payload) {
+                        return fetch(routes.updateFolder.replace('__id__', folderId), {
+                            method: 'PATCH',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrf(),
+                                'X-Requested-With': 'XMLHttpRequest',
+                            },
+                            body: JSON.stringify(payload),
+                        })
+                            .then(function (res) {
+                                if (!res.ok) {
+                                    return res.json().then(function (data) {
+                                        var message = data.message || i18n.unableRenameFolder;
+                                        if (data.errors) {
+                                            if (data.errors.name && data.errors.name[0]) message = data.errors.name[0];
+                                            else if (data.errors.parent_id && data.errors.parent_id[0]) message = data.errors.parent_id[0];
+                                        }
+                                        var err = new Error(message);
+                                        err.payload = data;
+                                        throw err;
+                                    });
+                                }
+                                return res.json();
+                            })
+                            .then(function (data) {
+                                var index = state.folders.findIndex(function (item) {
+                                    return item.id === folderId;
+                                });
+                                if (index !== -1) {
+                                    state.folders[index].name = data.folder.name;
+                                    state.folders[index].parent_id = data.folder.parent_id;
+                                    state.folders[index].media_count = data.folder.media_count;
+                                }
+                                if (data.folder.parent_id) {
+                                    state.expandedFolderIds[data.folder.parent_id] = true;
+                                }
+                                return loadFolders().then(function () {
+                                    renderFolders();
+                                    renderItems(state.items);
+                                    return data;
+                                });
+                            });
+                    }
+
+                    function renameFolderById(folderId) {
+                        openFolderEditor(folderId);
+                    }
+
+                    function setFolderModalSubmitting(isSubmitting) {
+                        var modal = document.getElementById('kt_modal_media_folder');
+                        if (!modal) return;
+                        var submitBtn = modal.querySelector('[data-ml-folder-modal-action="submit"]');
+                        if (!submitBtn) return;
+                        if (isSubmitting) {
+                            submitBtn.setAttribute('data-kt-indicator', 'on');
+                            submitBtn.disabled = true;
+                        } else {
+                            submitBtn.removeAttribute('data-kt-indicator');
+                            submitBtn.disabled = false;
+                        }
+                    }
+
+                    function hideFolderModal() {
+                        var modal = document.getElementById('kt_modal_media_folder');
+                        if (!modal) return;
+                        var bsModal = window.bootstrap && window.bootstrap.Modal
+                            ? window.bootstrap.Modal.getInstance(modal)
+                            : null;
+                        if (bsModal) {
+                            bsModal.hide();
+                        } else if (window.jQuery) {
+                            window.jQuery(modal).modal('hide');
+                        }
+                    }
+
+                    function bindFolderModalOnce() {
+                        if (folderModalState.bound) return;
+                        var modal = document.getElementById('kt_modal_media_folder');
+                        var form = document.getElementById('kt_modal_media_folder_form');
+                        if (!modal || !form) return;
+                        folderModalState.bound = true;
+
+                        modal.querySelectorAll('[data-ml-folder-modal-action="close"], [data-ml-folder-modal-action="cancel"]').forEach(function (btn) {
+                            btn.addEventListener('click', function (event) {
+                                event.preventDefault();
+                                hideFolderModal();
+                            });
+                        });
+
+                        form.addEventListener('submit', function (event) {
+                            event.preventDefault();
+                            var owner = instances[folderModalState.instanceId];
+                            if (!owner || typeof owner.submitFolderUpdate !== 'function' || folderModalState.mode !== 'edit' || !folderModalState.folderId) {
+                                hideFolderModal();
+                                return;
+                            }
+
+                            var nameInput = modal.querySelector('[data-ml-folder-modal-name]');
+                            var parentSelect = modal.querySelector('[data-ml-folder-modal-parent]');
+                            var nameError = modal.querySelector('[data-ml-folder-modal-name-error]');
+                            var parentError = modal.querySelector('[data-ml-folder-modal-parent-error]');
+                            var name = nameInput ? nameInput.value.trim() : '';
+                            var parentValue = parentSelect ? parentSelect.value : '';
+
+                            if (nameError) nameError.textContent = '';
+                            if (parentError) parentError.textContent = '';
+                            if (nameInput) nameInput.classList.remove('is-invalid');
+
+                            if (!name) {
+                                if (nameInput) nameInput.classList.add('is-invalid');
+                                if (nameError) nameError.textContent = i18n.folderName;
+                                return;
+                            }
+
+                            setFolderModalSubmitting(true);
+                            owner.submitFolderUpdate(folderModalState.folderId, {
+                                name: name,
+                                parent_id: parentValue === '' ? null : parseInt(parentValue, 10),
+                            }).then(function () {
+                                hideFolderModal();
+                            }).catch(function (error) {
+                                var data = error.payload || {};
+                                if (data.errors && data.errors.name && data.errors.name[0]) {
+                                    if (nameInput) nameInput.classList.add('is-invalid');
+                                    if (nameError) nameError.textContent = data.errors.name[0];
+                                } else if (data.errors && data.errors.parent_id && data.errors.parent_id[0]) {
+                                    if (parentError) parentError.textContent = data.errors.parent_id[0];
+                                } else {
+                                    alert(error.message || i18n.unableRenameFolder);
+                                }
+                            }).finally(function () {
+                                setFolderModalSubmitting(false);
+                            });
+                        });
                     }
 
                     function renameMediaById(mediaId) {
@@ -902,6 +1199,7 @@
                         if (state.folderId === 'root') return;
                         if (!confirm(i18n.deleteFolderConfirm)) return;
 
+                        var nextFolderId = parentDirectoryId();
                         fetch(routes.destroyFolder.replace('__id__', state.folderId), {
                             method: 'DELETE',
                             headers: {
@@ -910,7 +1208,7 @@
                             },
                         }).then(function (res) {
                             if (!res.ok) throw new Error(i18n.unableDeleteFolder);
-                            state.folderId = 'root';
+                            state.folderId = nextFolderId;
                             resetSelection();
                             return reload();
                         }).catch(function (error) {
@@ -999,6 +1297,16 @@
                         root.addEventListener('click', function (event) {
                             if (event.target.closest('.imas-ml-check') || event.target.closest('[data-ml-check]')) {
                                 event.stopPropagation();
+                                return;
+                            }
+
+                            var toggleBtn = event.target.closest('[data-ml-toggle-folder]');
+                            if (toggleBtn && root.contains(toggleBtn)) {
+                                event.preventDefault();
+                                event.stopPropagation();
+                                var toggleId = parseInt(toggleBtn.getAttribute('data-ml-toggle-folder'), 10);
+                                state.expandedFolderIds[toggleId] = !state.expandedFolderIds[toggleId];
+                                renderFolders();
                                 return;
                             }
 
@@ -1179,6 +1487,7 @@
                         shouldAutoload: root.getAttribute('data-imas-ml-autoload') === '1',
                         root: root,
                         state: state,
+                        submitFolderUpdate: submitFolderUpdate,
                         boot: function () {
                             state.mode = 'manage';
                             resetSelection();
@@ -1355,8 +1664,8 @@
                 </div>
                 <div class="card-body p-3">
                     <div class="input-group input-group-sm mb-3">
-                        <input type="text" class="form-control" data-ml-new-folder maxlength="120" placeholder="{{ __('New folder') }}">
-                        <button type="button" class="btn btn-light-primary" data-ml-create-folder title="{{ __('Create folder') }}">
+                        <input type="text" class="form-control" data-ml-new-folder maxlength="120" placeholder="{{ __('New subfolder') }}">
+                        <button type="button" class="btn btn-light-primary" data-ml-create-folder title="{{ __('Create folder under current folder') }}">
                             <i class="bi bi-plus-lg"></i>
                         </button>
                     </div>

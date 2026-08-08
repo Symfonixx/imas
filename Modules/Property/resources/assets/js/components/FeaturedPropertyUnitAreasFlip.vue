@@ -2,6 +2,7 @@
     <div
         v-if="names.length > 0"
         class="imas-featured-unit-areas"
+        role="group"
         :aria-label="trans('properties.unit_types_aria')"
         aria-live="polite"
     >

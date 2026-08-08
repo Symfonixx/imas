@@ -18,7 +18,6 @@
             <span
                 v-else
                 class="imas-blog-v2-pagination__btn is-disabled"
-                aria-disabled="true"
             >
                 <span v-html="link.displayLabel" />
             </span>

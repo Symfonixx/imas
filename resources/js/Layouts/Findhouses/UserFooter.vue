@@ -170,6 +170,7 @@
                         <div
                             v-if="footerSocialLinks.length"
                             class="socials imas-footer-socials"
+                            role="group"
                             :aria-label="trans('Social media')"
                         >
                             <a
@@ -773,7 +774,11 @@ onBeforeUnmount(() => {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: var(--text-muted, #6b7896);
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    color: var(--text-muted, #9aa6bd);
     text-decoration: none;
     transition: color 0.2s ease;
 }

@@ -29,13 +29,18 @@
     </Head>
 
     <div id="wrapper" class="imas-theme-dark">
+        <a class="imas-skip-link" href="#main-content">{{
+            skipToContentLabel
+        }}</a>
         <UserTopBar />
         <UserNavbar
             :nav-links="navLinks"
             :transparent-navbar="navbarTransparent"
         />
         <div class="clearfix"></div>
-        <slot />
+        <main id="main-content" class="imas-main" tabindex="-1">
+            <slot />
+        </main>
         <UserFooter :nav-links="navLinks" />
         <ClientOnly>
             <FloatingContactButton />
@@ -59,6 +64,14 @@ import ClientOnly from "@/components/Global/ClientOnly.vue";
 const page = usePage();
 
 const activeLocale = computed(() => page.props.locale || "en");
+
+function trans(key, fallback = key) {
+    return page.props.translations?.[key] || fallback;
+}
+
+const skipToContentLabel = computed(() =>
+    trans("Skip to content", "Skip to content"),
+);
 
 const siteName = computed(() => String(page.props.appName || "").trim());
 
@@ -148,8 +161,10 @@ function blogCategoryUrl(categorySlug) {
     return `${base}${sep}category=${encodeURIComponent(categorySlug)}`;
 }
 
-const blogNavCategories = computed(
-    () => page.props.globals?.blog_categories ?? [],
+const blogNavCategories = computed(() =>
+    (page.props.globals?.blog_categories ?? []).filter(
+        (c) => c.add_to_navbar,
+    ),
 );
 
 const navbarPages = computed(() => page.props.globals?.pages?.navbar ?? []);

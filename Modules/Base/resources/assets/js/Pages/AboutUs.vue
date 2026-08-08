@@ -77,7 +77,7 @@
                 :banner-video-embed="heroYoutubeEmbed"
             />
 
-            <main
+            <div
                 class="imas-about-page__page imas-blog-v2__page container"
                 :class="{
                     'imas-about-page__page--with-sidebar': hasSidebar,
@@ -107,7 +107,7 @@
                     v-if="hasSidebar"
                     :featured-properties="featuredProperties"
                 />
-            </main>
+            </div>
         </div>
     </AppLayout>
 </template>

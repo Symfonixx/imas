@@ -236,7 +236,11 @@ function trans(key) {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: var(--text-dim, #9aa6bd);
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    color: var(--text-dim, #aeb8cc);
     text-decoration: none;
     transition: color 0.2s ease;
 }

@@ -169,6 +169,7 @@
             <div class="col-xl-3">
                 <div class="fs-6 fw-bold mt-2 mb-3"><i
                         class="bi bi-code mx-1 text-primary"></i> {{__('Header Scripts')}}</div>
+                <div class="text-muted fs-7">{{__('Paste the Google Tag Manager <script> snippet here once. Scripts load after the page finishes painting (faster PageSpeed). Do not also paste the same GTM snippet in Footer Scripts.')}}</div>
             </div>
             <!--end::Col-->
             <!--begin::Col-->
@@ -180,11 +181,29 @@
             <!--begin::Col-->
         </div>
 
+          <div class="row mb-8">
+            <!--begin::Col-->
+            <div class="col-xl-3">
+                <div class="fs-6 fw-bold mt-2 mb-3"><i
+                        class="bi bi-code mx-1 text-primary"></i> {{__('Body Scripts')}}</div>
+                <div class="text-muted fs-7">{{__('Prefer the GTM noscript iframe here. Any script tags are deferred until after first paint (same as Header/Footer Scripts).')}}</div>
+            </div>
+            <!--end::Col-->
+            <!--begin::Col-->
+            <div class="col-xl-9 fv-row">
+                <textarea name="data[body_scripts]"
+                          class="form-control form-control-solid h-150px js-settings-html-field"
+                          spellcheck="false">{{$settings->get('body_scripts')}}</textarea>
+            </div>
+            <!--begin::Col-->
+        </div>
+
            <div class="row mb-8">
             <!--begin::Col-->
             <div class="col-xl-3">
                 <div class="fs-6 fw-bold mt-2 mb-3"><i
                         class="bi bi-code mx-1 text-primary"></i> {{__('Footer Scripts')}}</div>
+                <div class="text-muted fs-7">{{__('Extra pixels/chat widgets only. Do not duplicate Google Tag Manager here if it is already in Header Scripts — double-loading slows the site and skews analytics.')}}</div>
             </div>
             <!--end::Col-->
             <!--begin::Col-->

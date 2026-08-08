@@ -55,6 +55,18 @@ class UpsertPropertyAttributeRequest extends FormRequest
             'options' => ['nullable', 'array', 'max:200'],
             'options.*.id' => ['nullable', 'integer', 'distinct'],
             'options.*.label' => ['required', 'string', 'max:255'],
+            'options.*.icon' => [
+                'nullable',
+                'string',
+                'max:128',
+                Rule::in(
+                    collect(config('property.bootstrap_icons', []))
+                        ->pluck('class')
+                        ->filter()
+                        ->values()
+                        ->all()
+                ),
+            ],
             'options.*.is_active' => ['nullable', 'boolean'],
             'update_translations' => ['nullable', 'boolean'],
         ];
@@ -186,6 +198,35 @@ class UpsertPropertyAttributeRequest extends FormRequest
             'validation' => $this->filled('validation') ? $this->input('validation') : null,
             'regex' => $this->filled('regex') ? trim((string) $this->input('regex')) : null,
             'default_value' => $this->filled('default_value') ? $this->input('default_value') : null,
+            'options' => $this->normalizeOptions($this->input('options')),
         ]);
+    }
+
+    /**
+     * @param  mixed  $options
+     * @return list<array{id?: int, label: string, icon: ?string, is_active: bool}>|null
+     */
+    private function normalizeOptions(mixed $options): ?array
+    {
+        if (! is_array($options)) {
+            return null;
+        }
+
+        return array_values(array_map(static function (mixed $row): array {
+            $row = is_array($row) ? $row : [];
+            $icon = trim((string) ($row['icon'] ?? ''));
+
+            $normalized = [
+                'label' => (string) ($row['label'] ?? ''),
+                'icon' => $icon !== '' ? $icon : null,
+                'is_active' => filter_var($row['is_active'] ?? false, FILTER_VALIDATE_BOOLEAN),
+            ];
+
+            if (isset($row['id']) && $row['id'] !== '' && $row['id'] !== null) {
+                $normalized['id'] = (int) $row['id'];
+            }
+
+            return $normalized;
+        }, $options));
     }
 }

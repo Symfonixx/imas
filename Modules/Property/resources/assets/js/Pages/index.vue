@@ -79,7 +79,7 @@
                 :banner-image-url="listingsBannerUrl"
             />
 
-            <main class="imas-blog-v2__page">
+            <div class="imas-blog-v2__page">
                 <section class="imas-blog-v2__main">
                     <PropertyListingToolbar
                         :properties="properties"
@@ -117,7 +117,7 @@
                     :recent-properties="recentProperties"
                     :featured-properties="featuredProperties"
                 />
-            </main>
+            </div>
         </div>
     </AppLayout>
 </template>

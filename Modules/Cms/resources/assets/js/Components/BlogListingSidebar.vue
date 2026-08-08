@@ -78,13 +78,13 @@
                     class="imas-blog-v2-sidebar__recent-item"
                 >
                     <img :src="r.image" :alt="r.title" loading="lazy" />
-                    <div>
+                    <div class="imas-blog-v2-sidebar__recent-body">
                         <div class="imas-blog-v2-sidebar__recent-title">
                             {{ r.title }}
                         </div>
                         <div
                             v-if="r.date"
-                            class="imas-blog-v2-sidebar__recent-date text-dim text-start"
+                            class="imas-blog-v2-sidebar__recent-date text-dim"
                         >
                             {{ r.date }}
                         </div>

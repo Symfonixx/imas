@@ -46,8 +46,16 @@
         $selectedSlideCategoryIds = $property->slideCategories->pluck('id')->map(fn ($id) => (int) $id)->all();
     }
 
+    $removedSlideMediaIds = collect(old('remove_slide_media_ids', []))
+        ->map(fn ($id) => (int) $id)
+        ->filter(fn ($id) => $id > 0)
+        ->values()
+        ->all();
+
     $existingSlideMediaByCategory = $isEdit
-        ? $property->slideMedia->groupBy('slide_category_id')
+        ? $property->slideMedia
+            ->reject(fn ($media) => in_array((int) $media->id, $removedSlideMediaIds, true))
+            ->groupBy('slide_category_id')
         : collect();
 
     $selectedAttributeGroupIds = collect(old('attribute_group_ids'))
@@ -179,7 +187,7 @@
                     <div class="col-md-4">
                         <x-admin.form-group label="Location" name="area_id">
                             <select id="area_id" name="area_id" class="form-select form-select-solid"
-                                @disabled(! $prefillDistrictId && ! old('district_id'))>
+                                @disabled(! $prefillCityId && ! old('area_id') && ! old('district_id'))>
                                 <option value="">{{ __('Select area') }}</option>
                             </select>
                         </x-admin.form-group>
@@ -430,30 +438,29 @@
                             </div>
 
                             @if($categoryMedia->isNotEmpty())
-                                <div class="row g-4">
+                                <div class="row g-4 mt-1">
                                     @foreach($categoryMedia as $media)
-                                        <div class="col-6 col-md-3">
-                                            <div class="border rounded p-2 h-100">
+                                        <div class="col-6 col-md-3 js-existing-slide-media"
+                                             data-slide-media-id="{{ $media->id }}">
+                                            <div class="border rounded p-2 h-100 position-relative">
+                                                <button type="button"
+                                                        class="btn btn-icon btn-sm btn-light-danger position-absolute top-0 end-0 m-1 js-existing-slide-media-remove"
+                                                        title="{{ __('Remove') }}">
+                                                    <i class="bi bi-x"></i>
+                                                </button>
                                                 @if($media->type === \Modules\Property\Models\PropertySlideMedia::TYPE_IMAGE)
                                                     <img src="{{ $media->url }}"
                                                          alt="{{ $slideCategory['name'] }}"
-                                                         class="rounded object-fit-cover w-100 mb-2"
+                                                         class="rounded object-fit-cover w-100"
                                                          style="height: 110px"/>
                                                 @else
                                                     <a href="{{ $media->url }}"
                                                        target="_blank"
                                                        rel="noopener"
-                                                       class="btn btn-light-primary btn-sm w-100 mb-2">
+                                                       class="btn btn-light-primary btn-sm w-100">
                                                         <i class="bi bi-play-circle me-1"></i>{{ __('View video') }}
                                                     </a>
                                                 @endif
-                                                <label class="form-check form-check-sm form-check-custom form-check-solid">
-                                                    <input class="form-check-input"
-                                                           type="checkbox"
-                                                           name="remove_slide_media_ids[]"
-                                                           value="{{ $media->id }}"/>
-                                                    <span class="form-check-label">{{ __('Remove') }}</span>
-                                                </label>
                                             </div>
                                         </div>
                                     @endforeach
@@ -593,12 +600,15 @@
             const $district = window.jQuery ? window.jQuery('#district_id') : null;
             const $area = window.jQuery ? window.jQuery('#area_id') : null;
 
-            async function fetchLocations(parentId, type) {
+            async function fetchLocations(parentId, type, options = {}) {
                 const params = new URLSearchParams();
                 if (parentId !== null && parentId !== undefined && parentId !== '') {
                     params.set('parent_id', String(parentId));
                 }
                 params.set('type', type);
+                if (options.forCity) {
+                    params.set('for_city', '1');
+                }
                 const res = await fetch(`${LOCATION_CHILDREN_URL}?${params.toString()}`, {
                     headers: {'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest'},
                 });
@@ -610,7 +620,7 @@
                 return Array.isArray(data.items) ? data.items : [];
             }
 
-            function fillSelect($select, items, selectedId, placeholder) {
+            function fillSelect($select, items, selectedId, placeholder, options = {}) {
                 if (!$select || !$select.length) {
                     return;
                 }
@@ -627,6 +637,9 @@
                     const o = document.createElement('option');
                     o.value = String(item.id);
                     o.textContent = item.name;
+                    if (item.parent_id !== null && item.parent_id !== undefined) {
+                        o.dataset.parentId = String(item.parent_id);
+                    }
                     if (current !== '' && String(item.id) === current) {
                         o.selected = true;
                     }
@@ -636,36 +649,80 @@
                 if (current) {
                     $select.val(current);
                 }
-                $select.trigger('change');
+                if (!options.silent) {
+                    $select.trigger('change');
+                }
+            }
+
+            async function loadAreasForSelection(selectedAreaId = '') {
+                const cityId = $city?.val();
+                const districtId = $district?.val();
+                if (districtId) {
+                    const areas = await fetchLocations(districtId, TYPE_AREA);
+                    fillSelect($area, areas, selectedAreaId, @json(__('Select area')), {silent: true});
+                    $area?.prop('disabled', areas.length === 0);
+
+                    return;
+                }
+                if (cityId) {
+                    const areas = await fetchLocations(cityId, TYPE_AREA, {forCity: true});
+                    fillSelect($area, areas, selectedAreaId, @json(__('Select area')), {silent: true});
+                    $area?.prop('disabled', areas.length === 0);
+
+                    return;
+                }
+                fillSelect($area, [], '', @json(__('Select area')), {silent: true});
+                $area?.prop('disabled', true);
             }
 
             async function onCityChange() {
                 const cityId = $city?.val();
-                fillSelect($district, [], '', @json(__('Select municipality')));
-                fillSelect($area, [], '', @json(__('Select area')));
+                fillSelect($district, [], '', @json(__('Select municipality')), {silent: true});
+                fillSelect($area, [], '', @json(__('Select area')), {silent: true});
                 if (!cityId) {
                     $district?.prop('disabled', true);
                     $area?.prop('disabled', true);
 
                     return;
                 }
-                const districts = await fetchLocations(cityId, TYPE_DISTRICT);
-                fillSelect($district, districts, '', @json(__('Select municipality')));
+                const [districts, areas] = await Promise.all([
+                    fetchLocations(cityId, TYPE_DISTRICT),
+                    fetchLocations(cityId, TYPE_AREA, {forCity: true}),
+                ]);
+                fillSelect($district, districts, '', @json(__('Select municipality')), {silent: true});
                 $district?.prop('disabled', districts.length === 0);
-                $area?.prop('disabled', true);
+                fillSelect($area, areas, '', @json(__('Select area')), {silent: true});
+                $area?.prop('disabled', areas.length === 0);
             }
 
             async function onDistrictChange() {
-                const districtId = $district?.val();
-                fillSelect($area, [], '', @json(__('Select area')));
-                if (!districtId) {
-                    $area?.prop('disabled', true);
+                await loadAreasForSelection('');
+            }
+
+            function onAreaChange() {
+                const cityId = $city?.val();
+                if (!$area?.length || !cityId || !$district?.length) {
+                    return;
+                }
+                const selected = $area.find('option:selected');
+                const parentId = selected?.attr('data-parent-id');
+                if (!parentId) {
+                    return;
+                }
+                // City-direct area: municipality is not required.
+                if (String(parentId) === String(cityId)) {
+                    if ($district.val()) {
+                        $district.val('');
+                    }
 
                     return;
                 }
-                const areas = await fetchLocations(districtId, TYPE_AREA);
-                fillSelect($area, areas, '', @json(__('Select area')));
-                $area?.prop('disabled', areas.length === 0);
+                // Area under a municipality: keep municipality in sync (no change event).
+                if ($district.find(`option[value="${parentId}"]`).length
+                    && String($district.val()) !== String(parentId)
+                ) {
+                    $district.val(String(parentId));
+                }
             }
 
             function initLocationCascade() {
@@ -674,25 +731,20 @@
                 }
                 $city.off('change.propertyLoc');
                 $district.off('change.propertyLoc');
+                $area?.off('change.propertyLoc');
                 (async () => {
                     if (!PREFILL_CITY_ID) {
                         return;
                     }
-                    $city.val(String(PREFILL_CITY_ID)).trigger('change');
+                    $city.val(String(PREFILL_CITY_ID));
                     const districts = await fetchLocations(PREFILL_CITY_ID, TYPE_DISTRICT);
-                    fillSelect($district, districts, PREFILL_DISTRICT_ID, @json(__('Select municipality')));
+                    fillSelect($district, districts, PREFILL_DISTRICT_ID, @json(__('Select municipality')), {silent: true});
                     $district?.prop('disabled', districts.length === 0);
-                    if (PREFILL_DISTRICT_ID) {
-                        const areas = await fetchLocations(PREFILL_DISTRICT_ID, TYPE_AREA);
-                        fillSelect($area, areas, PREFILL_AREA_ID, @json(__('Select area')));
-                        $area?.prop('disabled', areas.length === 0);
-                    } else {
-                        fillSelect($area, [], '', @json(__('Select area')));
-                        $area?.prop('disabled', true);
-                    }
+                    await loadAreasForSelection(PREFILL_AREA_ID);
                 })().finally(() => {
                     $city.on('change.propertyLoc', onCityChange);
                     $district.on('change.propertyLoc', onDistrictChange);
+                    $area?.on('change.propertyLoc', onAreaChange);
                 });
             }
 
@@ -918,6 +970,57 @@
                 });
             }
 
+            const propertyForm = document.getElementById('property-form');
+
+            const slideMediaRemoveBucket = document.createElement('div');
+            slideMediaRemoveBucket.id = 'js-slide-media-remove-bucket';
+            slideMediaRemoveBucket.className = 'd-none';
+            propertyForm?.appendChild(slideMediaRemoveBucket);
+
+            @foreach($removedSlideMediaIds as $removedSlideMediaId)
+                (() => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'remove_slide_media_ids[]';
+                    input.value = @json((string) $removedSlideMediaId);
+                    slideMediaRemoveBucket.appendChild(input);
+                })();
+            @endforeach
+
+            function queueExistingSlideMediaRemoval(mediaId) {
+                if (!mediaId || !slideMediaRemoveBucket) {
+                    return;
+                }
+                const exists = [...slideMediaRemoveBucket.querySelectorAll('input')].some(
+                    (input) => input.value === String(mediaId)
+                );
+                if (exists) {
+                    return;
+                }
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'remove_slide_media_ids[]';
+                input.value = String(mediaId);
+                slideMediaRemoveBucket.appendChild(input);
+            }
+
+            function bindExistingSlideMediaRemovers() {
+                document.querySelectorAll('.js-existing-slide-media-remove').forEach((btn) => {
+                    if (btn.dataset.bound === '1') {
+                        return;
+                    }
+                    btn.dataset.bound = '1';
+                    btn.addEventListener('click', () => {
+                        const card = btn.closest('.js-existing-slide-media');
+                        if (!card) {
+                            return;
+                        }
+                        queueExistingSlideMediaRemoval(card.dataset.slideMediaId);
+                        card.remove();
+                    });
+                });
+            }
+
             function bindSlideMediaLibraryPickers() {
                 document.querySelectorAll('.js-slide-media-library').forEach((root) => {
                     if (root.dataset.bound === '1') {
@@ -942,7 +1045,7 @@
                             return;
                         }
                         const card = document.createElement('div');
-                        card.className = 'border rounded p-2 position-relative';
+                        card.className = 'border rounded p-2 position-relative js-slide-media-item';
                         card.style.width = '96px';
                         card.innerHTML =
                             '<img src="' + String(item.url || '').replace(/"/g, '&quot;') + '" alt="" class="rounded object-fit-cover w-100" style="height:72px">' +
@@ -969,11 +1072,12 @@
                         if (!removeBtn) {
                             return;
                         }
-                        removeBtn.closest('.border')?.remove();
+                        removeBtn.closest('.js-slide-media-item')?.remove();
                     });
                 });
             }
 
+            bindExistingSlideMediaRemovers();
             bindSlideMediaLibraryPickers();
 
             if (window.jQuery) {
@@ -985,7 +1089,6 @@
                 });
             }
 
-            const propertyForm = document.getElementById('property-form');
             propertyForm?.addEventListener('submit', () => {
                 if (typeof tinymce !== 'undefined') {
                     tinymce.triggerSave();

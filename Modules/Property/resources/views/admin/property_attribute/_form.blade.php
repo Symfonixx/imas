@@ -6,12 +6,14 @@
         ?? \Modules\Property\Enums\AttributeType::Text;
     $optionsVisible = $selectedAttributeType->hasOptions();
     $defaultVisible = ! $optionsVisible && ! $selectedAttributeType->isMedia();
+    $iconChoices = config('property.bootstrap_icons', []);
     $optionRows = old('options');
     if ($optionRows === null) {
         $optionRows = $editing
             ? $attribute->options->map(fn ($option) => [
                 'id' => $option->id,
                 'label' => $option->label,
+                'icon' => $option->icon,
                 'is_active' => $option->is_active,
             ])->all()
             : [];
@@ -106,15 +108,34 @@
                 @error('options')<div class="text-danger mb-3">{{ $message }}</div>@enderror
                 <div id="attribute_options" class="d-flex flex-column gap-3">
                     @foreach($optionRows as $index => $option)
-                        <div class="attribute-option d-flex align-items-center gap-2" draggable="true">
+                        @php
+                            $optionIcon = trim((string) ($option['icon'] ?? ''));
+                            $optionIconChoices = collect($iconChoices);
+                            if ($optionIcon !== '' && ! $optionIconChoices->pluck('class')->contains($optionIcon)) {
+                                $optionIconChoices = $optionIconChoices->prepend([
+                                    'class' => $optionIcon,
+                                    'label' => __('Current icon'),
+                                ]);
+                            }
+                        @endphp
+                        <div class="attribute-option d-flex align-items-center gap-2 flex-wrap" draggable="true">
                             <span class="text-muted cursor-move" aria-hidden="true">⋮⋮</span>
                             @if(! empty($option['id']))
                                 <input type="hidden" data-field="id" name="options[{{ $index }}][id]"
                                        value="{{ $option['id'] }}" @disabled(! $optionsVisible)/>
                             @endif
-                            <input class="form-control form-control-solid" data-field="label"
+                            @include('property::admin.partials.bootstrap_icon_picker', [
+                                'name' => 'options['.$index.'][icon]',
+                                'iconChoices' => $optionIconChoices->values()->all(),
+                                'selected' => $optionIcon,
+                                'required' => false,
+                                'compact' => true,
+                                'pickerId' => 'attr_opt_icon_'.$index,
+                            ])
+                            <input class="form-control form-control-solid flex-grow-1" data-field="label"
                                    name="options[{{ $index }}][label]" value="{{ $option['label'] ?? '' }}"
-                                   aria-label="{{ __('Option label') }}" @disabled(! $optionsVisible)/>
+                                   aria-label="{{ __('Option label') }}" @disabled(! $optionsVisible)
+                                   style="min-width: 10rem;"/>
                             <label class="form-check form-switch form-check-custom form-check-solid">
                                 <input type="hidden" data-field="is_active" name="options[{{ $index }}][is_active]"
                                        value="0" @disabled(! $optionsVisible)/>
@@ -133,6 +154,16 @@
                         </div>
                     @endforeach
                 </div>
+                <template id="attribute_option_icon_picker_template">
+                    @include('property::admin.partials.bootstrap_icon_picker', [
+                        'name' => 'options[__INDEX__][icon]',
+                        'iconChoices' => $iconChoices,
+                        'selected' => '',
+                        'required' => false,
+                        'compact' => true,
+                        'pickerId' => 'attr_opt_icon_tpl',
+                    ])
+                </template>
             </div>
         </div>
     </div>

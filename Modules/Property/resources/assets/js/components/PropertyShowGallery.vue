@@ -49,24 +49,22 @@
             </div>
 
             <template v-if="assets.length > 1">
-                <a
+                <button
+                    type="button"
                     class="carousel-control left imas-gallery-control"
-                    href="#"
-                    role="button"
                     :aria-label="previousLabel"
                     @click.prevent="goPrev"
                 >
                     <i class="fa fa-angle-left" aria-hidden="true"></i>
-                </a>
-                <a
+                </button>
+                <button
+                    type="button"
                     class="carousel-control right imas-gallery-control"
-                    href="#"
-                    role="button"
                     :aria-label="nextLabel"
                     @click.prevent="goNext"
                 >
                     <i class="fa fa-angle-right" aria-hidden="true"></i>
-                </a>
+                </button>
             </template>
         </div>
 
@@ -110,11 +108,6 @@
                             'is-active': category.id === activeCategoryId,
                         }"
                         :aria-pressed="category.id === activeCategoryId"
-                        :aria-current="
-                            category.id === activeCategoryId
-                                ? 'true'
-                                : undefined
-                        "
                         @click="selectCategory(category.id, $event)"
                     >
                         {{ category.name }}
@@ -142,17 +135,16 @@
                     class="list-inline-item imas-gallery-thumbs__item"
                     :class="{ active: index === activeIndex }"
                 >
-                    <a
-                        href="#"
+                    <button
+                        type="button"
+                        class="imas-gallery-thumbs__btn"
                         :class="{ selected: index === activeIndex }"
                         :aria-label="
                             asset.type === 'video'
                                 ? `Video ${index + 1}`
                                 : `Image ${index + 1}`
                         "
-                        :aria-current="
-                            index === activeIndex ? 'true' : undefined
-                        "
+                        :aria-pressed="index === activeIndex"
                         @click.prevent="selectThumb(index)"
                     >
                         <span class="imas-gallery-thumb__frame">
@@ -174,7 +166,7 @@
                                 <i class="fa fa-play"></i>
                             </span>
                         </span>
-                    </a>
+                    </button>
                 </li>
             </ul>
         </div>
@@ -666,6 +658,14 @@ watch(activeIndex, () => {
     top: 50%;
     transform: translateY(-50%);
     margin-top: 0 !important;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
 }
 
 .imas-gallery-thumbs-outer {
@@ -717,16 +717,23 @@ watch(activeIndex, () => {
     margin-inline-end: 0;
 }
 
-.imas-property-gallery :deep(.carousel-indicators a) {
+.imas-property-gallery :deep(.carousel-indicators a),
+.imas-property-gallery :deep(.carousel-indicators .imas-gallery-thumbs__btn) {
     display: block;
     padding: 0;
     border: 2px solid transparent;
     border-radius: 4px;
+    background: transparent;
+    cursor: pointer;
     transition: border-color 0.2s ease;
 }
 
 .imas-property-gallery :deep(.carousel-indicators > li.active a),
-.imas-property-gallery :deep(.carousel-indicators a.selected) {
+.imas-property-gallery :deep(.carousel-indicators a.selected),
+.imas-property-gallery
+    :deep(.carousel-indicators > li.active .imas-gallery-thumbs__btn),
+.imas-property-gallery
+    :deep(.carousel-indicators .imas-gallery-thumbs__btn.selected) {
     border-color: var(--brand-gold);
 }
 

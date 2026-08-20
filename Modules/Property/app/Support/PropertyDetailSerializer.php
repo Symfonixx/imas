@@ -63,7 +63,6 @@ final class PropertyDetailSerializer
                 'meta_title' => $metadata['meta_title'] ?? null,
                 'meta_description' => $metadata['meta_description'] ?? null,
                 'meta_keywords' => $metadata['meta_keywords'] ?? [],
-                'schema' => $metadata['schema'] ?? null,
                 'meta_img' => $metadata['meta_img'] ?? null,
                 'meta_img_url' => self::metaImageUrl($metadata, $resolver),
             ],

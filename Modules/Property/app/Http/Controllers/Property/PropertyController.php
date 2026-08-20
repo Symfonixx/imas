@@ -13,7 +13,6 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Modules\Base\Application\Seo\SeoDocumentService;
 use Modules\Base\lang;
-use Modules\Base\Support\Seo\JsonLd;
 use Modules\Property\Enums\LocationType;
 use Modules\Property\Models\Location;
 use Modules\Property\Models\Property;
@@ -290,7 +289,7 @@ class PropertyController extends Controller
                 'keywords' => $metaKeywords,
                 'og_image' => $ogImage,
                 'canonical' => $canonical,
-                'json_ld' => $this->showJsonLd($payload, $metadata, $canonical, $metaDescription, $seoService),
+                'json_ld' => $this->showJsonLd($payload, $canonical, $metaDescription, $seoService),
             ]),
         ]);
     }
@@ -300,12 +299,10 @@ class PropertyController extends Controller
      * in Modules/Property/resources/assets/js/Pages/show.vue.
      *
      * @param  array<string, mixed>  $payload
-     * @param  array<string, mixed>  $metadata
      * @return array<string, array<array-key, mixed>|null>
      */
     private function showJsonLd(
         array $payload,
-        array $metadata,
         string $canonical,
         string $metaDescription,
         SeoDocumentService $seoService,
@@ -335,7 +332,6 @@ class PropertyController extends Controller
                 $locale,
             ),
             'jsonld-breadcrumb' => PropertySchemaBuilder::breadcrumb($crumbs),
-            'jsonld-custom' => JsonLd::decode($metadata['schema'] ?? null),
         ];
     }
 

@@ -46,7 +46,11 @@
                                     name="location_id[]"
                                 />
                             </div>
-                            <div class="rld-single-select ml-22">
+                            <div class="rld-single-select ml-22 imas-select-with-icon">
+                                <i
+                                    class="fa fa-home imas-select-with-icon__glyph"
+                                    aria-hidden="true"
+                                ></i>
                                 <select
                                     v-model="searchPropertyTypeId"
                                     class="select single-select wide"
@@ -66,8 +70,12 @@
                             </div>
                             <div
                                 v-if="projectUnitTypes.length"
-                                class="rld-single-select unitTypeSelect"
+                                class="rld-single-select unitTypeSelect imas-select-with-icon"
                             >
+                                <i
+                                    class="fa fa-building imas-select-with-icon__glyph"
+                                    aria-hidden="true"
+                                ></i>
                                 <select
                                     v-model="searchUnitTypeId"
                                     class="select single-select wide"

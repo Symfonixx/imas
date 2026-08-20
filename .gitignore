@@ -5,6 +5,8 @@
 /public/storage
 /storage/*.key
 /storage/pail
+# Media Library uploads (public disk) — never commit uploaded assets
+/storage/app/public/media-library/
 /vendor
 composer.lock
 .env

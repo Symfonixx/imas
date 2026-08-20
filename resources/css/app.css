@@ -4099,6 +4099,28 @@ html[dir="rtl"] .imas-about-page .imas-blog-v2-sidebar__recent-item:hover img {
     margin-top: 40px;
 }
 
+/* Leading icons on property-type / unit-type selects (match location pickers) */
+.imas-select-with-icon {
+    position: relative;
+}
+
+.imas-select-with-icon__glyph {
+    position: absolute;
+    inset-inline-start: 14px;
+    top: 50%;
+    z-index: 2;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: var(--text);
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.imas-select-with-icon .single-select,
+.imas-select-with-icon .nice-select {
+    padding-inline-start: 2.35rem !important;
+}
+
 /* Property listings sidebar filter (home-hero structure, stacked) */
 .imas-blog-v2-sidebar__box.imas-property-listings-filter {
     overflow-x: visible;

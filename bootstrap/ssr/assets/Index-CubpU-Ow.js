@@ -977,23 +977,23 @@ var _sfc_main$2 = {
 			destroyHeroRangeSliders();
 		});
 		return (_ctx, _push, _parent, _attrs) => {
-			_push(`<div${ssrRenderAttrs(mergeProps({ class: "banner-search-wrap imas-hero-property-search" }, _attrs))} data-v-79a8a1b6><form class="tab-content" method="get"${ssrRenderAttr("action", __props.action)} data-v-79a8a1b6><input type="hidden" name="purpose"${ssrRenderAttr("value", __props.purpose)} data-v-79a8a1b6>`);
-			if (includeAdvancedParams.value) _push(`<input type="hidden" name="min_price"${ssrRenderAttr("value", priceRange.value[0])} data-v-79a8a1b6>`);
+			_push(`<div${ssrRenderAttrs(mergeProps({ class: "banner-search-wrap imas-hero-property-search" }, _attrs))} data-v-e5ba026d><form class="tab-content" method="get"${ssrRenderAttr("action", __props.action)} data-v-e5ba026d><input type="hidden" name="purpose"${ssrRenderAttr("value", __props.purpose)} data-v-e5ba026d>`);
+			if (includeAdvancedParams.value) _push(`<input type="hidden" name="min_price"${ssrRenderAttr("value", priceRange.value[0])} data-v-e5ba026d>`);
 			else _push(`<!---->`);
-			if (includeAdvancedParams.value) _push(`<input type="hidden" name="max_price"${ssrRenderAttr("value", priceRange.value[1])} data-v-79a8a1b6>`);
+			if (includeAdvancedParams.value) _push(`<input type="hidden" name="max_price"${ssrRenderAttr("value", priceRange.value[1])} data-v-e5ba026d>`);
 			else _push(`<!---->`);
-			if (includeAdvancedParams.value) _push(`<input type="hidden" name="min_area"${ssrRenderAttr("value", areaRange.value[0])} data-v-79a8a1b6>`);
+			if (includeAdvancedParams.value) _push(`<input type="hidden" name="min_area"${ssrRenderAttr("value", areaRange.value[0])} data-v-e5ba026d>`);
 			else _push(`<!---->`);
-			if (includeAdvancedParams.value) _push(`<input type="hidden" name="max_area"${ssrRenderAttr("value", areaRange.value[1])} data-v-79a8a1b6>`);
+			if (includeAdvancedParams.value) _push(`<input type="hidden" name="max_area"${ssrRenderAttr("value", areaRange.value[1])} data-v-e5ba026d>`);
 			else _push(`<!---->`);
-			_push(`<div class="tab-pane fade show active" data-v-79a8a1b6><div class="rld-main-search" data-v-79a8a1b6><div class="imas-hero-search-row" data-v-79a8a1b6><div class="imas-hero-search-fields" data-v-79a8a1b6><div class="rld-single-select imas-hero-city-cell" data-v-79a8a1b6>`);
+			_push(`<div class="tab-pane fade show active" data-v-e5ba026d><div class="rld-main-search" data-v-e5ba026d><div class="imas-hero-search-row" data-v-e5ba026d><div class="imas-hero-search-fields" data-v-e5ba026d><div class="rld-single-select imas-hero-city-cell" data-v-e5ba026d>`);
 			_push(ssrRenderComponent(LocationCityPicker_default, {
 				modelValue: unref(searchCityIds),
 				"onUpdate:modelValue": ($event) => isRef(searchCityIds) ? searchCityIds.value = $event : null,
 				cities: __props.cities,
 				name: "location_id[]"
 			}, null, _parent));
-			_push(`</div><div class="rld-single-select imas-hero-location-cell" data-v-79a8a1b6>`);
+			_push(`</div><div class="rld-single-select imas-hero-location-cell" data-v-e5ba026d>`);
 			_push(ssrRenderComponent(LocationAreaPicker_default, {
 				modelValue: unref(searchLocationIds),
 				"onUpdate:modelValue": ($event) => isRef(searchLocationIds) ? searchLocationIds.value = $event : null,
@@ -1001,22 +1001,22 @@ var _sfc_main$2 = {
 				areas: unref(filteredAreas),
 				name: "location_id[]"
 			}, null, _parent));
-			_push(`</div><div class="rld-single-select ml-22" data-v-79a8a1b6><select class="select single-select wide" name="property_type_id" data-v-79a8a1b6><option value="" data-v-79a8a1b6${ssrIncludeBooleanAttr(Array.isArray(searchPropertyTypeId.value) ? ssrLooseContain(searchPropertyTypeId.value, "") : ssrLooseEqual(searchPropertyTypeId.value, "")) ? " selected" : ""}>${ssrInterpolate(trans("Property Type"))}</option><!--[-->`);
+			_push(`</div><div class="rld-single-select ml-22 imas-select-with-icon" data-v-e5ba026d><i class="fa fa-home imas-select-with-icon__glyph" aria-hidden="true" data-v-e5ba026d></i><select class="select single-select wide" name="property_type_id" data-v-e5ba026d><option value="" data-v-e5ba026d${ssrIncludeBooleanAttr(Array.isArray(searchPropertyTypeId.value) ? ssrLooseContain(searchPropertyTypeId.value, "") : ssrLooseEqual(searchPropertyTypeId.value, "")) ? " selected" : ""}>${ssrInterpolate(trans("Property Type"))}</option><!--[-->`);
 			ssrRenderList(__props.propertyTypes, (t) => {
-				_push(`<option${ssrRenderAttr("value", String(t.id))} data-v-79a8a1b6${ssrIncludeBooleanAttr(Array.isArray(searchPropertyTypeId.value) ? ssrLooseContain(searchPropertyTypeId.value, String(t.id)) : ssrLooseEqual(searchPropertyTypeId.value, String(t.id))) ? " selected" : ""}>${ssrInterpolate(t.name)}</option>`);
+				_push(`<option${ssrRenderAttr("value", String(t.id))} data-v-e5ba026d${ssrIncludeBooleanAttr(Array.isArray(searchPropertyTypeId.value) ? ssrLooseContain(searchPropertyTypeId.value, String(t.id)) : ssrLooseEqual(searchPropertyTypeId.value, String(t.id))) ? " selected" : ""}>${ssrInterpolate(t.name)}</option>`);
 			});
 			_push(`<!--]--></select></div>`);
 			if (projectUnitTypes.value.length) {
-				_push(`<div class="rld-single-select unitTypeSelect" data-v-79a8a1b6><select class="select single-select wide" data-v-79a8a1b6><option value="" data-v-79a8a1b6${ssrIncludeBooleanAttr(Array.isArray(searchUnitTypeId.value) ? ssrLooseContain(searchUnitTypeId.value, "") : ssrLooseEqual(searchUnitTypeId.value, "")) ? " selected" : ""}>${ssrInterpolate(trans("Unit Types"))}</option><!--[-->`);
+				_push(`<div class="rld-single-select unitTypeSelect imas-select-with-icon" data-v-e5ba026d><i class="fa fa-building imas-select-with-icon__glyph" aria-hidden="true" data-v-e5ba026d></i><select class="select single-select wide" data-v-e5ba026d><option value="" data-v-e5ba026d${ssrIncludeBooleanAttr(Array.isArray(searchUnitTypeId.value) ? ssrLooseContain(searchUnitTypeId.value, "") : ssrLooseEqual(searchUnitTypeId.value, "")) ? " selected" : ""}>${ssrInterpolate(trans("Unit Types"))}</option><!--[-->`);
 				ssrRenderList(projectUnitTypes.value, (ut) => {
-					_push(`<option${ssrRenderAttr("value", String(ut.id))} data-v-79a8a1b6${ssrIncludeBooleanAttr(Array.isArray(searchUnitTypeId.value) ? ssrLooseContain(searchUnitTypeId.value, String(ut.id)) : ssrLooseEqual(searchUnitTypeId.value, String(ut.id))) ? " selected" : ""}>${ssrInterpolate(ut.name)}</option>`);
+					_push(`<option${ssrRenderAttr("value", String(ut.id))} data-v-e5ba026d${ssrIncludeBooleanAttr(Array.isArray(searchUnitTypeId.value) ? ssrLooseContain(searchUnitTypeId.value, String(ut.id)) : ssrLooseEqual(searchUnitTypeId.value, String(ut.id))) ? " selected" : ""}>${ssrInterpolate(ut.name)}</option>`);
 				});
 				_push(`<!--]--></select>`);
-				if (searchUnitTypeId.value) _push(`<input type="hidden" name="project_unit_type_id[]"${ssrRenderAttr("value", searchUnitTypeId.value)} data-v-79a8a1b6>`);
+				if (searchUnitTypeId.value) _push(`<input type="hidden" name="project_unit_type_id[]"${ssrRenderAttr("value", searchUnitTypeId.value)} data-v-e5ba026d>`);
 				else _push(`<!---->`);
 				_push(`</div>`);
 			} else _push(`<!---->`);
-			_push(`<div class="imas-hero-advanced-wrap" data-v-79a8a1b6><div class="dropdown-filter" role="button" tabindex="0"${ssrRenderAttr("aria-expanded", advancedOpen.value)} data-v-79a8a1b6><span data-v-79a8a1b6>${ssrInterpolate(trans("Advanced Search"))}</span></div><div class="${ssrRenderClass([{ "filter-block": advancedOpen.value }, "explore__form-checkbox-list full-filter imas-hero-advanced-panel"])}" data-v-79a8a1b6><div class="row" data-v-79a8a1b6><div class="col-12 py-1 pr-30 sld" data-v-79a8a1b6><div class="main-search-field-2" data-v-79a8a1b6><div class="range-slider" data-v-79a8a1b6><label data-v-79a8a1b6>${ssrInterpolate(trans("Area Size"))}</label><div id="imas-hero-area-range"${ssrRenderAttr("data-min", areaBounds.value.min)}${ssrRenderAttr("data-max", areaBounds.value.max)}${ssrRenderAttr("data-unit", areaBounds.value.unit)} data-v-79a8a1b6></div><div class="clearfix" data-v-79a8a1b6></div></div><br data-v-79a8a1b6><div class="range-slider" data-v-79a8a1b6><label data-v-79a8a1b6>${ssrInterpolate(trans("Price Range"))}</label><div id="imas-hero-price-range"${ssrRenderAttr("data-min", priceBounds.value.min)}${ssrRenderAttr("data-max", priceBounds.value.max)}${ssrRenderAttr("data-unit", priceBounds.value.currency)} data-v-79a8a1b6></div><div class="clearfix" data-v-79a8a1b6></div></div></div><div class="imas-hero-advanced-actions" data-v-79a8a1b6><button type="button" class="btn imas-hero-advanced-btn imas-hero-advanced-btn--cancel" data-v-79a8a1b6>${ssrInterpolate(trans("Cancel"))}</button><button type="button" class="btn btn-yellow imas-hero-advanced-btn imas-hero-advanced-btn--accept" data-v-79a8a1b6>${ssrInterpolate(trans("Accept"))}</button></div></div></div></div></div><div class="imas-hero-search-submit" data-v-79a8a1b6><button type="submit" class="btn btn-yellow" data-v-79a8a1b6>${ssrInterpolate(trans("Search Now"))}</button></div></div></div></div></div></form></div>`);
+			_push(`<div class="imas-hero-advanced-wrap" data-v-e5ba026d><div class="dropdown-filter" role="button" tabindex="0"${ssrRenderAttr("aria-expanded", advancedOpen.value)} data-v-e5ba026d><span data-v-e5ba026d>${ssrInterpolate(trans("Advanced Search"))}</span></div><div class="${ssrRenderClass([{ "filter-block": advancedOpen.value }, "explore__form-checkbox-list full-filter imas-hero-advanced-panel"])}" data-v-e5ba026d><div class="row" data-v-e5ba026d><div class="col-12 py-1 pr-30 sld" data-v-e5ba026d><div class="main-search-field-2" data-v-e5ba026d><div class="range-slider" data-v-e5ba026d><label data-v-e5ba026d>${ssrInterpolate(trans("Area Size"))}</label><div id="imas-hero-area-range"${ssrRenderAttr("data-min", areaBounds.value.min)}${ssrRenderAttr("data-max", areaBounds.value.max)}${ssrRenderAttr("data-unit", areaBounds.value.unit)} data-v-e5ba026d></div><div class="clearfix" data-v-e5ba026d></div></div><br data-v-e5ba026d><div class="range-slider" data-v-e5ba026d><label data-v-e5ba026d>${ssrInterpolate(trans("Price Range"))}</label><div id="imas-hero-price-range"${ssrRenderAttr("data-min", priceBounds.value.min)}${ssrRenderAttr("data-max", priceBounds.value.max)}${ssrRenderAttr("data-unit", priceBounds.value.currency)} data-v-e5ba026d></div><div class="clearfix" data-v-e5ba026d></div></div></div><div class="imas-hero-advanced-actions" data-v-e5ba026d><button type="button" class="btn imas-hero-advanced-btn imas-hero-advanced-btn--cancel" data-v-e5ba026d>${ssrInterpolate(trans("Cancel"))}</button><button type="button" class="btn btn-yellow imas-hero-advanced-btn imas-hero-advanced-btn--accept" data-v-e5ba026d>${ssrInterpolate(trans("Accept"))}</button></div></div></div></div></div><div class="imas-hero-search-submit" data-v-e5ba026d><button type="submit" class="btn btn-yellow" data-v-e5ba026d>${ssrInterpolate(trans("Search Now"))}</button></div></div></div></div></div></form></div>`);
 		};
 	}
 };
@@ -1026,7 +1026,7 @@ _sfc_main$2.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("Modules/Base/resources/assets/js/components/HomeHeroPropertySearch.vue");
 	return _sfc_setup$2 ? _sfc_setup$2(props, ctx) : void 0;
 };
-var HomeHeroPropertySearch_default = /* @__PURE__ */ _plugin_vue_export_helper_default(_sfc_main$2, [["__scopeId", "data-v-79a8a1b6"]]);
+var HomeHeroPropertySearch_default = /* @__PURE__ */ _plugin_vue_export_helper_default(_sfc_main$2, [["__scopeId", "data-v-e5ba026d"]]);
 //#endregion
 //#region Modules/Base/resources/assets/js/components/HomeHero.vue
 var MOBILE_HERO_MQ = "(max-width: 767.98px)";

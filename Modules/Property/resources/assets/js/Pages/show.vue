@@ -73,7 +73,6 @@
             head-key="jsonld-breadcrumb"
             :content="breadcrumbJsonLd"
         />
-        <JsonLdScript head-key="jsonld-custom" :content="customSchemaJsonLd" />
     </Head>
 
     <AppLayout>
@@ -702,29 +701,6 @@ const breadcrumbJsonLd = computed(() => {
     }));
     const schema = buildBreadcrumbSchema(crumbs);
     return schema ? JSON.stringify(schema) : "";
-});
-
-/**
- * Admin-provided custom JSON-LD (Property → SEO → schema). Rendered only when it
- * is valid JSON so a malformed textarea value never breaks the page head.
- */
-const customSchemaJsonLd = computed(() => {
-    const raw = meta.value.schema;
-    if (raw && typeof raw === "object") {
-        try {
-            return JSON.stringify(raw);
-        } catch {
-            return "";
-        }
-    }
-    if (typeof raw === "string" && raw.trim() !== "") {
-        try {
-            return JSON.stringify(JSON.parse(raw));
-        } catch {
-            return "";
-        }
-    }
-    return "";
 });
 
 const pageRef = ref(null);

@@ -317,15 +317,27 @@ const legacyImages = computed(() => {
     return rows;
 });
 
+/**
+ * Flatten every category's assets into one continuous sequence so prev/next
+ * and the thumb strip can move across categories. Category buttons remain a
+ * jump shortcut into that category's first asset.
+ */
 const assets = computed(() => {
-    if (useCategories.value && activeCategory.value) {
-        return (activeCategory.value.assets ?? []).map((asset, index) => ({
-            key: `${asset.type}-${asset.id ?? index}`,
-            type: asset.type === "video" ? "video" : "image",
-            url: asset.url,
-            alt: asset.alt || fallbackAlt.value,
-            title: asset.title || "",
-        }));
+    if (useCategories.value) {
+        const rows = [];
+        for (const category of categories.value) {
+            for (const [index, asset] of (category.assets ?? []).entries()) {
+                rows.push({
+                    key: `${category.id}-${asset.type}-${asset.id ?? index}`,
+                    type: asset.type === "video" ? "video" : "image",
+                    url: asset.url,
+                    alt: asset.alt || fallbackAlt.value,
+                    title: asset.title || "",
+                    categoryId: category.id,
+                });
+            }
+        }
+        return rows;
     }
     return legacyImages.value;
 });
@@ -394,16 +406,25 @@ async function scrollActiveThumbIntoView() {
     }
 }
 
+function syncActiveCategoryFromIndex(index = activeIndex.value) {
+    const asset = assets.value[index];
+    if (asset?.categoryId != null) {
+        activeCategoryId.value = asset.categoryId;
+    }
+}
+
 function selectCategory(categoryId, event) {
     if (event?.currentTarget instanceof HTMLElement) {
         event.currentTarget.blur();
     }
-    if (activeCategoryId.value === categoryId) {
+    const firstIndex = assets.value.findIndex(
+        (asset) => asset.categoryId === categoryId,
+    );
+    if (firstIndex === -1) {
         return;
     }
     activeCategoryId.value = categoryId;
-    activeIndex.value = 0;
-    thumbItemRefs.value = [];
+    activeIndex.value = firstIndex;
 }
 
 function selectThumb(index) {
@@ -446,6 +467,7 @@ watch(
             activeCategoryId.value = ids[0];
             activeIndex.value = 0;
         }
+        syncActiveCategoryFromIndex();
     },
     { immediate: true },
 );
@@ -462,10 +484,12 @@ watch(
         if (activeIndex.value >= length) {
             activeIndex.value = length - 1;
         }
+        syncActiveCategoryFromIndex();
     },
 );
 
 watch(activeIndex, () => {
+    syncActiveCategoryFromIndex();
     scrollActiveThumbIntoView();
 });
 </script>

@@ -3,7 +3,7 @@ import { o as localizedRoute, t as _sfc_main$7 } from "./App-6l5p54Dj.js";
 import { t as useScrollReveal } from "./useScrollReveal-B62WZo2W.js";
 import { t as useDocumentSeo } from "./useDocumentSeo-DFy1QA_G.js";
 import { t as _sfc_main$8 } from "./InnerPageHeadingHero-Cb6v5tfJ.js";
-import "./FeaturedPropertiesSidebar-4D26uQ27.js";
+import "./FeaturedPropertiesSidebar-BaoUo9Vd.js";
 import { c as stripHtml, i as buildRealEstateListingSchema, l as _sfc_main$9, n as buildBreadcrumbSchema, s as filterSchemaImages } from "./structuredData-HzbggR2u.js";
 import { t as PopularPropertiesSection_default } from "./PopularPropertiesSection-DL1ZK1LH.js";
 import { t as PropertyShowContactSidebar_default } from "./PropertyShowContactSidebar-Bz3YEnKW.js";
@@ -112,14 +112,24 @@ var _sfc_main$6 = {
 			}
 			return rows;
 		});
+		/**
+		* Flatten every category's assets into one continuous sequence so prev/next
+		* and the thumb strip can move across categories. Category buttons remain a
+		* jump shortcut into that category's first asset.
+		*/
 		const assets = computed(() => {
-			if (useCategories.value && activeCategory.value) return (activeCategory.value.assets ?? []).map((asset, index) => ({
-				key: `${asset.type}-${asset.id ?? index}`,
-				type: asset.type === "video" ? "video" : "image",
-				url: asset.url,
-				alt: asset.alt || fallbackAlt.value,
-				title: asset.title || ""
-			}));
+			if (useCategories.value) {
+				const rows = [];
+				for (const category of categories.value) for (const [index, asset] of (category.assets ?? []).entries()) rows.push({
+					key: `${category.id}-${asset.type}-${asset.id ?? index}`,
+					type: asset.type === "video" ? "video" : "image",
+					url: asset.url,
+					alt: asset.alt || fallbackAlt.value,
+					title: asset.title || "",
+					categoryId: category.id
+				});
+				return rows;
+			}
 			return legacyImages.value;
 		});
 		function prefersReducedMotion() {
@@ -162,6 +172,10 @@ var _sfc_main$6 = {
 				behavior
 			});
 		}
+		function syncActiveCategoryFromIndex(index = activeIndex.value) {
+			const asset = assets.value[index];
+			if (asset?.categoryId != null) activeCategoryId.value = asset.categoryId;
+		}
 		watch(() => categories.value.map((c) => c.id).join("|"), () => {
 			if (!useCategories.value) {
 				activeCategoryId.value = null;
@@ -172,6 +186,7 @@ var _sfc_main$6 = {
 				activeCategoryId.value = ids[0];
 				activeIndex.value = 0;
 			}
+			syncActiveCategoryFromIndex();
 		}, { immediate: true });
 		watch(() => assets.value.map((asset) => asset.key).join("|"), () => {
 			thumbItemRefs.value = [];
@@ -181,8 +196,10 @@ var _sfc_main$6 = {
 				return;
 			}
 			if (activeIndex.value >= length) activeIndex.value = length - 1;
+			syncActiveCategoryFromIndex();
 		});
 		watch(activeIndex, () => {
+			syncActiveCategoryFromIndex();
 			scrollActiveThumbIntoView();
 		});
 		return (_ctx, _push, _parent, _attrs) => {
@@ -190,38 +207,38 @@ var _sfc_main$6 = {
 				_push(`<div${ssrRenderAttrs(mergeProps({
 					id: carouselId.value,
 					class: "carousel listing-details-sliders slide mb-30 imas-property-gallery"
-				}, _attrs))} data-v-acdbe3e7><h5 class="imas-section-title mb-4" data-v-acdbe3e7>${ssrInterpolate(__props.title)}</h5><div class="imas-gallery-main" data-v-acdbe3e7><div class="carousel-inner imas-gallery-main__inner" data-v-acdbe3e7><!--[-->`);
+				}, _attrs))} data-v-ac69d4d9><h5 class="imas-section-title mb-4" data-v-ac69d4d9>${ssrInterpolate(__props.title)}</h5><div class="imas-gallery-main" data-v-ac69d4d9><div class="carousel-inner imas-gallery-main__inner" data-v-ac69d4d9><!--[-->`);
 				ssrRenderList(assets.value, (asset, index) => {
-					_push(`<div class="${ssrRenderClass([{ active: index === activeIndex.value }, "item carousel-item imas-gallery-slide"])}"${ssrRenderAttr("data-slide-number", index)} data-v-acdbe3e7><div class="imas-gallery-main__frame" data-v-acdbe3e7>`);
-					if (asset.type === "video") _push(`<!--[--><img${ssrRenderAttr("src", videoPosterUrl.value)} class="imas-gallery-main__img"${ssrRenderAttr("alt", asset.alt || fallbackAlt.value)} loading="lazy" data-v-acdbe3e7><button type="button" class="imas-gallery-video-play"${ssrRenderAttr("aria-label", playVideoLabel.value)} data-v-acdbe3e7><span class="imas-gallery-video-play__btn" aria-hidden="true" data-v-acdbe3e7><i class="fa fa-play" data-v-acdbe3e7></i></span></button><!--]-->`);
-					else _push(`<img${ssrRenderAttr("src", asset.url)} class="imas-gallery-main__img"${ssrRenderAttr("alt", asset.alt)} loading="lazy" data-v-acdbe3e7>`);
+					_push(`<div class="${ssrRenderClass([{ active: index === activeIndex.value }, "item carousel-item imas-gallery-slide"])}"${ssrRenderAttr("data-slide-number", index)} data-v-ac69d4d9><div class="imas-gallery-main__frame" data-v-ac69d4d9>`);
+					if (asset.type === "video") _push(`<!--[--><img${ssrRenderAttr("src", videoPosterUrl.value)} class="imas-gallery-main__img"${ssrRenderAttr("alt", asset.alt || fallbackAlt.value)} loading="lazy" data-v-ac69d4d9><button type="button" class="imas-gallery-video-play"${ssrRenderAttr("aria-label", playVideoLabel.value)} data-v-ac69d4d9><span class="imas-gallery-video-play__btn" aria-hidden="true" data-v-ac69d4d9><i class="fa fa-play" data-v-ac69d4d9></i></span></button><!--]-->`);
+					else _push(`<img${ssrRenderAttr("src", asset.url)} class="imas-gallery-main__img"${ssrRenderAttr("alt", asset.alt)} loading="lazy" data-v-ac69d4d9>`);
 					_push(`</div></div>`);
 				});
 				_push(`<!--]--></div>`);
-				if (assets.value.length > 1) _push(`<!--[--><button type="button" class="carousel-control left imas-gallery-control"${ssrRenderAttr("aria-label", previousLabel.value)} data-v-acdbe3e7><i class="fa fa-angle-left" aria-hidden="true" data-v-acdbe3e7></i></button><button type="button" class="carousel-control right imas-gallery-control"${ssrRenderAttr("aria-label", nextLabel.value)} data-v-acdbe3e7><i class="fa fa-angle-right" aria-hidden="true" data-v-acdbe3e7></i></button><!--]-->`);
+				if (assets.value.length > 1) _push(`<!--[--><button type="button" class="carousel-control left imas-gallery-control"${ssrRenderAttr("aria-label", previousLabel.value)} data-v-ac69d4d9><i class="fa fa-angle-left" aria-hidden="true" data-v-ac69d4d9></i></button><button type="button" class="carousel-control right imas-gallery-control"${ssrRenderAttr("aria-label", nextLabel.value)} data-v-ac69d4d9><i class="fa fa-angle-right" aria-hidden="true" data-v-ac69d4d9></i></button><!--]-->`);
 				else _push(`<!---->`);
 				_push(`</div>`);
 				if (assets.value.length > 1 || categories.value.length > 0) {
-					_push(`<div class="imas-gallery-toolbar" data-v-acdbe3e7>`);
-					if (assets.value.length > 1) _push(`<div class="imas-gallery-counter" aria-live="polite" data-v-acdbe3e7><i class="fa fa-image imas-gallery-counter__icon" aria-hidden="true" data-v-acdbe3e7></i><span class="imas-gallery-counter__text" data-v-acdbe3e7>${ssrInterpolate(activeIndex.value + 1)} / ${ssrInterpolate(assets.value.length)}</span></div>`);
+					_push(`<div class="imas-gallery-toolbar" data-v-ac69d4d9>`);
+					if (assets.value.length > 1) _push(`<div class="imas-gallery-counter" aria-live="polite" data-v-ac69d4d9><i class="fa fa-image imas-gallery-counter__icon" aria-hidden="true" data-v-ac69d4d9></i><span class="imas-gallery-counter__text" data-v-ac69d4d9>${ssrInterpolate(activeIndex.value + 1)} / ${ssrInterpolate(assets.value.length)}</span></div>`);
 					else _push(`<!---->`);
 					if (categories.value.length > 0) {
-						_push(`<nav class="imas-gallery-categories"${ssrRenderAttr("aria-label", categoriesRegionLabel.value)} data-v-acdbe3e7><!--[-->`);
+						_push(`<nav class="imas-gallery-categories"${ssrRenderAttr("aria-label", categoriesRegionLabel.value)} data-v-ac69d4d9><!--[-->`);
 						ssrRenderList(categories.value, (category, catIndex) => {
 							_push(`<!--[-->`);
-							if (catIndex > 0) _push(`<span class="imas-gallery-categories__sep" aria-hidden="true" data-v-acdbe3e7>|</span>`);
+							if (catIndex > 0) _push(`<span class="imas-gallery-categories__sep" aria-hidden="true" data-v-ac69d4d9>|</span>`);
 							else _push(`<!---->`);
-							_push(`<button type="button" class="${ssrRenderClass([{ "is-active": category.id === activeCategoryId.value }, "imas-gallery-categories__btn"])}"${ssrRenderAttr("aria-pressed", category.id === activeCategoryId.value)} data-v-acdbe3e7>${ssrInterpolate(category.name)}</button><!--]-->`);
+							_push(`<button type="button" class="${ssrRenderClass([{ "is-active": category.id === activeCategoryId.value }, "imas-gallery-categories__btn"])}"${ssrRenderAttr("aria-pressed", category.id === activeCategoryId.value)} data-v-ac69d4d9>${ssrInterpolate(category.name)}</button><!--]-->`);
 						});
 						_push(`<!--]--></nav>`);
 					} else _push(`<!---->`);
 					_push(`</div>`);
 				} else _push(`<!---->`);
 				if (assets.value.length > 1) {
-					_push(`<div class="imas-gallery-thumbs-outer"${ssrRenderAttr("dir", thumbsDir.value)} role="region" tabindex="0"${ssrRenderAttr("aria-label", thumbsRegionLabel.value)} data-v-acdbe3e7><ul class="carousel-indicators smail-listing list-inline imas-gallery-thumbs" data-v-acdbe3e7><!--[-->`);
+					_push(`<div class="imas-gallery-thumbs-outer"${ssrRenderAttr("dir", thumbsDir.value)} role="region" tabindex="0"${ssrRenderAttr("aria-label", thumbsRegionLabel.value)} data-v-ac69d4d9><ul class="carousel-indicators smail-listing list-inline imas-gallery-thumbs" data-v-ac69d4d9><!--[-->`);
 					ssrRenderList(assets.value, (asset, index) => {
-						_push(`<li class="${ssrRenderClass([{ active: index === activeIndex.value }, "list-inline-item imas-gallery-thumbs__item"])}" data-v-acdbe3e7><button type="button" class="${ssrRenderClass([{ selected: index === activeIndex.value }, "imas-gallery-thumbs__btn"])}"${ssrRenderAttr("aria-label", asset.type === "video" ? `Video ${index + 1}` : `Image ${index + 1}`)}${ssrRenderAttr("aria-pressed", index === activeIndex.value)} data-v-acdbe3e7><span class="imas-gallery-thumb__frame" data-v-acdbe3e7><img${ssrRenderAttr("src", asset.type === "video" ? videoPosterUrl.value : asset.url)} class="imas-gallery-thumb__img"${ssrRenderAttr("alt", asset.alt || fallbackAlt.value)} loading="lazy" data-v-acdbe3e7>`);
-						if (asset.type === "video") _push(`<span class="imas-gallery-thumb__play" aria-hidden="true" data-v-acdbe3e7><i class="fa fa-play" data-v-acdbe3e7></i></span>`);
+						_push(`<li class="${ssrRenderClass([{ active: index === activeIndex.value }, "list-inline-item imas-gallery-thumbs__item"])}" data-v-ac69d4d9><button type="button" class="${ssrRenderClass([{ selected: index === activeIndex.value }, "imas-gallery-thumbs__btn"])}"${ssrRenderAttr("aria-label", asset.type === "video" ? `Video ${index + 1}` : `Image ${index + 1}`)}${ssrRenderAttr("aria-pressed", index === activeIndex.value)} data-v-ac69d4d9><span class="imas-gallery-thumb__frame" data-v-ac69d4d9><img${ssrRenderAttr("src", asset.type === "video" ? videoPosterUrl.value : asset.url)} class="imas-gallery-thumb__img"${ssrRenderAttr("alt", asset.alt || fallbackAlt.value)} loading="lazy" data-v-ac69d4d9>`);
+						if (asset.type === "video") _push(`<span class="imas-gallery-thumb__play" aria-hidden="true" data-v-ac69d4d9><i class="fa fa-play" data-v-ac69d4d9></i></span>`);
 						else _push(`<!---->`);
 						_push(`</span></button></li>`);
 					});
@@ -245,7 +262,7 @@ _sfc_main$6.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("Modules/Property/resources/assets/js/components/PropertyShowGallery.vue");
 	return _sfc_setup$6 ? _sfc_setup$6(props, ctx) : void 0;
 };
-var PropertyShowGallery_default = /* @__PURE__ */ _plugin_vue_export_helper_default(_sfc_main$6, [["__scopeId", "data-v-acdbe3e7"]]);
+var PropertyShowGallery_default = /* @__PURE__ */ _plugin_vue_export_helper_default(_sfc_main$6, [["__scopeId", "data-v-ac69d4d9"]]);
 //#endregion
 //#region Modules/Property/resources/assets/js/components/PropertyShowVideo.vue
 var _sfc_main$5 = {
@@ -780,24 +797,6 @@ var _sfc_main = {
 			})));
 			return schema ? JSON.stringify(schema) : "";
 		});
-		/**
-		* Admin-provided custom JSON-LD (Property → SEO → schema). Rendered only when it
-		* is valid JSON so a malformed textarea value never breaks the page head.
-		*/
-		const customSchemaJsonLd = computed(() => {
-			const raw = meta.value.schema;
-			if (raw && typeof raw === "object") try {
-				return JSON.stringify(raw);
-			} catch {
-				return "";
-			}
-			if (typeof raw === "string" && raw.trim() !== "") try {
-				return JSON.stringify(JSON.parse(raw));
-			} catch {
-				return "";
-			}
-			return "";
-		});
 		const pageRef = ref(null);
 		const propertyContentRowRef = ref(null);
 		const propertySidebarColRef = ref(null);
@@ -813,26 +812,26 @@ var _sfc_main = {
 			_push(ssrRenderComponent(unref(Head), { title: documentTitle.value }, {
 				default: withCtx((_, _push, _parent, _scopeId) => {
 					if (_push) {
-						_push(`<meta head-key="description" name="description"${ssrRenderAttr("content", metaDescription.value)} data-v-64646fb4${_scopeId}>`);
-						if (metaKeywords.value) _push(`<meta head-key="keywords" name="keywords"${ssrRenderAttr("content", metaKeywords.value)} data-v-64646fb4${_scopeId}>`);
+						_push(`<meta head-key="description" name="description"${ssrRenderAttr("content", metaDescription.value)} data-v-3447f0a6${_scopeId}>`);
+						if (metaKeywords.value) _push(`<meta head-key="keywords" name="keywords"${ssrRenderAttr("content", metaKeywords.value)} data-v-3447f0a6${_scopeId}>`);
 						else _push(`<!---->`);
-						if (unref(canonicalUrl)) _push(`<link head-key="canonical" rel="canonical"${ssrRenderAttr("href", unref(canonicalUrl))} data-v-64646fb4${_scopeId}>`);
+						if (unref(canonicalUrl)) _push(`<link head-key="canonical" rel="canonical"${ssrRenderAttr("href", unref(canonicalUrl))} data-v-3447f0a6${_scopeId}>`);
 						else _push(`<!---->`);
-						if (unref(ogTitle)) _push(`<meta head-key="og:title" property="og:title"${ssrRenderAttr("content", unref(ogTitle))} data-v-64646fb4${_scopeId}>`);
+						if (unref(ogTitle)) _push(`<meta head-key="og:title" property="og:title"${ssrRenderAttr("content", unref(ogTitle))} data-v-3447f0a6${_scopeId}>`);
 						else _push(`<!---->`);
-						if (unref(ogDescription)) _push(`<meta head-key="og:description" property="og:description"${ssrRenderAttr("content", unref(ogDescription))} data-v-64646fb4${_scopeId}>`);
+						if (unref(ogDescription)) _push(`<meta head-key="og:description" property="og:description"${ssrRenderAttr("content", unref(ogDescription))} data-v-3447f0a6${_scopeId}>`);
 						else _push(`<!---->`);
-						if (unref(ogImage)) _push(`<meta head-key="og:image" property="og:image"${ssrRenderAttr("content", unref(ogImage))} data-v-64646fb4${_scopeId}>`);
+						if (unref(ogImage)) _push(`<meta head-key="og:image" property="og:image"${ssrRenderAttr("content", unref(ogImage))} data-v-3447f0a6${_scopeId}>`);
 						else _push(`<!---->`);
-						_push(`<meta head-key="og:type" property="og:type" content="website" data-v-64646fb4${_scopeId}>`);
-						if (unref(ogUrl)) _push(`<meta head-key="og:url" property="og:url"${ssrRenderAttr("content", unref(ogUrl))} data-v-64646fb4${_scopeId}>`);
+						_push(`<meta head-key="og:type" property="og:type" content="website" data-v-3447f0a6${_scopeId}>`);
+						if (unref(ogUrl)) _push(`<meta head-key="og:url" property="og:url"${ssrRenderAttr("content", unref(ogUrl))} data-v-3447f0a6${_scopeId}>`);
 						else _push(`<!---->`);
-						_push(`<meta head-key="twitter:card" name="twitter:card"${ssrRenderAttr("content", unref(twitterCard))} data-v-64646fb4${_scopeId}>`);
-						if (unref(ogTitle)) _push(`<meta head-key="twitter:title" name="twitter:title"${ssrRenderAttr("content", unref(ogTitle))} data-v-64646fb4${_scopeId}>`);
+						_push(`<meta head-key="twitter:card" name="twitter:card"${ssrRenderAttr("content", unref(twitterCard))} data-v-3447f0a6${_scopeId}>`);
+						if (unref(ogTitle)) _push(`<meta head-key="twitter:title" name="twitter:title"${ssrRenderAttr("content", unref(ogTitle))} data-v-3447f0a6${_scopeId}>`);
 						else _push(`<!---->`);
-						if (unref(ogDescription)) _push(`<meta head-key="twitter:description" name="twitter:description"${ssrRenderAttr("content", unref(ogDescription))} data-v-64646fb4${_scopeId}>`);
+						if (unref(ogDescription)) _push(`<meta head-key="twitter:description" name="twitter:description"${ssrRenderAttr("content", unref(ogDescription))} data-v-3447f0a6${_scopeId}>`);
 						else _push(`<!---->`);
-						if (unref(ogImage)) _push(`<meta head-key="twitter:image" name="twitter:image"${ssrRenderAttr("content", unref(ogImage))} data-v-64646fb4${_scopeId}>`);
+						if (unref(ogImage)) _push(`<meta head-key="twitter:image" name="twitter:image"${ssrRenderAttr("content", unref(ogImage))} data-v-3447f0a6${_scopeId}>`);
 						else _push(`<!---->`);
 						_push(ssrRenderComponent(_sfc_main$9, {
 							"head-key": "jsonld-real-estate-listing",
@@ -841,10 +840,6 @@ var _sfc_main = {
 						_push(ssrRenderComponent(_sfc_main$9, {
 							"head-key": "jsonld-breadcrumb",
 							content: breadcrumbJsonLd.value
-						}, null, _parent, _scopeId));
-						_push(ssrRenderComponent(_sfc_main$9, {
-							"head-key": "jsonld-custom",
-							content: customSchemaJsonLd.value
 						}, null, _parent, _scopeId));
 					} else return [
 						createVNode("meta", {
@@ -923,10 +918,6 @@ var _sfc_main = {
 						createVNode(_sfc_main$9, {
 							"head-key": "jsonld-breadcrumb",
 							content: breadcrumbJsonLd.value
-						}, null, 8, ["content"]),
-						createVNode(_sfc_main$9, {
-							"head-key": "jsonld-custom",
-							content: customSchemaJsonLd.value
 						}, null, 8, ["content"])
 					];
 				}),
@@ -935,29 +926,29 @@ var _sfc_main = {
 			_push(ssrRenderComponent(_sfc_main$7, null, {
 				default: withCtx((_, _push, _parent, _scopeId) => {
 					if (_push) {
-						_push(`<div class="inner-pages blog imas-property-show-page imas-blog-v2 imas-property-listings" data-v-64646fb4${_scopeId}>`);
+						_push(`<div class="inner-pages blog imas-property-show-page imas-blog-v2 imas-property-listings" data-v-3447f0a6${_scopeId}>`);
 						_push(ssrRenderComponent(_sfc_main$8, {
 							"page-title": trans("properties.proprty_details"),
 							"title-tag": "p",
 							items: propertyHeadingItems.value,
 							"banner-image-url": propertyShowBannerUrl.value
 						}, null, _parent, _scopeId));
-						_push(`<section class="single-proper blog details imas-property-show" data-v-64646fb4${_scopeId}><div class="container" data-v-64646fb4${_scopeId}><div class="row imas-property-show__content-row" data-v-64646fb4${_scopeId}><div class="col-lg-8 col-md-12 blog-pots" data-v-64646fb4${_scopeId}><div class="row" data-v-64646fb4${_scopeId}><div class="col-md-12" data-v-64646fb4${_scopeId}><section data-imas-reveal class="headings-2 pt-0" data-v-64646fb4${_scopeId}><div class="pro-wrapper imas-property-title-row" data-v-64646fb4${_scopeId}><div class="detail-wrapper-body" data-v-64646fb4${_scopeId}><div class="listing-title-bar text-start" data-v-64646fb4${_scopeId}>`);
-						if (__props.property.project_code) _push(`<div class="mt-0" data-v-64646fb4${_scopeId}><span class="listing-address" data-v-64646fb4${_scopeId}>${ssrInterpolate(trans("property_show.project_id"))}: ${ssrInterpolate(__props.property.project_code)}</span></div>`);
+						_push(`<section class="single-proper blog details imas-property-show" data-v-3447f0a6${_scopeId}><div class="container" data-v-3447f0a6${_scopeId}><div class="row imas-property-show__content-row" data-v-3447f0a6${_scopeId}><div class="col-lg-8 col-md-12 blog-pots" data-v-3447f0a6${_scopeId}><div class="row" data-v-3447f0a6${_scopeId}><div class="col-md-12" data-v-3447f0a6${_scopeId}><section data-imas-reveal class="headings-2 pt-0" data-v-3447f0a6${_scopeId}><div class="pro-wrapper imas-property-title-row" data-v-3447f0a6${_scopeId}><div class="detail-wrapper-body" data-v-3447f0a6${_scopeId}><div class="listing-title-bar text-start" data-v-3447f0a6${_scopeId}>`);
+						if (__props.property.project_code) _push(`<div class="mt-0" data-v-3447f0a6${_scopeId}><span class="listing-address" data-v-3447f0a6${_scopeId}>${ssrInterpolate(trans("property_show.project_id"))}: ${ssrInterpolate(__props.property.project_code)}</span></div>`);
 						else _push(`<!---->`);
-						_push(`<h1 data-v-64646fb4${_scopeId}>${ssrInterpolate(displayTitle.value)}</h1>`);
+						_push(`<h1 data-v-3447f0a6${_scopeId}>${ssrInterpolate(displayTitle.value)}</h1>`);
 						if (addressLine.value) {
-							_push(`<div class="mt-0" data-v-64646fb4${_scopeId}>`);
-							if (hasMapCoordinates.value) _push(`<a href="#listing-location" class="listing-address" data-v-64646fb4${_scopeId}><i class="fa fa-map-marker imas-address-marker" aria-hidden="true" data-v-64646fb4${_scopeId}></i><span data-v-64646fb4${_scopeId}>${ssrInterpolate(addressLine.value)}</span></a>`);
-							else _push(`<span class="listing-address" data-v-64646fb4${_scopeId}><i class="fa fa-map-marker imas-address-marker" aria-hidden="true" data-v-64646fb4${_scopeId}></i><span data-v-64646fb4${_scopeId}>${ssrInterpolate(addressLine.value)}</span></span>`);
+							_push(`<div class="mt-0" data-v-3447f0a6${_scopeId}>`);
+							if (hasMapCoordinates.value) _push(`<a href="#listing-location" class="listing-address" data-v-3447f0a6${_scopeId}><i class="fa fa-map-marker imas-address-marker" aria-hidden="true" data-v-3447f0a6${_scopeId}></i><span data-v-3447f0a6${_scopeId}>${ssrInterpolate(addressLine.value)}</span></a>`);
+							else _push(`<span class="listing-address" data-v-3447f0a6${_scopeId}><i class="fa fa-map-marker imas-address-marker" aria-hidden="true" data-v-3447f0a6${_scopeId}></i><span data-v-3447f0a6${_scopeId}>${ssrInterpolate(addressLine.value)}</span></span>`);
 							_push(`</div>`);
 						} else _push(`<!---->`);
-						if (propertyTypeLabel.value) _push(`<div class="imas-property-type-badge mt-2" data-v-64646fb4${_scopeId}>${ssrInterpolate(propertyTypeLabel.value)}</div>`);
+						if (propertyTypeLabel.value) _push(`<div class="imas-property-type-badge mt-2" data-v-3447f0a6${_scopeId}>${ssrInterpolate(propertyTypeLabel.value)}</div>`);
 						else _push(`<!---->`);
-						_push(`</div></div><div class="single detail-wrapper ms-lg-auto" data-v-64646fb4${_scopeId}><div class="detail-wrapper-body" data-v-64646fb4${_scopeId}><div class="listing-title-bar text-start text-lg-end" data-v-64646fb4${_scopeId}><h4 class="imas-price-heading" data-v-64646fb4${_scopeId}>`);
-						if (priceAmount.value) _push(`<!--[--><span class="imas-price-heading__prefix" data-v-64646fb4${_scopeId}>${ssrInterpolate(pricePrefix.value)}</span><span class="imas-price-heading__amount text-gold" data-v-64646fb4${_scopeId}>${ssrInterpolate(priceAmount.value)}</span><!--]-->`);
-						else _push(`<span class="imas-price-heading__amount text-gold" data-v-64646fb4${_scopeId}>—</span>`);
-						_push(`</h4></div></div></div></div></section><div data-imas-reveal data-v-64646fb4${_scopeId}>`);
+						_push(`</div></div><div class="single detail-wrapper ms-lg-auto" data-v-3447f0a6${_scopeId}><div class="detail-wrapper-body" data-v-3447f0a6${_scopeId}><div class="listing-title-bar text-start text-lg-end" data-v-3447f0a6${_scopeId}><h4 class="imas-price-heading" data-v-3447f0a6${_scopeId}>`);
+						if (priceAmount.value) _push(`<!--[--><span class="imas-price-heading__prefix" data-v-3447f0a6${_scopeId}>${ssrInterpolate(pricePrefix.value)}</span><span class="imas-price-heading__amount text-gold" data-v-3447f0a6${_scopeId}>${ssrInterpolate(priceAmount.value)}</span><!--]-->`);
+						else _push(`<span class="imas-price-heading__amount text-gold" data-v-3447f0a6${_scopeId}>—</span>`);
+						_push(`</h4></div></div></div></div></section><div data-imas-reveal data-v-3447f0a6${_scopeId}>`);
 						_push(ssrRenderComponent(PropertyShowGallery_default, {
 							"property-id": __props.property.id,
 							slides: __props.property.slides,
@@ -968,10 +959,10 @@ var _sfc_main = {
 							title: trans("property_show.gallery")
 						}, null, _parent, _scopeId));
 						_push(`</div>`);
-						if (overviewHtml.value) _push(`<div data-imas-reveal class="blog-info details mb-30 text-start imas-property-show-panel" data-v-64646fb4${_scopeId}><h5 class="imas-section-title mb-4" data-v-64646fb4${_scopeId}>${ssrInterpolate(trans("property_show.description"))}</h5><div class="imas-rich-content text-md" data-v-64646fb4${_scopeId}>${overviewHtml.value ?? ""}</div></div>`);
+						if (overviewHtml.value) _push(`<div data-imas-reveal class="blog-info details mb-30 text-start imas-property-show-panel" data-v-3447f0a6${_scopeId}><h5 class="imas-section-title mb-4" data-v-3447f0a6${_scopeId}>${ssrInterpolate(trans("property_show.description"))}</h5><div class="imas-rich-content text-md" data-v-3447f0a6${_scopeId}>${overviewHtml.value ?? ""}</div></div>`);
 						else _push(`<!---->`);
 						if (__props.property.unit_types?.length) {
-							_push(`<div data-imas-reveal data-v-64646fb4${_scopeId}>`);
+							_push(`<div data-imas-reveal data-v-3447f0a6${_scopeId}>`);
 							_push(ssrRenderComponent(PropertyShowUnitTypesTable_default, {
 								"unit-types": __props.property.unit_types,
 								"property-type": propertyTypeLabel.value,
@@ -987,19 +978,19 @@ var _sfc_main = {
 							}, null, _parent, _scopeId));
 							_push(`</div>`);
 						} else _push(`<!---->`);
-						if (whyToBuyHtml.value) _push(`<div data-imas-reveal class="blog-info details mb-30 text-start imas-property-show-panel" data-v-64646fb4${_scopeId}><h5 class="imas-section-title mb-4" data-v-64646fb4${_scopeId}>${ssrInterpolate(trans("property_show.why_to_buy"))}</h5><div class="imas-rich-content text-md" data-v-64646fb4${_scopeId}>${whyToBuyHtml.value ?? ""}</div></div>`);
+						if (whyToBuyHtml.value) _push(`<div data-imas-reveal class="blog-info details mb-30 text-start imas-property-show-panel" data-v-3447f0a6${_scopeId}><h5 class="imas-section-title mb-4" data-v-3447f0a6${_scopeId}>${ssrInterpolate(trans("property_show.why_to_buy"))}</h5><div class="imas-rich-content text-md" data-v-3447f0a6${_scopeId}>${whyToBuyHtml.value ?? ""}</div></div>`);
 						else _push(`<!---->`);
 						_push(`</div></div>`);
-						if (contentHtml.value) _push(`<div data-imas-reveal class="blog-info details mb-30 text-start imas-property-show-panel" data-v-64646fb4${_scopeId}><h5 class="imas-section-title mb-4" data-v-64646fb4${_scopeId}>${ssrInterpolate(trans("property_show.details"))}</h5><div class="imas-rich-content text-md" data-v-64646fb4${_scopeId}>${contentHtml.value ?? ""}</div></div>`);
+						if (contentHtml.value) _push(`<div data-imas-reveal class="blog-info details mb-30 text-start imas-property-show-panel" data-v-3447f0a6${_scopeId}><h5 class="imas-section-title mb-4" data-v-3447f0a6${_scopeId}>${ssrInterpolate(trans("property_show.details"))}</h5><div class="imas-rich-content text-md" data-v-3447f0a6${_scopeId}>${contentHtml.value ?? ""}</div></div>`);
 						else _push(`<!---->`);
 						if (__props.property.attributes?.length) {
-							_push(`<div data-imas-reveal data-v-64646fb4${_scopeId}>`);
+							_push(`<div data-imas-reveal data-v-3447f0a6${_scopeId}>`);
 							_push(ssrRenderComponent(PropertyShowAttributes_default, { attributes: __props.property.attributes }, null, _parent, _scopeId));
 							_push(`</div>`);
 						} else _push(`<!---->`);
 						_push(`<!--[-->`);
 						ssrRenderList(propertyVideos.value, (videoUrl, videoIndex) => {
-							_push(`<div data-imas-reveal data-v-64646fb4${_scopeId}>`);
+							_push(`<div data-imas-reveal data-v-3447f0a6${_scopeId}>`);
 							_push(ssrRenderComponent(PropertyShowVideo_default, {
 								"video-url": videoUrl,
 								"poster-url": __props.property.thumbnail_url,
@@ -1010,7 +1001,7 @@ var _sfc_main = {
 						});
 						_push(`<!--]-->`);
 						if (hasMapCoordinates.value) {
-							_push(`<div id="listing-location" data-imas-reveal data-v-64646fb4${_scopeId}>`);
+							_push(`<div id="listing-location" data-imas-reveal data-v-3447f0a6${_scopeId}>`);
 							_push(ssrRenderComponent(PropertyShowMap_default, {
 								lat: __props.property.lat,
 								lng: __props.property.lng,
@@ -1018,7 +1009,7 @@ var _sfc_main = {
 							}, null, _parent, _scopeId));
 							_push(`</div>`);
 						} else _push(`<!---->`);
-						_push(`</div><aside class="col-lg-4 col-md-12 car imas-blog-v2-sidebar imas-property-show__sidebar-col" data-v-64646fb4${_scopeId}><div class="imas-property-show__contact-sticky" data-imas-reveal="aside" data-v-64646fb4${_scopeId}>`);
+						_push(`</div><aside class="col-lg-4 col-md-12 car imas-blog-v2-sidebar imas-property-show__sidebar-col" data-v-3447f0a6${_scopeId}><div class="imas-property-show__contact-sticky" data-imas-reveal="aside" data-v-3447f0a6${_scopeId}>`);
 						_push(ssrRenderComponent(PropertyShowContactSidebar_default, {
 							"contact-store-url": __props.contactStoreUrl,
 							"default-subject": unref(canonicalUrl),
@@ -1242,6 +1233,6 @@ _sfc_main.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("Modules/Property/resources/assets/js/Pages/show.vue");
 	return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
 };
-var show_default = /* @__PURE__ */ _plugin_vue_export_helper_default(_sfc_main, [["__scopeId", "data-v-64646fb4"]]);
+var show_default = /* @__PURE__ */ _plugin_vue_export_helper_default(_sfc_main, [["__scopeId", "data-v-3447f0a6"]]);
 //#endregion
 export { show_default as default };

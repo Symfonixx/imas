@@ -3,7 +3,7 @@ import { o as localizedRoute, t as _sfc_main$3 } from "./App-6l5p54Dj.js";
 import { t as useScrollReveal } from "./useScrollReveal-B62WZo2W.js";
 import { t as useDocumentSeo } from "./useDocumentSeo-DFy1QA_G.js";
 import { t as _sfc_main$4 } from "./InnerPageHeadingHero-Cb6v5tfJ.js";
-import { t as _sfc_main$5 } from "./FeaturedPropertiesSidebar-4D26uQ27.js";
+import { t as _sfc_main$5 } from "./FeaturedPropertiesSidebar-BaoUo9Vd.js";
 import { a as destroyHeroRangeSliders, i as LocationAreaPicker_default, n as splitLocationIds, o as initHeroRangeSliders, r as LocationCityPicker_default, s as loadJqueryUi, t as useLocationSearchFilters } from "./useLocationSearchFilters-DvtfTN11.js";
 import { n as _sfc_main$6, t as _sfc_main$7 } from "./PropertyListingPagination-DqSNAame.js";
 import { Head, usePage } from "@inertiajs/vue3";
@@ -267,16 +267,16 @@ var _sfc_main$1 = {
 			});
 		});
 		return (_ctx, _push, _parent, _attrs) => {
-			_push(`<aside${ssrRenderAttrs(mergeProps({ class: "imas-blog-v2-sidebar" }, _attrs))} data-v-75585ca8><div class="imas-blog-v2-sidebar__box imas-property-listings-filter" data-v-75585ca8><h4 class="imas-blog-v2-sidebar__heading text-start" data-v-75585ca8>${ssrInterpolate(trans("listing_page.find_your_house"))}</h4><div class="banner-search-wrap imas-listing-property-search" data-v-75585ca8><form class="tab-content" method="get"${ssrRenderAttr("action", __props.searchAction)} data-v-75585ca8><input type="hidden" name="sort"${ssrRenderAttr("value", __props.sort)} data-v-75585ca8>`);
-			if (includeAdvancedParams.value) _push(`<input type="hidden" name="min_price"${ssrRenderAttr("value", priceRange.value[0])} data-v-75585ca8>`);
+			_push(`<aside${ssrRenderAttrs(mergeProps({ class: "imas-blog-v2-sidebar" }, _attrs))} data-v-6d4ce502><div class="imas-blog-v2-sidebar__box imas-property-listings-filter" data-v-6d4ce502><h4 class="imas-blog-v2-sidebar__heading text-start" data-v-6d4ce502>${ssrInterpolate(trans("listing_page.find_your_house"))}</h4><div class="banner-search-wrap imas-listing-property-search" data-v-6d4ce502><form class="tab-content" method="get"${ssrRenderAttr("action", __props.searchAction)} data-v-6d4ce502><input type="hidden" name="sort"${ssrRenderAttr("value", __props.sort)} data-v-6d4ce502>`);
+			if (includeAdvancedParams.value) _push(`<input type="hidden" name="min_price"${ssrRenderAttr("value", priceRange.value[0])} data-v-6d4ce502>`);
 			else _push(`<!---->`);
-			if (includeAdvancedParams.value) _push(`<input type="hidden" name="max_price"${ssrRenderAttr("value", priceRange.value[1])} data-v-75585ca8>`);
+			if (includeAdvancedParams.value) _push(`<input type="hidden" name="max_price"${ssrRenderAttr("value", priceRange.value[1])} data-v-6d4ce502>`);
 			else _push(`<!---->`);
-			if (includeAdvancedParams.value) _push(`<input type="hidden" name="min_area"${ssrRenderAttr("value", areaRange.value[0])} data-v-75585ca8>`);
+			if (includeAdvancedParams.value) _push(`<input type="hidden" name="min_area"${ssrRenderAttr("value", areaRange.value[0])} data-v-6d4ce502>`);
 			else _push(`<!---->`);
-			if (includeAdvancedParams.value) _push(`<input type="hidden" name="max_area"${ssrRenderAttr("value", areaRange.value[1])} data-v-75585ca8>`);
+			if (includeAdvancedParams.value) _push(`<input type="hidden" name="max_area"${ssrRenderAttr("value", areaRange.value[1])} data-v-6d4ce502>`);
 			else _push(`<!---->`);
-			_push(`<div class="tab-pane fade show active" data-v-75585ca8><div class="rld-main-search" data-v-75585ca8><div class="row imas-listing-property-search__fields" data-v-75585ca8><div class="rld-single-select imas-listing-city-cell" data-v-75585ca8>`);
+			_push(`<div class="tab-pane fade show active" data-v-6d4ce502><div class="rld-main-search" data-v-6d4ce502><div class="row imas-listing-property-search__fields" data-v-6d4ce502><div class="rld-single-select imas-listing-city-cell" data-v-6d4ce502>`);
 			_push(ssrRenderComponent(LocationCityPicker_default, {
 				modelValue: unref(searchCityIds),
 				"onUpdate:modelValue": ($event) => isRef(searchCityIds) ? searchCityIds.value = $event : null,
@@ -284,7 +284,7 @@ var _sfc_main$1 = {
 				cities: __props.cities,
 				name: "location_id[]"
 			}, null, _parent));
-			_push(`</div><div class="rld-single-select imas-listing-location-cell" data-v-75585ca8>`);
+			_push(`</div><div class="rld-single-select imas-listing-location-cell" data-v-6d4ce502>`);
 			_push(ssrRenderComponent(LocationAreaPicker_default, {
 				modelValue: unref(searchLocationIds),
 				"onUpdate:modelValue": ($event) => isRef(searchLocationIds) ? searchLocationIds.value = $event : null,
@@ -293,29 +293,29 @@ var _sfc_main$1 = {
 				areas: unref(filteredAreas),
 				name: "location_id[]"
 			}, null, _parent));
-			_push(`</div><div class="rld-single-select" data-v-75585ca8><select class="select single-select wide" name="property_type_id" data-v-75585ca8><option value="" data-v-75585ca8${ssrIncludeBooleanAttr(Array.isArray(searchPropertyTypeId.value) ? ssrLooseContain(searchPropertyTypeId.value, "") : ssrLooseEqual(searchPropertyTypeId.value, "")) ? " selected" : ""}>${ssrInterpolate(trans("Property Type"))}</option><!--[-->`);
+			_push(`</div><div class="rld-single-select imas-select-with-icon" data-v-6d4ce502><i class="fa fa-home imas-select-with-icon__glyph" aria-hidden="true" data-v-6d4ce502></i><select class="select single-select wide" name="property_type_id" data-v-6d4ce502><option value="" data-v-6d4ce502${ssrIncludeBooleanAttr(Array.isArray(searchPropertyTypeId.value) ? ssrLooseContain(searchPropertyTypeId.value, "") : ssrLooseEqual(searchPropertyTypeId.value, "")) ? " selected" : ""}>${ssrInterpolate(trans("Property Type"))}</option><!--[-->`);
 			ssrRenderList(__props.propertyTypes, (t) => {
-				_push(`<option${ssrRenderAttr("value", String(t.id))} data-v-75585ca8${ssrIncludeBooleanAttr(Array.isArray(searchPropertyTypeId.value) ? ssrLooseContain(searchPropertyTypeId.value, String(t.id)) : ssrLooseEqual(searchPropertyTypeId.value, String(t.id))) ? " selected" : ""}>${ssrInterpolate(t.name)}</option>`);
+				_push(`<option${ssrRenderAttr("value", String(t.id))} data-v-6d4ce502${ssrIncludeBooleanAttr(Array.isArray(searchPropertyTypeId.value) ? ssrLooseContain(searchPropertyTypeId.value, String(t.id)) : ssrLooseEqual(searchPropertyTypeId.value, String(t.id))) ? " selected" : ""}>${ssrInterpolate(t.name)}</option>`);
 			});
 			_push(`<!--]--></select></div>`);
 			if (projectUnitTypes.value.length) {
-				_push(`<div class="rld-single-select unitTypeSelect" data-v-75585ca8><select class="select single-select wide" data-v-75585ca8><option value="" data-v-75585ca8${ssrIncludeBooleanAttr(Array.isArray(searchUnitTypeId.value) ? ssrLooseContain(searchUnitTypeId.value, "") : ssrLooseEqual(searchUnitTypeId.value, "")) ? " selected" : ""}>${ssrInterpolate(trans("Unit Types"))}</option><!--[-->`);
+				_push(`<div class="rld-single-select unitTypeSelect imas-select-with-icon" data-v-6d4ce502><i class="fa fa-building imas-select-with-icon__glyph" aria-hidden="true" data-v-6d4ce502></i><select class="select single-select wide" data-v-6d4ce502><option value="" data-v-6d4ce502${ssrIncludeBooleanAttr(Array.isArray(searchUnitTypeId.value) ? ssrLooseContain(searchUnitTypeId.value, "") : ssrLooseEqual(searchUnitTypeId.value, "")) ? " selected" : ""}>${ssrInterpolate(trans("Unit Types"))}</option><!--[-->`);
 				ssrRenderList(projectUnitTypes.value, (ut) => {
-					_push(`<option${ssrRenderAttr("value", String(ut.id))} data-v-75585ca8${ssrIncludeBooleanAttr(Array.isArray(searchUnitTypeId.value) ? ssrLooseContain(searchUnitTypeId.value, String(ut.id)) : ssrLooseEqual(searchUnitTypeId.value, String(ut.id))) ? " selected" : ""}>${ssrInterpolate(ut.name)}</option>`);
+					_push(`<option${ssrRenderAttr("value", String(ut.id))} data-v-6d4ce502${ssrIncludeBooleanAttr(Array.isArray(searchUnitTypeId.value) ? ssrLooseContain(searchUnitTypeId.value, String(ut.id)) : ssrLooseEqual(searchUnitTypeId.value, String(ut.id))) ? " selected" : ""}>${ssrInterpolate(ut.name)}</option>`);
 				});
 				_push(`<!--]--></select>`);
-				if (searchUnitTypeId.value) _push(`<input type="hidden" name="project_unit_type_id[]"${ssrRenderAttr("value", searchUnitTypeId.value)} data-v-75585ca8>`);
+				if (searchUnitTypeId.value) _push(`<input type="hidden" name="project_unit_type_id[]"${ssrRenderAttr("value", searchUnitTypeId.value)} data-v-6d4ce502>`);
 				else _push(`<!---->`);
 				_push(`</div>`);
 			} else _push(`<!---->`);
-			_push(`<div class="imas-listing-range-panel" data-v-75585ca8><div class="main-search-field-2" data-v-75585ca8><div class="range-slider" data-v-75585ca8><label data-v-75585ca8>${ssrInterpolate(trans("Area Size"))}</label><div id="imas-listing-area-range"${ssrRenderAttr("data-min", areaBounds.value.min)}${ssrRenderAttr("data-max", areaBounds.value.max)}${ssrRenderAttr("data-unit", areaBounds.value.unit)} data-v-75585ca8></div><div class="clearfix" data-v-75585ca8></div></div><br data-v-75585ca8><div class="range-slider" data-v-75585ca8><label data-v-75585ca8>${ssrInterpolate(trans("Price Range"))}</label><div id="imas-listing-price-range"${ssrRenderAttr("data-min", priceBounds.value.min)}${ssrRenderAttr("data-max", priceBounds.value.max)}${ssrRenderAttr("data-unit", priceBounds.value.currency)} data-v-75585ca8></div><div class="clearfix" data-v-75585ca8></div></div></div></div><div class="imas-listing-property-search__submit" data-v-75585ca8><button type="submit" class="btn btn-yellow btn-block" data-v-75585ca8>${ssrInterpolate(trans("Search Now"))}</button>`);
-			if (hasActiveFilters.value) _push(`<button type="button" class="btn btn-block imas-listing-property-search__reset" data-v-75585ca8>${ssrInterpolate(trans("listing_page.clear_filters"))}</button>`);
+			_push(`<div class="imas-listing-range-panel" data-v-6d4ce502><div class="main-search-field-2" data-v-6d4ce502><div class="range-slider" data-v-6d4ce502><label data-v-6d4ce502>${ssrInterpolate(trans("Area Size"))}</label><div id="imas-listing-area-range"${ssrRenderAttr("data-min", areaBounds.value.min)}${ssrRenderAttr("data-max", areaBounds.value.max)}${ssrRenderAttr("data-unit", areaBounds.value.unit)} data-v-6d4ce502></div><div class="clearfix" data-v-6d4ce502></div></div><br data-v-6d4ce502><div class="range-slider" data-v-6d4ce502><label data-v-6d4ce502>${ssrInterpolate(trans("Price Range"))}</label><div id="imas-listing-price-range"${ssrRenderAttr("data-min", priceBounds.value.min)}${ssrRenderAttr("data-max", priceBounds.value.max)}${ssrRenderAttr("data-unit", priceBounds.value.currency)} data-v-6d4ce502></div><div class="clearfix" data-v-6d4ce502></div></div></div></div><div class="imas-listing-property-search__submit" data-v-6d4ce502><button type="submit" class="btn btn-yellow btn-block" data-v-6d4ce502>${ssrInterpolate(trans("Search Now"))}</button>`);
+			if (hasActiveFilters.value) _push(`<button type="button" class="btn btn-block imas-listing-property-search__reset" data-v-6d4ce502>${ssrInterpolate(trans("listing_page.clear_filters"))}</button>`);
 			else _push(`<!---->`);
 			_push(`</div></div></div></div></form></div></div>`);
 			if (__props.recentProperties.length > 0) {
-				_push(`<div class="imas-blog-v2-sidebar__box" data-v-75585ca8><h4 class="imas-blog-v2-sidebar__heading text-start" data-v-75585ca8>${ssrInterpolate(trans("listing_page.recent_properties"))}</h4><div class="imas-blog-v2-sidebar__recent" data-v-75585ca8><!--[-->`);
+				_push(`<div class="imas-blog-v2-sidebar__box" data-v-6d4ce502><h4 class="imas-blog-v2-sidebar__heading text-start" data-v-6d4ce502>${ssrInterpolate(trans("listing_page.recent_properties"))}</h4><div class="imas-blog-v2-sidebar__recent" data-v-6d4ce502><!--[-->`);
 				ssrRenderList(__props.recentProperties, (p) => {
-					_push(`<a${ssrRenderAttr("href", p.url)} class="imas-blog-v2-sidebar__recent-item" data-v-75585ca8><img${ssrRenderAttr("src", p.thumbnail_url)}${ssrRenderAttr("alt", displayTitle(p))} loading="lazy" data-v-75585ca8><div class="imas-blog-v2-sidebar__recent-body" data-v-75585ca8><div class="imas-blog-v2-sidebar__recent-title" data-v-75585ca8>${ssrInterpolate(displayTitle(p))}</div><div class="imas-blog-v2-sidebar__recent-date text-dim" data-v-75585ca8>${ssrInterpolate(formatMoney(unref(propertyStartPrice)(p)))}</div></div></a>`);
+					_push(`<a${ssrRenderAttr("href", p.url)} class="imas-blog-v2-sidebar__recent-item" data-v-6d4ce502><img${ssrRenderAttr("src", p.thumbnail_url)}${ssrRenderAttr("alt", displayTitle(p))} loading="lazy" data-v-6d4ce502><div class="imas-blog-v2-sidebar__recent-body" data-v-6d4ce502><div class="imas-blog-v2-sidebar__recent-title" data-v-6d4ce502>${ssrInterpolate(displayTitle(p))}</div><div class="imas-blog-v2-sidebar__recent-date text-dim" data-v-6d4ce502>${ssrInterpolate(formatMoney(unref(propertyStartPrice)(p)))}</div></div></a>`);
 				});
 				_push(`<!--]--></div></div>`);
 			} else _push(`<!---->`);
@@ -330,7 +330,7 @@ _sfc_main$1.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("Modules/Property/resources/assets/js/components/PropertyListingSidebar.vue");
 	return _sfc_setup$1 ? _sfc_setup$1(props, ctx) : void 0;
 };
-var PropertyListingSidebar_default = /* @__PURE__ */ _plugin_vue_export_helper_default(_sfc_main$1, [["__scopeId", "data-v-75585ca8"]]);
+var PropertyListingSidebar_default = /* @__PURE__ */ _plugin_vue_export_helper_default(_sfc_main$1, [["__scopeId", "data-v-6d4ce502"]]);
 //#endregion
 //#region Modules/Property/resources/assets/js/Pages/index.vue
 var _sfc_main = {

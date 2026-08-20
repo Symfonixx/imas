@@ -16,9 +16,12 @@ var _sfc_main$1 = {
 		const trans = (key) => page.props.translations[key] || key;
 		const activeIndex = ref(0);
 		let rotateTimer = null;
-		/** Unit type names only (skip empty labels). */
-		const names = computed(() => (Array.isArray(props.unitTypes) ? props.unitTypes : []).map((ut) => unitTypeDisplayParts(ut).name).filter((name) => typeof name === "string" && name.trim() !== "" && name !== "—"));
-		const activeName = computed(() => names.value[activeIndex.value] ?? names.value[0] ?? "");
+		/** Unit types with a displayable name (skip empty labels). */
+		const units = computed(() => (Array.isArray(props.unitTypes) ? props.unitTypes : []).filter((ut) => {
+			const name = unitTypeDisplayParts(ut).name;
+			return typeof name === "string" && name.trim() !== "" && name !== "—";
+		}));
+		const activeUnit = computed(() => unitTypeDisplayParts(units.value[activeIndex.value] ?? units.value[0]));
 		function clearRotateTimer() {
 			if (rotateTimer !== null) {
 				clearInterval(rotateTimer);
@@ -28,22 +31,28 @@ var _sfc_main$1 = {
 		function startRotateTimer() {
 			clearRotateTimer();
 			activeIndex.value = 0;
-			if (names.value.length <= 1 || prefersReducedMotion()) return;
+			if (units.value.length <= 1 || prefersReducedMotion()) return;
 			rotateTimer = setInterval(() => {
-				activeIndex.value = (activeIndex.value + 1) % names.value.length;
+				activeIndex.value = (activeIndex.value + 1) % units.value.length;
 			}, 3e3);
 		}
 		watch(() => props.unitTypes, () => startRotateTimer(), { deep: true });
 		onMounted(() => startRotateTimer());
 		onBeforeUnmount(() => clearRotateTimer());
 		return (_ctx, _push, _parent, _attrs) => {
-			if (names.value.length > 0) _push(`<div${ssrRenderAttrs(mergeProps({
-				class: "imas-featured-unit-areas",
-				role: "group",
-				"aria-label": trans("properties.unit_types_aria"),
-				"aria-live": "polite"
-			}, _attrs))} data-v-f35e81f6><div class="imas-featured-unit-areas__flip" data-v-f35e81f6><span class="imas-featured-unit-areas__value" data-v-f35e81f6>${ssrInterpolate(activeName.value)}</span></div></div>`);
-			else _push(`<!---->`);
+			if (units.value.length > 0) {
+				_push(`<div${ssrRenderAttrs(mergeProps({
+					class: "imas-featured-unit-areas",
+					role: "group",
+					"aria-label": trans("properties.unit_types_aria"),
+					"aria-live": "polite"
+				}, _attrs))} data-v-0ea01fa3><i class="fa fa-building imas-featured-unit-areas__icon" aria-hidden="true" data-v-0ea01fa3></i><div class="imas-featured-unit-areas__flip" data-v-0ea01fa3><div class="imas-featured-unit-areas__slide" data-v-0ea01fa3><span class="imas-featured-unit-areas__name" data-v-0ea01fa3>${ssrInterpolate(activeUnit.value.name)}</span>`);
+				if (activeUnit.value.area) _push(`<span class="imas-featured-unit-areas__sep" aria-hidden="true" data-v-0ea01fa3>→</span>`);
+				else _push(`<!---->`);
+				if (activeUnit.value.area) _push(`<span class="imas-featured-unit-areas__area" dir="ltr" data-v-0ea01fa3>${ssrInterpolate(activeUnit.value.area)}</span>`);
+				else _push(`<!---->`);
+				_push(`</div></div></div>`);
+			} else _push(`<!---->`);
 		};
 	}
 };
@@ -53,7 +62,7 @@ _sfc_main$1.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("Modules/Property/resources/assets/js/components/FeaturedPropertyUnitAreasFlip.vue");
 	return _sfc_setup$1 ? _sfc_setup$1(props, ctx) : void 0;
 };
-var FeaturedPropertyUnitAreasFlip_default = /* @__PURE__ */ _plugin_vue_export_helper_default(_sfc_main$1, [["__scopeId", "data-v-f35e81f6"]]);
+var FeaturedPropertyUnitAreasFlip_default = /* @__PURE__ */ _plugin_vue_export_helper_default(_sfc_main$1, [["__scopeId", "data-v-0ea01fa3"]]);
 //#endregion
 //#region Modules/Property/resources/assets/js/components/FeaturedPropertiesSidebar.vue
 var SLICK_SCRIPT_SRC = "/theme/findhouses/js/slick.min.js";

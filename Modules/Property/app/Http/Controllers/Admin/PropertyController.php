@@ -465,7 +465,6 @@ class PropertyController extends Controller
             'meta_title' => ['nullable', 'string', 'max:70'],
             'meta_description' => ['nullable', 'string', 'max:255'],
             'meta_keywords' => ['nullable'],
-            'meta_schema' => ['nullable', 'string'],
             'slide_category_ids' => ['nullable', 'array', 'max:20'],
             'slide_category_ids.*' => ['integer', 'distinct', 'exists:slide_categories,id'],
             'slide_category_ids_present' => ['nullable', 'boolean'],
@@ -655,7 +654,6 @@ class PropertyController extends Controller
                 'meta_title' => $validated['meta_title'] ?? null,
                 'meta_description' => $validated['meta_description'] ?? null,
                 'meta_keywords' => $this->normalizeKeywords($validated['meta_keywords'] ?? null),
-                'schema' => $validated['meta_schema'] ?? null,
                 'meta_img' => $metaImg,
             ],
         ];

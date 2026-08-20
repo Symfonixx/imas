@@ -3,7 +3,7 @@ import { o as localizedRoute, t as _sfc_main$2 } from "./App-6l5p54Dj.js";
 import { t as useScrollReveal } from "./useScrollReveal-B62WZo2W.js";
 import { t as useDocumentSeo } from "./useDocumentSeo-DFy1QA_G.js";
 import { t as _sfc_main$3 } from "./InnerPageHeadingHero-Cb6v5tfJ.js";
-import { t as _sfc_main$4 } from "./FeaturedPropertiesSidebar-4D26uQ27.js";
+import { t as _sfc_main$4 } from "./FeaturedPropertiesSidebar-BaoUo9Vd.js";
 import { Head, Link, usePage } from "@inertiajs/vue3";
 import { computed, createBlock, createCommentVNode, createVNode, mergeProps, openBlock, ref, toDisplayString, unref, useSSRContext, withCtx } from "vue";
 import { ssrInterpolate, ssrRenderAttr, ssrRenderAttrs, ssrRenderClass, ssrRenderComponent, ssrRenderList } from "vue/server-renderer";

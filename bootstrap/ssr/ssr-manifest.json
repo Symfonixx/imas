@@ -1,88 +1,88 @@
 {
   "\u0000plugin-vue:export-helper": [],
   "Modules/Base/resources/assets/js/Pages/AboutUs.vue": [
-    "/build/assets/AboutUs-g2sARHfo.js",
+    "/build/assets/AboutUs-K6oXpmvT.js",
     "/build/assets/AboutUs-DSMgBC6k.css"
   ],
   "Modules/Base/resources/assets/js/Pages/AboutUs.vue?vue&type=style&index=0&scoped=5bbe573f&lang.scss": [
-    "/build/assets/AboutUs-g2sARHfo.js",
+    "/build/assets/AboutUs-K6oXpmvT.js",
     "/build/assets/AboutUs-DSMgBC6k.css"
   ],
   "Modules/Base/resources/assets/js/Pages/Index.vue": [
-    "/build/assets/Index-DSCo2sjx.js",
-    "/build/assets/Index-Cyx1Ba9m.css"
+    "/build/assets/Index-CubpU-Ow.js",
+    "/build/assets/Index-BtTcLEv_.css"
   ],
   "Modules/Base/resources/assets/js/components/AboutUsQuickLinksSidebar.vue": [
-    "/build/assets/AboutUs-g2sARHfo.js",
+    "/build/assets/AboutUs-K6oXpmvT.js",
     "/build/assets/AboutUs-DSMgBC6k.css"
   ],
   "Modules/Base/resources/assets/js/components/FeaturedPropertiesSection.vue": [
-    "/build/assets/Index-DSCo2sjx.js",
-    "/build/assets/Index-Cyx1Ba9m.css"
+    "/build/assets/Index-CubpU-Ow.js",
+    "/build/assets/Index-BtTcLEv_.css"
   ],
   "Modules/Base/resources/assets/js/components/FeaturedPropertiesSection.vue?vue&type=style&index=0&scoped=25071020&lang.scss": [
-    "/build/assets/Index-DSCo2sjx.js",
-    "/build/assets/Index-Cyx1Ba9m.css"
+    "/build/assets/Index-CubpU-Ow.js",
+    "/build/assets/Index-BtTcLEv_.css"
   ],
   "Modules/Base/resources/assets/js/components/FeaturedPropertiesSection.vue?vue&type=style&index=1&lang.css": [
-    "/build/assets/Index-DSCo2sjx.js",
-    "/build/assets/Index-Cyx1Ba9m.css"
+    "/build/assets/Index-CubpU-Ow.js",
+    "/build/assets/Index-BtTcLEv_.css"
   ],
   "Modules/Base/resources/assets/js/components/HomeAboutus.vue": [
-    "/build/assets/Index-DSCo2sjx.js",
-    "/build/assets/Index-Cyx1Ba9m.css"
+    "/build/assets/Index-CubpU-Ow.js",
+    "/build/assets/Index-BtTcLEv_.css"
   ],
   "Modules/Base/resources/assets/js/components/HomeAboutus.vue?vue&type=style&index=0&scoped=b7586250&lang.css": [
-    "/build/assets/Index-DSCo2sjx.js",
-    "/build/assets/Index-Cyx1Ba9m.css"
+    "/build/assets/Index-CubpU-Ow.js",
+    "/build/assets/Index-BtTcLEv_.css"
   ],
   "Modules/Base/resources/assets/js/components/HomeArticlesSection.vue": [
-    "/build/assets/Index-DSCo2sjx.js",
-    "/build/assets/Index-Cyx1Ba9m.css"
+    "/build/assets/Index-CubpU-Ow.js",
+    "/build/assets/Index-BtTcLEv_.css"
   ],
   "Modules/Base/resources/assets/js/components/HomeArticlesSection.vue?vue&type=style&index=0&scoped=69a42cf5&lang.scss": [
-    "/build/assets/Index-DSCo2sjx.js",
-    "/build/assets/Index-Cyx1Ba9m.css"
+    "/build/assets/Index-CubpU-Ow.js",
+    "/build/assets/Index-BtTcLEv_.css"
   ],
   "Modules/Base/resources/assets/js/components/HomeArticlesSection.vue?vue&type=style&index=1&lang.css": [
-    "/build/assets/Index-DSCo2sjx.js",
-    "/build/assets/Index-Cyx1Ba9m.css"
+    "/build/assets/Index-CubpU-Ow.js",
+    "/build/assets/Index-BtTcLEv_.css"
   ],
   "Modules/Base/resources/assets/js/components/HomeHero.vue": [
-    "/build/assets/Index-DSCo2sjx.js",
-    "/build/assets/Index-Cyx1Ba9m.css"
+    "/build/assets/Index-CubpU-Ow.js",
+    "/build/assets/Index-BtTcLEv_.css"
   ],
   "Modules/Base/resources/assets/js/components/HomeHero.vue?vue&type=style&index=0&scoped=524e89df&lang.css": [
-    "/build/assets/Index-DSCo2sjx.js",
-    "/build/assets/Index-Cyx1Ba9m.css"
+    "/build/assets/Index-CubpU-Ow.js",
+    "/build/assets/Index-BtTcLEv_.css"
   ],
   "Modules/Base/resources/assets/js/components/HomeHeroPropertySearch.vue": [
-    "/build/assets/Index-DSCo2sjx.js",
-    "/build/assets/Index-Cyx1Ba9m.css"
+    "/build/assets/Index-CubpU-Ow.js",
+    "/build/assets/Index-BtTcLEv_.css"
   ],
-  "Modules/Base/resources/assets/js/components/HomeHeroPropertySearch.vue?vue&type=style&index=0&scoped=79a8a1b6&lang.scss": [
-    "/build/assets/Index-DSCo2sjx.js",
-    "/build/assets/Index-Cyx1Ba9m.css"
+  "Modules/Base/resources/assets/js/components/HomeHeroPropertySearch.vue?vue&type=style&index=0&scoped=e5ba026d&lang.scss": [
+    "/build/assets/Index-CubpU-Ow.js",
+    "/build/assets/Index-BtTcLEv_.css"
   ],
   "Modules/Base/resources/assets/js/components/HomeHeroPropertySearch.vue?vue&type=style&index=1&lang.css": [
-    "/build/assets/Index-DSCo2sjx.js",
-    "/build/assets/Index-Cyx1Ba9m.css"
+    "/build/assets/Index-CubpU-Ow.js",
+    "/build/assets/Index-BtTcLEv_.css"
   ],
   "Modules/Base/resources/assets/js/components/HomeServices.vue": [
-    "/build/assets/Index-DSCo2sjx.js",
-    "/build/assets/Index-Cyx1Ba9m.css"
+    "/build/assets/Index-CubpU-Ow.js",
+    "/build/assets/Index-BtTcLEv_.css"
   ],
   "Modules/Base/resources/assets/js/components/HomeServices.vue?vue&type=style&index=0&scoped=e9d9e2df&lang.css": [
-    "/build/assets/Index-DSCo2sjx.js",
-    "/build/assets/Index-Cyx1Ba9m.css"
+    "/build/assets/Index-CubpU-Ow.js",
+    "/build/assets/Index-BtTcLEv_.css"
   ],
   "Modules/Base/resources/assets/js/components/HomeTestimonials.vue": [
-    "/build/assets/Index-DSCo2sjx.js",
-    "/build/assets/Index-Cyx1Ba9m.css"
+    "/build/assets/Index-CubpU-Ow.js",
+    "/build/assets/Index-BtTcLEv_.css"
   ],
   "Modules/Base/resources/assets/js/components/HomeTestimonials.vue?vue&type=style&index=0&scoped=e4f8cd7c&lang.scss": [
-    "/build/assets/Index-DSCo2sjx.js",
-    "/build/assets/Index-Cyx1Ba9m.css"
+    "/build/assets/Index-CubpU-Ow.js",
+    "/build/assets/Index-BtTcLEv_.css"
   ],
   "Modules/Base/resources/assets/js/components/PopularPropertiesSection.vue": [
     "/build/assets/PopularPropertiesSection-DL1ZK1LH.js",
@@ -97,12 +97,12 @@
     "/build/assets/PopularPropertiesSection-MuspxSwG.css"
   ],
   "Modules/Base/resources/assets/js/components/TurkishCitizenshipOverview.vue": [
-    "/build/assets/Index-DSCo2sjx.js",
-    "/build/assets/Index-Cyx1Ba9m.css"
+    "/build/assets/Index-CubpU-Ow.js",
+    "/build/assets/Index-BtTcLEv_.css"
   ],
   "Modules/Base/resources/assets/js/components/TurkishCitizenshipOverview.vue?vue&type=style&index=0&scoped=27157782&lang.css": [
-    "/build/assets/Index-DSCo2sjx.js",
-    "/build/assets/Index-Cyx1Ba9m.css"
+    "/build/assets/Index-CubpU-Ow.js",
+    "/build/assets/Index-BtTcLEv_.css"
   ],
   "Modules/Base/resources/assets/js/components/TurkishCitizenshipSplitTitle.vue": [
     "/build/assets/TurkishCitizenshipSplitTitle-BUyN1Mfc.js",
@@ -153,32 +153,32 @@
     "/build/assets/TurkishCitizenship-C2oN9BVK.css"
   ],
   "Modules/Property/resources/assets/js/Pages/index.vue": [
-    "/build/assets/Pages-qJaI3-Ul.js",
-    "/build/assets/Pages-CA9g5maX.css"
+    "/build/assets/Pages-BenSfAND.js",
+    "/build/assets/Pages-NIgxSUvN.css"
   ],
   "Modules/Property/resources/assets/js/Pages/show.vue": [
-    "/build/assets/show-BoLpkgWc.js",
-    "/build/assets/show-ClivPD3F.css"
+    "/build/assets/show-BtHCZ1-4.js",
+    "/build/assets/show-Z49OCFBx.css"
   ],
-  "Modules/Property/resources/assets/js/Pages/show.vue?vue&type=style&index=0&scoped=64646fb4&lang.scss": [
-    "/build/assets/show-BoLpkgWc.js",
-    "/build/assets/show-ClivPD3F.css"
+  "Modules/Property/resources/assets/js/Pages/show.vue?vue&type=style&index=0&scoped=3447f0a6&lang.scss": [
+    "/build/assets/show-BtHCZ1-4.js",
+    "/build/assets/show-Z49OCFBx.css"
   ],
   "Modules/Property/resources/assets/js/Pages/show.vue?vue&type=style&index=1&lang.scss": [
-    "/build/assets/show-BoLpkgWc.js",
-    "/build/assets/show-ClivPD3F.css"
+    "/build/assets/show-BtHCZ1-4.js",
+    "/build/assets/show-Z49OCFBx.css"
   ],
   "Modules/Property/resources/assets/js/components/FeaturedPropertiesSidebar.vue": [
-    "/build/assets/FeaturedPropertiesSidebar-4D26uQ27.js",
-    "/build/assets/FeaturedPropertiesSidebar-CuHinFXm.css"
+    "/build/assets/FeaturedPropertiesSidebar-BaoUo9Vd.js",
+    "/build/assets/FeaturedPropertiesSidebar-CnI8-R4z.css"
   ],
   "Modules/Property/resources/assets/js/components/FeaturedPropertyUnitAreasFlip.vue": [
-    "/build/assets/FeaturedPropertiesSidebar-4D26uQ27.js",
-    "/build/assets/FeaturedPropertiesSidebar-CuHinFXm.css"
+    "/build/assets/FeaturedPropertiesSidebar-BaoUo9Vd.js",
+    "/build/assets/FeaturedPropertiesSidebar-CnI8-R4z.css"
   ],
-  "Modules/Property/resources/assets/js/components/FeaturedPropertyUnitAreasFlip.vue?vue&type=style&index=0&scoped=f35e81f6&lang.scss": [
-    "/build/assets/FeaturedPropertiesSidebar-4D26uQ27.js",
-    "/build/assets/FeaturedPropertiesSidebar-CuHinFXm.css"
+  "Modules/Property/resources/assets/js/components/FeaturedPropertyUnitAreasFlip.vue?vue&type=style&index=0&scoped=0ea01fa3&lang.scss": [
+    "/build/assets/FeaturedPropertiesSidebar-BaoUo9Vd.js",
+    "/build/assets/FeaturedPropertiesSidebar-CnI8-R4z.css"
   ],
   "Modules/Property/resources/assets/js/components/PropertyCard.vue": [],
   "Modules/Property/resources/assets/js/components/PropertyCard.vue?vue&type=style&index=0&scoped=3e40eff9&lang.scss": [],
@@ -191,28 +191,28 @@
     "/build/assets/PropertyListingPagination-DqSNAame.js"
   ],
   "Modules/Property/resources/assets/js/components/PropertyListingSidebar.vue": [
-    "/build/assets/Pages-qJaI3-Ul.js",
-    "/build/assets/Pages-CA9g5maX.css"
+    "/build/assets/Pages-BenSfAND.js",
+    "/build/assets/Pages-NIgxSUvN.css"
   ],
-  "Modules/Property/resources/assets/js/components/PropertyListingSidebar.vue?vue&type=style&index=0&scoped=75585ca8&lang.scss": [
-    "/build/assets/Pages-qJaI3-Ul.js",
-    "/build/assets/Pages-CA9g5maX.css"
+  "Modules/Property/resources/assets/js/components/PropertyListingSidebar.vue?vue&type=style&index=0&scoped=6d4ce502&lang.scss": [
+    "/build/assets/Pages-BenSfAND.js",
+    "/build/assets/Pages-NIgxSUvN.css"
   ],
   "Modules/Property/resources/assets/js/components/PropertyListingSidebar.vue?vue&type=style&index=1&lang.scss": [
-    "/build/assets/Pages-qJaI3-Ul.js",
-    "/build/assets/Pages-CA9g5maX.css"
+    "/build/assets/Pages-BenSfAND.js",
+    "/build/assets/Pages-NIgxSUvN.css"
   ],
   "Modules/Property/resources/assets/js/components/PropertyListingToolbar.vue": [
-    "/build/assets/Pages-qJaI3-Ul.js",
-    "/build/assets/Pages-CA9g5maX.css"
+    "/build/assets/Pages-BenSfAND.js",
+    "/build/assets/Pages-NIgxSUvN.css"
   ],
   "Modules/Property/resources/assets/js/components/PropertyShowAttributes.vue": [
-    "/build/assets/show-BoLpkgWc.js",
-    "/build/assets/show-ClivPD3F.css"
+    "/build/assets/show-BtHCZ1-4.js",
+    "/build/assets/show-Z49OCFBx.css"
   ],
   "Modules/Property/resources/assets/js/components/PropertyShowAttributes.vue?vue&type=style&index=0&scoped=dc95a293&lang.scss": [
-    "/build/assets/show-BoLpkgWc.js",
-    "/build/assets/show-ClivPD3F.css"
+    "/build/assets/show-BtHCZ1-4.js",
+    "/build/assets/show-Z49OCFBx.css"
   ],
   "Modules/Property/resources/assets/js/components/PropertyShowContactSidebar.vue": [
     "/build/assets/PropertyShowContactSidebar-Bz3YEnKW.js",
@@ -223,44 +223,44 @@
     "/build/assets/PropertyShowContactSidebar-IBHZS7Ob.css"
   ],
   "Modules/Property/resources/assets/js/components/PropertyShowGallery.vue": [
-    "/build/assets/show-BoLpkgWc.js",
-    "/build/assets/show-ClivPD3F.css"
+    "/build/assets/show-BtHCZ1-4.js",
+    "/build/assets/show-Z49OCFBx.css"
   ],
-  "Modules/Property/resources/assets/js/components/PropertyShowGallery.vue?vue&type=style&index=0&scoped=acdbe3e7&lang.scss": [
-    "/build/assets/show-BoLpkgWc.js",
-    "/build/assets/show-ClivPD3F.css"
+  "Modules/Property/resources/assets/js/components/PropertyShowGallery.vue?vue&type=style&index=0&scoped=ac69d4d9&lang.scss": [
+    "/build/assets/show-BtHCZ1-4.js",
+    "/build/assets/show-Z49OCFBx.css"
   ],
   "Modules/Property/resources/assets/js/components/PropertyShowMap.vue": [
-    "/build/assets/show-BoLpkgWc.js",
-    "/build/assets/show-ClivPD3F.css"
+    "/build/assets/show-BtHCZ1-4.js",
+    "/build/assets/show-Z49OCFBx.css"
   ],
   "Modules/Property/resources/assets/js/components/PropertyShowMap.vue?vue&type=style&index=0&scoped=68066e45&lang.css": [
-    "/build/assets/show-BoLpkgWc.js",
-    "/build/assets/show-ClivPD3F.css"
+    "/build/assets/show-BtHCZ1-4.js",
+    "/build/assets/show-Z49OCFBx.css"
   ],
   "Modules/Property/resources/assets/js/components/PropertyShowUnitTypesTable.vue": [
-    "/build/assets/show-BoLpkgWc.js",
-    "/build/assets/show-ClivPD3F.css"
+    "/build/assets/show-BtHCZ1-4.js",
+    "/build/assets/show-Z49OCFBx.css"
   ],
   "Modules/Property/resources/assets/js/components/PropertyShowUnitTypesTable.vue?vue&type=style&index=0&scoped=82d46c5b&lang.scss": [
-    "/build/assets/show-BoLpkgWc.js",
-    "/build/assets/show-ClivPD3F.css"
+    "/build/assets/show-BtHCZ1-4.js",
+    "/build/assets/show-Z49OCFBx.css"
   ],
   "Modules/Property/resources/assets/js/components/PropertyShowVideo.vue": [
-    "/build/assets/show-BoLpkgWc.js",
-    "/build/assets/show-ClivPD3F.css"
+    "/build/assets/show-BtHCZ1-4.js",
+    "/build/assets/show-Z49OCFBx.css"
   ],
   "Modules/Property/resources/assets/js/components/PropertyShowVideo.vue?vue&type=style&index=0&scoped=620fcb77&lang.scss": [
-    "/build/assets/show-BoLpkgWc.js",
-    "/build/assets/show-ClivPD3F.css"
+    "/build/assets/show-BtHCZ1-4.js",
+    "/build/assets/show-Z49OCFBx.css"
   ],
   "Modules/Property/resources/assets/js/components/PropertyShowVideo.vue?vue&type=style&index=1&lang.scss": [
-    "/build/assets/show-BoLpkgWc.js",
-    "/build/assets/show-ClivPD3F.css"
+    "/build/assets/show-BtHCZ1-4.js",
+    "/build/assets/show-Z49OCFBx.css"
   ],
   "Modules/Property/resources/assets/js/components/RecentPropertiesSidebar.vue": [
-    "/build/assets/show-BoLpkgWc.js",
-    "/build/assets/show-ClivPD3F.css"
+    "/build/assets/show-BtHCZ1-4.js",
+    "/build/assets/show-Z49OCFBx.css"
   ],
   "Modules/Property/resources/assets/js/utils/propertyLocalized.js": [],
   "Modules/Property/resources/assets/js/utils/propertyLocation.js": [],
@@ -424,12 +424,12 @@
     "/build/assets/structuredData-HzbggR2u.js"
   ],
   "resources/js/components/buttons/ReadMore.vue": [
-    "/build/assets/Index-DSCo2sjx.js",
-    "/build/assets/Index-Cyx1Ba9m.css"
+    "/build/assets/Index-CubpU-Ow.js",
+    "/build/assets/Index-BtTcLEv_.css"
   ],
   "resources/js/components/buttons/ReadMore.vue?vue&type=style&index=0&lang.css": [
-    "/build/assets/Index-DSCo2sjx.js",
-    "/build/assets/Index-Cyx1Ba9m.css"
+    "/build/assets/Index-CubpU-Ow.js",
+    "/build/assets/Index-BtTcLEv_.css"
   ],
   "resources/js/components/global/InnerPageHeadingHero.vue": [
     "/build/assets/InnerPageHeadingHero-Cb6v5tfJ.js"

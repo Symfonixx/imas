@@ -1,17 +1,35 @@
 <template>
     <div
-        v-if="names.length > 0"
+        v-if="units.length > 0"
         class="imas-featured-unit-areas"
         role="group"
         :aria-label="trans('properties.unit_types_aria')"
         aria-live="polite"
     >
+        <i
+            class="fa fa-building imas-featured-unit-areas__icon"
+            aria-hidden="true"
+        ></i>
         <div class="imas-featured-unit-areas__flip">
             <transition name="imas-featured-unit-area-flip" mode="out-in">
-                <span
+                <div
                     :key="activeIndex"
-                    class="imas-featured-unit-areas__value"
-                >{{ activeName }}</span>
+                    class="imas-featured-unit-areas__slide"
+                >
+                    <span class="imas-featured-unit-areas__name">{{
+                        activeUnit.name
+                    }}</span>
+                    <span
+                        v-if="activeUnit.area"
+                        class="imas-featured-unit-areas__sep"
+                        aria-hidden="true"
+                    >→</span>
+                    <span
+                        v-if="activeUnit.area"
+                        class="imas-featured-unit-areas__area"
+                        dir="ltr"
+                    >{{ activeUnit.area }}</span>
+                </div>
             </transition>
         </div>
     </div>
@@ -36,15 +54,16 @@ const trans = (key) => page.props.translations[key] || key;
 const activeIndex = ref(0);
 let rotateTimer = null;
 
-/** Unit type names only (skip empty labels). */
-const names = computed(() =>
-    (Array.isArray(props.unitTypes) ? props.unitTypes : [])
-        .map((ut) => unitTypeDisplayParts(ut).name)
-        .filter((name) => typeof name === "string" && name.trim() !== "" && name !== "—"),
+/** Unit types with a displayable name (skip empty labels). */
+const units = computed(() =>
+    (Array.isArray(props.unitTypes) ? props.unitTypes : []).filter((ut) => {
+        const name = unitTypeDisplayParts(ut).name;
+        return typeof name === "string" && name.trim() !== "" && name !== "—";
+    }),
 );
 
-const activeName = computed(
-    () => names.value[activeIndex.value] ?? names.value[0] ?? "",
+const activeUnit = computed(() =>
+    unitTypeDisplayParts(units.value[activeIndex.value] ?? units.value[0]),
 );
 
 function clearRotateTimer() {
@@ -58,12 +77,12 @@ function startRotateTimer() {
     clearRotateTimer();
     activeIndex.value = 0;
 
-    if (names.value.length <= 1 || prefersReducedMotion()) {
+    if (units.value.length <= 1 || prefersReducedMotion()) {
         return;
     }
 
     rotateTimer = setInterval(() => {
-        activeIndex.value = (activeIndex.value + 1) % names.value.length;
+        activeIndex.value = (activeIndex.value + 1) % units.value.length;
     }, 3000);
 }
 
@@ -79,7 +98,10 @@ onBeforeUnmount(() => clearRotateTimer());
 
 <style scoped lang="scss">
 .imas-featured-unit-areas {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.45rem;
     width: 100%;
     margin: 0;
     padding: 0;
@@ -89,25 +111,65 @@ onBeforeUnmount(() => clearRotateTimer());
     line-height: 1.35;
 }
 
+.imas-featured-unit-areas__icon {
+    flex-shrink: 0;
+    color: var(--brand-gold);
+    font-size: 0.95rem;
+    line-height: 1;
+}
+
 .imas-featured-unit-areas__flip {
     position: relative;
     overflow: hidden;
-    width: 100%;
+    flex: 1;
+    min-width: 0;
     min-height: 1.35em;
 }
 
-.imas-featured-unit-areas__value {
-    display: block;
+.imas-featured-unit-areas__slide {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.3rem;
     width: 100%;
+    max-width: 100%;
     color: var(--text);
     font-weight: 600;
-    white-space: nowrap;
+    line-height: 1.35;
+}
+
+.imas-featured-unit-areas__name {
+    flex-shrink: 1;
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.imas-featured-unit-areas__sep {
+    flex-shrink: 0;
+    display: inline-block;
+    color: var(--brand-gold);
+    font-weight: 700;
+    line-height: 1;
+}
+
+html[dir="rtl"] .imas-featured-unit-areas__sep {
+    transform: rotate(180deg);
+}
+
+.imas-featured-unit-areas__area {
+    flex-shrink: 0;
+    white-space: nowrap;
+    unicode-bidi: isolate;
 }
 
 .imas-featured-unit-area-flip-enter-active,
 .imas-featured-unit-area-flip-leave-active {
+    display: flex !important;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.3rem;
     transition:
         transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
         opacity 0.35s ease;

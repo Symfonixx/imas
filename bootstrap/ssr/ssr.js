@@ -1124,16 +1124,16 @@ async function resolvePageComponent(path, pages) {
 function resolveInertiaPage(name) {
 	const modules = name.split("::");
 	if (modules.length > 1) return resolvePageComponent(`../../Modules/${modules[0]}/resources/assets/js/Pages/${modules[1]}.vue`, /* @__PURE__ */ Object.assign({
-		"../../Modules/Base/resources/assets/js/Pages/AboutUs.vue": () => import("./assets/AboutUs-g2sARHfo.js"),
-		"../../Modules/Base/resources/assets/js/Pages/Index.vue": () => import("./assets/Index-DSCo2sjx.js"),
+		"../../Modules/Base/resources/assets/js/Pages/AboutUs.vue": () => import("./assets/AboutUs-K6oXpmvT.js"),
+		"../../Modules/Base/resources/assets/js/Pages/Index.vue": () => import("./assets/Index-CubpU-Ow.js"),
 		"../../Modules/Cms/resources/assets/js/Pages/Index.vue": () => import("./assets/Index-PqnY7Mso.js"),
 		"../../Modules/Cms/resources/assets/js/Pages/PageShow.vue": () => import("./assets/PageShow-DMAM2KpE.js"),
 		"../../Modules/Cms/resources/assets/js/Pages/Show.vue": () => import("./assets/Show-3L6QGW0H.js"),
 		"../../Modules/Corporate/resources/assets/js/Pages/index.vue": () => import("./assets/Pages-DmYQ7aH7.js"),
 		"../../Modules/Property/resources/assets/js/Pages/FavoriteProperties.vue": () => import("./assets/FavoriteProperties-CW5GQVsd.js"),
 		"../../Modules/Property/resources/assets/js/Pages/TurkishCitizenship.vue": () => import("./assets/TurkishCitizenship-CDn2oqmk.js"),
-		"../../Modules/Property/resources/assets/js/Pages/index.vue": () => import("./assets/Pages-qJaI3-Ul.js"),
-		"../../Modules/Property/resources/assets/js/Pages/show.vue": () => import("./assets/show-BoLpkgWc.js"),
+		"../../Modules/Property/resources/assets/js/Pages/index.vue": () => import("./assets/Pages-BenSfAND.js"),
+		"../../Modules/Property/resources/assets/js/Pages/show.vue": () => import("./assets/show-BtHCZ1-4.js"),
 		"../../Modules/Support/resources/assets/js/Pages/ContactUs.vue": () => import("./assets/ContactUs-CO2WY5ta.js"),
 		"../../Modules/User/resources/assets/js/Pages/Auth/ForgotPassword.vue": () => import("./assets/ForgotPassword-CFFXi9Qw.js"),
 		"../../Modules/User/resources/assets/js/Pages/Auth/Login.vue": () => import("./assets/Login-DzIOw7uK.js"),

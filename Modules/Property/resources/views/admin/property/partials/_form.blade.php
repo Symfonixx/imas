@@ -532,11 +532,6 @@
                     'baseUrl' => url('/').'/property/',
                 ])
 
-                <x-admin.form-group label="Schema JSON-LD" name="meta_schema">
-                    <textarea class="form-control form-control-solid" rows="5"
-                              name="meta_schema">{{ old('meta_schema', $seoMeta['schema'] ?? '') }}</textarea>
-                </x-admin.form-group>
-
                 @include('cms::admin.partials._seo_aside', [
                     'hasFeaturedImage' => $isEdit && ! empty($property->thumbnail),
                     'hasMetaImage' => ! empty($seoMeta['meta_img']),

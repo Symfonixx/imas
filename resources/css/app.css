@@ -745,6 +745,13 @@ html[dir="rtl"]
     transform: none;
 }
 
+/* Keep testimonial stacking local so cards don’t paint over the next section */
+section.home-testimonials.testimonials {
+    position: relative;
+    isolation: isolate;
+    z-index: 0;
+}
+
 /**
  * Scroll-pinned header (replaces theme jQuery `#header.cloned` so Vue/Inertia stay on the visible bar).
  * Enter animation matches menu.css `#header.cloned.unsticky` → `.sticky` (0.3s transform + visibility).

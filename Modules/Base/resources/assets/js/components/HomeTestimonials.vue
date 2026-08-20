@@ -20,7 +20,7 @@
                     :key="item.id"
                     class="singleJobClinet bg-gray"
                 >
-                    <p class="quote" v-html="item.quote"></p>
+                    <div class="quote" v-html="item.quote"></div>
                     <div class="detailJC">
                         <span><img :src="item.avatar" :alt="item.name" width="72" height="72" loading="lazy" decoding="async" /></span>
                         <h5>
@@ -94,6 +94,12 @@ async function ensureOwlCarousel() {
     await loadOwlCarousel("/theme/findhouses");
 }
 
+function refreshOwlLayout($el) {
+    if (!$el?.data("owl.carousel")) return;
+    $el.trigger("refresh.owl.carousel");
+    refreshScrollTrigger();
+}
+
 async function initOwl() {
     const el = testimonialsCarousel.value;
     if (!el || !props.testimonials.length) return;
@@ -112,13 +118,14 @@ async function initOwl() {
     const rtl = String(page.props.text_direction || "").toLowerCase() === "rtl";
     const prevLabel = trans("global.previous");
     const nextLabel = trans("global.next");
+    const itemCount = props.testimonials.length;
     $el.owlCarousel({
         rtl,
-        items: 2,
-        loop: props.testimonials.length > 1,
+        items: Math.min(2, itemCount),
+        loop: itemCount > 1,
         margin: 30,
         autoplay: false,
-        nav: true,
+        nav: itemCount > 1,
         smartSpeed: 1000,
         slideSpeed: 1000,
         navText: [
@@ -128,13 +135,15 @@ async function initOwl() {
         dots: false,
         responsive: {
             0: { items: 1 },
-            991: { items: 3 },
+            991: { items: Math.min(3, itemCount) },
         },
         onInitialized(event) {
             const root = event?.target;
             if (!root) return;
             root.querySelector(".owl-prev")?.setAttribute("aria-label", prevLabel);
             root.querySelector(".owl-next")?.setAttribute("aria-label", nextLabel);
+            // Flex equal-height + Owl float can leave stage height at 0 until refresh.
+            requestAnimationFrame(() => refreshOwlLayout($el));
         },
     });
 }
@@ -177,7 +186,22 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped lang="scss">
-/* Equal-height cards in Owl carousel */
+/*
+ * Equal-height cards without collapsing Owl’s stage height.
+ * Owl items are floated; combining float + flex without `float: none`
+ * often leaves `.owl-stage-outer` at ~0 height so cards overflow into
+ * the next section (blogs).
+ */
+.home-testimonials :deep(.owl-carousel.owl-loaded) {
+    display: block;
+}
+
+.home-testimonials :deep(.owl-stage-outer) {
+    display: block;
+    overflow: hidden;
+    height: auto !important;
+}
+
 .home-testimonials :deep(.owl-stage) {
     display: flex;
     align-items: stretch;
@@ -185,7 +209,8 @@ onBeforeUnmount(() => {
 
 .home-testimonials :deep(.owl-item) {
     display: flex;
-    height: auto;
+    float: none;
+    height: auto !important;
 }
 
 .home-testimonials .singleJobClinet {
@@ -193,8 +218,10 @@ onBeforeUnmount(() => {
     flex-direction: column;
     flex: 1 1 auto;
     width: 100%;
-    height: 100%;
+    height: auto;
+    min-height: 100%;
     margin-bottom: 0;
+    box-sizing: border-box;
 }
 
 .quote {

@@ -214,20 +214,26 @@
                     class="imas-second-footer__bottom-bar imas-second-footer__bottom-bar--empty"
                     aria-hidden="true"
                 ></div>
-                <p class="imas-second-footer__copy">
-                    {{ year }} © {{ appName }} —
-                    {{ trans("navBar.All Rights Reserved") }}
+                <p class="imas-second-footer__copy" dir="ltr">
+                    <span class="imas-second-footer__copy-brand"
+                        >{{ year }} © {{ appName }}</span
+                    >
+                    <span class="imas-second-footer__copy-sep" aria-hidden="true"
+                        > — </span
+                    >
+                    <span class="imas-second-footer__copy-rights">{{
+                        trans("navBar.All Rights Reserved")
+                    }}</span>
                 </p>
 
                 <a
                     href="https://symfonix.io/en"
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="text-decoration-none"
+                    class="imas-second-footer__developer text-decoration-none"
+                    dir="auto"
                 >
-                    <p class="imas-second-footer__developer">
-                        <span>{{ trans("Developed By Symfonix") }}</span>
-                    </p>
+                    {{ trans("Developed By Symfonix") }}
                 </a>
             </div>
         </div>
@@ -718,11 +724,15 @@ onBeforeUnmount(() => {
 }
 
 .imas-second-footer__inner {
-    display: grid;
+    /* Beat theme `.second-footer .container { display:flex; justify-content:space-between }` */
+    display: grid !important;
     grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     align-items: center;
+    justify-content: initial;
     gap: 1rem 1.5rem;
     padding-inline: 24px;
+    /* Keep slots: links | copyright | developer — don’t mirror in RTL */
+    direction: ltr;
 }
 
 .imas-second-footer__bottom-bar {
@@ -765,6 +775,19 @@ onBeforeUnmount(() => {
     color: var(--text-muted, #6b7896) !important;
     text-align: center;
     justify-self: center;
+    unicode-bidi: isolate;
+}
+
+.imas-second-footer__copy-brand {
+    unicode-bidi: isolate;
+}
+
+.imas-second-footer__copy-sep {
+    unicode-bidi: isolate;
+}
+
+.imas-second-footer__copy-rights {
+    unicode-bidi: isolate;
 }
 
 /* blog-v2 .copyright .socials — placed under newsletter */
@@ -809,6 +832,12 @@ onBeforeUnmount(() => {
     font-size: 12.5px;
     color: var(--text-muted, #6b7896);
     font-weight: 400;
+    transition: color 0.2s ease;
+}
+
+.imas-second-footer__developer:hover {
+    color: var(--brand-gold, #d9a800);
+    text-decoration: none;
 }
 
 .imas-second-footer__developer-link {

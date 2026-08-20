@@ -139,6 +139,14 @@
                                     >
                                         {{ trans("Search Now") }}
                                     </button>
+                                    <button
+                                        v-if="hasActiveFilters"
+                                        type="button"
+                                        class="btn btn-block imas-listing-property-search__reset"
+                                        @click="clearFilters"
+                                    >
+                                        {{ trans("listing_page.clear_filters") }}
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -194,11 +202,12 @@ import {
     ref,
     watch,
 } from "vue";
-import { usePage } from "@inertiajs/vue3";
+import { router, usePage } from "@inertiajs/vue3";
 import {
     destroyHeroRangeSliders,
     initHeroRangeSliders,
     loadJqueryUi,
+    setHeroRangeSliderValues,
 } from "@/utils/initHeroRangeSliders.js";
 import { formatPropertyMoney, propertyStartPrice } from "../utils/propertyPrice.js";
 import FeaturedPropertiesSidebar from "./FeaturedPropertiesSidebar.vue";
@@ -272,8 +281,80 @@ const areaRange = ref([0, 1]);
 
 const includeAdvancedParams = computed(() => rangesDirty.value);
 
+const hasActiveFilters = computed(() => {
+    const f = props.filters ?? {};
+    const locationIds = Array.isArray(f.location_id)
+        ? f.location_id.filter((id) => id != null && id !== "")
+        : f.location_id != null && f.location_id !== ""
+          ? [f.location_id]
+          : [];
+    const unitIds = Array.isArray(f.project_unit_type_id)
+        ? f.project_unit_type_id.filter((id) => id != null && id !== "")
+        : f.project_unit_type_id != null && f.project_unit_type_id !== ""
+          ? [f.project_unit_type_id]
+          : [];
+
+    if (locationIds.length > 0) {
+        return true;
+    }
+    if (f.property_type_id != null && f.property_type_id !== "") {
+        return true;
+    }
+    if (unitIds.length > 0) {
+        return true;
+    }
+    if (typeof f.q === "string" && f.q.trim() !== "") {
+        return true;
+    }
+    if (
+        f.min_price != null ||
+        f.max_price != null ||
+        f.min_area != null ||
+        f.max_area != null
+    ) {
+        return true;
+    }
+
+    return (
+        searchCityIds.value.length > 0 ||
+        searchLocationIds.value.length > 0 ||
+        searchPropertyTypeId.value !== "" ||
+        searchUnitTypeId.value !== "" ||
+        rangesDirty.value
+    );
+});
+
 function trans(key) {
     return page.props.translations[key] || key;
+}
+
+function clearFilters() {
+    searchCityIds.value = [];
+    searchLocationIds.value = [];
+    searchPropertyTypeId.value = "";
+    searchUnitTypeId.value = "";
+    priceRange.value = [priceBounds.value.min, priceBounds.value.max];
+    areaRange.value = [areaBounds.value.min, areaBounds.value.max];
+    rangesDirty.value = false;
+
+    setHeroRangeSliderValues({
+        areaSelector: LISTING_AREA_SELECTOR,
+        priceSelector: LISTING_PRICE_SELECTOR,
+        areaValues: areaRange.value,
+        priceValues: priceRange.value,
+        areaUnit: areaBounds.value.unit,
+        priceUnit: priceBounds.value.currency,
+    });
+
+    const query = {};
+    if (props.sort) {
+        query.sort = props.sort;
+    }
+
+    router.get(props.searchAction, query, {
+        preserveState: false,
+        preserveScroll: true,
+    });
 }
 
 function locale() {
@@ -560,6 +641,34 @@ onBeforeUnmount(() => {
 .imas-listing-property-search :deep(.btn.btn-yellow) {
     width: 100%;
     margin: 0;
+}
+
+.imas-listing-property-search :deep(.imas-listing-property-search__submit) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+
+.imas-listing-property-search :deep(.imas-listing-property-search__reset) {
+    width: 100%;
+    margin: 0;
+    background: transparent;
+    border: 1px solid var(--brand-gold);
+    color: var(--brand-gold);
+    font-weight: 600;
+}
+
+.imas-listing-property-search :deep(.imas-listing-property-search__reset:hover),
+.imas-listing-property-search
+    :deep(.imas-listing-property-search__reset:focus-visible) {
+    background: var(--brand-gold);
+    border-color: var(--brand-gold);
+    color: var(--text-on-gold);
+}
+
+.imas-listing-property-search
+    :deep(.imas-listing-property-search__reset:focus-visible) {
+    box-shadow: var(--ring);
 }
 
 /* Area + price — below last dropdown (unit type or property type) */

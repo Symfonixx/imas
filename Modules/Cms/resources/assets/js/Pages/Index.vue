@@ -44,6 +44,12 @@
             :content="ogUrl"
         />
         <meta
+            v-if="robots"
+            head-key="robots"
+            name="robots"
+            :content="robots"
+        />
+        <meta
             head-key="twitter:card"
             name="twitter:card"
             :content="twitterCard"
@@ -159,8 +165,16 @@ const {
     canonical: canonicalUrl,
     ogUrl,
     twitterCard,
+    robots,
 } = useDocumentSeo({
     pageTitle: () => props.title,
+    robots: () => {
+        const f = props.filters ?? {};
+        const hasQuery = typeof f.q === "string" && f.q.trim() !== "";
+        const hasCategory =
+            typeof f.category === "string" && f.category.trim() !== "";
+        return hasQuery || hasCategory ? "noindex, follow" : "";
+    },
     canonical: () => blogIndexLocalizedUrl(activeLocale.value),
 });
 

@@ -70,15 +70,20 @@ class SitemapService
         foreach ($pages as $page) {
             $alternates = $this->localizedUrls($locales, $page['path']);
             $xDefault = $alternates[$defaultLocale] ?? reset($alternates) ?: '';
+            $lastmod = $this->formatLastmod($page['lastmod'] ?? null);
 
-            $entries[] = [
-                'loc' => $xDefault,
-                'lastmod' => $this->formatLastmod($page['lastmod'] ?? null),
-                'changefreq' => $page['changefreq'],
-                'priority' => $page['priority'],
-                'alternates' => $alternates,
-                'xDefault' => $xDefault,
-            ];
+            // Emit a distinct <url><loc> per locale (en / ar / tr) so crawlers
+            // index each language version, not only the default.
+            foreach ($alternates as $loc) {
+                $entries[] = [
+                    'loc' => $loc,
+                    'lastmod' => $lastmod,
+                    'changefreq' => $page['changefreq'],
+                    'priority' => $page['priority'],
+                    'alternates' => $alternates,
+                    'xDefault' => $xDefault,
+                ];
+            }
         }
 
         return $entries;

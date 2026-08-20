@@ -4,6 +4,7 @@ namespace Modules\Property\Http\Controllers\Property;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Validator;
@@ -158,6 +159,17 @@ class PropertyController extends Controller
         $listingOgImage = $seoService->settingsImageUrl('property_show_banner')
             ?: $seoService->settingsImageUrl('meta_img');
 
+        $seoPayload = [
+            'page_title' => $pageTitle,
+            'description' => $description !== '' ? $description : null,
+            'og_image' => $listingOgImage !== '' ? $listingOgImage : null,
+            'canonical' => route('property.index'),
+        ];
+        // Faceted URLs are near-duplicates of the clean hub — noindex, keep follow for discovery.
+        if ($this->listingFiltersAreActive($filters)) {
+            $seoPayload['robots'] = 'noindex, follow';
+        }
+
         return Inertia::render('Property::index', [
             'title' => $pageTitle,
             'properties' => $properties,
@@ -172,12 +184,7 @@ class PropertyController extends Controller
             'seoDescription' => $description,
             'seoOgImage' => $listingOgImage,
         ])->withViewData([
-            'seo' => $seoService->documentSeo([
-                'page_title' => $pageTitle,
-                'description' => $description !== '' ? $description : null,
-                'og_image' => $listingOgImage !== '' ? $listingOgImage : null,
-                'canonical' => route('property.index'),
-            ]),
+            'seo' => $seoService->documentSeo($seoPayload),
         ]);
     }
 
@@ -215,19 +222,22 @@ class PropertyController extends Controller
 
     /**
      * Display the specified published property.
+     * Missing or unpublished slugs fall back to the listings index (no 404).
      */
-    public function show(Request $request, Property $property): Response
+    public function show(Request $request, string $property): Response|RedirectResponse
     {
-        abort_unless($property->status === CmsStatus::PUBLISHED, 404);
-
         $userId = $request->user()?->id;
 
         $property = Property::query()
-            ->whereKey($property->id)
+            ->where('url_key', $property)
             ->where('status', CmsStatus::PUBLISHED)
             ->with(PropertyDetailEagerLoads::relations())
             ->withFavoriteStateForUser($userId)
-            ->firstOrFail();
+            ->first();
+
+        if ($property === null) {
+            return redirect()->route('property.index');
+        }
 
         $payload = PropertyDetailSerializer::toArray($property);
         $seoService = app(SeoDocumentService::class);
@@ -622,5 +632,51 @@ class PropertyController extends Controller
                 $inner->orWhere("title->{$locale}", 'like', $pattern);
             }
         });
+    }
+
+    /**
+     * True when listing query params narrow results (price, type, location, keyword, etc.).
+     *
+     * @param  array{
+     *     q?: string|null,
+     *     location_id?: list<int>|array<int, mixed>,
+     *     property_type_id?: int|string|null,
+     *     min_price?: float|null,
+     *     max_price?: float|null,
+     *     min_area?: float|null,
+     *     max_area?: float|null,
+     *     project_unit_type_id?: list<int>|array<int, mixed>
+     * }  $filters
+     */
+    private function listingFiltersAreActive(array $filters): bool
+    {
+        if (isset($filters['q']) && is_string($filters['q']) && trim($filters['q']) !== '') {
+            return true;
+        }
+
+        $locationIds = array_values(array_filter(
+            array_map('intval', (array) ($filters['location_id'] ?? [])),
+            static fn (int $id): bool => $id > 0,
+        ));
+        if ($locationIds !== []) {
+            return true;
+        }
+
+        if (($filters['property_type_id'] ?? null) !== null && $filters['property_type_id'] !== '') {
+            return true;
+        }
+
+        foreach (['min_price', 'max_price', 'min_area', 'max_area'] as $key) {
+            if (($filters[$key] ?? null) !== null) {
+                return true;
+            }
+        }
+
+        $unitIds = array_values(array_filter(
+            array_map('intval', (array) ($filters['project_unit_type_id'] ?? [])),
+            static fn (int $id): bool => $id > 0,
+        ));
+
+        return $unitIds !== [];
     }
 }

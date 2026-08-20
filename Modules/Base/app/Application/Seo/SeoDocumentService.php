@@ -57,6 +57,10 @@ class SeoDocumentService
 
         $title = $this->resolveTitle($overrides, $siteName);
         $description = $this->resolveDescription($overrides);
+        // PSI SEO audit requires a non-empty meta description; fall back to title.
+        if ($description === '') {
+            $description = $title !== '' ? $title : $siteName;
+        }
         $keywords = $this->resolveKeywords($overrides);
         $ogImage = $this->resolveOgImage($overrides);
         $canonical = $this->stringOverride($overrides['canonical'] ?? null);

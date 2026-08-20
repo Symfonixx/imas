@@ -22,7 +22,7 @@
                 >
                     <p class="quote" v-html="item.quote"></p>
                     <div class="detailJC">
-                        <span><img :src="item.avatar" :alt="item.name" /></span>
+                        <span><img :src="item.avatar" :alt="item.name" width="72" height="72" loading="lazy" decoding="async" /></span>
                         <h5>
                             <a
                                 v-if="item.link"
@@ -85,13 +85,33 @@ function jquery() {
     return window.jQuery ?? window.$ ?? null;
 }
 
-function initOwl() {
+async function ensureOwlCarousel() {
     const $ = jquery();
+    if ($?.fn?.owlCarousel) {
+        return;
+    }
+    const { loadOwlCarousel } = await import("@/utils/loadThemeAsset.js");
+    await loadOwlCarousel("/theme/findhouses");
+}
+
+async function initOwl() {
     const el = testimonialsCarousel.value;
-    if (!$ || !el || !props.testimonials.length) return;
+    if (!el || !props.testimonials.length) return;
+
+    try {
+        await ensureOwlCarousel();
+    } catch {
+        return;
+    }
+
+    const $ = jquery();
+    if (!$?.fn?.owlCarousel) return;
+
     const $el = $(el);
     if ($el.data("owl.carousel")) return;
     const rtl = String(page.props.text_direction || "").toLowerCase() === "rtl";
+    const prevLabel = trans("global.previous");
+    const nextLabel = trans("global.next");
     $el.owlCarousel({
         rtl,
         items: 2,
@@ -102,13 +122,19 @@ function initOwl() {
         smartSpeed: 1000,
         slideSpeed: 1000,
         navText: [
-            "<i class='fa fa-chevron-left'></i>",
-            "<i class='fa fa-chevron-right'></i>",
+            `<i class='fa fa-chevron-left' aria-hidden='true'></i><span class='visually-hidden'>${prevLabel}</span>`,
+            `<i class='fa fa-chevron-right' aria-hidden='true'></i><span class='visually-hidden'>${nextLabel}</span>`,
         ],
         dots: false,
         responsive: {
             0: { items: 1 },
             991: { items: 3 },
+        },
+        onInitialized(event) {
+            const root = event?.target;
+            if (!root) return;
+            root.querySelector(".owl-prev")?.setAttribute("aria-label", prevLabel);
+            root.querySelector(".owl-next")?.setAttribute("aria-label", nextLabel);
         },
     });
 }

@@ -1,0 +1,1 @@
+import{C as e,d as t,t as n}from"./_plugin-vue_export-helper-DY4zl90g.js";var r={};function i(n,r){return e(),t(`div`)}var a=n(r,[[`render`,i]]);export{a as default};

@@ -6,6 +6,7 @@
         <a
             :href="article.url"
             class="news-img-link imas-article-card__img-link imas-card__media"
+            :aria-label="article.title"
         >
             <div class="news-item-img imas-article-card__img imas-card__img">
                 <img
@@ -13,6 +14,10 @@
                     :src="article.image"
                     :alt="article.image_alt || article.title"
                     :title="article.image_title || undefined"
+                    width="800"
+                    height="450"
+                    loading="lazy"
+                    decoding="async"
                 />
             </div>
         </a>

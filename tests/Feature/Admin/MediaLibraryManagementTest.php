@@ -106,6 +106,41 @@ class MediaLibraryManagementTest extends TestCase
         ]);
     }
 
+    public function test_admin_can_resolve_active_media_by_path(): void
+    {
+        $this->actingAs($this->admin());
+        $this->withoutMiddleware([
+            LaravelLocalizationRedirectFilter::class,
+            LocaleCookieRedirect::class,
+            LocaleSessionRedirect::class,
+        ]);
+
+        $folder = MediaFolder::query()->create([
+            'name' => 'Heroes',
+            'slug' => 'heroes',
+            'user_id' => auth()->id(),
+        ]);
+        $media = Media::query()->create($this->mediaAttributes([
+            'folder_id' => $folder->id,
+            'name' => 'Villa hero',
+            'path' => 'media-library/heroes/villa.jpg',
+            'alt_text' => 'Sea view villa',
+        ]));
+
+        $this->getJson(route('admin.media_library.resolve', [
+            'path' => '/storage/media-library/heroes/villa.jpg',
+        ]))
+            ->assertOk()
+            ->assertJsonPath('item.id', $media->id)
+            ->assertJsonPath('item.folder_id', $folder->id)
+            ->assertJsonPath('item.path', 'media-library/heroes/villa.jpg')
+            ->assertJsonPath('item.alt_text', 'Sea view villa');
+
+        $this->getJson(route('admin.media_library.resolve', [
+            'path' => 'media-library/missing.jpg',
+        ]))->assertNotFound();
+    }
+
     public function test_admin_can_rename_a_folder_without_changing_storage_slug(): void
     {
         $this->actingAs($this->admin());

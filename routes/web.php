@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\HandleInertiaRequests;
 use Illuminate\Support\Facades\Route;
+use Modules\Base\Http\Controllers\LlmsTxtController;
 use Modules\Base\Http\Controllers\RssController;
 use Modules\Base\Http\Controllers\SitemapController;
 use Modules\Base\Models\Settings;
@@ -41,6 +42,8 @@ Route::withoutMiddleware([
     })->name('robots');
 
     Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
+
+    Route::get('/llms.txt', LlmsTxtController::class)->name('llms');
 
     Route::get('/feed.xml', [RssController::class, 'show'])->name('feed');
     Route::get('/feed/{locale}.xml', [RssController::class, 'show'])

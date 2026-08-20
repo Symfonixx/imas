@@ -45,10 +45,8 @@
     {{-- Document SEO in View Page Source when SSR is off/unavailable. inertia="" lets Vue Head replace on SPA navigations. --}}
     @unless ($seoFromSsr)
         <title inertia>{{ $seoTitle }}</title>
-        @if ($seoDescription !== '')
-            <meta inertia="description" name="description" content="{{ $seoDescription }}">
-            <meta inertia="og:description" property="og:description" content="{{ $seoDescription }}">
-        @endif
+        <meta inertia="description" name="description" content="{{ $seoDescription }}">
+        <meta inertia="og:description" property="og:description" content="{{ $seoDescription }}">
         @if ($seoKeywords !== '')
             <meta inertia="keywords" name="keywords" content="{{ $seoKeywords }}">
         @endif
@@ -83,9 +81,7 @@
         <meta name="theme-color" content="{{ $seoThemeColor }}">
         <meta inertia="twitter:card" name="twitter:card" content="{{ $seoOgImage !== '' ? 'summary_large_image' : 'summary' }}">
         <meta inertia="twitter:title" name="twitter:title" content="{{ $seoTitle }}">
-        @if ($seoDescription !== '')
-            <meta inertia="twitter:description" name="twitter:description" content="{{ $seoDescription }}">
-        @endif
+        <meta inertia="twitter:description" name="twitter:description" content="{{ $seoDescription }}">
         @if ($seoOgImage !== '')
             <meta inertia="twitter:image" name="twitter:image" content="{{ $seoOgImage }}">
         @endif
@@ -111,25 +107,27 @@
         }
     </style>
 
-    {{-- Find Houses theme styles (order matches theme/findhouses/index.html) --}}
-    <link rel="stylesheet" href="{{ $fh }}/css/jquery-ui.css">
-    <link rel="stylesheet" href="{{ $fh }}/font/flaticon.css">
-    <link rel="stylesheet" href="{{ $fh }}/css/fontawesome-all.min.css">
-    <link rel="stylesheet" href="{{ $fh }}/css/fontawesome-5-all.min.css">
+    {{--
+      Critical Find Houses CSS only (render-blocking). Unused plugin skins
+      (AOS, animate, magnific, lightcase, maps, pink, flaticon, jquery-ui)
+      removed — jquery-ui CSS loads with the hero range slider; owl with testimonials.
+      FA4 + FA5 both required: app.css stacks FontAwesome first for .fa icons.
+    --}}
     <link rel="stylesheet" href="{{ $fh }}/css/font-awesome.min.css">
-    <link rel="stylesheet" href="{{ $fh }}/css/search.css">
-    <link rel="stylesheet" href="{{ $fh }}/css/animate.css">
-    <link rel="stylesheet" href="{{ $fh }}/css/aos.css">
-    <link rel="stylesheet" href="{{ $fh }}/css/aos2.css">
-    <link rel="stylesheet" href="{{ $fh }}/css/magnific-popup.css">
-    <link rel="stylesheet" href="{{ $fh }}/css/lightcase.css">
-    <link rel="stylesheet" href="{{ $fh }}/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="{{ $fh }}/css/fontawesome-5-all.min.css">
     <link rel="stylesheet" href="{{ $fh }}/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ $fh }}/css/menu.css">
+    <link rel="stylesheet" href="{{ $fh }}/css/search.css">
     <link rel="stylesheet" href="{{ $fh }}/css/slick.css">
     <link rel="stylesheet" href="{{ $fh }}/css/styles.css">
-    <link rel="stylesheet" href="{{ $fh }}/css/maps.css">
-    <link rel="stylesheet" href="{{ $fh }}/css/colors/pink.css" id="color">
+
+    {{-- Below-fold / conditional theme CSS — non-blocking --}}
+    <link rel="stylesheet" href="{{ $fh }}/css/owl.carousel.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="{{ $fh }}/css/owl.carousel.min.css"></noscript>
+
+    {{-- defer in <head> before @vite so jQuery/mmenu run before the Vue module --}}
+    <script src="{{ $fh }}/js/jquery-3.7.1.min.js" defer></script>
+    <script src="{{ $fh }}/js/mmenu.min.js" defer></script>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @routes
@@ -138,13 +136,6 @@
 </head>
 <body class="imas-theme-dark homepage-9 hp-6 homepage-1 mh">
 @inertia
-{{-- Minimal scripts for theme header / mobile nav (Bootstrap 4 + jQuery, aligned with Find Houses) --}}
-<script src="{{ $fh }}/js/jquery-3.5.1.min.js"></script>
-<script src="{{ $fh }}/js/owl.carousel.js"></script>
-<script src="{{ $fh }}/js/tether.min.js"></script>
-<script src="{{ $fh }}/js/bootstrap.min.js"></script>
-<script src="{{ $fh }}/js/mmenu.min.js"></script>
-{{-- Theme mmenu.js clones #header/#navigation on DOM ready and breaks Vue SSR hydration; mobile menu is initialized in UserNavbar.vue --}}
  {!! $settings->get('footer_scripts') !!}
 </body>
 </html>

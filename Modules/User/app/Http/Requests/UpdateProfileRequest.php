@@ -23,7 +23,7 @@ class UpdateProfileRequest extends FormRequest
         $user = $this->user();
 
         return [
-            'img' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:1048',
+            'img' => 'nullable|mimes:jpeg,png,jpg,webp,avif|max:1048',
             'img_media_path' => 'nullable|string',
             'name' => 'required|string|min:3|max:50',
             'email' => [

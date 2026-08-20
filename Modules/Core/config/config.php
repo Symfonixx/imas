@@ -2,6 +2,6 @@
 
 return [
     'page_size' => 30,
-    'allowed_mime_types' => ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf', 'image/webp'],
+    'allowed_mime_types' => ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf', 'image/webp', 'image/avif'],
     'tinymce_key' => env('TINYMCE_KEY'),
 ];

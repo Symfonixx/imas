@@ -149,7 +149,12 @@ export function useDocumentSeo(options = {}) {
             "site_meta_description",
             "website_desc",
         ];
-        return pickSeoString(...keys);
+        const fromKeys = pickSeoString(...keys);
+        if (fromKeys) {
+            return fromKeys;
+        }
+        // PSI SEO audit requires a non-empty meta description.
+        return title.value || siteName.value;
     });
 
     const keywords = computed(() => {

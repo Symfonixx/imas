@@ -36,7 +36,7 @@ export function resolvePriceStep(min, max, targetSteps) {
 }
 
 /**
- * Load Find Houses jQuery UI (slider widget) once.
+ * Load Find Houses jQuery UI (slider widget + CSS) once.
  */
 export function loadJqueryUi(themeUrl) {
     if (window.jQuery?.fn?.slider) {
@@ -47,14 +47,16 @@ export function loadJqueryUi(themeUrl) {
         return jqueryUiPromise;
     }
 
-    jqueryUiPromise = new Promise((resolve, reject) => {
-        const script = document.createElement("script");
-        script.src = `${themeUrl}/js/jquery-ui.js`;
-        script.async = true;
-        script.onload = () => resolve();
-        script.onerror = () =>
-            reject(new Error("Failed to load jQuery UI for range sliders"));
-        document.body.appendChild(script);
+    const base = String(themeUrl || "/theme/findhouses").replace(/\/$/, "");
+
+    jqueryUiPromise = import("@/utils/loadThemeAsset.js").then(
+        ({ loadScript, loadStylesheet }) =>
+            loadStylesheet(`${base}/css/jquery-ui.css`).then(() =>
+                loadScript(`${base}/js/jquery-ui.js`),
+            ),
+    ).catch((err) => {
+        jqueryUiPromise = null;
+        throw err;
     });
 
     return jqueryUiPromise;

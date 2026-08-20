@@ -1,3 +1,4 @@
+import { r as withVideoAutoplay, t as resolveVideoPlayback } from "./assets/videoEmbed-6-mdNPXm.js";
 import { Link, createInertiaApp, usePage } from "@inertiajs/vue3";
 import createServer from "@inertiajs/vue3/server";
 import { renderToString } from "@vue/server-renderer";
@@ -670,118 +671,6 @@ function useOpenAuthModal() {
 	return { openAuthModal };
 }
 //#endregion
-//#region resources/js/utils/videoEmbed.js
-/**
-* Resolve a front-office video URL into an embeddable iframe src or direct file URL.
-*
-* @param {string|null|undefined} raw
-* @returns {{ type: 'iframe', src: string }|{ type: 'file', src: string }|null}
-*/
-function resolveVideoPlayback(raw) {
-	if (typeof raw !== "string") return null;
-	const trimmed = raw.trim();
-	if (trimmed === "") return null;
-	const iframeSrc = extractIframeSrc(trimmed);
-	if (iframeSrc) return {
-		type: "iframe",
-		src: normalizeEmbedUrl(iframeSrc)
-	};
-	if (isEmbeddableUrl(trimmed)) return {
-		type: "iframe",
-		src: normalizeEmbedUrl(trimmed)
-	};
-	const youtubeId = extractYoutubeId(trimmed);
-	if (youtubeId) return {
-		type: "iframe",
-		src: `https://www.youtube.com/embed/${youtubeId}`
-	};
-	const vimeoId = extractVimeoId(trimmed);
-	if (vimeoId) return {
-		type: "iframe",
-		src: `https://player.vimeo.com/video/${vimeoId}`
-	};
-	if (/\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(trimmed)) return {
-		type: "file",
-		src: trimmed
-	};
-	return null;
-}
-/**
-* Build a muted, looping YouTube embed URL for a full-bleed hero background.
-*
-* @param {string|null|undefined} raw Admin iframe HTML, watch URL, or embed URL
-* @returns {string|null}
-*/
-function resolveYoutubeHeroBackgroundSrc(raw) {
-	const playback = resolveVideoPlayback(raw);
-	if (!playback || playback.type !== "iframe") return null;
-	const embedSrc = playback.src;
-	if (!/youtube(-nocookie)?\.com\/embed\//i.test(embedSrc)) return null;
-	const videoId = extractYoutubeId(String(raw ?? "")) || extractYoutubeId(embedSrc);
-	if (!videoId) return null;
-	try {
-		const url = new URL(`https://www.youtube.com/embed/${videoId}`);
-		url.searchParams.set("autoplay", "1");
-		url.searchParams.set("mute", "1");
-		url.searchParams.set("controls", "0");
-		url.searchParams.set("loop", "1");
-		url.searchParams.set("playlist", videoId);
-		url.searchParams.set("playsinline", "1");
-		url.searchParams.set("modestbranding", "1");
-		url.searchParams.set("rel", "0");
-		url.searchParams.set("showinfo", "0");
-		url.searchParams.set("disablekb", "1");
-		url.searchParams.set("fs", "0");
-		url.searchParams.set("iv_load_policy", "3");
-		url.searchParams.set("enablejsapi", "1");
-		if (typeof window !== "undefined" && window.location?.origin) url.searchParams.set("origin", window.location.origin);
-		return url.toString();
-	} catch {
-		return null;
-	}
-}
-/**
-* @param {string} embedSrc
-* @param {{ autoplay?: boolean }} [options]
-*/
-function withVideoAutoplay(embedSrc, options = {}) {
-	if (!(options.autoplay !== false) || typeof embedSrc !== "string" || embedSrc === "") return embedSrc;
-	try {
-		const url = new URL(embedSrc, window.location.origin);
-		url.searchParams.set("autoplay", "1");
-		url.searchParams.set("rel", "0");
-		if (url.hostname.includes("youtube.com")) url.searchParams.set("modestbranding", "1");
-		return url.toString();
-	} catch {
-		return `${embedSrc}${embedSrc.includes("?") ? "&" : "?"}autoplay=1`;
-	}
-}
-function extractIframeSrc(value) {
-	return value.match(/<iframe[^>]+src=["']([^"']+)["']/i)?.[1]?.trim() ?? "";
-}
-function isEmbeddableUrl(value) {
-	return /youtube(-nocookie)?\.com\/embed\//i.test(value) || /player\.vimeo\.com\/video\//i.test(value);
-}
-function extractYoutubeId(value) {
-	for (const pattern of [
-		/youtube(?:-nocookie)?\.com\/embed\/([a-zA-Z0-9_-]{11})/i,
-		/youtube\.com\/watch\?[^#]*v=([a-zA-Z0-9_-]{11})/i,
-		/youtu\.be\/([a-zA-Z0-9_-]{11})/i,
-		/youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/i
-	]) {
-		const match = value.match(pattern);
-		if (match?.[1]) return match[1];
-	}
-	return null;
-}
-function extractVimeoId(value) {
-	return value.match(/vimeo\.com\/(?:video\/)?(\d+)/i)?.[1] ?? null;
-}
-function normalizeEmbedUrl(src) {
-	if (src.startsWith("//")) return `https:${src}`;
-	return src;
-}
-//#endregion
 //#region \0plugin-vue:export-helper
 var _plugin_vue_export_helper_default = (sfc, props) => {
 	const target = sfc.__vccOpts || sfc;
@@ -1137,37 +1026,37 @@ var _sfc_main = {
 		const videoInvalidMessage = computed(() => trans("property_show.video_unavailable"));
 		const videoLightboxAria = computed(() => `${playVideoLabel.value} – ${displayTitle.value}`);
 		return (_ctx, _push, _parent, _attrs) => {
-			_push(`<div${ssrRenderAttrs(mergeProps({ class: ["imas-property-card imas-property-card--media-overlay item user-select-none", [__props.columnClass, { "imas-property-card--sold-out": isSoldOut.value }]] }, _attrs))} data-v-6b3d484b><div class="project-single imas-card__surface" data-v-6b3d484b>`);
+			_push(`<div${ssrRenderAttrs(mergeProps({ class: ["imas-property-card imas-property-card--media-overlay item user-select-none", [__props.columnClass, { "imas-property-card--sold-out": isSoldOut.value }]] }, _attrs))} data-v-3e40eff9><div class="project-single imas-card__surface" data-v-3e40eff9>`);
 			if (!isSoldOut.value) _push(ssrRenderComponent(unref(Link), {
 				href: showUrl.value,
 				class: "imas-property-card__stretched-link",
 				"aria-label": displayTitle.value
 			}, null, _parent));
 			else _push(`<!---->`);
-			_push(`<div class="project-inner project-head imas-card__media" data-v-6b3d484b><div class="homes" data-v-6b3d484b><div class="homes-img" data-v-6b3d484b>`);
+			_push(`<div class="project-inner project-head imas-card__media" data-v-3e40eff9><div class="homes" data-v-3e40eff9><div class="homes-img" data-v-3e40eff9>`);
 			if (propertyTypeLabel.value || __props.property.is_featured) {
-				_push(`<div class="homes-tag button alt imas-badge--type" data-v-6b3d484b>`);
-				if (__props.property.is_featured) _push(`<i class="fa fa-star imas-featured-star" aria-hidden="true" data-v-6b3d484b></i>`);
+				_push(`<div class="homes-tag button alt imas-badge--type" data-v-3e40eff9>`);
+				if (__props.property.is_featured) _push(`<i class="fa fa-star imas-featured-star" aria-hidden="true" data-v-3e40eff9></i>`);
 				else _push(`<!---->`);
-				if (__props.property.is_featured) _push(`<span class="visually-hidden" data-v-6b3d484b>${ssrInterpolate(trans("properties.featured"))}</span>`);
+				if (__props.property.is_featured) _push(`<span class="visually-hidden" data-v-3e40eff9>${ssrInterpolate(trans("properties.featured"))}</span>`);
 				else _push(`<!---->`);
-				if (propertyTypeLabel.value) _push(`<span data-v-6b3d484b>${ssrInterpolate(propertyTypeLabel.value)}</span>`);
+				if (propertyTypeLabel.value) _push(`<span data-v-3e40eff9>${ssrInterpolate(propertyTypeLabel.value)}</span>`);
 				else _push(`<!---->`);
 				_push(`</div>`);
 			} else _push(`<!---->`);
-			if (__props.property.is_sold_out) _push(`<div class="homes-tag button alt imas-sold-out-badge imas-badge--danger" data-v-6b3d484b>${ssrInterpolate(trans("properties.sold_out"))}</div>`);
+			if (__props.property.is_sold_out) _push(`<div class="homes-tag button alt imas-sold-out-badge imas-badge--danger" data-v-3e40eff9>${ssrInterpolate(trans("properties.sold_out"))}</div>`);
 			else _push(`<!---->`);
-			_push(`<img${ssrRenderAttr("src", __props.property.thumbnail_url)}${ssrRenderAttr("alt", __props.property.thumbnail_alt || displayTitle.value)}${ssrRenderAttr("title", __props.property.thumbnail_title || void 0)} class="img-responsive" data-v-6b3d484b></div></div><div class="imas-card-actions" data-v-6b3d484b><div class="homes-price imas-start-price imas-chip" data-v-6b3d484b><span class="imas-start-price__from" data-v-6b3d484b>${ssrInterpolate(trans("properties.price_from"))}</span><span class="imas-start-price__amount" data-v-6b3d484b>${ssrInterpolate(priceAmount.value)}</span></div>`);
+			_push(`<img${ssrRenderAttr("src", __props.property.thumbnail_url)}${ssrRenderAttr("alt", __props.property.thumbnail_alt || displayTitle.value)}${ssrRenderAttr("title", __props.property.thumbnail_title || void 0)} class="img-responsive" width="800" height="600" loading="lazy" decoding="async" data-v-3e40eff9></div></div><div class="imas-card-actions" data-v-3e40eff9><div class="homes-price imas-start-price imas-chip" data-v-3e40eff9><span class="imas-start-price__from" data-v-3e40eff9>${ssrInterpolate(trans("properties.price_from"))}</span><span class="imas-start-price__amount" data-v-3e40eff9>${ssrInterpolate(priceAmount.value)}</span></div>`);
 			if (!isSoldOut.value) {
-				_push(`<div class="button-effect" data-v-6b3d484b>`);
-				if (__props.property.youtube_video_url) _push(`<button type="button" class="btn imas-card-video-btn"${ssrRenderAttr("aria-label", playVideoLabel.value)} data-v-6b3d484b><i class="fas fa-video" aria-hidden="true" data-v-6b3d484b></i></button>`);
+				_push(`<div class="button-effect" data-v-3e40eff9>`);
+				if (__props.property.youtube_video_url) _push(`<button type="button" class="btn imas-card-video-btn"${ssrRenderAttr("aria-label", playVideoLabel.value)} data-v-3e40eff9><i class="fas fa-video" aria-hidden="true" data-v-3e40eff9></i></button>`);
 				else _push(`<!---->`);
-				_push(`<button type="button" class="${ssrRenderClass([{ "is-favorited": localFavorited.value }, "btn imas-favorite-btn"])}"${ssrRenderAttr("aria-label", favoriteAriaLabel.value)}${ssrRenderAttr("aria-pressed", localFavorited.value)} data-v-6b3d484b><i class="${ssrRenderClass([localFavorited.value ? "fa-heart" : "fa-heart-o", "fa favorite-icon"])}" aria-hidden="true" data-v-6b3d484b></i></button></div>`);
+				_push(`<button type="button" class="${ssrRenderClass([{ "is-favorited": localFavorited.value }, "btn imas-favorite-btn"])}"${ssrRenderAttr("aria-label", favoriteAriaLabel.value)}${ssrRenderAttr("aria-pressed", localFavorited.value)} data-v-3e40eff9><i class="${ssrRenderClass([localFavorited.value ? "fa-heart" : "fa-heart-o", "fa favorite-icon"])}" aria-hidden="true" data-v-3e40eff9></i></button></div>`);
 			} else _push(`<!---->`);
-			_push(`</div></div><div class="homes-content imas-card__body" data-v-6b3d484b><h3 class="imas-property-title imas-card__title" data-v-6b3d484b><span class="imas-card__title-text" data-v-6b3d484b>${ssrInterpolate(displayTitle.value)}</span></h3>`);
-			if (overviewText.value) _push(`<p class="imas-property-overview imas-card__excerpt text-card-excerpt mb-3" data-v-6b3d484b>${ssrInterpolate(overviewText.value)}</p>`);
+			_push(`</div></div><div class="homes-content imas-card__body" data-v-3e40eff9><h3 class="imas-property-title imas-card__title" data-v-3e40eff9><span class="imas-card__title-text" data-v-3e40eff9>${ssrInterpolate(displayTitle.value)}</span></h3>`);
+			if (overviewText.value) _push(`<p class="imas-property-overview imas-card__excerpt text-card-excerpt mb-3" data-v-3e40eff9>${ssrInterpolate(overviewText.value)}</p>`);
 			else _push(`<!---->`);
-			_push(`<p class="homes-address imas-card__meta text-base mb-3" data-v-6b3d484b><span class="imas-card__address-line" data-v-6b3d484b><i class="fa fa-map-marker imas-address-marker" aria-hidden="true" data-v-6b3d484b></i><span data-v-6b3d484b>${ssrInterpolate(addressLine.value)}</span></span></p>`);
+			_push(`<p class="homes-address imas-card__meta text-base mb-3" data-v-3e40eff9><span class="imas-card__address-line" data-v-3e40eff9><i class="fa fa-map-marker imas-address-marker" aria-hidden="true" data-v-3e40eff9></i><span data-v-3e40eff9>${ssrInterpolate(addressLine.value)}</span></span></p>`);
 			_push(ssrRenderComponent(PropertyCardUnitTypesBar_default, { "unit-types": __props.property.unit_types ?? [] }, null, _parent));
 			_push(`</div></div>`);
 			if (__props.property.youtube_video_url && !isSoldOut.value) _push(ssrRenderComponent(VideoLightbox_default, {
@@ -1188,7 +1077,7 @@ _sfc_main.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("Modules/Property/resources/assets/js/components/PropertyCard.vue");
 	return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
 };
-var PropertyCard_default = /* @__PURE__ */ _plugin_vue_export_helper_default(_sfc_main, [["__scopeId", "data-v-6b3d484b"]]);
+var PropertyCard_default = /* @__PURE__ */ _plugin_vue_export_helper_default(_sfc_main, [["__scopeId", "data-v-3e40eff9"]]);
 //#endregion
 //#region resources/js/configureImasVueApp.js
 /**
@@ -1235,23 +1124,23 @@ async function resolvePageComponent(path, pages) {
 function resolveInertiaPage(name) {
 	const modules = name.split("::");
 	if (modules.length > 1) return resolvePageComponent(`../../Modules/${modules[0]}/resources/assets/js/Pages/${modules[1]}.vue`, /* @__PURE__ */ Object.assign({
-		"../../Modules/Base/resources/assets/js/Pages/AboutUs.vue": () => import("./assets/AboutUs-BfsPimk2.js"),
-		"../../Modules/Base/resources/assets/js/Pages/Index.vue": () => import("./assets/Index-nI-iFQ9k.js"),
-		"../../Modules/Cms/resources/assets/js/Pages/Index.vue": () => import("./assets/Index-BYMirxkS.js"),
-		"../../Modules/Cms/resources/assets/js/Pages/PageShow.vue": () => import("./assets/PageShow-BB1cCgmh.js"),
-		"../../Modules/Cms/resources/assets/js/Pages/Show.vue": () => import("./assets/Show-D28qYINo.js"),
+		"../../Modules/Base/resources/assets/js/Pages/AboutUs.vue": () => import("./assets/AboutUs-g2sARHfo.js"),
+		"../../Modules/Base/resources/assets/js/Pages/Index.vue": () => import("./assets/Index-DSCo2sjx.js"),
+		"../../Modules/Cms/resources/assets/js/Pages/Index.vue": () => import("./assets/Index-PqnY7Mso.js"),
+		"../../Modules/Cms/resources/assets/js/Pages/PageShow.vue": () => import("./assets/PageShow-DMAM2KpE.js"),
+		"../../Modules/Cms/resources/assets/js/Pages/Show.vue": () => import("./assets/Show-3L6QGW0H.js"),
 		"../../Modules/Corporate/resources/assets/js/Pages/index.vue": () => import("./assets/Pages-DmYQ7aH7.js"),
-		"../../Modules/Property/resources/assets/js/Pages/FavoriteProperties.vue": () => import("./assets/FavoriteProperties-DH7LIYI7.js"),
-		"../../Modules/Property/resources/assets/js/Pages/TurkishCitizenship.vue": () => import("./assets/TurkishCitizenship-ybCbx3c7.js"),
-		"../../Modules/Property/resources/assets/js/Pages/index.vue": () => import("./assets/Pages-C5cU0pDQ.js"),
-		"../../Modules/Property/resources/assets/js/Pages/show.vue": () => import("./assets/show-D-AtN-op.js"),
-		"../../Modules/Support/resources/assets/js/Pages/ContactUs.vue": () => import("./assets/ContactUs-CZdCmFzw.js"),
-		"../../Modules/User/resources/assets/js/Pages/Auth/ForgotPassword.vue": () => import("./assets/ForgotPassword-Bw8g7MPT.js"),
-		"../../Modules/User/resources/assets/js/Pages/Auth/Login.vue": () => import("./assets/Login-fOB2C32W.js"),
-		"../../Modules/User/resources/assets/js/Pages/Auth/Register.vue": () => import("./assets/Register-BxjXFUs6.js"),
-		"../../Modules/User/resources/assets/js/Pages/Auth/ResetPassword.vue": () => import("./assets/ResetPassword-DM3Rpa6h.js")
+		"../../Modules/Property/resources/assets/js/Pages/FavoriteProperties.vue": () => import("./assets/FavoriteProperties-CW5GQVsd.js"),
+		"../../Modules/Property/resources/assets/js/Pages/TurkishCitizenship.vue": () => import("./assets/TurkishCitizenship-CDn2oqmk.js"),
+		"../../Modules/Property/resources/assets/js/Pages/index.vue": () => import("./assets/Pages-qJaI3-Ul.js"),
+		"../../Modules/Property/resources/assets/js/Pages/show.vue": () => import("./assets/show-BoLpkgWc.js"),
+		"../../Modules/Support/resources/assets/js/Pages/ContactUs.vue": () => import("./assets/ContactUs-CO2WY5ta.js"),
+		"../../Modules/User/resources/assets/js/Pages/Auth/ForgotPassword.vue": () => import("./assets/ForgotPassword-CFFXi9Qw.js"),
+		"../../Modules/User/resources/assets/js/Pages/Auth/Login.vue": () => import("./assets/Login-DzIOw7uK.js"),
+		"../../Modules/User/resources/assets/js/Pages/Auth/Register.vue": () => import("./assets/Register-BOYHfmG2.js"),
+		"../../Modules/User/resources/assets/js/Pages/Auth/ResetPassword.vue": () => import("./assets/ResetPassword-Ru8mlJkQ.js")
 	}));
-	return resolvePageComponent(`./Pages/${name}.vue`, /* @__PURE__ */ Object.assign({}));
+	return resolvePageComponent(`./Pages/${name}.vue`, /* @__PURE__ */ Object.assign({ "./Pages/Errors/NotFound.vue": () => import("./assets/NotFound-C-xH9loC.js") }));
 }
 //#endregion
 //#region resources/js/ssr.js
@@ -1273,4 +1162,4 @@ createServer((page) => createInertiaApp({
 	}
 }));
 //#endregion
-export { refreshScrollTrigger as a, localizedLocationName as c, VideoLightbox_default as d, _plugin_vue_export_helper_default as f, useOpenAuthModal as h, prefersReducedMotion as i, propertyLocationLine as l, IMAS_OPEN_AUTH_EVENT as m, unitTypeDisplayParts as n, formatPropertyMoney as o, resolveYoutubeHeroBackgroundSrc as p, createGsapContext as r, propertyStartPrice as s, PropertyCard_default as t, localizedField as u };
+export { refreshScrollTrigger as a, localizedLocationName as c, VideoLightbox_default as d, _plugin_vue_export_helper_default as f, prefersReducedMotion as i, propertyLocationLine as l, useOpenAuthModal as m, unitTypeDisplayParts as n, formatPropertyMoney as o, IMAS_OPEN_AUTH_EVENT as p, createGsapContext as r, propertyStartPrice as s, PropertyCard_default as t, localizedField as u };

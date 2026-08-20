@@ -17,6 +17,7 @@ Route::middleware('can:Settings Management')->group(function () {
 
 Route::middleware('can:Media Library Management')->group(function () {
     Route::get('media-library/list', [MediaLibraryController::class, 'list'])->name('media_library.list');
+    Route::get('media-library/resolve', [MediaLibraryController::class, 'resolve'])->name('media_library.resolve');
     Route::get('media-library/folders', [MediaLibraryController::class, 'folders'])->name('media_library.folders.index');
     Route::post('media-library/folders', [MediaLibraryController::class, 'storeFolder'])->name('media_library.folders.store');
     Route::patch('media-library/folders/{folder}', [MediaLibraryController::class, 'updateFolder'])->name('media_library.folders.update');

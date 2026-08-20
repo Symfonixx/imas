@@ -86,6 +86,7 @@ Root Blade emits `<title inertia>`, `<meta inertia="description">`, keywords, OG
 
 - Blade: `documentSeo()` defaults or `page_title` + canonical.
 - Vue: `useDocumentSeo({ useGlobalTitleTemplate: true })` (home) or `pageTitle: …`.
+- **Faceted / filtered hubs** (property `?min_price` / type / location, blog `?q` / `?category`): keep canonical on the **clean** hub URL and set `robots` to `noindex, follow` so query-string variants are not indexed as duplicates. Clean hubs stay indexable (omit robots or leave empty).
 
 ### 2) Parent / section pages
 

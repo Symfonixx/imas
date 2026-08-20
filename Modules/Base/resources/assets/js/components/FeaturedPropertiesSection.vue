@@ -14,7 +14,10 @@
                     ref="viewportRef"
                     dir="ltr"
                     class="row portfolio-items imas-featured-viewport"
-                    :class="{ 'is-dragging': isDragging }"
+                    :class="{
+                        'is-dragging': isDragging,
+                        'imas-featured-viewport--rtl': isRtl,
+                    }"
                     @scroll.passive="onScroll"
                     @pointerdown="onPointerDown"
                     @pointermove="onPointerMove"
@@ -82,10 +85,16 @@ function trans(key) {
     return page.props.translations[key] || key;
 }
 
-/** RTL/LTR for card content; scroll rail stays `dir="ltr"` so scrollLeft is reliable. */
-const slideTextDir = computed(() =>
-    page.props.text_direction === "rtl" ? "rtl" : "ltr",
+/**
+ * Scroll rail stays `dir="ltr"` so scrollLeft is reliable across browsers.
+ * RTL uses `flex-direction: row-reverse` + mirrored scroll offsets so slide 0 starts on the right.
+ */
+const isRtl = computed(
+    () =>
+        page.props.text_direction === "rtl" ||
+        page.props.locale === "ar",
 );
+const slideTextDir = computed(() => (isRtl.value ? "rtl" : "ltr"));
 
 const viewMoreHref = computed(() => {
     try {
@@ -171,6 +180,10 @@ const pageCount = computed(() => {
     return n > 1 ? n : 1;
 });
 
+function maxScrollLeft(vp) {
+    return Math.max(0, vp.scrollWidth - vp.clientWidth);
+}
+
 function cumulativeOffsetBeforeSlide(vp, index) {
     const slides = vp.querySelectorAll(".imas-featured-slide");
     let left = 0;
@@ -181,9 +194,16 @@ function cumulativeOffsetBeforeSlide(vp, index) {
     return left;
 }
 
-function scrollViewportToSlideIndex(vp, index, behavior = "smooth") {
+function scrollLeftForSlideIndex(vp, index) {
     const offset = cumulativeOffsetBeforeSlide(vp, index);
-    vp.scrollTo({ left: offset, behavior });
+    if (!isRtl.value) {
+        return offset;
+    }
+    return maxScrollLeft(vp) - offset;
+}
+
+function scrollViewportToSlideIndex(vp, index, behavior = "smooth") {
+    vp.scrollTo({ left: scrollLeftForSlideIndex(vp, index), behavior });
 }
 
 function goToPage(index) {
@@ -216,7 +236,9 @@ function syncActiveFromScroll() {
         return;
     }
     const maxStart = Math.max(0, slides.length - 1);
-    const pos = vp.scrollLeft;
+    const pos = isRtl.value
+        ? maxScrollLeft(vp) - vp.scrollLeft
+        : vp.scrollLeft;
     let best = 0;
     let bestDist = Infinity;
     for (let i = 0; i <= maxStart; i++) {
@@ -422,6 +444,10 @@ onBeforeUnmount(() => {
     max-width: 100%;
     margin-left: 0;
     margin-right: 0;
+}
+
+.imas-featured-viewport--rtl {
+    flex-direction: row-reverse;
 }
 
 .imas-featured-slide {

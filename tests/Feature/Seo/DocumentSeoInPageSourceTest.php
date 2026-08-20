@@ -188,4 +188,63 @@ class DocumentSeoInPageSourceTest extends TestCase
         // Blade SEO + SSR head must not both appear (SSR off in this test → single Blade title).
         $this->assertSame(1, substr_count($html, '<title inertia>'));
     }
+
+    public function test_filtered_property_listings_html_includes_noindex_robots(): void
+    {
+        Seo::set('website_name', 'IMas Test Site', false);
+        Cache::forget('seo_entries');
+
+        $response = $this->get(route('property.index', [
+            'min_price' => 100000,
+            'max_price' => 500000,
+        ]));
+
+        $response->assertOk();
+        $html = $response->getContent();
+        $this->assertIsString($html);
+        $this->assertStringContainsString(
+            '<meta inertia="robots" name="robots" content="noindex, follow">',
+            $html,
+        );
+        $this->assertStringContainsString(
+            'rel="canonical" href="'.route('property.index').'"',
+            $html,
+        );
+    }
+
+    public function test_unfiltered_property_listings_html_omits_robots_noindex(): void
+    {
+        Seo::set('website_name', 'IMas Test Site', false);
+        Cache::forget('seo_entries');
+
+        $response = $this->get(route('property.index'));
+
+        $response->assertOk();
+        $html = $response->getContent();
+        $this->assertIsString($html);
+        $this->assertStringNotContainsString(
+            'name="robots" content="noindex',
+            $html,
+        );
+    }
+
+    public function test_filtered_blog_index_html_includes_noindex_robots(): void
+    {
+        Seo::set('website_name', 'IMas Test Site', false);
+        Cache::forget('seo_entries');
+
+        $response = $this->get(route('blog.index', ['q' => 'istanbul']));
+
+        $response->assertOk();
+        $html = $response->getContent();
+        $this->assertIsString($html);
+        $this->assertStringContainsString(
+            '<meta inertia="robots" name="robots" content="noindex, follow">',
+            $html,
+        );
+        $this->assertStringContainsString(
+            'rel="canonical" href="'.route('blog.index').'"',
+            $html,
+        );
+    }
 }

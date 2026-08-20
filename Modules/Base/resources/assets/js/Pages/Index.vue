@@ -1,7 +1,6 @@
 <template>
     <Head :title="documentTitle">
         <meta
-            v-if="metaDescription"
             head-key="description"
             name="description"
             :content="metaDescription"

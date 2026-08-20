@@ -2052,6 +2052,44 @@ section.featured.portfolio.bg-white-2 .sec-title p,
     color: var(--text-dim) !important;
 }
 
+/*
+ * Theme (homepage-9 / video.css) centers .sec-title. In RTL, align titles to the
+ * inline-start (right) so they line up with property/blog rails that start on the right.
+ */
+html[dir="rtl"] .sec-title,
+html[dir="rtl"] .sec-title h2,
+html[dir="rtl"] .sec-title h2 span,
+html[dir="rtl"] .sec-title p,
+html[dir="rtl"] .section-title,
+html[dir="rtl"] .section-title h2,
+html[dir="rtl"] .section-title p,
+html[dir="rtl"] .homepage-9 .sec-title,
+html[dir="rtl"] .homepage-9 .sec-title h2,
+html[dir="rtl"] .homepage-9 .sec-title p,
+html[dir="rtl"] .homepage-9 .sec-title.discover,
+html[dir="rtl"] .homepage-9 .sec-title.discover h2,
+html[dir="rtl"] .homepage-9 .sec-title.discover h2 span,
+html[dir="rtl"] .homepage-9 .sec-title.discover p {
+    text-align: start !important;
+}
+
+html[dir="rtl"] .sec-title p,
+html[dir="rtl"] .section-title p,
+html[dir="rtl"] .homepage-9 .sec-title p {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    margin-inline: 0 !important;
+    max-width: none;
+}
+
+html[dir="rtl"] .portfolio .sec-title,
+html[dir="rtl"] .how-it-works .sec-title,
+html[dir="rtl"] .team .sec-title {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    margin-inline: 0 !important;
+}
+
 /* —— Global IMas cards (blog, teasers) — property cards: PropertyCard.vue — see DARK_THEME_SPEC §4.15 —— */
 .imas-card__surface,
 .imas-card .project-single,
@@ -4753,12 +4791,14 @@ html[dir="rtl"] .imas-featured-properties-sidebar__badge--price {
     background: var(--bg) !important;
 }
 
+.imas-property-show-page .headings-2 .listing-title-bar h1,
 .imas-property-show-page .headings-2 .listing-title-bar h3,
 .imas-property-show-page .headings-2 .listing-title-bar h4 {
     color: var(--text);
     text-transform: none !important;
 }
 
+.imas-property-show-page .headings-2 .listing-title-bar h1,
 .imas-property-show-page .headings-2 .listing-title-bar h3,
 .imas-property-show-page .headings-2 .listing-title-bar h4.imas-price-heading,
 .imas-property-show-page .imas-price-heading__amount {
@@ -5532,4 +5572,237 @@ html[dir="ltr"] .imas-contact-page .call-info .info p {
     text-transform: capitalize; /* Capitalizes every word */
 }
 
+/* -------------------------------------------------------------------------- */
+/* 404 — Not found (Errors/NotFound.vue)                                      */
+/* -------------------------------------------------------------------------- */
+.imas-notfound {
+    position: relative;
+    padding: clamp(3.5rem, 8vw, 6.5rem) 0;
+    background:
+        radial-gradient(
+            ellipse 70% 55% at 50% 0%,
+            color-mix(in srgb, var(--brand-gold) 12%, transparent),
+            transparent 70%
+        ),
+        var(--bg);
+    overflow: hidden;
+}
+
+.imas-notfound .imas-notfound__panel {
+    max-width: 40rem;
+    margin-inline: auto;
+    text-align: center;
+}
+
+.imas-notfound .imas-notfound__visual {
+    position: relative;
+    display: grid;
+    place-items: center;
+    margin-bottom: 1.5rem;
+    min-height: 8.5rem;
+}
+
+.imas-notfound .imas-notfound__glow {
+    position: absolute;
+    inset: 10% 18%;
+    border-radius: 50%;
+    background: radial-gradient(
+        circle,
+        color-mix(in srgb, var(--brand-gold) 28%, transparent),
+        transparent 70%
+    );
+    pointer-events: none;
+}
+
+.imas-notfound .imas-notfound__code {
+    position: relative;
+    z-index: 1;
+    font-family: var(--font-sans);
+    font-size: clamp(5.5rem, 18vw, 8.5rem);
+    font-weight: 700;
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    color: var(--brand-gold);
+    text-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+}
+
+.imas-notfound .imas-notfound__mark {
+    position: absolute;
+    z-index: 2;
+    inset-inline-end: calc(50% - 4.25rem);
+    bottom: 0.35rem;
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    background: var(--surface);
+    box-shadow: var(--shadow-md);
+    color: var(--brand-gold);
+    font-size: 1.15rem;
+}
+
+html[dir="rtl"] .imas-notfound .imas-notfound__mark {
+    inset-inline-end: auto;
+    inset-inline-start: calc(50% - 4.25rem);
+}
+
+.imas-notfound .imas-notfound__eyebrow {
+    margin: 0 0 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.imas-notfound .top-headings h1.imas-notfound__title,
+.imas-notfound .imas-notfound__title {
+    margin: 0 0 0.85rem;
+    color: var(--text) !important;
+    font-size: var(--text-2xl) !important;
+    font-weight: 700 !important;
+    line-height: 1.25;
+    text-transform: none;
+}
+
+.imas-notfound .imas-notfound__message {
+    margin: 0 auto;
+    max-width: 32rem;
+    color: var(--text-dim);
+    line-height: var(--line-height-base);
+}
+
+.imas-notfound .port-info.imas-notfound__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem 1rem;
+    margin-top: 1.75rem;
+}
+
+.imas-notfound .imas-notfound__btn {
+    min-width: 10.5rem;
+    padding: 12px 22px;
+    border-radius: 6px;
+    font-weight: 600;
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.imas-notfound .imas-notfound__btn:focus-visible {
+    outline: none;
+    box-shadow: var(--ring) !important;
+}
+
+.imas-notfound .imas-notfound__btn--primary {
+    background: var(--brand-gold) !important;
+    border: 1px solid var(--brand-gold) !important;
+    color: var(--text-on-gold) !important;
+}
+
+.imas-notfound .imas-notfound__btn--primary:hover {
+    background: var(--brand-gold-hover) !important;
+    border-color: var(--brand-gold-hover) !important;
+    color: var(--text-on-gold) !important;
+}
+
+.imas-notfound .imas-notfound__btn--outline {
+    background: transparent !important;
+    border: 1px solid var(--brand-gold) !important;
+    color: var(--brand-gold) !important;
+}
+
+.imas-notfound .imas-notfound__btn--outline:hover {
+    background: var(--brand-gold) !important;
+    color: var(--text-on-gold) !important;
+}
+
+.imas-notfound .imas-notfound__shortcuts {
+    margin-top: 2.25rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--divider);
+}
+
+.imas-notfound .imas-notfound__shortcuts-label {
+    margin: 0 0 0.75rem;
+}
+
+.imas-notfound .imas-notfound__shortcut-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem 1.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.imas-notfound .imas-notfound__shortcut {
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.imas-notfound .imas-notfound__shortcut:hover,
+.imas-notfound .imas-notfound__shortcut:focus-visible {
+    color: var(--brand-gold);
+}
+
+.imas-notfound .imas-notfound__shortcut:focus-visible {
+    outline: none;
+    box-shadow: var(--ring);
+    border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .imas-notfound .imas-notfound__code {
+        animation: imas-notfound-code-in 0.7s ease both;
+    }
+
+    .imas-notfound .imas-notfound__mark {
+        animation: imas-notfound-mark-in 0.55s 0.2s ease both;
+    }
+}
+
+@keyframes imas-notfound-code-in {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes imas-notfound-mark-in {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media screen and (max-width: 560px) {
+    .imas-notfound .imas-notfound__mark {
+        width: 2.35rem;
+        height: 2.35rem;
+        font-size: 1rem;
+        inset-inline-end: calc(50% - 3.4rem);
+        bottom: 0.15rem;
+    }
+
+    html[dir="rtl"] .imas-notfound .imas-notfound__mark {
+        inset-inline-start: calc(50% - 3.4rem);
+    }
+
+    .imas-notfound .imas-notfound__btn {
+        width: 100%;
+        min-width: 0;
+    }
+}
 

@@ -350,6 +350,7 @@
         "property_type":"Property type",
         "all_types":"All types",
         "search":"Search",
+        "clear_filters":"Clear filters",
         "sort_by":"Sort by",
         "price_low_high":"Price (low to high)",
         "price_high_low":"Price (high to low)",
@@ -448,7 +449,8 @@
         "enter_your_email":"Enter your email",
         "useful_links":"Useful links",
         "footer_location":"Istanbul, Turkey",
-        "All Rights Reserved":"All Rights Reserved."
+        "All Rights Reserved":"All Rights Reserved.",
+        "back_to_top":"Back to top"
     },
     "contact_us":{
         "title":"Connect With Us Today",
@@ -512,5 +514,21 @@
         "no_content":"About us page has no published content yet.",
         "latest_properties":"Latest properties",
         "quick_links":"Quick links"
+    },
+    "errors":{
+        "not_found":{
+            "title":"Page not found",
+            "eyebrow":"Lost your way?",
+            "heading":"Page not found",
+            "message":"We can’t find the page you’re looking for. It may have moved, or the link might be incorrect.",
+            "go_home":"Go to Home",
+            "browse_properties":"Browse properties",
+            "try_these":"Or try one of these:",
+            "shortcuts_label":"Helpful links",
+            "link_home":"Home",
+            "link_properties":"Buy Real Estate",
+            "link_blog":"Blog",
+            "link_contact":"Contact us"
+        }
     }
 }

@@ -12,6 +12,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Modules\Base\Models\Media;
 use Modules\Base\Models\MediaFolder;
+use Modules\Base\Support\Media\MediaAssetResolver;
 use Modules\Core\Traits\FileTrait;
 
 class MediaLibraryController extends Controller
@@ -34,7 +35,7 @@ class MediaLibraryController extends Controller
         $payload = $request->validate([
             'q' => ['nullable', 'string', 'max:255'],
             'folder_id' => ['nullable'],
-            'type' => ['nullable', Rule::in(['all', 'image', 'jpeg', 'png', 'gif', 'webp'])],
+            'type' => ['nullable', Rule::in(['all', 'image', 'jpeg', 'png', 'gif', 'webp', 'avif'])],
             'date' => ['nullable', 'date_format:Y-m'],
             'sort' => ['nullable', Rule::in(['newest', 'oldest', 'name_asc', 'name_desc'])],
             'page' => ['nullable', 'integer', 'min:1'],
@@ -67,7 +68,7 @@ class MediaLibraryController extends Controller
 
         if ($type === 'image') {
             $query->where('mime_type', 'like', 'image/%');
-        } elseif (in_array($type, ['jpeg', 'png', 'gif', 'webp'], true)) {
+        } elseif (in_array($type, ['jpeg', 'png', 'gif', 'webp', 'avif'], true)) {
             $mime = $type === 'jpeg' ? 'image/jpeg' : 'image/'.$type;
             $query->where('mime_type', $mime);
         }
@@ -103,6 +104,33 @@ class MediaLibraryController extends Controller
             ->values();
 
         return response()->json(['folders' => $serialized]);
+    }
+
+    /**
+     * Resolve an active library image by storage path (used by the admin picker to
+     * open on the folder that already holds the field's current image).
+     */
+    public function resolve(Request $request): JsonResponse
+    {
+        $payload = $request->validate([
+            'path' => ['required', 'string', 'max:2048'],
+        ]);
+
+        $path = MediaAssetResolver::normalizePath($payload['path']);
+        abort_if($path === null, 404);
+
+        $media = Media::query()
+            ->active()
+            ->where('disk', 'public')
+            ->where('path', $path)
+            ->with(['user:id,name', 'folder:id,name'])
+            ->first();
+
+        abort_if($media === null, 404);
+
+        return response()->json([
+            'item' => $this->serializeMedia($media),
+        ]);
     }
 
     public function storeFolder(Request $request): JsonResponse
@@ -168,9 +196,9 @@ class MediaLibraryController extends Controller
     public function store(Request $request): JsonResponse|RedirectResponse
     {
         $request->validate([
-            'file' => ['nullable', 'file', 'mimes:jpeg,jpg,png,gif,webp', 'max:4096'],
+            'file' => ['nullable', 'file', 'mimes:jpeg,jpg,png,gif,webp,avif', 'max:4096'],
             'files' => ['nullable', 'array'],
-            'files.*' => ['file', 'mimes:jpeg,jpg,png,gif,webp', 'max:4096'],
+            'files.*' => ['file', 'mimes:jpeg,jpg,png,gif,webp,avif', 'max:4096'],
             'folder_id' => ['nullable', 'integer', 'exists:media_folders,id'],
             'alt_text' => ['nullable', 'string', 'max:255'],
             'title' => ['nullable', 'string', 'max:255'],

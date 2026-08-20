@@ -44,6 +44,12 @@
             :content="ogUrl"
         />
         <meta
+            v-if="robots"
+            head-key="robots"
+            name="robots"
+            :content="robots"
+        />
+        <meta
             head-key="twitter:card"
             name="twitter:card"
             :content="twitterCard"
@@ -173,6 +179,41 @@ const propertyIndexUrl = computed(() =>
     ),
 );
 
+/** Faceted listing query → noindex to avoid duplicate-content URLs. */
+const listingFiltersAreActive = computed(() => {
+    const f = props.filters ?? {};
+    const locationIds = Array.isArray(f.location_id)
+        ? f.location_id.filter((id) => id != null && id !== "")
+        : f.location_id != null && f.location_id !== ""
+          ? [f.location_id]
+          : [];
+    const unitIds = Array.isArray(f.project_unit_type_id)
+        ? f.project_unit_type_id.filter((id) => id != null && id !== "")
+        : f.project_unit_type_id != null && f.project_unit_type_id !== ""
+          ? [f.project_unit_type_id]
+          : [];
+
+    if (locationIds.length > 0) {
+        return true;
+    }
+    if (f.property_type_id != null && f.property_type_id !== "") {
+        return true;
+    }
+    if (unitIds.length > 0) {
+        return true;
+    }
+    if (typeof f.q === "string" && f.q.trim() !== "") {
+        return true;
+    }
+
+    return (
+        f.min_price != null ||
+        f.max_price != null ||
+        f.min_area != null ||
+        f.max_area != null
+    );
+});
+
 const {
     title: documentTitle,
     description: metaDescription,
@@ -183,6 +224,7 @@ const {
     canonical: canonicalUrl,
     ogUrl,
     twitterCard,
+    robots,
 } = useDocumentSeo({
     pageTitle: () => props.title,
     description: () => props.seoDescription,
@@ -193,6 +235,7 @@ const {
         const banner = media.value.property_show_banner;
         return typeof banner === "string" ? banner : "";
     },
+    robots: () => (listingFiltersAreActive.value ? "noindex, follow" : ""),
     canonical: () => {
         if (typeof route === "function" && route().has?.("property.index")) {
             try {

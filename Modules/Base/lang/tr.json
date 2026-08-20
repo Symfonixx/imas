@@ -351,6 +351,7 @@
         "property_type":"Mülk Tipi",
         "all_types":"Tüm Tipler",
         "search":"Ara",
+        "clear_filters":"Filtreleri temizle",
         "sort_by":"Sırala",
         "price_low_high":"Fiyat (düşükten yükseğe)",
         "price_high_low":"Fiyat (yüksekten düşüğe)",
@@ -449,7 +450,8 @@
         "enter_your_email":"E-posta adresinizi girin",
         "useful_links":"Kullanışlı bağlantılar",
         "footer_location":"İstanbul, Türkiye",
-        "All Rights Reserved":"Tüm hakları saklıdır."
+        "All Rights Reserved":"Tüm hakları saklıdır.",
+        "back_to_top":"Yukarı çık"
     },
     "contact_us":{
         "title":"Bize Ulaşın Bugün",
@@ -513,5 +515,21 @@
         "no_content":"Hakkımızda sayfasında henüz yayınlanmış içerik yok.",
         "latest_properties":"En son eklenen mülkler",
         "quick_links":"Hızlı bağlantılar"
+    },
+    "errors":{
+        "not_found":{
+            "title":"Sayfa bulunamadı",
+            "eyebrow":"Yolunuzu mu kaybettiniz?",
+            "heading":"Sayfa bulunamadı",
+            "message":"Aradığınız sayfayı bulamıyoruz. Taşınmış olabilir veya bağlantı hatalı olabilir.",
+            "go_home":"Ana sayfaya git",
+            "browse_properties":"Mülklere göz at",
+            "try_these":"Ya da bunlardan birini deneyin:",
+            "shortcuts_label":"Yararlı bağlantılar",
+            "link_home":"Ana sayfa",
+            "link_properties":"Gayrimenkul satın al",
+            "link_blog":"Blog",
+            "link_contact":"Bize ulaşın"
+        }
     }
 }

@@ -42,6 +42,10 @@
                             :alt="property.thumbnail_alt || displayTitle"
                             :title="property.thumbnail_title || undefined"
                             class="img-responsive"
+                            width="800"
+                            height="600"
+                            loading="lazy"
+                            decoding="async"
                         />
                     </div>
                 </div>

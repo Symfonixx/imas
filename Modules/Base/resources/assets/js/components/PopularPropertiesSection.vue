@@ -23,7 +23,10 @@
                         ref="viewportRef"
                         dir="ltr"
                         class="slick-lancers imas-popular-viewport"
-                        :class="{ 'is-dragging': isDragging }"
+                        :class="{
+                            'is-dragging': isDragging,
+                            'imas-popular-viewport--rtl': isRtl,
+                        }"
                         :style="{ '--imas-slides-visible': visibleCount }"
                         @scroll.passive="syncActiveFromScroll"
                         @pointerdown="onPointerDown"
@@ -87,10 +90,16 @@ const page = usePage();
 function trans(key) {
     return page.props.translations[key] || key;
 }
-/** RTL/LTR for card content; scroll rail stays `dir="ltr"` so scrollLeft is reliable. */
-const slideTextDir = computed(() =>
-    page.props.text_direction === "rtl" ? "rtl" : "ltr",
+/**
+ * Scroll rail stays `dir="ltr"` so scrollLeft is reliable across browsers.
+ * RTL uses `flex-direction: row-reverse` + mirrored scroll offsets so slide 0 starts on the right.
+ */
+const isRtl = computed(
+    () =>
+        page.props.text_direction === "rtl" ||
+        page.props.locale === "ar",
 );
+const slideTextDir = computed(() => (isRtl.value ? "rtl" : "ltr"));
 
 const props = defineProps({
     properties: {
@@ -185,7 +194,11 @@ const pageCount = computed(() => {
     return n - v + 1;
 });
 
-/** Offset from the left edge of scroll content to align slide `index` at the viewport’s left edge. */
+function maxScrollLeft(vp) {
+    return Math.max(0, vp.scrollWidth - vp.clientWidth);
+}
+
+/** Distance from the inline-start of the track to slide `index` (DOM order). */
 function cumulativeOffsetBeforeSlide(vp, index) {
     const slides = vp.querySelectorAll(".imas-popular-slide");
     let left = 0;
@@ -196,9 +209,17 @@ function cumulativeOffsetBeforeSlide(vp, index) {
     return left;
 }
 
-function scrollViewportToSlideIndex(vp, index, behavior = "smooth") {
+function scrollLeftForSlideIndex(vp, index) {
     const offset = cumulativeOffsetBeforeSlide(vp, index);
-    vp.scrollTo({ left: offset, behavior });
+    if (!isRtl.value) {
+        return offset;
+    }
+    // row-reverse: inline-start is the right edge; index 0 sits at max scrollLeft.
+    return maxScrollLeft(vp) - offset;
+}
+
+function scrollViewportToSlideIndex(vp, index, behavior = "smooth") {
+    vp.scrollTo({ left: scrollLeftForSlideIndex(vp, index), behavior });
 }
 
 function goToPage(index) {
@@ -225,7 +246,9 @@ function syncActiveFromScroll() {
         return;
     }
     const maxStart = Math.max(0, slides.length - visibleCount.value);
-    const pos = vp.scrollLeft;
+    const pos = isRtl.value
+        ? maxScrollLeft(vp) - vp.scrollLeft
+        : vp.scrollLeft;
     let best = 0;
     let bestDist = Infinity;
     for (let i = 0; i <= maxStart; i++) {
@@ -418,6 +441,11 @@ onBeforeUnmount(() => {
     scrollbar-color: transparent transparent;
 }
 
+/* Pack/start from the inline-end so slide 0 begins on the right in RTL. */
+.imas-popular-viewport--rtl {
+    flex-direction: row-reverse;
+}
+
 .imas-popular-viewport::-webkit-scrollbar {
     display: none;
     width: 0;
@@ -528,10 +556,12 @@ html[dir="rtl"] ul.imas-popular-dots {
 
 .sec-title {
     color: var(--text) !important;
+    text-align: start;
 }
 
 .sec-title h2 {
     color: var(--brand-gold) !important;
+    text-align: start;
 }
 
 .sec-title h2 span {
@@ -540,6 +570,8 @@ html[dir="rtl"] ul.imas-popular-dots {
 
 .sec-title p {
     color: var(--text-dim) !important;
+    text-align: start;
+    margin-inline: 0;
 }
 .featured.portfolio.rec-pro.disc{
     background: var(--bg) !important;

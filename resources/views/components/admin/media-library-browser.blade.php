@@ -19,6 +19,7 @@
                 var instances = {};
                 var routes = {
                     list: @json(route('admin.media_library.list')),
+                    resolve: @json(route('admin.media_library.resolve')),
                     folders: @json(route('admin.media_library.folders.index')),
                     storeFolder: @json(route('admin.media_library.folders.store')),
                     updateFolder: @json(route('admin.media_library.folders.update', ['folder' => '__id__'])),
@@ -702,8 +703,108 @@
 
                     function reload() {
                         return loadFolders().then(function () {
+                            renderBreadcrumb();
                             return loadMedia(1);
                         });
+                    }
+
+                    function normalizePickerPath(value) {
+                        if (value == null) return '';
+                        var path = String(value).trim();
+                        if (!path || path.toLowerCase() === 'null') return '';
+                        return path;
+                    }
+
+                    function readTargetPath(explicitPath) {
+                        var fromOption = normalizePickerPath(explicitPath);
+                        if (fromOption) return fromOption;
+
+                        var input = state.targetInput;
+                        if (!input) return '';
+                        if (typeof input === 'string') {
+                            input = document.querySelector(input);
+                            state.targetInput = input;
+                        }
+                        if (!input) return '';
+
+                        return normalizePickerPath(input.value);
+                    }
+
+                    function clearPickerFilters() {
+                        state.search = '';
+                        state.date = '';
+                        state.type = 'all';
+                        state.page = 1;
+
+                        var searchInput = $('[data-ml-search]');
+                        if (searchInput) searchInput.value = '';
+                        var dateInput = $('[data-ml-date]');
+                        if (dateInput) dateInput.value = '';
+                        var typeInput = $('[data-ml-type]');
+                        if (typeInput) typeInput.value = 'all';
+                    }
+
+                    function ensureItemVisible(item) {
+                        if (!item || !item.id) return;
+                        var exists = state.items.some(function (media) {
+                            return media.id === item.id;
+                        });
+                        if (!exists) {
+                            state.items = [item].concat(state.items);
+                        }
+                        state.selectedId = item.id;
+                        if (state.mode === 'picker-multi' && state.selectedIds.indexOf(item.id) === -1) {
+                            state.selectedIds = [item.id].concat(state.selectedIds);
+                        }
+                        renderItems(state.items);
+                        var selectedEl = root.querySelector('[data-ml-item="' + item.id + '"]');
+                        if (selectedEl && typeof selectedEl.scrollIntoView === 'function') {
+                            selectedEl.scrollIntoView({block: 'nearest', inline: 'nearest'});
+                        }
+                    }
+
+                    function focusCurrentPath(path) {
+                        var currentPath = normalizePickerPath(path);
+                        if (!currentPath) {
+                            return reload();
+                        }
+
+                        var url = routes.resolve + '?path=' + encodeURIComponent(currentPath);
+                        return fetch(url, {headers: {'X-Requested-With': 'XMLHttpRequest'}})
+                            .then(function (res) {
+                                if (res.status === 404) {
+                                    return null;
+                                }
+                                if (!res.ok) {
+                                    throw new Error('resolve failed');
+                                }
+                                return res.json();
+                            })
+                            .then(function (data) {
+                                if (!data || !data.item) {
+                                    return reload();
+                                }
+
+                                var item = data.item;
+                                clearPickerFilters();
+                                state.folderId = item.folder_id ? String(item.folder_id) : 'root';
+                                state.selectedId = item.id;
+                                state.selectedIds = state.mode === 'picker-multi' ? [item.id] : [];
+                                setBulkButtonState();
+                                updateUseButton();
+
+                                return loadFolders().then(function () {
+                                    ensureExpandedPath(state.folderId);
+                                    renderFolders();
+                                    renderBreadcrumb();
+                                    return loadMedia(1).then(function () {
+                                        ensureItemVisible(item);
+                                    });
+                                });
+                            })
+                            .catch(function () {
+                                return reload();
+                            });
                     }
 
                     function applyPickerResult(items) {
@@ -791,7 +892,7 @@
                         resetSelection();
                         updateUseButton();
                         openModal();
-                        reload();
+                        focusCurrentPath(readTargetPath(options.currentPath));
                     }
 
                     function openAsManage() {
@@ -1543,6 +1644,7 @@
                         onSelect: options.onSelect || null,
                         targetInput: options.targetInput || null,
                         targetPreview: options.targetPreview || null,
+                        currentPath: options.currentPath || null,
                         max: options.max || null,
                     });
                 };
@@ -1595,6 +1697,7 @@
             <option value="png">PNG</option>
             <option value="gif">GIF</option>
             <option value="webp">WebP</option>
+            <option value="avif">AVIF</option>
         </select>
 
         <input type="month" class="form-control form-control-solid w-160px" data-ml-date title="{{ __('Date') }}">
@@ -1617,7 +1720,7 @@
 
         <label class="btn btn-light-primary mb-0">
             <i class="bi bi-upload me-1"></i>{{ __('Upload') }}
-            <input type="file" class="d-none" data-ml-upload accept=".png,.jpg,.jpeg,.webp,.gif" multiple>
+            <input type="file" class="d-none" data-ml-upload accept=".png,.jpg,.jpeg,.webp,.gif,.avif" multiple>
         </label>
 
         <button type="button" class="btn btn-light-danger" data-ml-bulk-delete disabled>

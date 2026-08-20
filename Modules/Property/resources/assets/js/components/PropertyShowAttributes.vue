@@ -117,7 +117,10 @@
                             class="imas-property-attributes__image"
                             :src="image.url"
                             :alt="image.alt"
+                            width="400"
+                            height="300"
                             loading="lazy"
+                            decoding="async"
                         />
                     </div>
 
@@ -126,7 +129,7 @@
                         class="imas-property-attributes__file"
                         :href="attribute.value.url"
                         target="_blank"
-                        rel="noopener"
+                        rel="noopener noreferrer"
                         :download="attribute.value.name"
                     >
                         <i class="fa fa-download" aria-hidden="true"></i>

@@ -222,6 +222,7 @@
                 <a
                     href="https://symfonix.io/en"
                     target="_blank"
+                    rel="noopener noreferrer"
                     class="text-decoration-none"
                 >
                     <p class="imas-second-footer__developer">
@@ -232,9 +233,14 @@
         </div>
     </footer>
 
-    <a data-scroll href="#wrapper" class="go-up"
-        ><i class="fa fa-angle-double-up" aria-hidden="true"></i
-    ></a>
+    <a
+        data-scroll
+        href="#wrapper"
+        class="go-up"
+        :aria-label="trans('navBar.back_to_top')"
+    >
+        <i class="fa fa-angle-double-up" aria-hidden="true"></i>
+    </a>
 </template>
 
 <script setup>

@@ -13,7 +13,7 @@ class StoreUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'img' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:1048',
+            'img' => 'nullable|mimes:jpeg,png,jpg,webp,avif|max:1048',
             'name' => 'required|min:3',
             'email' => EmailValidation::rules(uniqueOnUsersTable: true),
             'mobile' => ['required', 'string', 'regex:/^[0-9]{8,15}$/', 'unique:users,mobile'],

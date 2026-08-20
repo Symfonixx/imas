@@ -65,6 +65,15 @@ class BlogController extends Controller
 
         $hubTitle = $this->blogHubTitle();
 
+        $seoPayload = [
+            'page_title' => $hubTitle,
+            'canonical' => route('blog.index'),
+        ];
+        // Faceted blog URLs (?q / ?category) are near-duplicates of the clean hub.
+        if ($this->blogFiltersAreActive($filters)) {
+            $seoPayload['robots'] = 'noindex, follow';
+        }
+
         return Inertia::render('Cms::Index', [
             'title' => $hubTitle,
             'blogs' => $blogs,
@@ -72,10 +81,7 @@ class BlogController extends Controller
             'categories' => $categories,
             'filters' => $filters,
         ])->withViewData([
-            'seo' => app(SeoDocumentService::class)->documentSeo([
-                'page_title' => $hubTitle,
-                'canonical' => route('blog.index'),
-            ]),
+            'seo' => app(SeoDocumentService::class)->documentSeo($seoPayload),
         ]);
     }
 
@@ -235,5 +241,17 @@ class BlogController extends Controller
         $label = $blogs['hub_title'] ?? null;
 
         return is_string($label) && $label !== '' ? $label : 'Blog';
+    }
+
+    /**
+     * @param  array{q?: string|null, category?: string|null}  $filters
+     */
+    private function blogFiltersAreActive(array $filters): bool
+    {
+        if (isset($filters['q']) && is_string($filters['q']) && trim($filters['q']) !== '') {
+            return true;
+        }
+
+        return isset($filters['category']) && is_string($filters['category']) && $filters['category'] !== '';
     }
 }

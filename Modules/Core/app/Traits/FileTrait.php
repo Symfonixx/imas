@@ -33,8 +33,10 @@ trait FileTrait
         // Generate a secure filename
         $filename = $this->generateFilename($file, $name);
 
-        // Handle PDF files
-        if ($file->getMimeType() === 'application/pdf') {
+        $mimeType = $file->getMimeType();
+
+        // Store PDFs (and formats GD cannot process) without re-encoding.
+        if ($mimeType === 'application/pdf' || $this->mustStoreWithoutProcessing($mimeType)) {
             return Storage::disk($disk)->putFileAs($dir, $file, $filename);
         }
 
@@ -43,16 +45,36 @@ trait FileTrait
         // the same 'image' container key to Illuminate\Image\ImageManager,
         // whose GD driver calls ImageManager::usingDriver() (Intervention v4 API).
         $source = $file->getRealPath() ?: $file->getPathname();
-        $image = ImageManager::gd()->read($source);
-        if ($width) {
-            $image->scale(width: $width);
+
+        try {
+            $image = ImageManager::gd()->read($source);
+            if ($width) {
+                $image->scale(width: $width);
+            }
+
+            $extension = $file->getClientOriginalExtension() ?: 'jpg';
+            $encoded = $image->encodeByExtension($extension);
+            Storage::disk($disk)->put($dir.'/'.$filename, (string) $encoded);
+
+            return $dir.'/'.$filename;
+        } catch (\Throwable) {
+            // Fallback when the host GD build cannot decode/encode (e.g. AVIF).
+            return Storage::disk($disk)->putFileAs($dir, $file, $filename);
+        }
+    }
+
+    /**
+     * Formats that should skip Intervention when the local GD build lacks support.
+     */
+    private function mustStoreWithoutProcessing(?string $mimeType): bool
+    {
+        if ($mimeType !== 'image/avif') {
+            return false;
         }
 
-        $extension = $file->getClientOriginalExtension() ?: 'jpg';
-        $encoded = $image->encodeByExtension($extension);
-        Storage::disk($disk)->put($dir.'/'.$filename, (string) $encoded);
+        $info = function_exists('gd_info') ? gd_info() : [];
 
-        return $dir.'/'.$filename;
+        return empty($info['AVIF Support']);
     }
 
     /**

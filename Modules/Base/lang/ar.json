@@ -341,6 +341,7 @@
         "property_type": "نوع العقار",
         "all_types": "كل الأنواع",
         "search": "بحث",
+        "clear_filters": "مسح الفلاتر",
         "sort_by": "ترتيب حسب",
         "price_low_high": "السعر (من الأقل إلى الأعلى)",
         "price_high_low": "السعر (من الأعلى إلى الأقل)",
@@ -439,7 +440,8 @@
         "enter_your_email": "أدخل بريدك الإلكتروني",
         "useful_links": "روابط مفيدة",
         "footer_location": "إسطنبول، تركيا",
-        "All Rights Reserved": "جميع الحقوق محفوظة."
+        "All Rights Reserved": "جميع الحقوق محفوظة.",
+        "back_to_top": "العودة إلى الأعلى"
     },
     "contact_us": {
         "title": "تواصل معنا اليوم",
@@ -503,6 +505,22 @@
         "no_content": "لا يوجد محتوى منشور لصفحة من نحن بعد.",
         "latest_properties": "أحدث العقارات",
         "quick_links": "روابط سريعة"
+    },
+    "errors": {
+        "not_found": {
+            "title": "الصفحة غير موجودة",
+            "eyebrow": "هل ضللت الطريق؟",
+            "heading": "الصفحة غير موجودة",
+            "message": "تعذر العثور على الصفحة التي تبحث عنها. قد تكون نُقلت أو أن الرابط غير صحيح.",
+            "go_home": "العودة للرئيسية",
+            "browse_properties": "تصفح العقارات",
+            "try_these": "أو جرّب أحد هذه الروابط:",
+            "shortcuts_label": "روابط مفيدة",
+            "link_home": "الرئيسية",
+            "link_properties": "شراء عقارات",
+            "link_blog": "المدونة",
+            "link_contact": "اتصل بنا"
+        }
     },
     "Home": "الرئيسية",
     "Buy Real Estate": "شراء عقارات",

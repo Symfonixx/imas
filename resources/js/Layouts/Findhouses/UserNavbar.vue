@@ -745,8 +745,17 @@ function stripMmenuAuthLinks($) {
 function initMobileMenuMmenu() {
     const $ = window.jQuery;
     if (!$ || !$.fn?.mmenu) {
+        // jQuery/mmenu are deferred; retry briefly if Vue mounted first.
+        if (!initMobileMenuMmenu._retries) {
+            initMobileMenuMmenu._retries = 0;
+        }
+        if (initMobileMenuMmenu._retries < 20) {
+            initMobileMenuMmenu._retries += 1;
+            window.setTimeout(initMobileMenuMmenu, 50);
+        }
         return;
     }
+    initMobileMenuMmenu._retries = 0;
 
     const wi = $(window).width();
     if (wi > 1024) {

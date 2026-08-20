@@ -25,7 +25,7 @@ final class PropertyAttributeValueSyncService
 {
     private const FILE_EXTENSIONS = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'csv', 'txt', 'zip'];
 
-    private const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'];
+    private const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif', 'bmp'];
 
     private const IMAGE_MIME_TYPES = [
         'image/jpeg',
@@ -34,6 +34,7 @@ final class PropertyAttributeValueSyncService
         'image/png',
         'image/gif',
         'image/webp',
+        'image/avif',
         'image/bmp',
         'image/x-ms-bmp',
     ];

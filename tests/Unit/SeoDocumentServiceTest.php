@@ -50,20 +50,16 @@ class SeoDocumentServiceTest extends TestCase
         $this->assertSame('https://example.test/property', $seo['canonical']);
     }
 
-    public function test_document_seo_respects_explicit_title_override(): void
+    public function test_document_seo_falls_back_description_to_title(): void
     {
         Seo::set('website_name', 'IMas', false);
+        Seo::set('main_title', 'IMas | Luxury Homes', false);
         Cache::forget('seo_entries');
 
-        $seo = app(SeoDocumentService::class)->documentSeo([
-            'title' => 'Penthouse in Istanbul | IMas',
-            'og_type' => 'article',
-            'robots' => 'noindex, nofollow',
-        ]);
+        $seo = app(SeoDocumentService::class)->documentSeo();
 
-        $this->assertSame('Penthouse in Istanbul | IMas', $seo['title']);
-        $this->assertSame('article', $seo['og_type']);
-        $this->assertSame('noindex, nofollow', $seo['robots']);
+        $this->assertSame('IMas | Luxury Homes', $seo['title']);
+        $this->assertSame('IMas | Luxury Homes', $seo['description']);
     }
 
     public function test_document_seo_includes_locale_hreflang_and_theme_color(): void

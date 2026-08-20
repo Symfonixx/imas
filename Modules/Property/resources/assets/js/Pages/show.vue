@@ -1,7 +1,6 @@
 <template>
     <Head :title="documentTitle">
         <meta
-            v-if="metaDescription"
             head-key="description"
             name="description"
             :content="metaDescription"
@@ -84,6 +83,7 @@
         >
             <InnerPageHeadingHero
                 :page-title="trans('properties.proprty_details')"
+                title-tag="p"
                 :items="propertyHeadingItems"
                 :banner-image-url="propertyShowBannerUrl"
             />
@@ -121,7 +121,7 @@
                                                         }}</span
                                                     >
                                                 </div>
-                                                    <h3>{{ displayTitle }}</h3>
+                                                    <h1>{{ displayTitle }}</h1>
                                                     <div
                                                         v-if="addressLine"
                                                         class="mt-0"
@@ -414,6 +414,7 @@ import JsonLdScript from "@/components/Seo/JsonLdScript.vue";
 import InnerPageHeadingHero from "@/components/global/InnerPageHeadingHero.vue";
 import { useScrollReveal } from "@/composables/useScrollReveal";
 import { useBoundedSticky } from "@/composables/useBoundedSticky";
+import { useDocumentSeo } from "@/composables/useDocumentSeo.js";
 import { localizedRoute } from "@/utils/localizedRoute.js";
 import PopularPropertiesSection from "../../../../../Base/resources/assets/js/components/PopularPropertiesSection.vue";
 import PropertyShowGallery from "../components/PropertyShowGallery.vue";
@@ -571,13 +572,27 @@ const hasMapCoordinates = computed(
 
 const meta = computed(() => props.property.metadata ?? {});
 
+const siteName = computed(() => {
+    const name = page.props.appName;
+    return typeof name === "string" && name.trim() !== ""
+        ? name.trim()
+        : "IMas";
+});
+
 const documentTitle = computed(() => {
     const custom = meta.value.meta_title;
-    const title =
+    const titleBase =
         typeof custom === "string" && custom.trim() !== ""
             ? custom.trim()
             : displayTitle.value;
-    return `${title} | ${page.props.appName}`;
+    const site = siteName.value;
+    if (!titleBase) {
+        return site;
+    }
+    if (!site || titleBase === site || titleBase.includes(site)) {
+        return titleBase;
+    }
+    return `${titleBase} | ${site}`;
 });
 
 const metaDescription = computed(() => {
@@ -586,7 +601,9 @@ const metaDescription = computed(() => {
         return d.trim();
     }
     const plain = overviewHtml.value.replace(/<[^>]*>/g, " ").trim();
-    return plain.slice(0, 160);
+    const excerpt = plain.slice(0, 160);
+    // Match SeoDocumentService: never leave description empty for crawlers.
+    return excerpt || documentTitle.value;
 });
 
 const metaKeywords = computed(() => {
@@ -597,39 +614,52 @@ const metaKeywords = computed(() => {
     if (typeof k === "string" && k.trim() !== "") {
         return k.trim();
     }
-    return "";
-});
-
-const ogTitle = computed(() => documentTitle.value);
-const ogDescription = computed(() => metaDescription.value);
-const ogImage = computed(() => {
-    const candidates = filterSchemaImages([
-        meta.value.meta_img_url,
-        props.property.thumbnail_url,
-        media.value.meta_img,
-    ]);
-    return candidates.length > 0 ? candidates[0].trim() : "";
-});
-const canonicalUrl = computed(() => {
-    try {
-        if (typeof route === "function" && route().has?.("property.show")) {
-            const slug =
-                props.property.url_key ||
-                props.property.slug ||
-                props.property.project_code;
-            if (slug) {
-                return route("property.show", slug);
-            }
+    const seoMap = globals.value.seo ?? {};
+    for (const key of ["site_meta_keywords", "website_keywords"]) {
+        const v = seoMap[key];
+        if (typeof v === "string" && v.trim() !== "") {
+            return v.trim();
         }
-    } catch {
-        /* ignore */
     }
     return "";
 });
-const ogUrl = computed(() => canonicalUrl.value);
-const twitterCard = computed(() =>
-    ogImage.value ? "summary_large_image" : "summary",
-);
+
+const {
+    ogTitle,
+    ogDescription,
+    ogImage,
+    canonical: canonicalUrl,
+    ogUrl,
+    twitterCard,
+} = useDocumentSeo({
+    title: () => documentTitle.value,
+    description: () => metaDescription.value,
+    keywords: () => metaKeywords.value,
+    ogImage: () => {
+        const candidates = filterSchemaImages([
+            meta.value.meta_img_url,
+            props.property.thumbnail_url,
+            media.value.meta_img,
+        ]);
+        return candidates.length > 0 ? candidates[0].trim() : "";
+    },
+    canonical: () => {
+        try {
+            if (typeof route === "function" && route().has?.("property.show")) {
+                const slug =
+                    props.property.url_key ||
+                    props.property.slug ||
+                    props.property.project_code;
+                if (slug) {
+                    return route("property.show", slug);
+                }
+            }
+        } catch {
+            /* ignore */
+        }
+        return "";
+    },
+});
 
 const realEstateListingSchema = computed(() => {
     const loc = props.property.location;
@@ -846,6 +876,7 @@ useBoundedSticky({
     color: var(--brand-gold);
 }
 
+.listing-title-bar h1,
 .listing-title-bar h3 {
     text-align: start;
     font-size: var(--text-xl);
